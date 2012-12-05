@@ -1,0 +1,373 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"stm32f4xx_crc.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.align	2
+  19              		.global	CRC_ResetDR
+  20              		.thumb
+  21              		.thumb_func
+  23              	CRC_ResetDR:
+  24              	.LFB110:
+  25              		.file 1 "../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c"
+   1:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** /**
+   2:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   ******************************************************************************
+   3:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @file    stm32f4xx_crc.c
+   4:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @author  MCD Application Team
+   5:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @version V1.0.0RC1
+   6:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @date    25-August-2011
+   7:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @brief   This file provides all the CRC firmware functions.
+   8:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   ******************************************************************************
+   9:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @attention
+  10:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   *
+  11:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
+  12:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
+  13:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * TIME. AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY
+  14:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
+  15:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
+  16:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+  17:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   *
+  18:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * <h2><center>&copy; COPYRIGHT 2011 STMicroelectronics</center></h2>
+  19:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   ******************************************************************************
+  20:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   */
+  21:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** 
+  22:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** /* Includes ------------------------------------------------------------------*/
+  23:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** #include "stm32f4xx_crc.h"
+  24:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** 
+  25:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** /** @addtogroup STM32F4xx_StdPeriph_Driver
+  26:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @{
+  27:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   */
+  28:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** 
+  29:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** /** @defgroup CRC 
+  30:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @brief CRC driver modules
+  31:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @{
+  32:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   */
+  33:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** 
+  34:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** /* Private typedef -----------------------------------------------------------*/
+  35:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** /* Private define ------------------------------------------------------------*/
+  36:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** /* Private macro -------------------------------------------------------------*/
+  37:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** /* Private variables ---------------------------------------------------------*/
+  38:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** /* Private function prototypes -----------------------------------------------*/
+  39:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** /* Private functions ---------------------------------------------------------*/
+  40:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** 
+  41:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** /** @defgroup CRC_Private_Functions
+  42:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @{
+  43:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   */
+  44:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** 
+  45:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** /**
+  46:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @brief  Resets the CRC Data register (DR).
+  47:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @param  None
+  48:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @retval None
+  49:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   */
+  50:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** void CRC_ResetDR(void)
+  51:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** {
+  26              		.loc 1 51 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 0
+  29              		@ frame_needed = 1, uses_anonymous_args = 0
+  30              		@ link register save eliminated.
+  31 0000 80B4     		push	{r7}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 4
+  34              		.cfi_offset 7, -4
+  35 0002 00AF     		add	r7, sp, #0
+  36              	.LCFI1:
+  37              		.cfi_def_cfa_register 7
+  52:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   /* Reset CRC generator */
+  53:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   CRC->CR = CRC_CR_RESET;
+  38              		.loc 1 53 0
+  39 0004 4FF44053 		mov	r3, #12288
+  40 0008 C4F20203 		movt	r3, 16386
+  41 000c 4FF00102 		mov	r2, #1
+  42 0010 9A60     		str	r2, [r3, #8]
+  54:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** }
+  43              		.loc 1 54 0
+  44 0012 BD46     		mov	sp, r7
+  45 0014 80BC     		pop	{r7}
+  46 0016 7047     		bx	lr
+  47              		.cfi_endproc
+  48              	.LFE110:
+  50              		.align	2
+  51              		.global	CRC_CalcCRC
+  52              		.thumb
+  53              		.thumb_func
+  55              	CRC_CalcCRC:
+  56              	.LFB111:
+  55:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** 
+  56:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** /**
+  57:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @brief  Computes the 32-bit CRC of a given data word(32-bit).
+  58:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @param  Data: data word(32-bit) to compute its CRC
+  59:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @retval 32-bit CRC
+  60:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   */
+  61:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** uint32_t CRC_CalcCRC(uint32_t Data)
+  62:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** {
+  57              		.loc 1 62 0
+  58              		.cfi_startproc
+  59              		@ args = 0, pretend = 0, frame = 8
+  60              		@ frame_needed = 1, uses_anonymous_args = 0
+  61              		@ link register save eliminated.
+  62 0018 80B4     		push	{r7}
+  63              	.LCFI2:
+  64              		.cfi_def_cfa_offset 4
+  65              		.cfi_offset 7, -4
+  66 001a 83B0     		sub	sp, sp, #12
+  67              	.LCFI3:
+  68              		.cfi_def_cfa_offset 16
+  69 001c 00AF     		add	r7, sp, #0
+  70              	.LCFI4:
+  71              		.cfi_def_cfa_register 7
+  72 001e 7860     		str	r0, [r7, #4]
+  63:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   CRC->DR = Data;
+  73              		.loc 1 63 0
+  74 0020 4FF44053 		mov	r3, #12288
+  75 0024 C4F20203 		movt	r3, 16386
+  76 0028 7A68     		ldr	r2, [r7, #4]
+  77 002a 1A60     		str	r2, [r3, #0]
+  64:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   
+  65:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   return (CRC->DR);
+  78              		.loc 1 65 0
+  79 002c 4FF44053 		mov	r3, #12288
+  80 0030 C4F20203 		movt	r3, 16386
+  81 0034 1B68     		ldr	r3, [r3, #0]
+  66:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** }
+  82              		.loc 1 66 0
+  83 0036 1846     		mov	r0, r3
+  84 0038 07F10C07 		add	r7, r7, #12
+  85 003c BD46     		mov	sp, r7
+  86 003e 80BC     		pop	{r7}
+  87 0040 7047     		bx	lr
+  88              		.cfi_endproc
+  89              	.LFE111:
+  91 0042 00BF     		.align	2
+  92              		.global	CRC_CalcBlockCRC
+  93              		.thumb
+  94              		.thumb_func
+  96              	CRC_CalcBlockCRC:
+  97              	.LFB112:
+  67:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** 
+  68:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** /**
+  69:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @brief  Computes the 32-bit CRC of a given buffer of data word(32-bit).
+  70:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @param  pBuffer: pointer to the buffer containing the data to be computed
+  71:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @param  BufferLength: length of the buffer to be computed					
+  72:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @retval 32-bit CRC
+  73:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   */
+  74:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** uint32_t CRC_CalcBlockCRC(uint32_t pBuffer[], uint32_t BufferLength)
+  75:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** {
+  98              		.loc 1 75 0
+  99              		.cfi_startproc
+ 100              		@ args = 0, pretend = 0, frame = 16
+ 101              		@ frame_needed = 1, uses_anonymous_args = 0
+ 102              		@ link register save eliminated.
+ 103 0044 80B4     		push	{r7}
+ 104              	.LCFI5:
+ 105              		.cfi_def_cfa_offset 4
+ 106              		.cfi_offset 7, -4
+ 107 0046 85B0     		sub	sp, sp, #20
+ 108              	.LCFI6:
+ 109              		.cfi_def_cfa_offset 24
+ 110 0048 00AF     		add	r7, sp, #0
+ 111              	.LCFI7:
+ 112              		.cfi_def_cfa_register 7
+ 113 004a 7860     		str	r0, [r7, #4]
+ 114 004c 3960     		str	r1, [r7, #0]
+  76:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   uint32_t index = 0;
+ 115              		.loc 1 76 0
+ 116 004e 4FF00003 		mov	r3, #0
+ 117 0052 FB60     		str	r3, [r7, #12]
+  77:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   
+  78:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   for(index = 0; index < BufferLength; index++)
+ 118              		.loc 1 78 0
+ 119 0054 4FF00003 		mov	r3, #0
+ 120 0058 FB60     		str	r3, [r7, #12]
+ 121 005a 0EE0     		b	.L4
+ 122              	.L5:
+  79:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   {
+  80:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****     CRC->DR = pBuffer[index];
+ 123              		.loc 1 80 0 discriminator 2
+ 124 005c 4FF44053 		mov	r3, #12288
+ 125 0060 C4F20203 		movt	r3, 16386
+ 126 0064 FA68     		ldr	r2, [r7, #12]
+ 127 0066 4FEA8202 		lsl	r2, r2, #2
+ 128 006a 7968     		ldr	r1, [r7, #4]
+ 129 006c 8A18     		adds	r2, r1, r2
+ 130 006e 1268     		ldr	r2, [r2, #0]
+ 131 0070 1A60     		str	r2, [r3, #0]
+  78:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   for(index = 0; index < BufferLength; index++)
+ 132              		.loc 1 78 0 discriminator 2
+ 133 0072 FB68     		ldr	r3, [r7, #12]
+ 134 0074 03F10103 		add	r3, r3, #1
+ 135 0078 FB60     		str	r3, [r7, #12]
+ 136              	.L4:
+  78:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   for(index = 0; index < BufferLength; index++)
+ 137              		.loc 1 78 0 is_stmt 0 discriminator 1
+ 138 007a FA68     		ldr	r2, [r7, #12]
+ 139 007c 3B68     		ldr	r3, [r7, #0]
+ 140 007e 9A42     		cmp	r2, r3
+ 141 0080 ECD3     		bcc	.L5
+  81:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   }
+  82:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   return (CRC->DR);
+ 142              		.loc 1 82 0 is_stmt 1
+ 143 0082 4FF44053 		mov	r3, #12288
+ 144 0086 C4F20203 		movt	r3, 16386
+ 145 008a 1B68     		ldr	r3, [r3, #0]
+  83:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** }
+ 146              		.loc 1 83 0
+ 147 008c 1846     		mov	r0, r3
+ 148 008e 07F11407 		add	r7, r7, #20
+ 149 0092 BD46     		mov	sp, r7
+ 150 0094 80BC     		pop	{r7}
+ 151 0096 7047     		bx	lr
+ 152              		.cfi_endproc
+ 153              	.LFE112:
+ 155              		.align	2
+ 156              		.global	CRC_GetCRC
+ 157              		.thumb
+ 158              		.thumb_func
+ 160              	CRC_GetCRC:
+ 161              	.LFB113:
+  84:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** 
+  85:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** /**
+  86:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @brief  Returns the current CRC value.
+  87:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @param  None
+  88:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @retval 32-bit CRC
+  89:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   */
+  90:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** uint32_t CRC_GetCRC(void)
+  91:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** {
+ 162              		.loc 1 91 0
+ 163              		.cfi_startproc
+ 164              		@ args = 0, pretend = 0, frame = 0
+ 165              		@ frame_needed = 1, uses_anonymous_args = 0
+ 166              		@ link register save eliminated.
+ 167 0098 80B4     		push	{r7}
+ 168              	.LCFI8:
+ 169              		.cfi_def_cfa_offset 4
+ 170              		.cfi_offset 7, -4
+ 171 009a 00AF     		add	r7, sp, #0
+ 172              	.LCFI9:
+ 173              		.cfi_def_cfa_register 7
+  92:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   return (CRC->DR);
+ 174              		.loc 1 92 0
+ 175 009c 4FF44053 		mov	r3, #12288
+ 176 00a0 C4F20203 		movt	r3, 16386
+ 177 00a4 1B68     		ldr	r3, [r3, #0]
+  93:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** }
+ 178              		.loc 1 93 0
+ 179 00a6 1846     		mov	r0, r3
+ 180 00a8 BD46     		mov	sp, r7
+ 181 00aa 80BC     		pop	{r7}
+ 182 00ac 7047     		bx	lr
+ 183              		.cfi_endproc
+ 184              	.LFE113:
+ 186 00ae 00BF     		.align	2
+ 187              		.global	CRC_SetIDRegister
+ 188              		.thumb
+ 189              		.thumb_func
+ 191              	CRC_SetIDRegister:
+ 192              	.LFB114:
+  94:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** 
+  95:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** /**
+  96:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @brief  Stores a 8-bit data in the Independent Data(ID) register.
+  97:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @param  IDValue: 8-bit value to be stored in the ID register 					
+  98:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @retval None
+  99:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   */
+ 100:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** void CRC_SetIDRegister(uint8_t IDValue)
+ 101:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** {
+ 193              		.loc 1 101 0
+ 194              		.cfi_startproc
+ 195              		@ args = 0, pretend = 0, frame = 8
+ 196              		@ frame_needed = 1, uses_anonymous_args = 0
+ 197              		@ link register save eliminated.
+ 198 00b0 80B4     		push	{r7}
+ 199              	.LCFI10:
+ 200              		.cfi_def_cfa_offset 4
+ 201              		.cfi_offset 7, -4
+ 202 00b2 83B0     		sub	sp, sp, #12
+ 203              	.LCFI11:
+ 204              		.cfi_def_cfa_offset 16
+ 205 00b4 00AF     		add	r7, sp, #0
+ 206              	.LCFI12:
+ 207              		.cfi_def_cfa_register 7
+ 208 00b6 0346     		mov	r3, r0
+ 209 00b8 FB71     		strb	r3, [r7, #7]
+ 102:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   CRC->IDR = IDValue;
+ 210              		.loc 1 102 0
+ 211 00ba 4FF44053 		mov	r3, #12288
+ 212 00be C4F20203 		movt	r3, 16386
+ 213 00c2 FA79     		ldrb	r2, [r7, #7]
+ 214 00c4 1A71     		strb	r2, [r3, #4]
+ 103:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** }
+ 215              		.loc 1 103 0
+ 216 00c6 07F10C07 		add	r7, r7, #12
+ 217 00ca BD46     		mov	sp, r7
+ 218 00cc 80BC     		pop	{r7}
+ 219 00ce 7047     		bx	lr
+ 220              		.cfi_endproc
+ 221              	.LFE114:
+ 223              		.align	2
+ 224              		.global	CRC_GetIDRegister
+ 225              		.thumb
+ 226              		.thumb_func
+ 228              	CRC_GetIDRegister:
+ 229              	.LFB115:
+ 104:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** 
+ 105:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** /**
+ 106:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @brief  Returns the 8-bit data stored in the Independent Data(ID) register
+ 107:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @param  None
+ 108:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   * @retval 8-bit value of the ID register 
+ 109:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   */
+ 110:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** uint8_t CRC_GetIDRegister(void)
+ 111:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** {
+ 230              		.loc 1 111 0
+ 231              		.cfi_startproc
+ 232              		@ args = 0, pretend = 0, frame = 0
+ 233              		@ frame_needed = 1, uses_anonymous_args = 0
+ 234              		@ link register save eliminated.
+ 235 00d0 80B4     		push	{r7}
+ 236              	.LCFI13:
+ 237              		.cfi_def_cfa_offset 4
+ 238              		.cfi_offset 7, -4
+ 239 00d2 00AF     		add	r7, sp, #0
+ 240              	.LCFI14:
+ 241              		.cfi_def_cfa_register 7
+ 112:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c ****   return (CRC->IDR);
+ 242              		.loc 1 112 0
+ 243 00d4 4FF44053 		mov	r3, #12288
+ 244 00d8 C4F20203 		movt	r3, 16386
+ 245 00dc 1B79     		ldrb	r3, [r3, #4]
+ 246 00de DBB2     		uxtb	r3, r3
+ 113:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c **** }
+ 247              		.loc 1 113 0
+ 248 00e0 1846     		mov	r0, r3
+ 249 00e2 BD46     		mov	sp, r7
+ 250 00e4 80BC     		pop	{r7}
+ 251 00e6 7047     		bx	lr
+ 252              		.cfi_endproc
+ 253              	.LFE115:
+ 255              	.Letext0:
+ 256              		.file 2 "c:\\program files (x86)\\codesourcery\\eabi\\bin\\../lib/gcc/arm-none-eabi/4.6.3/../../..
+ 257              		.file 3 "C:\\Users\\Jure\\workspace\\TemplateProject\\Libraries\\Device\\STM32F4xx\\Include/stm32f
+ 258              		.file 4 "C:\\Users\\Jure\\workspace\\TemplateProject\\Libraries\\CMSIS\\Include/core_cm4.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 stm32f4xx_crc.c
+C:\Users\Jure\AppData\Local\Temp\cckLRI1e.s:18     .text:00000000 $t
+C:\Users\Jure\AppData\Local\Temp\cckLRI1e.s:23     .text:00000000 CRC_ResetDR
+C:\Users\Jure\AppData\Local\Temp\cckLRI1e.s:55     .text:00000018 CRC_CalcCRC
+C:\Users\Jure\AppData\Local\Temp\cckLRI1e.s:96     .text:00000044 CRC_CalcBlockCRC
+C:\Users\Jure\AppData\Local\Temp\cckLRI1e.s:160    .text:00000098 CRC_GetCRC
+C:\Users\Jure\AppData\Local\Temp\cckLRI1e.s:191    .text:000000b0 CRC_SetIDRegister
+C:\Users\Jure\AppData\Local\Temp\cckLRI1e.s:228    .text:000000d0 CRC_GetIDRegister
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

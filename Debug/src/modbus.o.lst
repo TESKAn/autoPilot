@@ -1,0 +1,2025 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"modbus.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.global	MODBUS_ReceiveState
+  19              		.bss
+  20              		.align	2
+  23              	MODBUS_ReceiveState:
+  24 0000 00000000 		.space	4
+  25              		.global	ucMBCRCLOW
+  28              	ucMBCRCLOW:
+  29 0004 00       		.space	1
+  30              		.global	ucMBCRCHI
+  33              	ucMBCRCHI:
+  34 0005 00       		.space	1
+  35              		.global	MODBUS_Timeout
+  36 0006 0000     		.align	2
+  39              	MODBUS_Timeout:
+  40 0008 00000000 		.space	4
+  41              		.comm	MODBUSReg,160,4
+  42              		.comm	MODBUSData,200,4
+  43              		.global	MODBUSTempReg
+  44              		.align	1
+  47              	MODBUSTempReg:
+  48 000c 0000     		.space	2
+  49 000e 0000     		.data
+  50              		.align	2
+  53              	ucCRCTableHi:
+  54 0000 00       		.byte	0
+  55 0001 C1       		.byte	-63
+  56 0002 81       		.byte	-127
+  57 0003 40       		.byte	64
+  58 0004 01       		.byte	1
+  59 0005 C0       		.byte	-64
+  60 0006 80       		.byte	-128
+  61 0007 41       		.byte	65
+  62 0008 01       		.byte	1
+  63 0009 C0       		.byte	-64
+  64 000a 80       		.byte	-128
+  65 000b 41       		.byte	65
+  66 000c 00       		.byte	0
+  67 000d C1       		.byte	-63
+  68 000e 81       		.byte	-127
+  69 000f 40       		.byte	64
+  70 0010 01       		.byte	1
+  71 0011 C0       		.byte	-64
+  72 0012 80       		.byte	-128
+  73 0013 41       		.byte	65
+  74 0014 00       		.byte	0
+  75 0015 C1       		.byte	-63
+  76 0016 81       		.byte	-127
+  77 0017 40       		.byte	64
+  78 0018 00       		.byte	0
+  79 0019 C1       		.byte	-63
+  80 001a 81       		.byte	-127
+  81 001b 40       		.byte	64
+  82 001c 01       		.byte	1
+  83 001d C0       		.byte	-64
+  84 001e 80       		.byte	-128
+  85 001f 41       		.byte	65
+  86 0020 01       		.byte	1
+  87 0021 C0       		.byte	-64
+  88 0022 80       		.byte	-128
+  89 0023 41       		.byte	65
+  90 0024 00       		.byte	0
+  91 0025 C1       		.byte	-63
+  92 0026 81       		.byte	-127
+  93 0027 40       		.byte	64
+  94 0028 00       		.byte	0
+  95 0029 C1       		.byte	-63
+  96 002a 81       		.byte	-127
+  97 002b 40       		.byte	64
+  98 002c 01       		.byte	1
+  99 002d C0       		.byte	-64
+ 100 002e 80       		.byte	-128
+ 101 002f 41       		.byte	65
+ 102 0030 00       		.byte	0
+ 103 0031 C1       		.byte	-63
+ 104 0032 81       		.byte	-127
+ 105 0033 40       		.byte	64
+ 106 0034 01       		.byte	1
+ 107 0035 C0       		.byte	-64
+ 108 0036 80       		.byte	-128
+ 109 0037 41       		.byte	65
+ 110 0038 01       		.byte	1
+ 111 0039 C0       		.byte	-64
+ 112 003a 80       		.byte	-128
+ 113 003b 41       		.byte	65
+ 114 003c 00       		.byte	0
+ 115 003d C1       		.byte	-63
+ 116 003e 81       		.byte	-127
+ 117 003f 40       		.byte	64
+ 118 0040 01       		.byte	1
+ 119 0041 C0       		.byte	-64
+ 120 0042 80       		.byte	-128
+ 121 0043 41       		.byte	65
+ 122 0044 00       		.byte	0
+ 123 0045 C1       		.byte	-63
+ 124 0046 81       		.byte	-127
+ 125 0047 40       		.byte	64
+ 126 0048 00       		.byte	0
+ 127 0049 C1       		.byte	-63
+ 128 004a 81       		.byte	-127
+ 129 004b 40       		.byte	64
+ 130 004c 01       		.byte	1
+ 131 004d C0       		.byte	-64
+ 132 004e 80       		.byte	-128
+ 133 004f 41       		.byte	65
+ 134 0050 00       		.byte	0
+ 135 0051 C1       		.byte	-63
+ 136 0052 81       		.byte	-127
+ 137 0053 40       		.byte	64
+ 138 0054 01       		.byte	1
+ 139 0055 C0       		.byte	-64
+ 140 0056 80       		.byte	-128
+ 141 0057 41       		.byte	65
+ 142 0058 01       		.byte	1
+ 143 0059 C0       		.byte	-64
+ 144 005a 80       		.byte	-128
+ 145 005b 41       		.byte	65
+ 146 005c 00       		.byte	0
+ 147 005d C1       		.byte	-63
+ 148 005e 81       		.byte	-127
+ 149 005f 40       		.byte	64
+ 150 0060 00       		.byte	0
+ 151 0061 C1       		.byte	-63
+ 152 0062 81       		.byte	-127
+ 153 0063 40       		.byte	64
+ 154 0064 01       		.byte	1
+ 155 0065 C0       		.byte	-64
+ 156 0066 80       		.byte	-128
+ 157 0067 41       		.byte	65
+ 158 0068 01       		.byte	1
+ 159 0069 C0       		.byte	-64
+ 160 006a 80       		.byte	-128
+ 161 006b 41       		.byte	65
+ 162 006c 00       		.byte	0
+ 163 006d C1       		.byte	-63
+ 164 006e 81       		.byte	-127
+ 165 006f 40       		.byte	64
+ 166 0070 01       		.byte	1
+ 167 0071 C0       		.byte	-64
+ 168 0072 80       		.byte	-128
+ 169 0073 41       		.byte	65
+ 170 0074 00       		.byte	0
+ 171 0075 C1       		.byte	-63
+ 172 0076 81       		.byte	-127
+ 173 0077 40       		.byte	64
+ 174 0078 00       		.byte	0
+ 175 0079 C1       		.byte	-63
+ 176 007a 81       		.byte	-127
+ 177 007b 40       		.byte	64
+ 178 007c 01       		.byte	1
+ 179 007d C0       		.byte	-64
+ 180 007e 80       		.byte	-128
+ 181 007f 41       		.byte	65
+ 182 0080 01       		.byte	1
+ 183 0081 C0       		.byte	-64
+ 184 0082 80       		.byte	-128
+ 185 0083 41       		.byte	65
+ 186 0084 00       		.byte	0
+ 187 0085 C1       		.byte	-63
+ 188 0086 81       		.byte	-127
+ 189 0087 40       		.byte	64
+ 190 0088 00       		.byte	0
+ 191 0089 C1       		.byte	-63
+ 192 008a 81       		.byte	-127
+ 193 008b 40       		.byte	64
+ 194 008c 01       		.byte	1
+ 195 008d C0       		.byte	-64
+ 196 008e 80       		.byte	-128
+ 197 008f 41       		.byte	65
+ 198 0090 00       		.byte	0
+ 199 0091 C1       		.byte	-63
+ 200 0092 81       		.byte	-127
+ 201 0093 40       		.byte	64
+ 202 0094 01       		.byte	1
+ 203 0095 C0       		.byte	-64
+ 204 0096 80       		.byte	-128
+ 205 0097 41       		.byte	65
+ 206 0098 01       		.byte	1
+ 207 0099 C0       		.byte	-64
+ 208 009a 80       		.byte	-128
+ 209 009b 41       		.byte	65
+ 210 009c 00       		.byte	0
+ 211 009d C1       		.byte	-63
+ 212 009e 81       		.byte	-127
+ 213 009f 40       		.byte	64
+ 214 00a0 00       		.byte	0
+ 215 00a1 C1       		.byte	-63
+ 216 00a2 81       		.byte	-127
+ 217 00a3 40       		.byte	64
+ 218 00a4 01       		.byte	1
+ 219 00a5 C0       		.byte	-64
+ 220 00a6 80       		.byte	-128
+ 221 00a7 41       		.byte	65
+ 222 00a8 01       		.byte	1
+ 223 00a9 C0       		.byte	-64
+ 224 00aa 80       		.byte	-128
+ 225 00ab 41       		.byte	65
+ 226 00ac 00       		.byte	0
+ 227 00ad C1       		.byte	-63
+ 228 00ae 81       		.byte	-127
+ 229 00af 40       		.byte	64
+ 230 00b0 01       		.byte	1
+ 231 00b1 C0       		.byte	-64
+ 232 00b2 80       		.byte	-128
+ 233 00b3 41       		.byte	65
+ 234 00b4 00       		.byte	0
+ 235 00b5 C1       		.byte	-63
+ 236 00b6 81       		.byte	-127
+ 237 00b7 40       		.byte	64
+ 238 00b8 00       		.byte	0
+ 239 00b9 C1       		.byte	-63
+ 240 00ba 81       		.byte	-127
+ 241 00bb 40       		.byte	64
+ 242 00bc 01       		.byte	1
+ 243 00bd C0       		.byte	-64
+ 244 00be 80       		.byte	-128
+ 245 00bf 41       		.byte	65
+ 246 00c0 00       		.byte	0
+ 247 00c1 C1       		.byte	-63
+ 248 00c2 81       		.byte	-127
+ 249 00c3 40       		.byte	64
+ 250 00c4 01       		.byte	1
+ 251 00c5 C0       		.byte	-64
+ 252 00c6 80       		.byte	-128
+ 253 00c7 41       		.byte	65
+ 254 00c8 01       		.byte	1
+ 255 00c9 C0       		.byte	-64
+ 256 00ca 80       		.byte	-128
+ 257 00cb 41       		.byte	65
+ 258 00cc 00       		.byte	0
+ 259 00cd C1       		.byte	-63
+ 260 00ce 81       		.byte	-127
+ 261 00cf 40       		.byte	64
+ 262 00d0 01       		.byte	1
+ 263 00d1 C0       		.byte	-64
+ 264 00d2 80       		.byte	-128
+ 265 00d3 41       		.byte	65
+ 266 00d4 00       		.byte	0
+ 267 00d5 C1       		.byte	-63
+ 268 00d6 81       		.byte	-127
+ 269 00d7 40       		.byte	64
+ 270 00d8 00       		.byte	0
+ 271 00d9 C1       		.byte	-63
+ 272 00da 81       		.byte	-127
+ 273 00db 40       		.byte	64
+ 274 00dc 01       		.byte	1
+ 275 00dd C0       		.byte	-64
+ 276 00de 80       		.byte	-128
+ 277 00df 41       		.byte	65
+ 278 00e0 01       		.byte	1
+ 279 00e1 C0       		.byte	-64
+ 280 00e2 80       		.byte	-128
+ 281 00e3 41       		.byte	65
+ 282 00e4 00       		.byte	0
+ 283 00e5 C1       		.byte	-63
+ 284 00e6 81       		.byte	-127
+ 285 00e7 40       		.byte	64
+ 286 00e8 00       		.byte	0
+ 287 00e9 C1       		.byte	-63
+ 288 00ea 81       		.byte	-127
+ 289 00eb 40       		.byte	64
+ 290 00ec 01       		.byte	1
+ 291 00ed C0       		.byte	-64
+ 292 00ee 80       		.byte	-128
+ 293 00ef 41       		.byte	65
+ 294 00f0 00       		.byte	0
+ 295 00f1 C1       		.byte	-63
+ 296 00f2 81       		.byte	-127
+ 297 00f3 40       		.byte	64
+ 298 00f4 01       		.byte	1
+ 299 00f5 C0       		.byte	-64
+ 300 00f6 80       		.byte	-128
+ 301 00f7 41       		.byte	65
+ 302 00f8 01       		.byte	1
+ 303 00f9 C0       		.byte	-64
+ 304 00fa 80       		.byte	-128
+ 305 00fb 41       		.byte	65
+ 306 00fc 00       		.byte	0
+ 307 00fd C1       		.byte	-63
+ 308 00fe 81       		.byte	-127
+ 309 00ff 40       		.byte	64
+ 310              		.align	2
+ 313              	ucCRCTableLo:
+ 314 0100 00       		.byte	0
+ 315 0101 C0       		.byte	-64
+ 316 0102 C1       		.byte	-63
+ 317 0103 01       		.byte	1
+ 318 0104 C3       		.byte	-61
+ 319 0105 03       		.byte	3
+ 320 0106 02       		.byte	2
+ 321 0107 C2       		.byte	-62
+ 322 0108 C6       		.byte	-58
+ 323 0109 06       		.byte	6
+ 324 010a 07       		.byte	7
+ 325 010b C7       		.byte	-57
+ 326 010c 05       		.byte	5
+ 327 010d C5       		.byte	-59
+ 328 010e C4       		.byte	-60
+ 329 010f 04       		.byte	4
+ 330 0110 CC       		.byte	-52
+ 331 0111 0C       		.byte	12
+ 332 0112 0D       		.byte	13
+ 333 0113 CD       		.byte	-51
+ 334 0114 0F       		.byte	15
+ 335 0115 CF       		.byte	-49
+ 336 0116 CE       		.byte	-50
+ 337 0117 0E       		.byte	14
+ 338 0118 0A       		.byte	10
+ 339 0119 CA       		.byte	-54
+ 340 011a CB       		.byte	-53
+ 341 011b 0B       		.byte	11
+ 342 011c C9       		.byte	-55
+ 343 011d 09       		.byte	9
+ 344 011e 08       		.byte	8
+ 345 011f C8       		.byte	-56
+ 346 0120 D8       		.byte	-40
+ 347 0121 18       		.byte	24
+ 348 0122 19       		.byte	25
+ 349 0123 D9       		.byte	-39
+ 350 0124 1B       		.byte	27
+ 351 0125 DB       		.byte	-37
+ 352 0126 DA       		.byte	-38
+ 353 0127 1A       		.byte	26
+ 354 0128 1E       		.byte	30
+ 355 0129 DE       		.byte	-34
+ 356 012a DF       		.byte	-33
+ 357 012b 1F       		.byte	31
+ 358 012c DD       		.byte	-35
+ 359 012d 1D       		.byte	29
+ 360 012e 1C       		.byte	28
+ 361 012f DC       		.byte	-36
+ 362 0130 14       		.byte	20
+ 363 0131 D4       		.byte	-44
+ 364 0132 D5       		.byte	-43
+ 365 0133 15       		.byte	21
+ 366 0134 D7       		.byte	-41
+ 367 0135 17       		.byte	23
+ 368 0136 16       		.byte	22
+ 369 0137 D6       		.byte	-42
+ 370 0138 D2       		.byte	-46
+ 371 0139 12       		.byte	18
+ 372 013a 13       		.byte	19
+ 373 013b D3       		.byte	-45
+ 374 013c 11       		.byte	17
+ 375 013d D1       		.byte	-47
+ 376 013e D0       		.byte	-48
+ 377 013f 10       		.byte	16
+ 378 0140 F0       		.byte	-16
+ 379 0141 30       		.byte	48
+ 380 0142 31       		.byte	49
+ 381 0143 F1       		.byte	-15
+ 382 0144 33       		.byte	51
+ 383 0145 F3       		.byte	-13
+ 384 0146 F2       		.byte	-14
+ 385 0147 32       		.byte	50
+ 386 0148 36       		.byte	54
+ 387 0149 F6       		.byte	-10
+ 388 014a F7       		.byte	-9
+ 389 014b 37       		.byte	55
+ 390 014c F5       		.byte	-11
+ 391 014d 35       		.byte	53
+ 392 014e 34       		.byte	52
+ 393 014f F4       		.byte	-12
+ 394 0150 3C       		.byte	60
+ 395 0151 FC       		.byte	-4
+ 396 0152 FD       		.byte	-3
+ 397 0153 3D       		.byte	61
+ 398 0154 FF       		.byte	-1
+ 399 0155 3F       		.byte	63
+ 400 0156 3E       		.byte	62
+ 401 0157 FE       		.byte	-2
+ 402 0158 FA       		.byte	-6
+ 403 0159 3A       		.byte	58
+ 404 015a 3B       		.byte	59
+ 405 015b FB       		.byte	-5
+ 406 015c 39       		.byte	57
+ 407 015d F9       		.byte	-7
+ 408 015e F8       		.byte	-8
+ 409 015f 38       		.byte	56
+ 410 0160 28       		.byte	40
+ 411 0161 E8       		.byte	-24
+ 412 0162 E9       		.byte	-23
+ 413 0163 29       		.byte	41
+ 414 0164 EB       		.byte	-21
+ 415 0165 2B       		.byte	43
+ 416 0166 2A       		.byte	42
+ 417 0167 EA       		.byte	-22
+ 418 0168 EE       		.byte	-18
+ 419 0169 2E       		.byte	46
+ 420 016a 2F       		.byte	47
+ 421 016b EF       		.byte	-17
+ 422 016c 2D       		.byte	45
+ 423 016d ED       		.byte	-19
+ 424 016e EC       		.byte	-20
+ 425 016f 2C       		.byte	44
+ 426 0170 E4       		.byte	-28
+ 427 0171 24       		.byte	36
+ 428 0172 25       		.byte	37
+ 429 0173 E5       		.byte	-27
+ 430 0174 27       		.byte	39
+ 431 0175 E7       		.byte	-25
+ 432 0176 E6       		.byte	-26
+ 433 0177 26       		.byte	38
+ 434 0178 22       		.byte	34
+ 435 0179 E2       		.byte	-30
+ 436 017a E3       		.byte	-29
+ 437 017b 23       		.byte	35
+ 438 017c E1       		.byte	-31
+ 439 017d 21       		.byte	33
+ 440 017e 20       		.byte	32
+ 441 017f E0       		.byte	-32
+ 442 0180 A0       		.byte	-96
+ 443 0181 60       		.byte	96
+ 444 0182 61       		.byte	97
+ 445 0183 A1       		.byte	-95
+ 446 0184 63       		.byte	99
+ 447 0185 A3       		.byte	-93
+ 448 0186 A2       		.byte	-94
+ 449 0187 62       		.byte	98
+ 450 0188 66       		.byte	102
+ 451 0189 A6       		.byte	-90
+ 452 018a A7       		.byte	-89
+ 453 018b 67       		.byte	103
+ 454 018c A5       		.byte	-91
+ 455 018d 65       		.byte	101
+ 456 018e 64       		.byte	100
+ 457 018f A4       		.byte	-92
+ 458 0190 6C       		.byte	108
+ 459 0191 AC       		.byte	-84
+ 460 0192 AD       		.byte	-83
+ 461 0193 6D       		.byte	109
+ 462 0194 AF       		.byte	-81
+ 463 0195 6F       		.byte	111
+ 464 0196 6E       		.byte	110
+ 465 0197 AE       		.byte	-82
+ 466 0198 AA       		.byte	-86
+ 467 0199 6A       		.byte	106
+ 468 019a 6B       		.byte	107
+ 469 019b AB       		.byte	-85
+ 470 019c 69       		.byte	105
+ 471 019d A9       		.byte	-87
+ 472 019e A8       		.byte	-88
+ 473 019f 68       		.byte	104
+ 474 01a0 78       		.byte	120
+ 475 01a1 B8       		.byte	-72
+ 476 01a2 B9       		.byte	-71
+ 477 01a3 79       		.byte	121
+ 478 01a4 BB       		.byte	-69
+ 479 01a5 7B       		.byte	123
+ 480 01a6 7A       		.byte	122
+ 481 01a7 BA       		.byte	-70
+ 482 01a8 BE       		.byte	-66
+ 483 01a9 7E       		.byte	126
+ 484 01aa 7F       		.byte	127
+ 485 01ab BF       		.byte	-65
+ 486 01ac 7D       		.byte	125
+ 487 01ad BD       		.byte	-67
+ 488 01ae BC       		.byte	-68
+ 489 01af 7C       		.byte	124
+ 490 01b0 B4       		.byte	-76
+ 491 01b1 74       		.byte	116
+ 492 01b2 75       		.byte	117
+ 493 01b3 B5       		.byte	-75
+ 494 01b4 77       		.byte	119
+ 495 01b5 B7       		.byte	-73
+ 496 01b6 B6       		.byte	-74
+ 497 01b7 76       		.byte	118
+ 498 01b8 72       		.byte	114
+ 499 01b9 B2       		.byte	-78
+ 500 01ba B3       		.byte	-77
+ 501 01bb 73       		.byte	115
+ 502 01bc B1       		.byte	-79
+ 503 01bd 71       		.byte	113
+ 504 01be 70       		.byte	112
+ 505 01bf B0       		.byte	-80
+ 506 01c0 50       		.byte	80
+ 507 01c1 90       		.byte	-112
+ 508 01c2 91       		.byte	-111
+ 509 01c3 51       		.byte	81
+ 510 01c4 93       		.byte	-109
+ 511 01c5 53       		.byte	83
+ 512 01c6 52       		.byte	82
+ 513 01c7 92       		.byte	-110
+ 514 01c8 96       		.byte	-106
+ 515 01c9 56       		.byte	86
+ 516 01ca 57       		.byte	87
+ 517 01cb 97       		.byte	-105
+ 518 01cc 55       		.byte	85
+ 519 01cd 95       		.byte	-107
+ 520 01ce 94       		.byte	-108
+ 521 01cf 54       		.byte	84
+ 522 01d0 9C       		.byte	-100
+ 523 01d1 5C       		.byte	92
+ 524 01d2 5D       		.byte	93
+ 525 01d3 9D       		.byte	-99
+ 526 01d4 5F       		.byte	95
+ 527 01d5 9F       		.byte	-97
+ 528 01d6 9E       		.byte	-98
+ 529 01d7 5E       		.byte	94
+ 530 01d8 5A       		.byte	90
+ 531 01d9 9A       		.byte	-102
+ 532 01da 9B       		.byte	-101
+ 533 01db 5B       		.byte	91
+ 534 01dc 99       		.byte	-103
+ 535 01dd 59       		.byte	89
+ 536 01de 58       		.byte	88
+ 537 01df 98       		.byte	-104
+ 538 01e0 88       		.byte	-120
+ 539 01e1 48       		.byte	72
+ 540 01e2 49       		.byte	73
+ 541 01e3 89       		.byte	-119
+ 542 01e4 4B       		.byte	75
+ 543 01e5 8B       		.byte	-117
+ 544 01e6 8A       		.byte	-118
+ 545 01e7 4A       		.byte	74
+ 546 01e8 4E       		.byte	78
+ 547 01e9 8E       		.byte	-114
+ 548 01ea 8F       		.byte	-113
+ 549 01eb 4F       		.byte	79
+ 550 01ec 8D       		.byte	-115
+ 551 01ed 4D       		.byte	77
+ 552 01ee 4C       		.byte	76
+ 553 01ef 8C       		.byte	-116
+ 554 01f0 44       		.byte	68
+ 555 01f1 84       		.byte	-124
+ 556 01f2 85       		.byte	-123
+ 557 01f3 45       		.byte	69
+ 558 01f4 87       		.byte	-121
+ 559 01f5 47       		.byte	71
+ 560 01f6 46       		.byte	70
+ 561 01f7 86       		.byte	-122
+ 562 01f8 82       		.byte	-126
+ 563 01f9 42       		.byte	66
+ 564 01fa 43       		.byte	67
+ 565 01fb 83       		.byte	-125
+ 566 01fc 41       		.byte	65
+ 567 01fd 81       		.byte	-127
+ 568 01fe 80       		.byte	-128
+ 569 01ff 40       		.byte	64
+ 570              		.text
+ 571              		.align	2
+ 572              		.global	MODBUS_Timer
+ 573              		.thumb
+ 574              		.thumb_func
+ 576              	MODBUS_Timer:
+ 577              	.LFB110:
+ 578              		.file 1 "../src/modbus.c"
+   1:../src/modbus.c **** /*
+   2:../src/modbus.c ****  * modbus.c
+   3:../src/modbus.c ****  *
+   4:../src/modbus.c ****  *  Created on: Oct 7, 2012
+   5:../src/modbus.c ****  *      Author: Jure
+   6:../src/modbus.c ****  */
+   7:../src/modbus.c **** 
+   8:../src/modbus.c **** #include "allinclude.h"
+   9:../src/modbus.c **** 
+  10:../src/modbus.c **** // Variables
+  11:../src/modbus.c **** int MODBUS_ReceiveState = 0;
+  12:../src/modbus.c **** unsigned char ucMBCRCLOW = 0;
+  13:../src/modbus.c **** unsigned char ucMBCRCHI = 0;
+  14:../src/modbus.c **** int MODBUS_Timeout = 0;
+  15:../src/modbus.c **** // MODBUS registers
+  16:../src/modbus.c **** uint16_t MODBUSReg[MB_TOTALREGISTERS];
+  17:../src/modbus.c **** // Var holds data
+  18:../src/modbus.c **** Typedef_mbd MODBUSData;
+  19:../src/modbus.c **** // MODBUS temp reg variable
+  20:../src/modbus.c **** uint16_t MODBUSTempReg = 0;
+  21:../src/modbus.c **** 
+  22:../src/modbus.c **** // CRC tables
+  23:../src/modbus.c **** /* Table of CRC values for high–order byte */
+  24:../src/modbus.c **** static unsigned char ucCRCTableHi[] = {
+  25:../src/modbus.c **** 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81,
+  26:../src/modbus.c **** 0x40, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0,
+  27:../src/modbus.c **** 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01,
+  28:../src/modbus.c **** 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41,
+  29:../src/modbus.c **** 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81,
+  30:../src/modbus.c **** 0x40, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0,
+  31:../src/modbus.c **** 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01,
+  32:../src/modbus.c **** 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40,
+  33:../src/modbus.c **** 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81,
+  34:../src/modbus.c **** 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0,
+  35:../src/modbus.c **** 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01,
+  36:../src/modbus.c **** 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41,
+  37:../src/modbus.c **** 0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81,
+  38:../src/modbus.c **** 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0,
+  39:../src/modbus.c **** 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01,
+  40:../src/modbus.c **** 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41,
+  41:../src/modbus.c **** 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81,
+  42:../src/modbus.c **** 0x40
+  43:../src/modbus.c **** } ;
+  44:../src/modbus.c **** 
+  45:../src/modbus.c **** /* Table of CRC values for low–order byte */
+  46:../src/modbus.c **** static unsigned char ucCRCTableLo[] = {
+  47:../src/modbus.c **** 0x00, 0xC0, 0xC1, 0x01, 0xC3, 0x03, 0x02, 0xC2, 0xC6, 0x06, 0x07, 0xC7, 0x05, 0xC5, 0xC4,
+  48:../src/modbus.c **** 0x04, 0xCC, 0x0C, 0x0D, 0xCD, 0x0F, 0xCF, 0xCE, 0x0E, 0x0A, 0xCA, 0xCB, 0x0B, 0xC9, 0x09,
+  49:../src/modbus.c **** 0x08, 0xC8, 0xD8, 0x18, 0x19, 0xD9, 0x1B, 0xDB, 0xDA, 0x1A, 0x1E, 0xDE, 0xDF, 0x1F, 0xDD,
+  50:../src/modbus.c **** 0x1D, 0x1C, 0xDC, 0x14, 0xD4, 0xD5, 0x15, 0xD7, 0x17, 0x16, 0xD6, 0xD2, 0x12, 0x13, 0xD3,
+  51:../src/modbus.c **** 0x11, 0xD1, 0xD0, 0x10, 0xF0, 0x30, 0x31, 0xF1, 0x33, 0xF3, 0xF2, 0x32, 0x36, 0xF6, 0xF7,
+  52:../src/modbus.c **** 0x37, 0xF5, 0x35, 0x34, 0xF4, 0x3C, 0xFC, 0xFD, 0x3D, 0xFF, 0x3F, 0x3E, 0xFE, 0xFA, 0x3A,
+  53:../src/modbus.c **** 0x3B, 0xFB, 0x39, 0xF9, 0xF8, 0x38, 0x28, 0xE8, 0xE9, 0x29, 0xEB, 0x2B, 0x2A, 0xEA, 0xEE,
+  54:../src/modbus.c **** 0x2E, 0x2F, 0xEF, 0x2D, 0xED, 0xEC, 0x2C, 0xE4, 0x24, 0x25, 0xE5, 0x27, 0xE7, 0xE6, 0x26,
+  55:../src/modbus.c **** 0x22, 0xE2, 0xE3, 0x23, 0xE1, 0x21, 0x20, 0xE0, 0xA0, 0x60, 0x61, 0xA1, 0x63, 0xA3, 0xA2,
+  56:../src/modbus.c **** 0x62, 0x66, 0xA6, 0xA7, 0x67, 0xA5, 0x65, 0x64, 0xA4, 0x6C, 0xAC, 0xAD, 0x6D, 0xAF, 0x6F,
+  57:../src/modbus.c **** 0x6E, 0xAE, 0xAA, 0x6A, 0x6B, 0xAB, 0x69, 0xA9, 0xA8, 0x68, 0x78, 0xB8, 0xB9, 0x79, 0xBB,
+  58:../src/modbus.c **** 0x7B, 0x7A, 0xBA, 0xBE, 0x7E, 0x7F, 0xBF, 0x7D, 0xBD, 0xBC, 0x7C, 0xB4, 0x74, 0x75, 0xB5,
+  59:../src/modbus.c **** 0x77, 0xB7, 0xB6, 0x76, 0x72, 0xB2, 0xB3, 0x73, 0xB1, 0x71, 0x70, 0xB0, 0x50, 0x90, 0x91,
+  60:../src/modbus.c **** 0x51, 0x93, 0x53, 0x52, 0x92, 0x96, 0x56, 0x57, 0x97, 0x55, 0x95, 0x94, 0x54, 0x9C, 0x5C,
+  61:../src/modbus.c **** 0x5D, 0x9D, 0x5F, 0x9F, 0x9E, 0x5E, 0x5A, 0x9A, 0x9B, 0x5B, 0x99, 0x59, 0x58, 0x98, 0x88,
+  62:../src/modbus.c **** 0x48, 0x49, 0x89, 0x4B, 0x8B, 0x8A, 0x4A, 0x4E, 0x8E, 0x8F, 0x4F, 0x8D, 0x4D, 0x4C, 0x8C,
+  63:../src/modbus.c **** 0x44, 0x84, 0x85, 0x45, 0x87, 0x47, 0x46, 0x86, 0x82, 0x42, 0x43, 0x83, 0x41, 0x81, 0x80,
+  64:../src/modbus.c **** 0x40
+  65:../src/modbus.c **** } ;
+  66:../src/modbus.c **** 
+  67:../src/modbus.c **** // Include _all_ functions needed for modbus, _NO_ hardware functions
+  68:../src/modbus.c **** 
+  69:../src/modbus.c **** // Function ModBus timeout
+  70:../src/modbus.c **** void MODBUS_Timer(void)
+  71:../src/modbus.c **** {
+ 579              		.loc 1 71 0
+ 580              		.cfi_startproc
+ 581              		@ args = 0, pretend = 0, frame = 0
+ 582              		@ frame_needed = 1, uses_anonymous_args = 0
+ 583              		@ link register save eliminated.
+ 584 0000 80B4     		push	{r7}
+ 585              	.LCFI0:
+ 586              		.cfi_def_cfa_offset 4
+ 587              		.cfi_offset 7, -4
+ 588 0002 00AF     		add	r7, sp, #0
+ 589              	.LCFI1:
+ 590              		.cfi_def_cfa_register 7
+  72:../src/modbus.c **** 	// Call every 1 millisecond
+  73:../src/modbus.c **** #ifdef MB_USETIMEOUTS
+  74:../src/modbus.c **** 	MODBUS_Timeout++;
+ 591              		.loc 1 74 0
+ 592 0004 40F20003 		movw	r3, #:lower16:MODBUS_Timeout
+ 593 0008 C0F20003 		movt	r3, #:upper16:MODBUS_Timeout
+ 594 000c 1B68     		ldr	r3, [r3, #0]
+ 595 000e 03F10102 		add	r2, r3, #1
+ 596 0012 40F20003 		movw	r3, #:lower16:MODBUS_Timeout
+ 597 0016 C0F20003 		movt	r3, #:upper16:MODBUS_Timeout
+ 598 001a 1A60     		str	r2, [r3, #0]
+  75:../src/modbus.c **** 	if(MODBUS_Timeout > MB_MAXTIME)
+ 599              		.loc 1 75 0
+ 600 001c 40F20003 		movw	r3, #:lower16:MODBUS_Timeout
+ 601 0020 C0F20003 		movt	r3, #:upper16:MODBUS_Timeout
+ 602 0024 1A68     		ldr	r2, [r3, #0]
+ 603 0026 40F24C43 		movw	r3, #1100
+ 604 002a 9A42     		cmp	r2, r3
+ 605 002c 06DD     		ble	.L2
+  76:../src/modbus.c **** 	{
+  77:../src/modbus.c **** 		MODBUS_Timeout = MB_MAXTIME;
+ 606              		.loc 1 77 0
+ 607 002e 40F20003 		movw	r3, #:lower16:MODBUS_Timeout
+ 608 0032 C0F20003 		movt	r3, #:upper16:MODBUS_Timeout
+ 609 0036 40F24C42 		movw	r2, #1100
+ 610 003a 1A60     		str	r2, [r3, #0]
+ 611              	.L2:
+  78:../src/modbus.c **** 	}
+  79:../src/modbus.c **** 	if(MODBUS_ReceiveState != MB_IDLE)
+ 612              		.loc 1 79 0
+ 613 003c 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 614 0040 C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 615 0044 1B68     		ldr	r3, [r3, #0]
+ 616 0046 002B     		cmp	r3, #0
+ 617 0048 0ED0     		beq	.L1
+  80:../src/modbus.c **** 	{
+  81:../src/modbus.c **** 		if(MODBUS_Timeout > MB_TIMEOUT)
+ 618              		.loc 1 81 0
+ 619 004a 40F20003 		movw	r3, #:lower16:MODBUS_Timeout
+ 620 004e C0F20003 		movt	r3, #:upper16:MODBUS_Timeout
+ 621 0052 1B68     		ldr	r3, [r3, #0]
+ 622 0054 B3F57A7F 		cmp	r3, #1000
+ 623 0058 06DD     		ble	.L1
+  82:../src/modbus.c **** 		{
+  83:../src/modbus.c **** 			MODBUS_ReceiveState = MB_IDLE;							//set state
+ 624              		.loc 1 83 0
+ 625 005a 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 626 005e C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 627 0062 4FF00002 		mov	r2, #0
+ 628 0066 1A60     		str	r2, [r3, #0]
+ 629              	.L1:
+  84:../src/modbus.c **** 		}
+  85:../src/modbus.c **** 	}
+  86:../src/modbus.c **** #endif
+  87:../src/modbus.c **** }
+ 630              		.loc 1 87 0
+ 631 0068 BD46     		mov	sp, r7
+ 632 006a 80BC     		pop	{r7}
+ 633 006c 7047     		bx	lr
+ 634              		.cfi_endproc
+ 635              	.LFE110:
+ 637 006e 00BF     		.align	2
+ 638              		.global	MODBUS_ExecuteFunction
+ 639              		.thumb
+ 640              		.thumb_func
+ 642              	MODBUS_ExecuteFunction:
+ 643              	.LFB111:
+  88:../src/modbus.c **** 
+  89:../src/modbus.c **** // Function to process data once it is received
+  90:../src/modbus.c **** void MODBUS_ExecuteFunction()
+  91:../src/modbus.c **** {
+ 644              		.loc 1 91 0
+ 645              		.cfi_startproc
+ 646              		@ args = 0, pretend = 0, frame = 16
+ 647              		@ frame_needed = 1, uses_anonymous_args = 0
+ 648 0070 80B5     		push	{r7, lr}
+ 649              	.LCFI2:
+ 650              		.cfi_def_cfa_offset 8
+ 651              		.cfi_offset 14, -4
+ 652              		.cfi_offset 7, -8
+ 653 0072 84B0     		sub	sp, sp, #16
+ 654              	.LCFI3:
+ 655              		.cfi_def_cfa_offset 24
+ 656 0074 00AF     		add	r7, sp, #0
+ 657              	.LCFI4:
+ 658              		.cfi_def_cfa_register 7
+  92:../src/modbus.c **** 	int i = 0;
+ 659              		.loc 1 92 0
+ 660 0076 4FF00003 		mov	r3, #0
+ 661 007a FB60     		str	r3, [r7, #12]
+  93:../src/modbus.c **** 	int writeDataIndex = 0;
+ 662              		.loc 1 93 0
+ 663 007c 4FF00003 		mov	r3, #0
+ 664 0080 BB60     		str	r3, [r7, #8]
+  94:../src/modbus.c **** 	int responseByteCount = 0;
+ 665              		.loc 1 94 0
+ 666 0082 4FF00003 		mov	r3, #0
+ 667 0086 7B60     		str	r3, [r7, #4]
+  95:../src/modbus.c **** 	unsigned int uiTemp = 0;
+ 668              		.loc 1 95 0
+ 669 0088 4FF00003 		mov	r3, #0
+ 670 008c 3B60     		str	r3, [r7, #0]
+  96:../src/modbus.c **** 	// Check function
+  97:../src/modbus.c **** 	switch(MODBUSData.data.cFunctionCode)
+ 671              		.loc 1 97 0
+ 672 008e 40F20003 		movw	r3, #:lower16:MODBUSData
+ 673 0092 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 674 0096 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 675 0098 172B     		cmp	r3, #23
+ 676 009a 40F0AF80 		bne	.L4
+ 677              	.L6:
+  98:../src/modbus.c **** 	{
+  99:../src/modbus.c **** 		case MBRWMULTIPLEREGISTERS:
+ 100:../src/modbus.c **** 		{
+ 101:../src/modbus.c **** 			// Read/write registers
+ 102:../src/modbus.c **** 			// First write all registers
+ 103:../src/modbus.c **** 			// Set index to start from 0
+ 104:../src/modbus.c **** 			writeDataIndex = 0;
+ 678              		.loc 1 104 0
+ 679 009e 4FF00003 		mov	r3, #0
+ 680 00a2 BB60     		str	r3, [r7, #8]
+ 105:../src/modbus.c **** 			for(i=MODBUSData.data.uiWriteStartingAddress; i < MODBUSData.data.uiWriteStartingAddress + MODBU
+ 681              		.loc 1 105 0
+ 682 00a4 40F20003 		movw	r3, #:lower16:MODBUSData
+ 683 00a8 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 684 00ac DB88     		ldrh	r3, [r3, #6]
+ 685 00ae FB60     		str	r3, [r7, #12]
+ 686 00b0 1FE0     		b	.L7
+ 687              	.L9:
+ 106:../src/modbus.c **** 			{
+ 107:../src/modbus.c **** 				// Check address overflow
+ 108:../src/modbus.c **** 				if((i >= 0) && (i < MB_TOTALREGISTERS))
+ 688              		.loc 1 108 0
+ 689 00b2 FB68     		ldr	r3, [r7, #12]
+ 690 00b4 002B     		cmp	r3, #0
+ 691 00b6 18DB     		blt	.L8
+ 692              		.loc 1 108 0 is_stmt 0 discriminator 1
+ 693 00b8 FB68     		ldr	r3, [r7, #12]
+ 694 00ba 4F2B     		cmp	r3, #79
+ 695 00bc 15DC     		bgt	.L8
+ 109:../src/modbus.c **** 				{
+ 110:../src/modbus.c **** 					//*MODBUS_Pointers[i] = MODBUSData.data.uiData[writeDataIndex];
+ 111:../src/modbus.c **** 
+ 112:../src/modbus.c **** 					MODBUSReg[i] = MODBUSData.data.uiData[writeDataIndex];
+ 696              		.loc 1 112 0 is_stmt 1
+ 697 00be 40F20002 		movw	r2, #:lower16:MODBUSData
+ 698 00c2 C0F20002 		movt	r2, #:upper16:MODBUSData
+ 699 00c6 BB68     		ldr	r3, [r7, #8]
+ 700 00c8 03F10803 		add	r3, r3, #8
+ 701 00cc 4FEA4303 		lsl	r3, r3, #1
+ 702 00d0 D318     		adds	r3, r2, r3
+ 703 00d2 5988     		ldrh	r1, [r3, #2]
+ 704 00d4 40F20003 		movw	r3, #:lower16:MODBUSReg
+ 705 00d8 C0F20003 		movt	r3, #:upper16:MODBUSReg
+ 706 00dc FA68     		ldr	r2, [r7, #12]
+ 707 00de 23F81210 		strh	r1, [r3, r2, lsl #1]	@ movhi
+ 113:../src/modbus.c **** 					// Increase data index
+ 114:../src/modbus.c **** 					writeDataIndex++;
+ 708              		.loc 1 114 0
+ 709 00e2 BB68     		ldr	r3, [r7, #8]
+ 710 00e4 03F10103 		add	r3, r3, #1
+ 711 00e8 BB60     		str	r3, [r7, #8]
+ 712              	.L8:
+ 105:../src/modbus.c **** 			for(i=MODBUSData.data.uiWriteStartingAddress; i < MODBUSData.data.uiWriteStartingAddress + MODBU
+ 713              		.loc 1 105 0
+ 714 00ea FB68     		ldr	r3, [r7, #12]
+ 715 00ec 03F10103 		add	r3, r3, #1
+ 716 00f0 FB60     		str	r3, [r7, #12]
+ 717              	.L7:
+ 105:../src/modbus.c **** 			for(i=MODBUSData.data.uiWriteStartingAddress; i < MODBUSData.data.uiWriteStartingAddress + MODBU
+ 718              		.loc 1 105 0 is_stmt 0 discriminator 1
+ 719 00f2 40F20003 		movw	r3, #:lower16:MODBUSData
+ 720 00f6 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 721 00fa DB88     		ldrh	r3, [r3, #6]
+ 722 00fc 1A46     		mov	r2, r3
+ 723 00fe 40F20003 		movw	r3, #:lower16:MODBUSData
+ 724 0102 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 725 0106 DB89     		ldrh	r3, [r3, #14]
+ 726 0108 D218     		adds	r2, r2, r3
+ 727 010a FB68     		ldr	r3, [r7, #12]
+ 728 010c 9A42     		cmp	r2, r3
+ 729 010e D0DC     		bgt	.L9
+ 115:../src/modbus.c **** 				}
+ 116:../src/modbus.c **** 			}
+ 117:../src/modbus.c **** 			// Second read data from registers
+ 118:../src/modbus.c **** 			// First setup response
+ 119:../src/modbus.c **** 			responseByteCount = 0;
+ 730              		.loc 1 119 0 is_stmt 1
+ 731 0110 4FF00003 		mov	r3, #0
+ 732 0114 7B60     		str	r3, [r7, #4]
+ 120:../src/modbus.c **** 			// Store slave ID
+ 121:../src/modbus.c **** 			MODBUSData.bytes.cdata[0] = MB_SLAVEID;
+ 733              		.loc 1 121 0
+ 734 0116 40F20003 		movw	r3, #:lower16:MODBUSData
+ 735 011a C0F20003 		movt	r3, #:upper16:MODBUSData
+ 736 011e 4FF03302 		mov	r2, #51
+ 737 0122 9A74     		strb	r2, [r3, #18]
+ 122:../src/modbus.c **** 			// Store function code
+ 123:../src/modbus.c **** 			MODBUSData.bytes.cdata[1] = MBRWMULTIPLEREGISTERS;
+ 738              		.loc 1 123 0
+ 739 0124 40F20003 		movw	r3, #:lower16:MODBUSData
+ 740 0128 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 741 012c 4FF01702 		mov	r2, #23
+ 742 0130 DA74     		strb	r2, [r3, #19]
+ 124:../src/modbus.c **** 			// Store data quantity
+ 125:../src/modbus.c **** 			MODBUSData.bytes.cdata[2] = MODBUSData.data.uiQuantToRead * 2;
+ 743              		.loc 1 125 0
+ 744 0132 40F20003 		movw	r3, #:lower16:MODBUSData
+ 745 0136 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 746 013a 9B88     		ldrh	r3, [r3, #4]
+ 747 013c DBB2     		uxtb	r3, r3
+ 748 013e 4FEA4303 		lsl	r3, r3, #1
+ 749 0142 DAB2     		uxtb	r2, r3
+ 750 0144 40F20003 		movw	r3, #:lower16:MODBUSData
+ 751 0148 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 752 014c 1A75     		strb	r2, [r3, #20]
+ 126:../src/modbus.c **** 			// Store how much data we have
+ 127:../src/modbus.c **** 			responseByteCount = 3;
+ 753              		.loc 1 127 0
+ 754 014e 4FF00303 		mov	r3, #3
+ 755 0152 7B60     		str	r3, [r7, #4]
+ 128:../src/modbus.c **** 			// Store data
+ 129:../src/modbus.c **** 			for(i=MODBUSData.data.uiReadStartingAddress; i < MODBUSData.data.uiReadStartingAddress + MODBUSD
+ 756              		.loc 1 129 0
+ 757 0154 40F20003 		movw	r3, #:lower16:MODBUSData
+ 758 0158 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 759 015c 5B88     		ldrh	r3, [r3, #2]
+ 760 015e FB60     		str	r3, [r7, #12]
+ 761 0160 31E0     		b	.L10
+ 762              	.L12:
+ 130:../src/modbus.c **** 			{
+ 131:../src/modbus.c **** 				// Check address overflow
+ 132:../src/modbus.c **** 				if((i >= 0) && (i < MB_TOTALREGISTERS))
+ 763              		.loc 1 132 0
+ 764 0162 FB68     		ldr	r3, [r7, #12]
+ 765 0164 002B     		cmp	r3, #0
+ 766 0166 2ADB     		blt	.L11
+ 767              		.loc 1 132 0 is_stmt 0 discriminator 1
+ 768 0168 FB68     		ldr	r3, [r7, #12]
+ 769 016a 4F2B     		cmp	r3, #79
+ 770 016c 27DC     		bgt	.L11
+ 133:../src/modbus.c **** 				{
+ 134:../src/modbus.c **** 					//uiTemp = *MODBUS_Pointers[i];
+ 135:../src/modbus.c **** 					uiTemp = MODBUSReg[i];
+ 771              		.loc 1 135 0 is_stmt 1
+ 772 016e 40F20003 		movw	r3, #:lower16:MODBUSReg
+ 773 0172 C0F20003 		movt	r3, #:upper16:MODBUSReg
+ 774 0176 FA68     		ldr	r2, [r7, #12]
+ 775 0178 33F81230 		ldrh	r3, [r3, r2, lsl #1]
+ 776 017c 3B60     		str	r3, [r7, #0]
+ 136:../src/modbus.c **** 					// Store data to buffer
+ 137:../src/modbus.c **** 					MODBUSData.bytes.cdata[responseByteCount] = (uiTemp >> 8) & 0x00FF;
+ 777              		.loc 1 137 0
+ 778 017e 3B68     		ldr	r3, [r7, #0]
+ 779 0180 4FEA1323 		lsr	r3, r3, #8
+ 780 0184 DAB2     		uxtb	r2, r3
+ 781 0186 40F20003 		movw	r3, #:lower16:MODBUSData
+ 782 018a C0F20003 		movt	r3, #:upper16:MODBUSData
+ 783 018e 7968     		ldr	r1, [r7, #4]
+ 784 0190 5B18     		adds	r3, r3, r1
+ 785 0192 03F11003 		add	r3, r3, #16
+ 786 0196 9A70     		strb	r2, [r3, #2]
+ 138:../src/modbus.c **** 					responseByteCount++;
+ 787              		.loc 1 138 0
+ 788 0198 7B68     		ldr	r3, [r7, #4]
+ 789 019a 03F10103 		add	r3, r3, #1
+ 790 019e 7B60     		str	r3, [r7, #4]
+ 139:../src/modbus.c **** 					MODBUSData.bytes.cdata[responseByteCount] = uiTemp & 0x00FF;
+ 791              		.loc 1 139 0
+ 792 01a0 3B68     		ldr	r3, [r7, #0]
+ 793 01a2 DAB2     		uxtb	r2, r3
+ 794 01a4 40F20003 		movw	r3, #:lower16:MODBUSData
+ 795 01a8 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 796 01ac 7968     		ldr	r1, [r7, #4]
+ 797 01ae 5B18     		adds	r3, r3, r1
+ 798 01b0 03F11003 		add	r3, r3, #16
+ 799 01b4 9A70     		strb	r2, [r3, #2]
+ 140:../src/modbus.c **** 					responseByteCount++;
+ 800              		.loc 1 140 0
+ 801 01b6 7B68     		ldr	r3, [r7, #4]
+ 802 01b8 03F10103 		add	r3, r3, #1
+ 803 01bc 7B60     		str	r3, [r7, #4]
+ 804              	.L11:
+ 129:../src/modbus.c **** 			for(i=MODBUSData.data.uiReadStartingAddress; i < MODBUSData.data.uiReadStartingAddress + MODBUSD
+ 805              		.loc 1 129 0
+ 806 01be FB68     		ldr	r3, [r7, #12]
+ 807 01c0 03F10103 		add	r3, r3, #1
+ 808 01c4 FB60     		str	r3, [r7, #12]
+ 809              	.L10:
+ 129:../src/modbus.c **** 			for(i=MODBUSData.data.uiReadStartingAddress; i < MODBUSData.data.uiReadStartingAddress + MODBUSD
+ 810              		.loc 1 129 0 is_stmt 0 discriminator 1
+ 811 01c6 40F20003 		movw	r3, #:lower16:MODBUSData
+ 812 01ca C0F20003 		movt	r3, #:upper16:MODBUSData
+ 813 01ce 5B88     		ldrh	r3, [r3, #2]
+ 814 01d0 1A46     		mov	r2, r3
+ 815 01d2 40F20003 		movw	r3, #:lower16:MODBUSData
+ 816 01d6 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 817 01da 9B88     		ldrh	r3, [r3, #4]
+ 818 01dc D218     		adds	r2, r2, r3
+ 819 01de FB68     		ldr	r3, [r7, #12]
+ 820 01e0 9A42     		cmp	r2, r3
+ 821 01e2 BEDC     		bgt	.L12
+ 141:../src/modbus.c **** 				}
+ 142:../src/modbus.c **** 			}
+ 143:../src/modbus.c **** 			// Store number of bytes
+ 144:../src/modbus.c **** 			MODBUSData.bytes.uiDataCount = responseByteCount;
+ 822              		.loc 1 144 0 is_stmt 1
+ 823 01e4 7B68     		ldr	r3, [r7, #4]
+ 824 01e6 9AB2     		uxth	r2, r3
+ 825 01e8 40F20003 		movw	r3, #:lower16:MODBUSData
+ 826 01ec C0F20003 		movt	r3, #:upper16:MODBUSData
+ 827 01f0 DA81     		strh	r2, [r3, #14]	@ unaligned
+ 145:../src/modbus.c **** 			// Calculate CRC and add it to message
+ 146:../src/modbus.c **** 			crcOnMessage(responseByteCount);
+ 828              		.loc 1 146 0
+ 829 01f2 7B68     		ldr	r3, [r7, #4]
+ 830 01f4 1846     		mov	r0, r3
+ 831 01f6 FFF7FEFF 		bl	crcOnMessage
+ 147:../src/modbus.c **** 			break;
+ 832              		.loc 1 147 0
+ 833 01fa 00BF     		nop
+ 834              	.L4:
+ 148:../src/modbus.c **** 		}
+ 149:../src/modbus.c **** 	}
+ 150:../src/modbus.c **** 
+ 151:../src/modbus.c **** }
+ 835              		.loc 1 151 0
+ 836 01fc 07F11007 		add	r7, r7, #16
+ 837 0200 BD46     		mov	sp, r7
+ 838 0202 80BD     		pop	{r7, pc}
+ 839              		.cfi_endproc
+ 840              	.LFE111:
+ 842              		.align	2
+ 843              		.global	MODBUS_ProcessData
+ 844              		.thumb
+ 845              		.thumb_func
+ 847              	MODBUS_ProcessData:
+ 848              	.LFB112:
+ 152:../src/modbus.c **** 
+ 153:../src/modbus.c **** void MODBUS_ProcessData(unsigned int data)
+ 154:../src/modbus.c **** {
+ 849              		.loc 1 154 0
+ 850              		.cfi_startproc
+ 851              		@ args = 0, pretend = 0, frame = 8
+ 852              		@ frame_needed = 1, uses_anonymous_args = 0
+ 853 0204 80B5     		push	{r7, lr}
+ 854              	.LCFI5:
+ 855              		.cfi_def_cfa_offset 8
+ 856              		.cfi_offset 14, -4
+ 857              		.cfi_offset 7, -8
+ 858 0206 82B0     		sub	sp, sp, #8
+ 859              	.LCFI6:
+ 860              		.cfi_def_cfa_offset 16
+ 861 0208 00AF     		add	r7, sp, #0
+ 862              	.LCFI7:
+ 863              		.cfi_def_cfa_register 7
+ 864 020a 7860     		str	r0, [r7, #4]
+ 155:../src/modbus.c **** 	//calculate CRC
+ 156:../src/modbus.c **** 	crcOnByte(data);
+ 865              		.loc 1 156 0
+ 866 020c 7868     		ldr	r0, [r7, #4]
+ 867 020e FFF7FEFF 		bl	crcOnByte
+ 157:../src/modbus.c **** 	// Check if IDLE
+ 158:../src/modbus.c **** 	if(MODBUS_ReceiveState == MB_IDLE)
+ 868              		.loc 1 158 0
+ 869 0212 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 870 0216 C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 871 021a 1B68     		ldr	r3, [r3, #0]
+ 872 021c 002B     		cmp	r3, #0
+ 873 021e 30D1     		bne	.L14
+ 159:../src/modbus.c **** 	{
+ 160:../src/modbus.c **** 		// Check enough time has passed
+ 161:../src/modbus.c **** 		#ifdef MB_USETIMEOUTS
+ 162:../src/modbus.c **** 		if(MODBUS_Timeout < MB_3CHAR)
+ 874              		.loc 1 162 0
+ 875 0220 40F20003 		movw	r3, #:lower16:MODBUS_Timeout
+ 876 0224 C0F20003 		movt	r3, #:upper16:MODBUS_Timeout
+ 877 0228 1B68     		ldr	r3, [r3, #0]
+ 878 022a 312B     		cmp	r3, #49
+ 879 022c 02DC     		bgt	.L15
+ 163:../src/modbus.c **** 		{
+ 164:../src/modbus.c **** 			// If not, reset data to something else than slave ID
+ 165:../src/modbus.c **** 			data = MB_SLAVEID + 1;
+ 880              		.loc 1 165 0
+ 881 022e 4FF03403 		mov	r3, #52
+ 882 0232 7B60     		str	r3, [r7, #4]
+ 883              	.L15:
+ 166:../src/modbus.c **** 		}
+ 167:../src/modbus.c **** 		#endif
+ 168:../src/modbus.c **** 		// Check if we received ID
+ 169:../src/modbus.c **** 		if(data == MB_SLAVEID)
+ 884              		.loc 1 169 0
+ 885 0234 7B68     		ldr	r3, [r7, #4]
+ 886 0236 332B     		cmp	r3, #51
+ 887 0238 40F05C82 		bne	.L16
+ 170:../src/modbus.c **** 		{
+ 171:../src/modbus.c **** 			// If OK, initialize CRC
+ 172:../src/modbus.c **** 			ucMBCRCHI = 0xFF;
+ 888              		.loc 1 172 0
+ 889 023c 40F20003 		movw	r3, #:lower16:ucMBCRCHI
+ 890 0240 C0F20003 		movt	r3, #:upper16:ucMBCRCHI
+ 891 0244 4FF0FF02 		mov	r2, #255
+ 892 0248 1A70     		strb	r2, [r3, #0]
+ 173:../src/modbus.c **** 			ucMBCRCLOW = 0xFF;
+ 893              		.loc 1 173 0
+ 894 024a 40F20003 		movw	r3, #:lower16:ucMBCRCLOW
+ 895 024e C0F20003 		movt	r3, #:upper16:ucMBCRCLOW
+ 896 0252 4FF0FF02 		mov	r2, #255
+ 897 0256 1A70     		strb	r2, [r3, #0]
+ 174:../src/modbus.c **** 			// Calculate first byte CRC
+ 175:../src/modbus.c **** 			crcOnByte(data);
+ 898              		.loc 1 175 0
+ 899 0258 7868     		ldr	r0, [r7, #4]
+ 900 025a FFF7FEFF 		bl	crcOnByte
+ 176:../src/modbus.c **** 			// Store data
+ 177:../src/modbus.c **** 			MODBUSData.data.cSlaveID = (char)data;
+ 901              		.loc 1 177 0
+ 902 025e 7B68     		ldr	r3, [r7, #4]
+ 903 0260 D9B2     		uxtb	r1, r3
+ 904 0262 40F20003 		movw	r3, #:lower16:MODBUSData
+ 905 0266 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 906 026a 1A78     		ldrb	r2, [r3, #0]
+ 907 026c 61F30702 		bfi	r2, r1, #0, #8
+ 908 0270 1A70     		strb	r2, [r3, #0]
+ 178:../src/modbus.c **** 			// Go to next step
+ 179:../src/modbus.c **** 			MODBUS_ReceiveState = MB_RECEIVINGFCODE;
+ 909              		.loc 1 179 0
+ 910 0272 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 911 0276 C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 912 027a 4FF00102 		mov	r2, #1
+ 913 027e 1A60     		str	r2, [r3, #0]
+ 914 0280 38E2     		b	.L16
+ 915              	.L14:
+ 180:../src/modbus.c **** 		}
+ 181:../src/modbus.c **** 	}
+ 182:../src/modbus.c **** 	else
+ 183:../src/modbus.c **** 	{
+ 184:../src/modbus.c **** 		// Check new byte arrived fast enough
+ 185:../src/modbus.c **** 		#ifdef MB_USETIMEOUTS
+ 186:../src/modbus.c **** 		if(MODBUS_Timeout > MB_1CHAR)
+ 916              		.loc 1 186 0
+ 917 0282 40F20003 		movw	r3, #:lower16:MODBUS_Timeout
+ 918 0286 C0F20003 		movt	r3, #:upper16:MODBUS_Timeout
+ 919 028a 1B68     		ldr	r3, [r3, #0]
+ 920 028c 0A2B     		cmp	r3, #10
+ 921 028e 09DD     		ble	.L17
+ 187:../src/modbus.c **** 		{
+ 188:../src/modbus.c **** 			// If not, reset data to something else than slave ID
+ 189:../src/modbus.c **** 			data = MB_SLAVEID + 1;
+ 922              		.loc 1 189 0
+ 923 0290 4FF03403 		mov	r3, #52
+ 924 0294 7B60     		str	r3, [r7, #4]
+ 190:../src/modbus.c **** 			// And reset state to idle
+ 191:../src/modbus.c **** 			MODBUS_ReceiveState = MB_IDLE;
+ 925              		.loc 1 191 0
+ 926 0296 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 927 029a C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 928 029e 4FF00002 		mov	r2, #0
+ 929 02a2 1A60     		str	r2, [r3, #0]
+ 930              	.L17:
+ 192:../src/modbus.c **** 		}
+ 193:../src/modbus.c **** 		#endif
+ 194:../src/modbus.c **** 		switch(MODBUS_ReceiveState)
+ 931              		.loc 1 194 0
+ 932 02a4 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 933 02a8 C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 934 02ac 1B68     		ldr	r3, [r3, #0]
+ 935 02ae 03F1FF33 		add	r3, r3, #-1
+ 936 02b2 0E2B     		cmp	r3, #14
+ 937 02b4 00F21182 		bhi	.L18
+ 938 02b8 01A2     		adr	r2, .L34
+ 939 02ba 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+ 940 02be 00BF     		.align	2
+ 941              	.L34:
+ 942 02c0 FD020000 		.word	.L19+1
+ 943 02c4 C3030000 		.word	.L20+1
+ 944 02c8 E7030000 		.word	.L21+1
+ 945 02cc 0B040000 		.word	.L22+1
+ 946 02d0 2F040000 		.word	.L23+1
+ 947 02d4 77040000 		.word	.L24+1
+ 948 02d8 9B040000 		.word	.L25+1
+ 949 02dc 21050000 		.word	.L26+1
+ 950 02e0 45050000 		.word	.L27+1
+ 951 02e4 69050000 		.word	.L28+1
+ 952 02e8 AD050000 		.word	.L29+1
+ 953 02ec DB050000 		.word	.L30+1
+ 954 02f0 63060000 		.word	.L31+1
+ 955 02f4 87060000 		.word	.L32+1
+ 956 02f8 EB060000 		.word	.L51+1
+ 957              	.L19:
+ 195:../src/modbus.c **** 		{
+ 196:../src/modbus.c **** 			case MB_RECEIVINGFCODE:
+ 197:../src/modbus.c **** 			{
+ 198:../src/modbus.c **** 				MODBUSData.bytes.cFunctionCode = (char)data;
+ 958              		.loc 1 198 0
+ 959 02fc 7B68     		ldr	r3, [r7, #4]
+ 960 02fe D9B2     		uxtb	r1, r3
+ 961 0300 40F20003 		movw	r3, #:lower16:MODBUSData
+ 962 0304 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 963 0308 5A78     		ldrb	r2, [r3, #1]
+ 964 030a 61F30702 		bfi	r2, r1, #0, #8
+ 965 030e 5A70     		strb	r2, [r3, #1]
+ 199:../src/modbus.c **** 				switch(MODBUSData.bytes.cFunctionCode)
+ 966              		.loc 1 199 0
+ 967 0310 40F20003 		movw	r3, #:lower16:MODBUSData
+ 968 0314 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 969 0318 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 970 031a A3F10303 		sub	r3, r3, #3
+ 971 031e 142B     		cmp	r3, #20
+ 972 0320 00F2E581 		bhi	.L52
+ 973 0324 01A2     		adr	r2, .L40
+ 974 0326 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+ 975 032a 00BF     		.align	2
+ 976              	.L40:
+ 977 032c A1030000 		.word	.L36+1
+ 978 0330 EF060000 		.word	.L52+1
+ 979 0334 EF060000 		.word	.L52+1
+ 980 0338 91030000 		.word	.L37+1
+ 981 033c EF060000 		.word	.L52+1
+ 982 0340 EF060000 		.word	.L52+1
+ 983 0344 EF060000 		.word	.L52+1
+ 984 0348 EF060000 		.word	.L52+1
+ 985 034c EF060000 		.word	.L52+1
+ 986 0350 EF060000 		.word	.L52+1
+ 987 0354 EF060000 		.word	.L52+1
+ 988 0358 EF060000 		.word	.L52+1
+ 989 035c EF060000 		.word	.L52+1
+ 990 0360 B1030000 		.word	.L38+1
+ 991 0364 EF060000 		.word	.L52+1
+ 992 0368 EF060000 		.word	.L52+1
+ 993 036c EF060000 		.word	.L52+1
+ 994 0370 EF060000 		.word	.L52+1
+ 995 0374 EF060000 		.word	.L52+1
+ 996 0378 EF060000 		.word	.L52+1
+ 997 037c 81030000 		.word	.L39+1
+ 998              	.L39:
+ 200:../src/modbus.c **** 				{
+ 201:../src/modbus.c **** 					case MBRWMULTIPLEREGISTERS:
+ 202:../src/modbus.c **** 					{
+ 203:../src/modbus.c **** 						MODBUS_ReceiveState = MB_RECEIVINGRSTARTADDRESS_HI;
+ 999              		.loc 1 203 0
+ 1000 0380 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 1001 0384 C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 1002 0388 4FF00202 		mov	r2, #2
+ 1003 038c 1A60     		str	r2, [r3, #0]
+ 204:../src/modbus.c **** 						break;
+ 1004              		.loc 1 204 0
+ 1005 038e 17E0     		b	.L35
+ 1006              	.L37:
+ 205:../src/modbus.c **** 					}
+ 206:../src/modbus.c **** 					case MBWRITESINGLEREGISTER:
+ 207:../src/modbus.c **** 					{
+ 208:../src/modbus.c **** 						MODBUS_ReceiveState = MB_RECEIVINGWRITESTART_HI;
+ 1007              		.loc 1 208 0
+ 1008 0390 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 1009 0394 C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 1010 0398 4FF00602 		mov	r2, #6
+ 1011 039c 1A60     		str	r2, [r3, #0]
+ 209:../src/modbus.c **** 						break;
+ 1012              		.loc 1 209 0
+ 1013 039e 0FE0     		b	.L35
+ 1014              	.L36:
+ 210:../src/modbus.c **** 					}
+ 211:../src/modbus.c **** 					case MBREADHOLDINGREGISTERS:
+ 212:../src/modbus.c **** 					{
+ 213:../src/modbus.c **** 						MODBUS_ReceiveState = MB_RECEIVINGRSTARTADDRESS_HI;
+ 1015              		.loc 1 213 0
+ 1016 03a0 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 1017 03a4 C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 1018 03a8 4FF00202 		mov	r2, #2
+ 1019 03ac 1A60     		str	r2, [r3, #0]
+ 214:../src/modbus.c **** 						break;
+ 1020              		.loc 1 214 0
+ 1021 03ae 07E0     		b	.L35
+ 1022              	.L38:
+ 215:../src/modbus.c **** 					}
+ 216:../src/modbus.c **** 					case MBWRITEMULTIPLEREGISTERS:
+ 217:../src/modbus.c **** 					{
+ 218:../src/modbus.c **** 						MODBUS_ReceiveState = MB_RECEIVINGWRITESTART_HI;
+ 1023              		.loc 1 218 0
+ 1024 03b0 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 1025 03b4 C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 1026 03b8 4FF00602 		mov	r2, #6
+ 1027 03bc 1A60     		str	r2, [r3, #0]
+ 219:../src/modbus.c **** 						break;
+ 1028              		.loc 1 219 0
+ 1029 03be 00BF     		nop
+ 1030              	.L35:
+ 220:../src/modbus.c **** 					}
+ 221:../src/modbus.c **** 				}
+ 222:../src/modbus.c **** 				break;
+ 1031              		.loc 1 222 0
+ 1032 03c0 95E1     		b	.L52
+ 1033              	.L20:
+ 223:../src/modbus.c **** 			}
+ 224:../src/modbus.c **** 			case MB_RECEIVINGRSTARTADDRESS_HI:
+ 225:../src/modbus.c **** 			{
+ 226:../src/modbus.c **** 				MODBUSData.bytes.uiReadStartingAddressHi = (unsigned char)data;
+ 1034              		.loc 1 226 0
+ 1035 03c2 7B68     		ldr	r3, [r7, #4]
+ 1036 03c4 D9B2     		uxtb	r1, r3
+ 1037 03c6 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1038 03ca C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1039 03ce DA78     		ldrb	r2, [r3, #3]
+ 1040 03d0 61F30702 		bfi	r2, r1, #0, #8
+ 1041 03d4 DA70     		strb	r2, [r3, #3]
+ 227:../src/modbus.c **** 				MODBUS_ReceiveState = MB_RECEIVINGRSTARTADDRESS_LO;
+ 1042              		.loc 1 227 0
+ 1043 03d6 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 1044 03da C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 1045 03de 4FF00302 		mov	r2, #3
+ 1046 03e2 1A60     		str	r2, [r3, #0]
+ 228:../src/modbus.c **** 				break;
+ 1047              		.loc 1 228 0
+ 1048 03e4 86E1     		b	.L16
+ 1049              	.L21:
+ 229:../src/modbus.c **** 			}
+ 230:../src/modbus.c **** 			case MB_RECEIVINGRSTARTADDRESS_LO:
+ 231:../src/modbus.c **** 			{
+ 232:../src/modbus.c **** 				MODBUSData.bytes.uiReadStartingAddressLo  = (unsigned char)data;
+ 1050              		.loc 1 232 0
+ 1051 03e6 7B68     		ldr	r3, [r7, #4]
+ 1052 03e8 D9B2     		uxtb	r1, r3
+ 1053 03ea 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1054 03ee C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1055 03f2 9A78     		ldrb	r2, [r3, #2]
+ 1056 03f4 61F30702 		bfi	r2, r1, #0, #8
+ 1057 03f8 9A70     		strb	r2, [r3, #2]
+ 233:../src/modbus.c **** 				MODBUS_ReceiveState = MB_RECEIVINGQREAD_HI;
+ 1058              		.loc 1 233 0
+ 1059 03fa 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 1060 03fe C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 1061 0402 4FF00402 		mov	r2, #4
+ 1062 0406 1A60     		str	r2, [r3, #0]
+ 234:../src/modbus.c **** 				break;
+ 1063              		.loc 1 234 0
+ 1064 0408 74E1     		b	.L16
+ 1065              	.L22:
+ 235:../src/modbus.c **** 			}
+ 236:../src/modbus.c **** 			case MB_RECEIVINGQREAD_HI:
+ 237:../src/modbus.c **** 			{
+ 238:../src/modbus.c **** 				MODBUSData.bytes.uiQuantToReadHi  = (unsigned char)data;
+ 1066              		.loc 1 238 0
+ 1067 040a 7B68     		ldr	r3, [r7, #4]
+ 1068 040c D9B2     		uxtb	r1, r3
+ 1069 040e 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1070 0412 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1071 0416 5A79     		ldrb	r2, [r3, #5]
+ 1072 0418 61F30702 		bfi	r2, r1, #0, #8
+ 1073 041c 5A71     		strb	r2, [r3, #5]
+ 239:../src/modbus.c **** 				MODBUS_ReceiveState = MB_RECEIVINGQREAD_LO;
+ 1074              		.loc 1 239 0
+ 1075 041e 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 1076 0422 C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 1077 0426 4FF00502 		mov	r2, #5
+ 1078 042a 1A60     		str	r2, [r3, #0]
+ 240:../src/modbus.c **** 				break;
+ 1079              		.loc 1 240 0
+ 1080 042c 62E1     		b	.L16
+ 1081              	.L23:
+ 241:../src/modbus.c **** 			}
+ 242:../src/modbus.c **** 			case MB_RECEIVINGQREAD_LO:
+ 243:../src/modbus.c **** 			{
+ 244:../src/modbus.c **** 				MODBUSData.bytes.uiQuantToReadLo = (unsigned char)data;
+ 1082              		.loc 1 244 0
+ 1083 042e 7B68     		ldr	r3, [r7, #4]
+ 1084 0430 D9B2     		uxtb	r1, r3
+ 1085 0432 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1086 0436 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1087 043a 1A79     		ldrb	r2, [r3, #4]
+ 1088 043c 61F30702 		bfi	r2, r1, #0, #8
+ 1089 0440 1A71     		strb	r2, [r3, #4]
+ 245:../src/modbus.c **** 				switch(MODBUSData.bytes.cFunctionCode)
+ 1090              		.loc 1 245 0
+ 1091 0442 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1092 0446 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1093 044a 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 1094 044c 032B     		cmp	r3, #3
+ 1095 044e 09D0     		beq	.L42
+ 1096 0450 172B     		cmp	r3, #23
+ 1097 0452 0FD1     		bne	.L41
+ 1098              	.L43:
+ 246:../src/modbus.c **** 				{
+ 247:../src/modbus.c **** 					case MBRWMULTIPLEREGISTERS:
+ 248:../src/modbus.c **** 					{
+ 249:../src/modbus.c **** 						MODBUS_ReceiveState = MB_RECEIVINGWRITESTART_HI;
+ 1099              		.loc 1 249 0
+ 1100 0454 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 1101 0458 C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 1102 045c 4FF00602 		mov	r2, #6
+ 1103 0460 1A60     		str	r2, [r3, #0]
+ 250:../src/modbus.c **** 						break;
+ 1104              		.loc 1 250 0
+ 1105 0462 07E0     		b	.L41
+ 1106              	.L42:
+ 251:../src/modbus.c **** 					}
+ 252:../src/modbus.c **** 					case MBREADHOLDINGREGISTERS:
+ 253:../src/modbus.c **** 					{
+ 254:../src/modbus.c **** 						MODBUS_ReceiveState = MB_RECEIVINGCRC_HI;
+ 1107              		.loc 1 254 0
+ 1108 0464 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 1109 0468 C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 1110 046c 4FF00D02 		mov	r2, #13
+ 1111 0470 1A60     		str	r2, [r3, #0]
+ 255:../src/modbus.c **** 						break;
+ 1112              		.loc 1 255 0
+ 1113 0472 00BF     		nop
+ 1114              	.L41:
+ 256:../src/modbus.c **** 					}
+ 257:../src/modbus.c **** 				}
+ 258:../src/modbus.c **** 				break;
+ 1115              		.loc 1 258 0
+ 1116 0474 3EE1     		b	.L16
+ 1117              	.L24:
+ 259:../src/modbus.c **** 			}
+ 260:../src/modbus.c **** 			case MB_RECEIVINGWRITESTART_HI:
+ 261:../src/modbus.c **** 			{
+ 262:../src/modbus.c **** 				MODBUSData.bytes.uiWriteStartingAddressHi = (unsigned char)data;
+ 1118              		.loc 1 262 0
+ 1119 0476 7B68     		ldr	r3, [r7, #4]
+ 1120 0478 D9B2     		uxtb	r1, r3
+ 1121 047a 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1122 047e C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1123 0482 DA79     		ldrb	r2, [r3, #7]
+ 1124 0484 61F30702 		bfi	r2, r1, #0, #8
+ 1125 0488 DA71     		strb	r2, [r3, #7]
+ 263:../src/modbus.c **** 				MODBUS_ReceiveState = MB_RECEIVINGWRITESTART_LO;
+ 1126              		.loc 1 263 0
+ 1127 048a 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 1128 048e C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 1129 0492 4FF00702 		mov	r2, #7
+ 1130 0496 1A60     		str	r2, [r3, #0]
+ 264:../src/modbus.c **** 				break;
+ 1131              		.loc 1 264 0
+ 1132 0498 2CE1     		b	.L16
+ 1133              	.L25:
+ 265:../src/modbus.c **** 			}
+ 266:../src/modbus.c **** 			case MB_RECEIVINGWRITESTART_LO:
+ 267:../src/modbus.c **** 			{
+ 268:../src/modbus.c **** 				MODBUSData.bytes.uiWriteStartingAddressLo = (unsigned char)data;
+ 1134              		.loc 1 268 0
+ 1135 049a 7B68     		ldr	r3, [r7, #4]
+ 1136 049c D9B2     		uxtb	r1, r3
+ 1137 049e 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1138 04a2 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1139 04a6 9A79     		ldrb	r2, [r3, #6]
+ 1140 04a8 61F30702 		bfi	r2, r1, #0, #8
+ 1141 04ac 9A71     		strb	r2, [r3, #6]
+ 269:../src/modbus.c **** 				switch(MODBUSData.bytes.cFunctionCode)
+ 1142              		.loc 1 269 0
+ 1143 04ae 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1144 04b2 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1145 04b6 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 1146 04b8 102B     		cmp	r3, #16
+ 1147 04ba 28D0     		beq	.L46
+ 1148 04bc 172B     		cmp	r3, #23
+ 1149 04be 02D0     		beq	.L47
+ 1150 04c0 062B     		cmp	r3, #6
+ 1151 04c2 08D0     		beq	.L45
+ 1152 04c4 2BE0     		b	.L44
+ 1153              	.L47:
+ 270:../src/modbus.c **** 				{
+ 271:../src/modbus.c **** 					case MBRWMULTIPLEREGISTERS:
+ 272:../src/modbus.c **** 					{
+ 273:../src/modbus.c **** 						MODBUS_ReceiveState = MB_RECEIVINGQWRITE_HI;
+ 1154              		.loc 1 273 0
+ 1155 04c6 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 1156 04ca C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 1157 04ce 4FF00802 		mov	r2, #8
+ 1158 04d2 1A60     		str	r2, [r3, #0]
+ 274:../src/modbus.c **** 						break;
+ 1159              		.loc 1 274 0
+ 1160 04d4 23E0     		b	.L44
+ 1161              	.L45:
+ 275:../src/modbus.c **** 					}
+ 276:../src/modbus.c **** 					case MBWRITESINGLEREGISTER:
+ 277:../src/modbus.c **** 					{
+ 278:../src/modbus.c **** 						MODBUSData.data.uiQuantToWrite = 1;
+ 1162              		.loc 1 278 0
+ 1163 04d6 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1164 04da C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1165 04de 1A89     		ldrh	r2, [r3, #8]	@ movhi
+ 1166 04e0 4FF00101 		mov	r1, #1
+ 1167 04e4 61F30F02 		bfi	r2, r1, #0, #16
+ 1168 04e8 1A81     		strh	r2, [r3, #8]	@ movhi
+ 279:../src/modbus.c **** 						MODBUSData.bytes.ucWriteByteCount = 2;
+ 1169              		.loc 1 279 0
+ 1170 04ea 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1171 04ee C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1172 04f2 9A7A     		ldrb	r2, [r3, #10]
+ 1173 04f4 4FF00201 		mov	r1, #2
+ 1174 04f8 61F30702 		bfi	r2, r1, #0, #8
+ 1175 04fc 9A72     		strb	r2, [r3, #10]
+ 280:../src/modbus.c **** 						MODBUS_ReceiveState = MB_RECEIVINGDATA_HI;
+ 1176              		.loc 1 280 0
+ 1177 04fe 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 1178 0502 C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 1179 0506 4FF00B02 		mov	r2, #11
+ 1180 050a 1A60     		str	r2, [r3, #0]
+ 281:../src/modbus.c **** 						break;
+ 1181              		.loc 1 281 0
+ 1182 050c 07E0     		b	.L44
+ 1183              	.L46:
+ 282:../src/modbus.c **** 					}
+ 283:../src/modbus.c **** 					case MBWRITEMULTIPLEREGISTERS:
+ 284:../src/modbus.c **** 					{
+ 285:../src/modbus.c **** 						MODBUS_ReceiveState = MB_RECEIVINGQWRITE_HI;
+ 1184              		.loc 1 285 0
+ 1185 050e 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 1186 0512 C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 1187 0516 4FF00802 		mov	r2, #8
+ 1188 051a 1A60     		str	r2, [r3, #0]
+ 286:../src/modbus.c **** 						break;
+ 1189              		.loc 1 286 0
+ 1190 051c 00BF     		nop
+ 1191              	.L44:
+ 287:../src/modbus.c **** 					}
+ 288:../src/modbus.c **** 				}
+ 289:../src/modbus.c **** 				break;
+ 1192              		.loc 1 289 0
+ 1193 051e E9E0     		b	.L16
+ 1194              	.L26:
+ 290:../src/modbus.c **** 			}
+ 291:../src/modbus.c **** 			case MB_RECEIVINGQWRITE_HI:
+ 292:../src/modbus.c **** 			{
+ 293:../src/modbus.c **** 				MODBUSData.bytes.uiQuantToWriteHi = (unsigned char)data;
+ 1195              		.loc 1 293 0
+ 1196 0520 7B68     		ldr	r3, [r7, #4]
+ 1197 0522 D9B2     		uxtb	r1, r3
+ 1198 0524 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1199 0528 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1200 052c 5A7A     		ldrb	r2, [r3, #9]
+ 1201 052e 61F30702 		bfi	r2, r1, #0, #8
+ 1202 0532 5A72     		strb	r2, [r3, #9]
+ 294:../src/modbus.c **** 				MODBUS_ReceiveState = MB_RECEIVINGQWRITE_LO;
+ 1203              		.loc 1 294 0
+ 1204 0534 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 1205 0538 C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 1206 053c 4FF00902 		mov	r2, #9
+ 1207 0540 1A60     		str	r2, [r3, #0]
+ 295:../src/modbus.c **** 				break;
+ 1208              		.loc 1 295 0
+ 1209 0542 D7E0     		b	.L16
+ 1210              	.L27:
+ 296:../src/modbus.c **** 			}
+ 297:../src/modbus.c **** 			case MB_RECEIVINGQWRITE_LO:
+ 298:../src/modbus.c **** 			{
+ 299:../src/modbus.c **** 				MODBUSData.bytes.uiQuantToWriteLo = (unsigned char)data;
+ 1211              		.loc 1 299 0
+ 1212 0544 7B68     		ldr	r3, [r7, #4]
+ 1213 0546 D9B2     		uxtb	r1, r3
+ 1214 0548 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1215 054c C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1216 0550 1A7A     		ldrb	r2, [r3, #8]
+ 1217 0552 61F30702 		bfi	r2, r1, #0, #8
+ 1218 0556 1A72     		strb	r2, [r3, #8]
+ 300:../src/modbus.c **** 				MODBUS_ReceiveState = MB_RECEIVINGBYTECOUNT;
+ 1219              		.loc 1 300 0
+ 1220 0558 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 1221 055c C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 1222 0560 4FF00A02 		mov	r2, #10
+ 1223 0564 1A60     		str	r2, [r3, #0]
+ 301:../src/modbus.c **** 				break;
+ 1224              		.loc 1 301 0
+ 1225 0566 C5E0     		b	.L16
+ 1226              	.L28:
+ 302:../src/modbus.c **** 			}
+ 303:../src/modbus.c **** 			case MB_RECEIVINGBYTECOUNT:
+ 304:../src/modbus.c **** 			{
+ 305:../src/modbus.c **** 				MODBUSData.bytes.ucWriteByteCount = (unsigned char)data;
+ 1227              		.loc 1 305 0
+ 1228 0568 7B68     		ldr	r3, [r7, #4]
+ 1229 056a D9B2     		uxtb	r1, r3
+ 1230 056c 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1231 0570 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1232 0574 9A7A     		ldrb	r2, [r3, #10]
+ 1233 0576 61F30702 		bfi	r2, r1, #0, #8
+ 1234 057a 9A72     		strb	r2, [r3, #10]
+ 306:../src/modbus.c **** 				MODBUS_ReceiveState = MB_RECEIVINGDATA_HI;
+ 1235              		.loc 1 306 0
+ 1236 057c 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 1237 0580 C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 1238 0584 4FF00B02 		mov	r2, #11
+ 1239 0588 1A60     		str	r2, [r3, #0]
+ 307:../src/modbus.c **** 				MODBUSData.data.uiDataIndex = 0;
+ 1240              		.loc 1 307 0
+ 1241 058a 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1242 058e C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1243 0592 9A89     		ldrh	r2, [r3, #12]	@ movhi
+ 1244 0594 6FF30F02 		bfc	r2, #0, #16
+ 1245 0598 9A81     		strh	r2, [r3, #12]	@ movhi
+ 308:../src/modbus.c **** 				MODBUSData.bytes.uiDataCount = 0;
+ 1246              		.loc 1 308 0
+ 1247 059a 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1248 059e C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1249 05a2 DA89     		ldrh	r2, [r3, #14]	@ movhi
+ 1250 05a4 6FF30F02 		bfc	r2, #0, #16
+ 1251 05a8 DA81     		strh	r2, [r3, #14]	@ movhi
+ 309:../src/modbus.c **** 				break;
+ 1252              		.loc 1 309 0
+ 1253 05aa A3E0     		b	.L16
+ 1254              	.L29:
+ 310:../src/modbus.c **** 			}
+ 311:../src/modbus.c **** 			case MB_RECEIVINGDATA_HI:
+ 312:../src/modbus.c **** 			{
+ 313:../src/modbus.c **** 				MODBUSData.bytes.cdata[MODBUSData.bytes.uiDataIndex+1] = (unsigned char)data;
+ 1255              		.loc 1 313 0
+ 1256 05ac 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1257 05b0 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1258 05b4 9B89     		ldrh	r3, [r3, #12]
+ 1259 05b6 03F10101 		add	r1, r3, #1
+ 1260 05ba 7B68     		ldr	r3, [r7, #4]
+ 1261 05bc DAB2     		uxtb	r2, r3
+ 1262 05be 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1263 05c2 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1264 05c6 5B18     		adds	r3, r3, r1
+ 1265 05c8 9A74     		strb	r2, [r3, #18]
+ 314:../src/modbus.c **** 				MODBUS_ReceiveState = MB_RECEIVINGDATA_LO;
+ 1266              		.loc 1 314 0
+ 1267 05ca 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 1268 05ce C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 1269 05d2 4FF00C02 		mov	r2, #12
+ 1270 05d6 1A60     		str	r2, [r3, #0]
+ 315:../src/modbus.c **** 				break;
+ 1271              		.loc 1 315 0
+ 1272 05d8 8CE0     		b	.L16
+ 1273              	.L30:
+ 316:../src/modbus.c **** 			}
+ 317:../src/modbus.c **** 			case MB_RECEIVINGDATA_LO:
+ 318:../src/modbus.c **** 			{
+ 319:../src/modbus.c **** 				MODBUSData.bytes.cdata[MODBUSData.bytes.uiDataIndex] = (unsigned char)data;
+ 1274              		.loc 1 319 0
+ 1275 05da 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1276 05de C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1277 05e2 9B89     		ldrh	r3, [r3, #12]
+ 1278 05e4 1946     		mov	r1, r3
+ 1279 05e6 7B68     		ldr	r3, [r7, #4]
+ 1280 05e8 DAB2     		uxtb	r2, r3
+ 1281 05ea 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1282 05ee C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1283 05f2 5B18     		adds	r3, r3, r1
+ 1284 05f4 9A74     		strb	r2, [r3, #18]
+ 320:../src/modbus.c **** 				MODBUSData.bytes.uiDataIndex += 2;
+ 1285              		.loc 1 320 0
+ 1286 05f6 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1287 05fa C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1288 05fe 9B89     		ldrh	r3, [r3, #12]
+ 1289 0600 03F10203 		add	r3, r3, #2
+ 1290 0604 9AB2     		uxth	r2, r3
+ 1291 0606 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1292 060a C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1293 060e 9A81     		strh	r2, [r3, #12]	@ unaligned
+ 321:../src/modbus.c **** 				MODBUSData.bytes.uiDataCount++;
+ 1294              		.loc 1 321 0
+ 1295 0610 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1296 0614 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1297 0618 DB89     		ldrh	r3, [r3, #14]
+ 1298 061a 03F10103 		add	r3, r3, #1
+ 1299 061e 9AB2     		uxth	r2, r3
+ 1300 0620 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1301 0624 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1302 0628 DA81     		strh	r2, [r3, #14]	@ unaligned
+ 322:../src/modbus.c **** 				if(MODBUSData.bytes.uiDataIndex == MODBUSData.bytes.ucWriteByteCount)
+ 1303              		.loc 1 322 0
+ 1304 062a 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1305 062e C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1306 0632 9A89     		ldrh	r2, [r3, #12]
+ 1307 0634 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1308 0638 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1309 063c 9B7A     		ldrb	r3, [r3, #10]	@ zero_extendqisi2
+ 1310 063e 9A42     		cmp	r2, r3
+ 1311 0640 07D1     		bne	.L48
+ 323:../src/modbus.c **** 				{
+ 324:../src/modbus.c **** 					// If all data received
+ 325:../src/modbus.c **** 					MODBUS_ReceiveState = MB_RECEIVINGCRC_HI;
+ 1312              		.loc 1 325 0
+ 1313 0642 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 1314 0646 C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 1315 064a 4FF00D02 		mov	r2, #13
+ 1316 064e 1A60     		str	r2, [r3, #0]
+ 326:../src/modbus.c **** 				}
+ 327:../src/modbus.c **** 				else
+ 328:../src/modbus.c **** 				{
+ 329:../src/modbus.c **** 					MODBUS_ReceiveState = MB_RECEIVINGDATA_HI;
+ 330:../src/modbus.c **** 				}
+ 331:../src/modbus.c **** 				break;
+ 1317              		.loc 1 331 0
+ 1318 0650 50E0     		b	.L16
+ 1319              	.L48:
+ 329:../src/modbus.c **** 					MODBUS_ReceiveState = MB_RECEIVINGDATA_HI;
+ 1320              		.loc 1 329 0
+ 1321 0652 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 1322 0656 C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 1323 065a 4FF00B02 		mov	r2, #11
+ 1324 065e 1A60     		str	r2, [r3, #0]
+ 1325              		.loc 1 331 0
+ 1326 0660 48E0     		b	.L16
+ 1327              	.L31:
+ 332:../src/modbus.c **** 			}
+ 333:../src/modbus.c **** 			case MB_RECEIVINGCRC_HI:
+ 334:../src/modbus.c **** 			{
+ 335:../src/modbus.c **** 				MODBUSData.bytes.uiCRCHi = (unsigned char)data;
+ 1328              		.loc 1 335 0
+ 1329 0662 7B68     		ldr	r3, [r7, #4]
+ 1330 0664 D9B2     		uxtb	r1, r3
+ 1331 0666 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1332 066a C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1333 066e 5A7C     		ldrb	r2, [r3, #17]
+ 1334 0670 61F30702 		bfi	r2, r1, #0, #8
+ 1335 0674 5A74     		strb	r2, [r3, #17]
+ 336:../src/modbus.c **** 				MODBUS_ReceiveState = MB_RECEIVINGCRC_LO;
+ 1336              		.loc 1 336 0
+ 1337 0676 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 1338 067a C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 1339 067e 4FF00E02 		mov	r2, #14
+ 1340 0682 1A60     		str	r2, [r3, #0]
+ 337:../src/modbus.c **** 				break;
+ 1341              		.loc 1 337 0
+ 1342 0684 36E0     		b	.L16
+ 1343              	.L32:
+ 338:../src/modbus.c **** 			}
+ 339:../src/modbus.c **** 			case MB_RECEIVINGCRC_LO:
+ 340:../src/modbus.c **** 			{
+ 341:../src/modbus.c **** 				MODBUSData.bytes.uiCRCLo = (unsigned char)data;
+ 1344              		.loc 1 341 0
+ 1345 0686 7B68     		ldr	r3, [r7, #4]
+ 1346 0688 D9B2     		uxtb	r1, r3
+ 1347 068a 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1348 068e C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1349 0692 1A7C     		ldrb	r2, [r3, #16]
+ 1350 0694 61F30702 		bfi	r2, r1, #0, #8
+ 1351 0698 1A74     		strb	r2, [r3, #16]
+ 342:../src/modbus.c **** 				MODBUS_ReceiveState = MB_DATAREADY;
+ 1352              		.loc 1 342 0
+ 1353 069a 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 1354 069e C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 1355 06a2 4FF00F02 		mov	r2, #15
+ 1356 06a6 1A60     		str	r2, [r3, #0]
+ 343:../src/modbus.c **** 				if((ucMBCRCHI == 0)&&(ucMBCRCLOW == 0))
+ 1357              		.loc 1 343 0
+ 1358 06a8 40F20003 		movw	r3, #:lower16:ucMBCRCHI
+ 1359 06ac C0F20003 		movt	r3, #:upper16:ucMBCRCHI
+ 1360 06b0 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1361 06b2 002B     		cmp	r3, #0
+ 1362 06b4 1DD1     		bne	.L53
+ 1363              		.loc 1 343 0 is_stmt 0 discriminator 1
+ 1364 06b6 40F20003 		movw	r3, #:lower16:ucMBCRCLOW
+ 1365 06ba C0F20003 		movt	r3, #:upper16:ucMBCRCLOW
+ 1366 06be 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1367 06c0 002B     		cmp	r3, #0
+ 1368 06c2 16D1     		bne	.L53
+ 344:../src/modbus.c **** 				{
+ 345:../src/modbus.c **** 					MODBUSData.data.ucDataReady = 1;
+ 1369              		.loc 1 345 0 is_stmt 1
+ 1370 06c4 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1371 06c8 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1372 06cc DA7A     		ldrb	r2, [r3, #11]
+ 1373 06ce 4FF00101 		mov	r1, #1
+ 1374 06d2 61F30702 		bfi	r2, r1, #0, #8
+ 1375 06d6 DA72     		strb	r2, [r3, #11]
+ 346:../src/modbus.c **** 				}
+ 347:../src/modbus.c **** 				break;
+ 1376              		.loc 1 347 0
+ 1377 06d8 0BE0     		b	.L53
+ 1378              	.L18:
+ 348:../src/modbus.c **** 			}
+ 349:../src/modbus.c **** 			case MB_DATAREADY:
+ 350:../src/modbus.c **** 			{
+ 351:../src/modbus.c **** 				break;
+ 352:../src/modbus.c **** 			}
+ 353:../src/modbus.c **** 			default:
+ 354:../src/modbus.c **** 			{
+ 355:../src/modbus.c **** 				MODBUS_ReceiveState = MB_IDLE;
+ 1379              		.loc 1 355 0
+ 1380 06da 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
+ 1381 06de C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
+ 1382 06e2 4FF00002 		mov	r2, #0
+ 1383 06e6 1A60     		str	r2, [r3, #0]
+ 356:../src/modbus.c **** 				break;
+ 1384              		.loc 1 356 0
+ 1385 06e8 04E0     		b	.L16
+ 1386              	.L51:
+ 351:../src/modbus.c **** 				break;
+ 1387              		.loc 1 351 0
+ 1388 06ea 00BF     		nop
+ 1389 06ec 02E0     		b	.L16
+ 1390              	.L52:
+ 222:../src/modbus.c **** 				break;
+ 1391              		.loc 1 222 0
+ 1392 06ee 00BF     		nop
+ 1393 06f0 00E0     		b	.L16
+ 1394              	.L53:
+ 347:../src/modbus.c **** 				break;
+ 1395              		.loc 1 347 0
+ 1396 06f2 00BF     		nop
+ 1397              	.L16:
+ 357:../src/modbus.c **** 			}
+ 358:../src/modbus.c **** 		}
+ 359:../src/modbus.c **** 	}
+ 360:../src/modbus.c **** 	// Reset timer
+ 361:../src/modbus.c **** 	MODBUS_Timeout = 0;
+ 1398              		.loc 1 361 0
+ 1399 06f4 40F20003 		movw	r3, #:lower16:MODBUS_Timeout
+ 1400 06f8 C0F20003 		movt	r3, #:upper16:MODBUS_Timeout
+ 1401 06fc 4FF00002 		mov	r2, #0
+ 1402 0700 1A60     		str	r2, [r3, #0]
+ 362:../src/modbus.c **** }
+ 1403              		.loc 1 362 0
+ 1404 0702 07F10807 		add	r7, r7, #8
+ 1405 0706 BD46     		mov	sp, r7
+ 1406 0708 80BD     		pop	{r7, pc}
+ 1407              		.cfi_endproc
+ 1408              	.LFE112:
+ 1410 070a 00BF     		.align	2
+ 1411              		.global	crcOnByte
+ 1412              		.thumb
+ 1413              		.thumb_func
+ 1415              	crcOnByte:
+ 1416              	.LFB113:
+ 363:../src/modbus.c **** 
+ 364:../src/modbus.c **** // Function slave calculate CRC on received byte
+ 365:../src/modbus.c **** void crcOnByte(unsigned int ucMsgByte)
+ 366:../src/modbus.c **** {
+ 1417              		.loc 1 366 0
+ 1418              		.cfi_startproc
+ 1419              		@ args = 0, pretend = 0, frame = 16
+ 1420              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1421              		@ link register save eliminated.
+ 1422 070c 80B4     		push	{r7}
+ 1423              	.LCFI8:
+ 1424              		.cfi_def_cfa_offset 4
+ 1425              		.cfi_offset 7, -4
+ 1426 070e 85B0     		sub	sp, sp, #20
+ 1427              	.LCFI9:
+ 1428              		.cfi_def_cfa_offset 24
+ 1429 0710 00AF     		add	r7, sp, #0
+ 1430              	.LCFI10:
+ 1431              		.cfi_def_cfa_register 7
+ 1432 0712 7860     		str	r0, [r7, #4]
+ 367:../src/modbus.c **** 	unsigned int uiIndex = 0;
+ 1433              		.loc 1 367 0
+ 1434 0714 4FF00003 		mov	r3, #0
+ 1435 0718 FB60     		str	r3, [r7, #12]
+ 368:../src/modbus.c **** 	uiIndex = (unsigned int)(ucMBCRCHI^ucMsgByte) ; //calculate the CRC
+ 1436              		.loc 1 368 0
+ 1437 071a 40F20003 		movw	r3, #:lower16:ucMBCRCHI
+ 1438 071e C0F20003 		movt	r3, #:upper16:ucMBCRCHI
+ 1439 0722 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1440 0724 1A46     		mov	r2, r3
+ 1441 0726 7B68     		ldr	r3, [r7, #4]
+ 1442 0728 5340     		eors	r3, r3, r2
+ 1443 072a FB60     		str	r3, [r7, #12]
+ 369:../src/modbus.c **** 	ucMBCRCHI = (unsigned char) (ucMBCRCLOW ^ ucCRCTableHi[uiIndex]) ;
+ 1444              		.loc 1 369 0
+ 1445 072c 40F20003 		movw	r3, #:lower16:ucCRCTableHi
+ 1446 0730 C0F20003 		movt	r3, #:upper16:ucCRCTableHi
+ 1447 0734 FA68     		ldr	r2, [r7, #12]
+ 1448 0736 9B18     		adds	r3, r3, r2
+ 1449 0738 1A78     		ldrb	r2, [r3, #0]	@ zero_extendqisi2
+ 1450 073a 40F20003 		movw	r3, #:lower16:ucMBCRCLOW
+ 1451 073e C0F20003 		movt	r3, #:upper16:ucMBCRCLOW
+ 1452 0742 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1453 0744 5340     		eors	r3, r3, r2
+ 1454 0746 DAB2     		uxtb	r2, r3
+ 1455 0748 40F20003 		movw	r3, #:lower16:ucMBCRCHI
+ 1456 074c C0F20003 		movt	r3, #:upper16:ucMBCRCHI
+ 1457 0750 1A70     		strb	r2, [r3, #0]
+ 370:../src/modbus.c **** 	ucMBCRCLOW = ucCRCTableLo[uiIndex] ;
+ 1458              		.loc 1 370 0
+ 1459 0752 40F20003 		movw	r3, #:lower16:ucCRCTableLo
+ 1460 0756 C0F20003 		movt	r3, #:upper16:ucCRCTableLo
+ 1461 075a FA68     		ldr	r2, [r7, #12]
+ 1462 075c 9B18     		adds	r3, r3, r2
+ 1463 075e 1A78     		ldrb	r2, [r3, #0]	@ zero_extendqisi2
+ 1464 0760 40F20003 		movw	r3, #:lower16:ucMBCRCLOW
+ 1465 0764 C0F20003 		movt	r3, #:upper16:ucMBCRCLOW
+ 1466 0768 1A70     		strb	r2, [r3, #0]
+ 371:../src/modbus.c **** }
+ 1467              		.loc 1 371 0
+ 1468 076a 07F11407 		add	r7, r7, #20
+ 1469 076e BD46     		mov	sp, r7
+ 1470 0770 80BC     		pop	{r7}
+ 1471 0772 7047     		bx	lr
+ 1472              		.cfi_endproc
+ 1473              	.LFE113:
+ 1475              		.align	2
+ 1476              		.global	crcOnMessage
+ 1477              		.thumb
+ 1478              		.thumb_func
+ 1480              	crcOnMessage:
+ 1481              	.LFB114:
+ 372:../src/modbus.c **** 
+ 373:../src/modbus.c **** // Function slave calculate CRC on message
+ 374:../src/modbus.c **** void crcOnMessage(unsigned int uiDataLen)
+ 375:../src/modbus.c **** {
+ 1482              		.loc 1 375 0
+ 1483              		.cfi_startproc
+ 1484              		@ args = 0, pretend = 0, frame = 16
+ 1485              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1486              		@ link register save eliminated.
+ 1487 0774 80B4     		push	{r7}
+ 1488              	.LCFI11:
+ 1489              		.cfi_def_cfa_offset 4
+ 1490              		.cfi_offset 7, -4
+ 1491 0776 85B0     		sub	sp, sp, #20
+ 1492              	.LCFI12:
+ 1493              		.cfi_def_cfa_offset 24
+ 1494 0778 00AF     		add	r7, sp, #0
+ 1495              	.LCFI13:
+ 1496              		.cfi_def_cfa_register 7
+ 1497 077a 7860     		str	r0, [r7, #4]
+ 376:../src/modbus.c **** 	int i = 0;
+ 1498              		.loc 1 376 0
+ 1499 077c 4FF00003 		mov	r3, #0
+ 1500 0780 FB60     		str	r3, [r7, #12]
+ 377:../src/modbus.c **** 	unsigned int uiIndex = 0;
+ 1501              		.loc 1 377 0
+ 1502 0782 4FF00003 		mov	r3, #0
+ 1503 0786 BB60     		str	r3, [r7, #8]
+ 378:../src/modbus.c **** 	ucMBCRCHI = 0xFF ;  	// high byte of CRC initialized
+ 1504              		.loc 1 378 0
+ 1505 0788 40F20003 		movw	r3, #:lower16:ucMBCRCHI
+ 1506 078c C0F20003 		movt	r3, #:upper16:ucMBCRCHI
+ 1507 0790 4FF0FF02 		mov	r2, #255
+ 1508 0794 1A70     		strb	r2, [r3, #0]
+ 379:../src/modbus.c **** 	ucMBCRCLOW = 0xFF ;  // low byte of CRC initialized
+ 1509              		.loc 1 379 0
+ 1510 0796 40F20003 		movw	r3, #:lower16:ucMBCRCLOW
+ 1511 079a C0F20003 		movt	r3, #:upper16:ucMBCRCLOW
+ 1512 079e 4FF0FF02 		mov	r2, #255
+ 1513 07a2 1A70     		strb	r2, [r3, #0]
+ 380:../src/modbus.c **** 
+ 381:../src/modbus.c **** 	uiIndex = 0;
+ 1514              		.loc 1 381 0
+ 1515 07a4 4FF00003 		mov	r3, #0
+ 1516 07a8 BB60     		str	r3, [r7, #8]
+ 382:../src/modbus.c **** 	for(i=0;i < uiDataLen;i++)
+ 1517              		.loc 1 382 0
+ 1518 07aa 4FF00003 		mov	r3, #0
+ 1519 07ae FB60     		str	r3, [r7, #12]
+ 1520 07b0 33E0     		b	.L56
+ 1521              	.L57:
+ 383:../src/modbus.c **** 	{
+ 384:../src/modbus.c **** 		uiIndex = (unsigned int)(ucMBCRCHI^MODBUSData.bytes.cdata[i]) ; // calculate the CRC
+ 1522              		.loc 1 384 0 discriminator 2
+ 1523 07b2 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1524 07b6 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1525 07ba FA68     		ldr	r2, [r7, #12]
+ 1526 07bc 9B18     		adds	r3, r3, r2
+ 1527 07be 03F11003 		add	r3, r3, #16
+ 1528 07c2 9A78     		ldrb	r2, [r3, #2]	@ zero_extendqisi2
+ 1529 07c4 40F20003 		movw	r3, #:lower16:ucMBCRCHI
+ 1530 07c8 C0F20003 		movt	r3, #:upper16:ucMBCRCHI
+ 1531 07cc 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1532 07ce 5340     		eors	r3, r3, r2
+ 1533 07d0 DBB2     		uxtb	r3, r3
+ 1534 07d2 BB60     		str	r3, [r7, #8]
+ 385:../src/modbus.c **** 		ucMBCRCHI = (unsigned char) (ucMBCRCLOW ^ ucCRCTableHi[uiIndex]) ;
+ 1535              		.loc 1 385 0 discriminator 2
+ 1536 07d4 40F20003 		movw	r3, #:lower16:ucCRCTableHi
+ 1537 07d8 C0F20003 		movt	r3, #:upper16:ucCRCTableHi
+ 1538 07dc BA68     		ldr	r2, [r7, #8]
+ 1539 07de 9B18     		adds	r3, r3, r2
+ 1540 07e0 1A78     		ldrb	r2, [r3, #0]	@ zero_extendqisi2
+ 1541 07e2 40F20003 		movw	r3, #:lower16:ucMBCRCLOW
+ 1542 07e6 C0F20003 		movt	r3, #:upper16:ucMBCRCLOW
+ 1543 07ea 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1544 07ec 5340     		eors	r3, r3, r2
+ 1545 07ee DAB2     		uxtb	r2, r3
+ 1546 07f0 40F20003 		movw	r3, #:lower16:ucMBCRCHI
+ 1547 07f4 C0F20003 		movt	r3, #:upper16:ucMBCRCHI
+ 1548 07f8 1A70     		strb	r2, [r3, #0]
+ 386:../src/modbus.c **** 		ucMBCRCLOW = ucCRCTableLo[uiIndex] ;
+ 1549              		.loc 1 386 0 discriminator 2
+ 1550 07fa 40F20003 		movw	r3, #:lower16:ucCRCTableLo
+ 1551 07fe C0F20003 		movt	r3, #:upper16:ucCRCTableLo
+ 1552 0802 BA68     		ldr	r2, [r7, #8]
+ 1553 0804 9B18     		adds	r3, r3, r2
+ 1554 0806 1A78     		ldrb	r2, [r3, #0]	@ zero_extendqisi2
+ 1555 0808 40F20003 		movw	r3, #:lower16:ucMBCRCLOW
+ 1556 080c C0F20003 		movt	r3, #:upper16:ucMBCRCLOW
+ 1557 0810 1A70     		strb	r2, [r3, #0]
+ 382:../src/modbus.c **** 	for(i=0;i < uiDataLen;i++)
+ 1558              		.loc 1 382 0 discriminator 2
+ 1559 0812 FB68     		ldr	r3, [r7, #12]
+ 1560 0814 03F10103 		add	r3, r3, #1
+ 1561 0818 FB60     		str	r3, [r7, #12]
+ 1562              	.L56:
+ 382:../src/modbus.c **** 	for(i=0;i < uiDataLen;i++)
+ 1563              		.loc 1 382 0 is_stmt 0 discriminator 1
+ 1564 081a FA68     		ldr	r2, [r7, #12]
+ 1565 081c 7B68     		ldr	r3, [r7, #4]
+ 1566 081e 9A42     		cmp	r2, r3
+ 1567 0820 C7D3     		bcc	.L57
+ 387:../src/modbus.c **** 	}
+ 388:../src/modbus.c **** 	MODBUSData.bytes.cdata[MODBUSData.bytes.uiDataCount] = ucMBCRCHI;
+ 1568              		.loc 1 388 0 is_stmt 1
+ 1569 0822 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1570 0826 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1571 082a DB89     		ldrh	r3, [r3, #14]
+ 1572 082c 1946     		mov	r1, r3
+ 1573 082e 40F20003 		movw	r3, #:lower16:ucMBCRCHI
+ 1574 0832 C0F20003 		movt	r3, #:upper16:ucMBCRCHI
+ 1575 0836 1A78     		ldrb	r2, [r3, #0]	@ zero_extendqisi2
+ 1576 0838 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1577 083c C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1578 0840 5B18     		adds	r3, r3, r1
+ 1579 0842 9A74     		strb	r2, [r3, #18]
+ 389:../src/modbus.c **** 	MODBUSData.bytes.uiDataCount ++;
+ 1580              		.loc 1 389 0
+ 1581 0844 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1582 0848 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1583 084c DB89     		ldrh	r3, [r3, #14]
+ 1584 084e 03F10103 		add	r3, r3, #1
+ 1585 0852 9AB2     		uxth	r2, r3
+ 1586 0854 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1587 0858 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1588 085c DA81     		strh	r2, [r3, #14]	@ unaligned
+ 390:../src/modbus.c **** 	MODBUSData.bytes.cdata[MODBUSData.bytes.uiDataCount] = ucMBCRCLOW;
+ 1589              		.loc 1 390 0
+ 1590 085e 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1591 0862 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1592 0866 DB89     		ldrh	r3, [r3, #14]
+ 1593 0868 1946     		mov	r1, r3
+ 1594 086a 40F20003 		movw	r3, #:lower16:ucMBCRCLOW
+ 1595 086e C0F20003 		movt	r3, #:upper16:ucMBCRCLOW
+ 1596 0872 1A78     		ldrb	r2, [r3, #0]	@ zero_extendqisi2
+ 1597 0874 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1598 0878 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1599 087c 5B18     		adds	r3, r3, r1
+ 1600 087e 9A74     		strb	r2, [r3, #18]
+ 391:../src/modbus.c **** 	MODBUSData.bytes.uiDataCount ++;
+ 1601              		.loc 1 391 0
+ 1602 0880 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1603 0884 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1604 0888 DB89     		ldrh	r3, [r3, #14]
+ 1605 088a 03F10103 		add	r3, r3, #1
+ 1606 088e 9AB2     		uxth	r2, r3
+ 1607 0890 40F20003 		movw	r3, #:lower16:MODBUSData
+ 1608 0894 C0F20003 		movt	r3, #:upper16:MODBUSData
+ 1609 0898 DA81     		strh	r2, [r3, #14]	@ unaligned
+ 392:../src/modbus.c **** }
+ 1610              		.loc 1 392 0
+ 1611 089a 07F11407 		add	r7, r7, #20
+ 1612 089e BD46     		mov	sp, r7
+ 1613 08a0 80BC     		pop	{r7}
+ 1614 08a2 7047     		bx	lr
+ 1615              		.cfi_endproc
+ 1616              	.LFE114:
+ 1618              	.Letext0:
+ 1619              		.file 2 "c:\\program files (x86)\\codesourcery\\eabi\\bin\\../lib/gcc/arm-none-eabi/4.6.3/../../..
+ 1620              		.file 3 "../src/modbus.h"
+ 1621              		.file 4 "C:\\Users\\Jure\\workspace\\TemplateProject\\Libraries\\CMSIS\\Include/core_cm4.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 modbus.c
+C:\Users\Jure\AppData\Local\Temp\ccR4bo2Z.s:23     .bss:00000000 MODBUS_ReceiveState
+C:\Users\Jure\AppData\Local\Temp\ccR4bo2Z.s:20     .bss:00000000 $d
+C:\Users\Jure\AppData\Local\Temp\ccR4bo2Z.s:28     .bss:00000004 ucMBCRCLOW
+C:\Users\Jure\AppData\Local\Temp\ccR4bo2Z.s:33     .bss:00000005 ucMBCRCHI
+C:\Users\Jure\AppData\Local\Temp\ccR4bo2Z.s:39     .bss:00000008 MODBUS_Timeout
+                            *COM*:000000a0 MODBUSReg
+                            *COM*:000000c8 MODBUSData
+C:\Users\Jure\AppData\Local\Temp\ccR4bo2Z.s:47     .bss:0000000c MODBUSTempReg
+C:\Users\Jure\AppData\Local\Temp\ccR4bo2Z.s:50     .data:00000000 $d
+C:\Users\Jure\AppData\Local\Temp\ccR4bo2Z.s:53     .data:00000000 ucCRCTableHi
+C:\Users\Jure\AppData\Local\Temp\ccR4bo2Z.s:313    .data:00000100 ucCRCTableLo
+C:\Users\Jure\AppData\Local\Temp\ccR4bo2Z.s:571    .text:00000000 $t
+C:\Users\Jure\AppData\Local\Temp\ccR4bo2Z.s:576    .text:00000000 MODBUS_Timer
+C:\Users\Jure\AppData\Local\Temp\ccR4bo2Z.s:642    .text:00000070 MODBUS_ExecuteFunction
+C:\Users\Jure\AppData\Local\Temp\ccR4bo2Z.s:1480   .text:00000774 crcOnMessage
+C:\Users\Jure\AppData\Local\Temp\ccR4bo2Z.s:847    .text:00000204 MODBUS_ProcessData
+C:\Users\Jure\AppData\Local\Temp\ccR4bo2Z.s:1415   .text:0000070c crcOnByte
+C:\Users\Jure\AppData\Local\Temp\ccR4bo2Z.s:942    .text:000002c0 $d
+C:\Users\Jure\AppData\Local\Temp\ccR4bo2Z.s:959    .text:000002fc $t
+C:\Users\Jure\AppData\Local\Temp\ccR4bo2Z.s:977    .text:0000032c $d
+C:\Users\Jure\AppData\Local\Temp\ccR4bo2Z.s:1000   .text:00000380 $t
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/STM32-Discovery-Board/!svn/ver/3/Template/src
+END
+stm32f4xx_conf.h
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/STM32-Discovery-Board/!svn/ver/3/Template/src/stm32f4xx_conf.h
+END
+stm32f4xx_it.c
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/STM32-Discovery-Board/!svn/ver/3/Template/src/stm32f4xx_it.c
+END
+stm32f4xx_it.h
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/STM32-Discovery-Board/!svn/ver/3/Template/src/stm32f4xx_it.h
+END
+startup_stm32f4xx.S
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/STM32-Discovery-Board/!svn/ver/3/Template/src/startup_stm32f4xx.S
+END
+main.c
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/STM32-Discovery-Board/!svn/ver/3/Template/src/main.c
+END
+system_stm32f4xx.c
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/STM32-Discovery-Board/!svn/ver/3/Template/src/system_stm32f4xx.c
+END

@@ -1,0 +1,37 @@
+10
+
+dir
+5
+http://127.0.0.1:9880/STM32-Discovery-Board/Template/Libraries
+http://127.0.0.1:9880/STM32-Discovery-Board
+
+
+
+2011-11-06T04:31:57.745502Z
+3
+sharethl
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+ae1bd711-f67b-3c40-a654-13acc88d7346
+
+CMSIS
+dir
+
+Device
+dir
+
+STM32F4xx_StdPeriph_Driver
+dir
+

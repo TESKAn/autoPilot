@@ -1,0 +1,1372 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"powerSensor.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.global	crc8_Table
+  19              		.section	.rodata
+  20              		.align	2
+  23              	crc8_Table:
+  24 0000 00000000 		.word	0
+  25 0004 5E000000 		.word	94
+  26 0008 BC000000 		.word	188
+  27 000c E2000000 		.word	226
+  28 0010 61000000 		.word	97
+  29 0014 3F000000 		.word	63
+  30 0018 DD000000 		.word	221
+  31 001c 83000000 		.word	131
+  32 0020 C2000000 		.word	194
+  33 0024 9C000000 		.word	156
+  34 0028 7E000000 		.word	126
+  35 002c 20000000 		.word	32
+  36 0030 A3000000 		.word	163
+  37 0034 FD000000 		.word	253
+  38 0038 1F000000 		.word	31
+  39 003c 41000000 		.word	65
+  40 0040 9D000000 		.word	157
+  41 0044 C3000000 		.word	195
+  42 0048 21000000 		.word	33
+  43 004c 7F000000 		.word	127
+  44 0050 FC000000 		.word	252
+  45 0054 A2000000 		.word	162
+  46 0058 40000000 		.word	64
+  47 005c 1E000000 		.word	30
+  48 0060 5F000000 		.word	95
+  49 0064 01000000 		.word	1
+  50 0068 E3000000 		.word	227
+  51 006c BD000000 		.word	189
+  52 0070 3E000000 		.word	62
+  53 0074 60000000 		.word	96
+  54 0078 82000000 		.word	130
+  55 007c DC000000 		.word	220
+  56 0080 23000000 		.word	35
+  57 0084 7D000000 		.word	125
+  58 0088 9F000000 		.word	159
+  59 008c C1000000 		.word	193
+  60 0090 42000000 		.word	66
+  61 0094 1C000000 		.word	28
+  62 0098 FE000000 		.word	254
+  63 009c A0000000 		.word	160
+  64 00a0 E1000000 		.word	225
+  65 00a4 BF000000 		.word	191
+  66 00a8 5D000000 		.word	93
+  67 00ac 03000000 		.word	3
+  68 00b0 80000000 		.word	128
+  69 00b4 DE000000 		.word	222
+  70 00b8 3C000000 		.word	60
+  71 00bc 62000000 		.word	98
+  72 00c0 BE000000 		.word	190
+  73 00c4 E0000000 		.word	224
+  74 00c8 02000000 		.word	2
+  75 00cc 5C000000 		.word	92
+  76 00d0 DF000000 		.word	223
+  77 00d4 81000000 		.word	129
+  78 00d8 63000000 		.word	99
+  79 00dc 3D000000 		.word	61
+  80 00e0 7C000000 		.word	124
+  81 00e4 22000000 		.word	34
+  82 00e8 C0000000 		.word	192
+  83 00ec 9E000000 		.word	158
+  84 00f0 1D000000 		.word	29
+  85 00f4 43000000 		.word	67
+  86 00f8 A1000000 		.word	161
+  87 00fc FF000000 		.word	255
+  88 0100 46000000 		.word	70
+  89 0104 18000000 		.word	24
+  90 0108 FA000000 		.word	250
+  91 010c A4000000 		.word	164
+  92 0110 27000000 		.word	39
+  93 0114 79000000 		.word	121
+  94 0118 9B000000 		.word	155
+  95 011c C5000000 		.word	197
+  96 0120 84000000 		.word	132
+  97 0124 DA000000 		.word	218
+  98 0128 38000000 		.word	56
+  99 012c 66000000 		.word	102
+ 100 0130 E5000000 		.word	229
+ 101 0134 BB000000 		.word	187
+ 102 0138 59000000 		.word	89
+ 103 013c 07000000 		.word	7
+ 104 0140 DB000000 		.word	219
+ 105 0144 85000000 		.word	133
+ 106 0148 67000000 		.word	103
+ 107 014c 39000000 		.word	57
+ 108 0150 BA000000 		.word	186
+ 109 0154 E4000000 		.word	228
+ 110 0158 06000000 		.word	6
+ 111 015c 58000000 		.word	88
+ 112 0160 19000000 		.word	25
+ 113 0164 47000000 		.word	71
+ 114 0168 A5000000 		.word	165
+ 115 016c FB000000 		.word	251
+ 116 0170 78000000 		.word	120
+ 117 0174 26000000 		.word	38
+ 118 0178 C4000000 		.word	196
+ 119 017c 9A000000 		.word	154
+ 120 0180 65000000 		.word	101
+ 121 0184 3B000000 		.word	59
+ 122 0188 D9000000 		.word	217
+ 123 018c 87000000 		.word	135
+ 124 0190 04000000 		.word	4
+ 125 0194 5A000000 		.word	90
+ 126 0198 B8000000 		.word	184
+ 127 019c E6000000 		.word	230
+ 128 01a0 A7000000 		.word	167
+ 129 01a4 F9000000 		.word	249
+ 130 01a8 1B000000 		.word	27
+ 131 01ac 45000000 		.word	69
+ 132 01b0 C6000000 		.word	198
+ 133 01b4 98000000 		.word	152
+ 134 01b8 7A000000 		.word	122
+ 135 01bc 24000000 		.word	36
+ 136 01c0 F8000000 		.word	248
+ 137 01c4 A6000000 		.word	166
+ 138 01c8 44000000 		.word	68
+ 139 01cc 1A000000 		.word	26
+ 140 01d0 99000000 		.word	153
+ 141 01d4 C7000000 		.word	199
+ 142 01d8 25000000 		.word	37
+ 143 01dc 7B000000 		.word	123
+ 144 01e0 3A000000 		.word	58
+ 145 01e4 64000000 		.word	100
+ 146 01e8 86000000 		.word	134
+ 147 01ec D8000000 		.word	216
+ 148 01f0 5B000000 		.word	91
+ 149 01f4 05000000 		.word	5
+ 150 01f8 E7000000 		.word	231
+ 151 01fc B9000000 		.word	185
+ 152 0200 8C000000 		.word	140
+ 153 0204 D2000000 		.word	210
+ 154 0208 30000000 		.word	48
+ 155 020c 6E000000 		.word	110
+ 156 0210 ED000000 		.word	237
+ 157 0214 B3000000 		.word	179
+ 158 0218 51000000 		.word	81
+ 159 021c 0F000000 		.word	15
+ 160 0220 4E000000 		.word	78
+ 161 0224 10000000 		.word	16
+ 162 0228 F2000000 		.word	242
+ 163 022c AC000000 		.word	172
+ 164 0230 2F000000 		.word	47
+ 165 0234 71000000 		.word	113
+ 166 0238 93000000 		.word	147
+ 167 023c CD000000 		.word	205
+ 168 0240 11000000 		.word	17
+ 169 0244 4F000000 		.word	79
+ 170 0248 AD000000 		.word	173
+ 171 024c F3000000 		.word	243
+ 172 0250 70000000 		.word	112
+ 173 0254 2E000000 		.word	46
+ 174 0258 CC000000 		.word	204
+ 175 025c 92000000 		.word	146
+ 176 0260 D3000000 		.word	211
+ 177 0264 8D000000 		.word	141
+ 178 0268 6F000000 		.word	111
+ 179 026c 31000000 		.word	49
+ 180 0270 B2000000 		.word	178
+ 181 0274 EC000000 		.word	236
+ 182 0278 0E000000 		.word	14
+ 183 027c 50000000 		.word	80
+ 184 0280 AF000000 		.word	175
+ 185 0284 F1000000 		.word	241
+ 186 0288 13000000 		.word	19
+ 187 028c 4D000000 		.word	77
+ 188 0290 CE000000 		.word	206
+ 189 0294 90000000 		.word	144
+ 190 0298 72000000 		.word	114
+ 191 029c 2C000000 		.word	44
+ 192 02a0 6D000000 		.word	109
+ 193 02a4 33000000 		.word	51
+ 194 02a8 D1000000 		.word	209
+ 195 02ac 8F000000 		.word	143
+ 196 02b0 0C000000 		.word	12
+ 197 02b4 52000000 		.word	82
+ 198 02b8 B0000000 		.word	176
+ 199 02bc EE000000 		.word	238
+ 200 02c0 32000000 		.word	50
+ 201 02c4 6C000000 		.word	108
+ 202 02c8 8E000000 		.word	142
+ 203 02cc D0000000 		.word	208
+ 204 02d0 53000000 		.word	83
+ 205 02d4 0D000000 		.word	13
+ 206 02d8 EF000000 		.word	239
+ 207 02dc B1000000 		.word	177
+ 208 02e0 F0000000 		.word	240
+ 209 02e4 AE000000 		.word	174
+ 210 02e8 4C000000 		.word	76
+ 211 02ec 12000000 		.word	18
+ 212 02f0 91000000 		.word	145
+ 213 02f4 CF000000 		.word	207
+ 214 02f8 2D000000 		.word	45
+ 215 02fc 73000000 		.word	115
+ 216 0300 CA000000 		.word	202
+ 217 0304 94000000 		.word	148
+ 218 0308 76000000 		.word	118
+ 219 030c 28000000 		.word	40
+ 220 0310 AB000000 		.word	171
+ 221 0314 F5000000 		.word	245
+ 222 0318 17000000 		.word	23
+ 223 031c 49000000 		.word	73
+ 224 0320 08000000 		.word	8
+ 225 0324 56000000 		.word	86
+ 226 0328 B4000000 		.word	180
+ 227 032c EA000000 		.word	234
+ 228 0330 69000000 		.word	105
+ 229 0334 37000000 		.word	55
+ 230 0338 D5000000 		.word	213
+ 231 033c 8B000000 		.word	139
+ 232 0340 57000000 		.word	87
+ 233 0344 09000000 		.word	9
+ 234 0348 EB000000 		.word	235
+ 235 034c B5000000 		.word	181
+ 236 0350 36000000 		.word	54
+ 237 0354 68000000 		.word	104
+ 238 0358 8A000000 		.word	138
+ 239 035c D4000000 		.word	212
+ 240 0360 95000000 		.word	149
+ 241 0364 CB000000 		.word	203
+ 242 0368 29000000 		.word	41
+ 243 036c 77000000 		.word	119
+ 244 0370 F4000000 		.word	244
+ 245 0374 AA000000 		.word	170
+ 246 0378 48000000 		.word	72
+ 247 037c 16000000 		.word	22
+ 248 0380 E9000000 		.word	233
+ 249 0384 B7000000 		.word	183
+ 250 0388 55000000 		.word	85
+ 251 038c 0B000000 		.word	11
+ 252 0390 88000000 		.word	136
+ 253 0394 D6000000 		.word	214
+ 254 0398 34000000 		.word	52
+ 255 039c 6A000000 		.word	106
+ 256 03a0 2B000000 		.word	43
+ 257 03a4 75000000 		.word	117
+ 258 03a8 97000000 		.word	151
+ 259 03ac C9000000 		.word	201
+ 260 03b0 4A000000 		.word	74
+ 261 03b4 14000000 		.word	20
+ 262 03b8 F6000000 		.word	246
+ 263 03bc A8000000 		.word	168
+ 264 03c0 74000000 		.word	116
+ 265 03c4 2A000000 		.word	42
+ 266 03c8 C8000000 		.word	200
+ 267 03cc 96000000 		.word	150
+ 268 03d0 15000000 		.word	21
+ 269 03d4 4B000000 		.word	75
+ 270 03d8 A9000000 		.word	169
+ 271 03dc F7000000 		.word	247
+ 272 03e0 B6000000 		.word	182
+ 273 03e4 E8000000 		.word	232
+ 274 03e8 0A000000 		.word	10
+ 275 03ec 54000000 		.word	84
+ 276 03f0 D7000000 		.word	215
+ 277 03f4 89000000 		.word	137
+ 278 03f8 6B000000 		.word	107
+ 279 03fc 35000000 		.word	53
+ 280              		.comm	PS_CRC,1,1
+ 281              		.global	PS_ReceiveStateVar
+ 282              		.bss
+ 285              	PS_ReceiveStateVar:
+ 286 0000 00       		.space	1
+ 287              		.global	PS_TIMER
+ 288 0001 000000   		.align	2
+ 291              	PS_TIMER:
+ 292 0004 00000000 		.space	4
+ 293              		.comm	PS_DATA,16,4
+ 294              		.global	PS_PollTimer
+ 295              		.align	2
+ 298              	PS_PollTimer:
+ 299 0008 00000000 		.space	4
+ 300              		.text
+ 301              		.align	2
+ 302              		.global	PS_Timer
+ 303              		.thumb
+ 304              		.thumb_func
+ 306              	PS_Timer:
+ 307              	.LFB110:
+ 308              		.file 1 "../src/powerSensor.c"
+   1:../src/powerSensor.c **** /*
+   2:../src/powerSensor.c ****  * powerSensor.c
+   3:../src/powerSensor.c ****  *
+   4:../src/powerSensor.c ****  *  Created on: Oct 15, 2012
+   5:../src/powerSensor.c ****  *      Author: Jure
+   6:../src/powerSensor.c ****  */
+   7:../src/powerSensor.c **** 
+   8:../src/powerSensor.c **** #include "allinclude.h"
+   9:../src/powerSensor.c **** 
+  10:../src/powerSensor.c **** // CRC table
+  11:../src/powerSensor.c **** const int crc8_Table[ ] =
+  12:../src/powerSensor.c **** {
+  13:../src/powerSensor.c ****      0,  94, 188, 226,  97,  63, 221, 131, 194, 156, 126,  32, 163, 253,  31,  65,
+  14:../src/powerSensor.c ****    157, 195,  33, 127, 252, 162,  64,  30,  95,   1, 227, 189,  62,  96, 130, 220,
+  15:../src/powerSensor.c ****     35, 125, 159, 193,  66,  28, 254, 160, 225, 191,  93,   3, 128, 222,  60,  98,
+  16:../src/powerSensor.c ****    190, 224,   2,  92, 223, 129,  99,  61, 124,  34, 192, 158,  29,  67, 161, 255,
+  17:../src/powerSensor.c ****     70,  24, 250, 164,  39, 121, 155, 197, 132, 218,  56, 102, 229, 187,  89,   7,
+  18:../src/powerSensor.c ****    219, 133, 103,  57, 186, 228,   6,  88,  25,  71, 165, 251, 120,  38, 196, 154,
+  19:../src/powerSensor.c ****    101,  59, 217, 135,   4,  90, 184, 230, 167, 249,  27,  69, 198, 152, 122,  36,
+  20:../src/powerSensor.c ****    248, 166,  68,  26, 153, 199,  37, 123,  58, 100, 134, 216,  91,   5, 231, 185,
+  21:../src/powerSensor.c ****    140, 210,  48, 110, 237, 179,  81,  15,  78,  16, 242, 172,  47, 113, 147, 205,
+  22:../src/powerSensor.c ****     17,  79, 173, 243, 112,  46, 204, 146, 211, 141, 111,  49, 178, 236,  14,  80,
+  23:../src/powerSensor.c ****    175, 241,  19,  77, 206, 144, 114,  44, 109,  51, 209, 143,  12,  82, 176, 238,
+  24:../src/powerSensor.c ****     50, 108, 142, 208,  83,  13, 239, 177, 240, 174,  76,  18, 145, 207,  45, 115,
+  25:../src/powerSensor.c ****    202, 148, 118,  40, 171, 245,  23,  73,   8,  86, 180, 234, 105,  55, 213, 139,
+  26:../src/powerSensor.c ****     87,   9, 235, 181,  54, 104, 138, 212, 149, 203,  41, 119, 244, 170,  72,  22,
+  27:../src/powerSensor.c ****    233, 183,  85,  11, 136, 214,  52, 106,  43, 117, 151, 201,  74,  20, 246, 168,
+  28:../src/powerSensor.c ****    116,  42, 200, 150,  21,  75, 169, 247, 182, 232,  10,  84, 215, 137, 107,  53
+  29:../src/powerSensor.c **** } ;
+  30:../src/powerSensor.c **** 
+  31:../src/powerSensor.c **** // Variables
+  32:../src/powerSensor.c **** uint8_t PS_CRC;
+  33:../src/powerSensor.c **** uint8_t PS_ReceiveStateVar = 0;
+  34:../src/powerSensor.c **** int PS_TIMER = 0;
+  35:../src/powerSensor.c **** PS_DataStruct PS_DATA;
+  36:../src/powerSensor.c **** int PS_PollTimer = 0;
+  37:../src/powerSensor.c **** 
+  38:../src/powerSensor.c **** void PS_Timer(void)
+  39:../src/powerSensor.c **** {
+ 309              		.loc 1 39 0
+ 310              		.cfi_startproc
+ 311              		@ args = 0, pretend = 0, frame = 0
+ 312              		@ frame_needed = 1, uses_anonymous_args = 0
+ 313              		@ link register save eliminated.
+ 314 0000 80B4     		push	{r7}
+ 315              	.LCFI0:
+ 316              		.cfi_def_cfa_offset 4
+ 317              		.cfi_offset 7, -4
+ 318 0002 00AF     		add	r7, sp, #0
+ 319              	.LCFI1:
+ 320              		.cfi_def_cfa_register 7
+  40:../src/powerSensor.c **** 	PS_TIMER++;
+ 321              		.loc 1 40 0
+ 322 0004 40F20003 		movw	r3, #:lower16:PS_TIMER
+ 323 0008 C0F20003 		movt	r3, #:upper16:PS_TIMER
+ 324 000c 1B68     		ldr	r3, [r3, #0]
+ 325 000e 03F10102 		add	r2, r3, #1
+ 326 0012 40F20003 		movw	r3, #:lower16:PS_TIMER
+ 327 0016 C0F20003 		movt	r3, #:upper16:PS_TIMER
+ 328 001a 1A60     		str	r2, [r3, #0]
+  41:../src/powerSensor.c **** 	if(PS_TIMER > PS_MAXTIME)
+ 329              		.loc 1 41 0
+ 330 001c 40F20003 		movw	r3, #:lower16:PS_TIMER
+ 331 0020 C0F20003 		movt	r3, #:upper16:PS_TIMER
+ 332 0024 1A68     		ldr	r2, [r3, #0]
+ 333 0026 40F24C43 		movw	r3, #1100
+ 334 002a 9A42     		cmp	r2, r3
+ 335 002c 06DD     		ble	.L2
+  42:../src/powerSensor.c **** 	{
+  43:../src/powerSensor.c **** 		PS_TIMER = PS_MAXTIME;
+ 336              		.loc 1 43 0
+ 337 002e 40F20003 		movw	r3, #:lower16:PS_TIMER
+ 338 0032 C0F20003 		movt	r3, #:upper16:PS_TIMER
+ 339 0036 40F24C42 		movw	r2, #1100
+ 340 003a 1A60     		str	r2, [r3, #0]
+ 341              	.L2:
+  44:../src/powerSensor.c **** 	}
+  45:../src/powerSensor.c **** 	// Check if we are waiting to receive data
+  46:../src/powerSensor.c **** 	if(PS_WAITINGDATA)
+ 342              		.loc 1 46 0
+ 343 003c 40F20003 		movw	r3, #:lower16:flag0
+ 344 0040 C0F20003 		movt	r3, #:upper16:flag0
+ 345 0044 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 346 0046 03F00403 		and	r3, r3, #4
+ 347 004a DBB2     		uxtb	r3, r3
+ 348 004c 002B     		cmp	r3, #0
+ 349 004e 2BD0     		beq	.L3
+  47:../src/powerSensor.c **** 	{
+  48:../src/powerSensor.c **** 		if(PS_TIMER > PS_TIMEOUT)
+ 350              		.loc 1 48 0
+ 351 0050 40F20003 		movw	r3, #:lower16:PS_TIMER
+ 352 0054 C0F20003 		movt	r3, #:upper16:PS_TIMER
+ 353 0058 1B68     		ldr	r3, [r3, #0]
+ 354 005a B3F57A7F 		cmp	r3, #1000
+ 355 005e 23DD     		ble	.L3
+  49:../src/powerSensor.c **** 		{
+  50:../src/powerSensor.c **** 			PS_ReceiveStateVar = PS_IDLE;
+ 356              		.loc 1 50 0
+ 357 0060 40F20003 		movw	r3, #:lower16:PS_ReceiveStateVar
+ 358 0064 C0F20003 		movt	r3, #:upper16:PS_ReceiveStateVar
+ 359 0068 4FF00002 		mov	r2, #0
+ 360 006c 1A70     		strb	r2, [r3, #0]
+  51:../src/powerSensor.c **** 			PS_WAITINGDATA = 0;
+ 361              		.loc 1 51 0
+ 362 006e 40F20003 		movw	r3, #:lower16:flag0
+ 363 0072 C0F20003 		movt	r3, #:upper16:flag0
+ 364 0076 1A78     		ldrb	r2, [r3, #0]
+ 365 0078 6FF38202 		bfc	r2, #2, #1
+ 366 007c 1A70     		strb	r2, [r3, #0]
+  52:../src/powerSensor.c **** 			PSBUSY = 0;
+ 367              		.loc 1 52 0
+ 368 007e 40F20003 		movw	r3, #:lower16:flag0
+ 369 0082 C0F20003 		movt	r3, #:upper16:flag0
+ 370 0086 1A78     		ldrb	r2, [r3, #0]
+ 371 0088 6FF34102 		bfc	r2, #1, #1
+ 372 008c 1A70     		strb	r2, [r3, #0]
+  53:../src/powerSensor.c ****         	// Mark sensor not OK
+  54:../src/powerSensor.c ****         	SCR2 = SCR2 & ~SCR2_POWEROK;
+ 373              		.loc 1 54 0
+ 374 008e 40F20003 		movw	r3, #:lower16:MODBUSReg
+ 375 0092 C0F20003 		movt	r3, #:upper16:MODBUSReg
+ 376 0096 5B88     		ldrh	r3, [r3, #2]
+ 377 0098 23F01003 		bic	r3, r3, #16
+ 378 009c 9AB2     		uxth	r2, r3
+ 379 009e 40F20003 		movw	r3, #:lower16:MODBUSReg
+ 380 00a2 C0F20003 		movt	r3, #:upper16:MODBUSReg
+ 381 00a6 5A80     		strh	r2, [r3, #2]	@ movhi
+ 382              	.L3:
+  55:../src/powerSensor.c **** 		}
+  56:../src/powerSensor.c **** 	}
+  57:../src/powerSensor.c **** 	if(PS_ReceiveStateVar != PS_IDLE)
+ 383              		.loc 1 57 0
+ 384 00a8 40F20003 		movw	r3, #:lower16:PS_ReceiveStateVar
+ 385 00ac C0F20003 		movt	r3, #:upper16:PS_ReceiveStateVar
+ 386 00b0 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 387 00b2 002B     		cmp	r3, #0
+ 388 00b4 2BD0     		beq	.L1
+  58:../src/powerSensor.c **** 	{
+  59:../src/powerSensor.c **** 		if(PS_TIMER > PS_TIMEOUT)
+ 389              		.loc 1 59 0
+ 390 00b6 40F20003 		movw	r3, #:lower16:PS_TIMER
+ 391 00ba C0F20003 		movt	r3, #:upper16:PS_TIMER
+ 392 00be 1B68     		ldr	r3, [r3, #0]
+ 393 00c0 B3F57A7F 		cmp	r3, #1000
+ 394 00c4 23DD     		ble	.L1
+  60:../src/powerSensor.c **** 		{
+  61:../src/powerSensor.c **** 			PS_ReceiveStateVar = PS_IDLE;
+ 395              		.loc 1 61 0
+ 396 00c6 40F20003 		movw	r3, #:lower16:PS_ReceiveStateVar
+ 397 00ca C0F20003 		movt	r3, #:upper16:PS_ReceiveStateVar
+ 398 00ce 4FF00002 		mov	r2, #0
+ 399 00d2 1A70     		strb	r2, [r3, #0]
+  62:../src/powerSensor.c **** 			PS_WAITINGDATA = 0;
+ 400              		.loc 1 62 0
+ 401 00d4 40F20003 		movw	r3, #:lower16:flag0
+ 402 00d8 C0F20003 		movt	r3, #:upper16:flag0
+ 403 00dc 1A78     		ldrb	r2, [r3, #0]
+ 404 00de 6FF38202 		bfc	r2, #2, #1
+ 405 00e2 1A70     		strb	r2, [r3, #0]
+  63:../src/powerSensor.c **** 			PSBUSY = 0;
+ 406              		.loc 1 63 0
+ 407 00e4 40F20003 		movw	r3, #:lower16:flag0
+ 408 00e8 C0F20003 		movt	r3, #:upper16:flag0
+ 409 00ec 1A78     		ldrb	r2, [r3, #0]
+ 410 00ee 6FF34102 		bfc	r2, #1, #1
+ 411 00f2 1A70     		strb	r2, [r3, #0]
+  64:../src/powerSensor.c ****         	// Mark sensor not OK
+  65:../src/powerSensor.c ****         	SCR2 = SCR2 & ~SCR2_POWEROK;
+ 412              		.loc 1 65 0
+ 413 00f4 40F20003 		movw	r3, #:lower16:MODBUSReg
+ 414 00f8 C0F20003 		movt	r3, #:upper16:MODBUSReg
+ 415 00fc 5B88     		ldrh	r3, [r3, #2]
+ 416 00fe 23F01003 		bic	r3, r3, #16
+ 417 0102 9AB2     		uxth	r2, r3
+ 418 0104 40F20003 		movw	r3, #:lower16:MODBUSReg
+ 419 0108 C0F20003 		movt	r3, #:upper16:MODBUSReg
+ 420 010c 5A80     		strh	r2, [r3, #2]	@ movhi
+ 421              	.L1:
+  66:../src/powerSensor.c **** 		}
+  67:../src/powerSensor.c **** 	}
+  68:../src/powerSensor.c **** }
+ 422              		.loc 1 68 0
+ 423 010e BD46     		mov	sp, r7
+ 424 0110 80BC     		pop	{r7}
+ 425 0112 7047     		bx	lr
+ 426              		.cfi_endproc
+ 427              	.LFE110:
+ 429              		.align	2
+ 430              		.global	PSRequestData
+ 431              		.thumb
+ 432              		.thumb_func
+ 434              	PSRequestData:
+ 435              	.LFB111:
+  69:../src/powerSensor.c **** 
+  70:../src/powerSensor.c **** void PSRequestData(void)
+  71:../src/powerSensor.c **** {
+ 436              		.loc 1 71 0
+ 437              		.cfi_startproc
+ 438              		@ args = 0, pretend = 0, frame = 0
+ 439              		@ frame_needed = 1, uses_anonymous_args = 0
+ 440 0114 80B5     		push	{r7, lr}
+ 441              	.LCFI2:
+ 442              		.cfi_def_cfa_offset 8
+ 443              		.cfi_offset 14, -4
+ 444              		.cfi_offset 7, -8
+ 445 0116 00AF     		add	r7, sp, #0
+ 446              	.LCFI3:
+ 447              		.cfi_def_cfa_register 7
+  72:../src/powerSensor.c **** 	PSBUSY = 1;
+ 448              		.loc 1 72 0
+ 449 0118 40F20003 		movw	r3, #:lower16:flag0
+ 450 011c C0F20003 		movt	r3, #:upper16:flag0
+ 451 0120 1A78     		ldrb	r2, [r3, #0]
+ 452 0122 42F00202 		orr	r2, r2, #2
+ 453 0126 1A70     		strb	r2, [r3, #0]
+  73:../src/powerSensor.c **** 	PS_WAITINGDATA = 1;
+ 454              		.loc 1 73 0
+ 455 0128 40F20003 		movw	r3, #:lower16:flag0
+ 456 012c C0F20003 		movt	r3, #:upper16:flag0
+ 457 0130 1A78     		ldrb	r2, [r3, #0]
+ 458 0132 42F00402 		orr	r2, r2, #4
+ 459 0136 1A70     		strb	r2, [r3, #0]
+  74:../src/powerSensor.c **** 	PS_TIMER = 100;
+ 460              		.loc 1 74 0
+ 461 0138 40F20003 		movw	r3, #:lower16:PS_TIMER
+ 462 013c C0F20003 		movt	r3, #:upper16:PS_TIMER
+ 463 0140 4FF06402 		mov	r2, #100
+ 464 0144 1A60     		str	r2, [r3, #0]
+  75:../src/powerSensor.c **** 	USART_SendData(USART1, 0x57);
+ 465              		.loc 1 75 0
+ 466 0146 4FF48050 		mov	r0, #4096
+ 467 014a C4F20100 		movt	r0, 16385
+ 468 014e 4FF05701 		mov	r1, #87
+ 469 0152 FFF7FEFF 		bl	USART_SendData
+  76:../src/powerSensor.c **** 	// Wait
+  77:../src/powerSensor.c **** 	while(!USART_GetFlagStatus(USART1, USART_FLAG_TC))
+ 470              		.loc 1 77 0
+ 471 0156 00BF     		nop
+ 472              	.L6:
+ 473              		.loc 1 77 0 is_stmt 0 discriminator 1
+ 474 0158 4FF48050 		mov	r0, #4096
+ 475 015c C4F20100 		movt	r0, 16385
+ 476 0160 4FF04001 		mov	r1, #64
+ 477 0164 FFF7FEFF 		bl	USART_GetFlagStatus
+ 478 0168 0346     		mov	r3, r0
+ 479 016a 002B     		cmp	r3, #0
+ 480 016c F4D0     		beq	.L6
+  78:../src/powerSensor.c **** 	{}
+  79:../src/powerSensor.c **** 	Delaynus(1000);
+ 481              		.loc 1 79 0 is_stmt 1
+ 482 016e 4FF47A70 		mov	r0, #1000
+ 483 0172 FFF7FEFF 		bl	Delaynus
+  80:../src/powerSensor.c **** 	// Send CRC
+  81:../src/powerSensor.c **** 	USART_SendData(USART1, 0x6d);
+ 484              		.loc 1 81 0
+ 485 0176 4FF48050 		mov	r0, #4096
+ 486 017a C4F20100 		movt	r0, 16385
+ 487 017e 4FF06D01 		mov	r1, #109
+ 488 0182 FFF7FEFF 		bl	USART_SendData
+  82:../src/powerSensor.c **** }
+ 489              		.loc 1 82 0
+ 490 0186 80BD     		pop	{r7, pc}
+ 491              		.cfi_endproc
+ 492              	.LFE111:
+ 494              		.align	2
+ 495              		.global	PSSetI0
+ 496              		.thumb
+ 497              		.thumb_func
+ 499              	PSSetI0:
+ 500              	.LFB112:
+  83:../src/powerSensor.c **** 
+  84:../src/powerSensor.c **** void PSSetI0(void)
+  85:../src/powerSensor.c **** {
+ 501              		.loc 1 85 0
+ 502              		.cfi_startproc
+ 503              		@ args = 0, pretend = 0, frame = 0
+ 504              		@ frame_needed = 1, uses_anonymous_args = 0
+ 505 0188 80B5     		push	{r7, lr}
+ 506              	.LCFI4:
+ 507              		.cfi_def_cfa_offset 8
+ 508              		.cfi_offset 14, -4
+ 509              		.cfi_offset 7, -8
+ 510 018a 00AF     		add	r7, sp, #0
+ 511              	.LCFI5:
+ 512              		.cfi_def_cfa_register 7
+  86:../src/powerSensor.c **** 	USART_SendData(USART1, 0x58);
+ 513              		.loc 1 86 0
+ 514 018c 4FF48050 		mov	r0, #4096
+ 515 0190 C4F20100 		movt	r0, 16385
+ 516 0194 4FF05801 		mov	r1, #88
+ 517 0198 FFF7FEFF 		bl	USART_SendData
+  87:../src/powerSensor.c **** 	// Wait
+  88:../src/powerSensor.c **** 	Delaynus(1000);
+ 518              		.loc 1 88 0
+ 519 019c 4FF47A70 		mov	r0, #1000
+ 520 01a0 FFF7FEFF 		bl	Delaynus
+  89:../src/powerSensor.c **** 	// Wait
+  90:../src/powerSensor.c **** 	while(!USART_GetFlagStatus(USART1, USART_FLAG_TC))
+ 521              		.loc 1 90 0
+ 522 01a4 00BF     		nop
+ 523              	.L8:
+ 524              		.loc 1 90 0 is_stmt 0 discriminator 1
+ 525 01a6 4FF48050 		mov	r0, #4096
+ 526 01aa C4F20100 		movt	r0, 16385
+ 527 01ae 4FF04001 		mov	r1, #64
+ 528 01b2 FFF7FEFF 		bl	USART_GetFlagStatus
+ 529 01b6 0346     		mov	r3, r0
+ 530 01b8 002B     		cmp	r3, #0
+ 531 01ba F4D0     		beq	.L8
+  91:../src/powerSensor.c **** 	{}
+  92:../src/powerSensor.c **** 	// Send CRC
+  93:../src/powerSensor.c **** 	USART_SendData(USART1, 0x2c);
+ 532              		.loc 1 93 0 is_stmt 1
+ 533 01bc 4FF48050 		mov	r0, #4096
+ 534 01c0 C4F20100 		movt	r0, 16385
+ 535 01c4 4FF02C01 		mov	r1, #44
+ 536 01c8 FFF7FEFF 		bl	USART_SendData
+  94:../src/powerSensor.c **** 	// Wait for finish
+  95:../src/powerSensor.c **** 	while(!USART_GetFlagStatus(USART1, USART_FLAG_TC))
+ 537              		.loc 1 95 0
+ 538 01cc 00BF     		nop
+ 539              	.L9:
+ 540              		.loc 1 95 0 is_stmt 0 discriminator 1
+ 541 01ce 4FF48050 		mov	r0, #4096
+ 542 01d2 C4F20100 		movt	r0, 16385
+ 543 01d6 4FF04001 		mov	r1, #64
+ 544 01da FFF7FEFF 		bl	USART_GetFlagStatus
+ 545 01de 0346     		mov	r3, r0
+ 546 01e0 002B     		cmp	r3, #0
+ 547 01e2 F4D0     		beq	.L9
+  96:../src/powerSensor.c **** 	{}
+  97:../src/powerSensor.c **** }
+ 548              		.loc 1 97 0 is_stmt 1
+ 549 01e4 80BD     		pop	{r7, pc}
+ 550              		.cfi_endproc
+ 551              	.LFE112:
+ 553 01e6 00BF     		.align	2
+ 554              		.global	PSReset
+ 555              		.thumb
+ 556              		.thumb_func
+ 558              	PSReset:
+ 559              	.LFB113:
+  98:../src/powerSensor.c **** 
+  99:../src/powerSensor.c **** void PSReset(void)
+ 100:../src/powerSensor.c **** {
+ 560              		.loc 1 100 0
+ 561              		.cfi_startproc
+ 562              		@ args = 0, pretend = 0, frame = 0
+ 563              		@ frame_needed = 1, uses_anonymous_args = 0
+ 564 01e8 80B5     		push	{r7, lr}
+ 565              	.LCFI6:
+ 566              		.cfi_def_cfa_offset 8
+ 567              		.cfi_offset 14, -4
+ 568              		.cfi_offset 7, -8
+ 569 01ea 00AF     		add	r7, sp, #0
+ 570              	.LCFI7:
+ 571              		.cfi_def_cfa_register 7
+ 101:../src/powerSensor.c **** 	PSBUSY = 1;
+ 572              		.loc 1 101 0
+ 573 01ec 40F20003 		movw	r3, #:lower16:flag0
+ 574 01f0 C0F20003 		movt	r3, #:upper16:flag0
+ 575 01f4 1A78     		ldrb	r2, [r3, #0]
+ 576 01f6 42F00202 		orr	r2, r2, #2
+ 577 01fa 1A70     		strb	r2, [r3, #0]
+ 102:../src/powerSensor.c **** 	USART_SendData(USART1, 0x59);
+ 578              		.loc 1 102 0
+ 579 01fc 4FF48050 		mov	r0, #4096
+ 580 0200 C4F20100 		movt	r0, 16385
+ 581 0204 4FF05901 		mov	r1, #89
+ 582 0208 FFF7FEFF 		bl	USART_SendData
+ 103:../src/powerSensor.c **** 	// Wait
+ 104:../src/powerSensor.c **** 	Delaynus(1000);
+ 583              		.loc 1 104 0
+ 584 020c 4FF47A70 		mov	r0, #1000
+ 585 0210 FFF7FEFF 		bl	Delaynus
+ 105:../src/powerSensor.c **** 	// Wait
+ 106:../src/powerSensor.c **** 	while(!USART_GetFlagStatus(USART1, USART_FLAG_TC))
+ 586              		.loc 1 106 0
+ 587 0214 00BF     		nop
+ 588              	.L11:
+ 589              		.loc 1 106 0 is_stmt 0 discriminator 1
+ 590 0216 4FF48050 		mov	r0, #4096
+ 591 021a C4F20100 		movt	r0, 16385
+ 592 021e 4FF04001 		mov	r1, #64
+ 593 0222 FFF7FEFF 		bl	USART_GetFlagStatus
+ 594 0226 0346     		mov	r3, r0
+ 595 0228 002B     		cmp	r3, #0
+ 596 022a F4D0     		beq	.L11
+ 107:../src/powerSensor.c **** 	{}
+ 108:../src/powerSensor.c **** 	// Send CRC
+ 109:../src/powerSensor.c **** 	USART_SendData(USART1, 0x72);
+ 597              		.loc 1 109 0 is_stmt 1
+ 598 022c 4FF48050 		mov	r0, #4096
+ 599 0230 C4F20100 		movt	r0, 16385
+ 600 0234 4FF07201 		mov	r1, #114
+ 601 0238 FFF7FEFF 		bl	USART_SendData
+ 110:../src/powerSensor.c **** 	// Wait for finish
+ 111:../src/powerSensor.c **** 	while(!USART_GetFlagStatus(USART1, USART_FLAG_TC))
+ 602              		.loc 1 111 0
+ 603 023c 00BF     		nop
+ 604              	.L12:
+ 605              		.loc 1 111 0 is_stmt 0 discriminator 1
+ 606 023e 4FF48050 		mov	r0, #4096
+ 607 0242 C4F20100 		movt	r0, 16385
+ 608 0246 4FF04001 		mov	r1, #64
+ 609 024a FFF7FEFF 		bl	USART_GetFlagStatus
+ 610 024e 0346     		mov	r3, r0
+ 611 0250 002B     		cmp	r3, #0
+ 612 0252 F4D0     		beq	.L12
+ 112:../src/powerSensor.c **** 	{}
+ 113:../src/powerSensor.c **** }
+ 613              		.loc 1 113 0 is_stmt 1
+ 614 0254 80BD     		pop	{r7, pc}
+ 615              		.cfi_endproc
+ 616              	.LFE113:
+ 618 0256 00BF     		.align	2
+ 619              		.global	processPSData
+ 620              		.thumb
+ 621              		.thumb_func
+ 623              	processPSData:
+ 624              	.LFB114:
+ 114:../src/powerSensor.c **** 
+ 115:../src/powerSensor.c **** void processPSData(void)
+ 116:../src/powerSensor.c **** {
+ 625              		.loc 1 116 0
+ 626              		.cfi_startproc
+ 627              		@ args = 0, pretend = 0, frame = 0
+ 628              		@ frame_needed = 1, uses_anonymous_args = 0
+ 629              		@ link register save eliminated.
+ 630 0258 80B4     		push	{r7}
+ 631              	.LCFI8:
+ 632              		.cfi_def_cfa_offset 4
+ 633              		.cfi_offset 7, -4
+ 634 025a 00AF     		add	r7, sp, #0
+ 635              	.LCFI9:
+ 636              		.cfi_def_cfa_register 7
+ 117:../src/powerSensor.c **** 	CURRENT = PS_DATA.data.Current;
+ 637              		.loc 1 117 0
+ 638 025c 40F20003 		movw	r3, #:lower16:PS_DATA
+ 639 0260 C0F20003 		movt	r3, #:upper16:PS_DATA
+ 640 0264 5A88     		ldrh	r2, [r3, #2]
+ 641 0266 40F20003 		movw	r3, #:lower16:MODBUSReg
+ 642 026a C0F20003 		movt	r3, #:upper16:MODBUSReg
+ 643 026e 9A86     		strh	r2, [r3, #52]	@ movhi
+ 118:../src/powerSensor.c **** 	MAH = PS_DATA.data.mAh;
+ 644              		.loc 1 118 0
+ 645 0270 40F20003 		movw	r3, #:lower16:PS_DATA
+ 646 0274 C0F20003 		movt	r3, #:upper16:PS_DATA
+ 647 0278 9A88     		ldrh	r2, [r3, #4]
+ 648 027a 40F20003 		movw	r3, #:lower16:MODBUSReg
+ 649 027e C0F20003 		movt	r3, #:upper16:MODBUSReg
+ 650 0282 DA86     		strh	r2, [r3, #54]	@ movhi
+ 119:../src/powerSensor.c **** 	VOLTAGE = PS_DATA.data.Voltage;
+ 651              		.loc 1 119 0
+ 652 0284 40F20003 		movw	r3, #:lower16:PS_DATA
+ 653 0288 C0F20003 		movt	r3, #:upper16:PS_DATA
+ 654 028c DA88     		ldrh	r2, [r3, #6]
+ 655 028e 40F20003 		movw	r3, #:lower16:MODBUSReg
+ 656 0292 C0F20003 		movt	r3, #:upper16:MODBUSReg
+ 657 0296 1A87     		strh	r2, [r3, #56]	@ movhi
+ 120:../src/powerSensor.c **** 	T1 = PS_DATA.data.T_1;
+ 658              		.loc 1 120 0
+ 659 0298 40F20003 		movw	r3, #:lower16:PS_DATA
+ 660 029c C0F20003 		movt	r3, #:upper16:PS_DATA
+ 661 02a0 1A89     		ldrh	r2, [r3, #8]
+ 662 02a2 40F20003 		movw	r3, #:lower16:MODBUSReg
+ 663 02a6 C0F20003 		movt	r3, #:upper16:MODBUSReg
+ 664 02aa 5A87     		strh	r2, [r3, #58]	@ movhi
+ 121:../src/powerSensor.c **** 	T2 = PS_DATA.data.T_2;
+ 665              		.loc 1 121 0
+ 666 02ac 40F20003 		movw	r3, #:lower16:PS_DATA
+ 667 02b0 C0F20003 		movt	r3, #:upper16:PS_DATA
+ 668 02b4 5A89     		ldrh	r2, [r3, #10]
+ 669 02b6 40F20003 		movw	r3, #:lower16:MODBUSReg
+ 670 02ba C0F20003 		movt	r3, #:upper16:MODBUSReg
+ 671 02be 9A87     		strh	r2, [r3, #60]	@ movhi
+ 122:../src/powerSensor.c **** 	T3 = PS_DATA.data.T_3;
+ 672              		.loc 1 122 0
+ 673 02c0 40F20003 		movw	r3, #:lower16:PS_DATA
+ 674 02c4 C0F20003 		movt	r3, #:upper16:PS_DATA
+ 675 02c8 9A89     		ldrh	r2, [r3, #12]
+ 676 02ca 40F20003 		movw	r3, #:lower16:MODBUSReg
+ 677 02ce C0F20003 		movt	r3, #:upper16:MODBUSReg
+ 678 02d2 DA87     		strh	r2, [r3, #62]	@ movhi
+ 123:../src/powerSensor.c **** 	PS_ReceiveStateVar = PS_IDLE;
+ 679              		.loc 1 123 0
+ 680 02d4 40F20003 		movw	r3, #:lower16:PS_ReceiveStateVar
+ 681 02d8 C0F20003 		movt	r3, #:upper16:PS_ReceiveStateVar
+ 682 02dc 4FF00002 		mov	r2, #0
+ 683 02e0 1A70     		strb	r2, [r3, #0]
+ 124:../src/powerSensor.c **** }
+ 684              		.loc 1 124 0
+ 685 02e2 BD46     		mov	sp, r7
+ 686 02e4 80BC     		pop	{r7}
+ 687 02e6 7047     		bx	lr
+ 688              		.cfi_endproc
+ 689              	.LFE114:
+ 691              		.align	2
+ 692              		.global	PowerSensorCommProcess
+ 693              		.thumb
+ 694              		.thumb_func
+ 696              	PowerSensorCommProcess:
+ 697              	.LFB115:
+ 125:../src/powerSensor.c **** 
+ 126:../src/powerSensor.c **** void PowerSensorCommProcess(uint8_t data)
+ 127:../src/powerSensor.c **** {
+ 698              		.loc 1 127 0
+ 699              		.cfi_startproc
+ 700              		@ args = 0, pretend = 0, frame = 8
+ 701              		@ frame_needed = 1, uses_anonymous_args = 0
+ 702 02e8 80B5     		push	{r7, lr}
+ 703              	.LCFI10:
+ 704              		.cfi_def_cfa_offset 8
+ 705              		.cfi_offset 14, -4
+ 706              		.cfi_offset 7, -8
+ 707 02ea 82B0     		sub	sp, sp, #8
+ 708              	.LCFI11:
+ 709              		.cfi_def_cfa_offset 16
+ 710 02ec 00AF     		add	r7, sp, #0
+ 711              	.LCFI12:
+ 712              		.cfi_def_cfa_register 7
+ 713 02ee 0346     		mov	r3, r0
+ 714 02f0 FB71     		strb	r3, [r7, #7]
+ 128:../src/powerSensor.c **** 	// Calculate CRC
+ 129:../src/powerSensor.c **** 	PS_CalculateCRC(data);
+ 715              		.loc 1 129 0
+ 716 02f2 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 717 02f4 1846     		mov	r0, r3
+ 718 02f6 FFF7FEFF 		bl	PS_CalculateCRC
+ 130:../src/powerSensor.c **** 	if(PS_ReceiveStateVar == PS_IDLE)
+ 719              		.loc 1 130 0
+ 720 02fa 40F20003 		movw	r3, #:lower16:PS_ReceiveStateVar
+ 721 02fe C0F20003 		movt	r3, #:upper16:PS_ReceiveStateVar
+ 722 0302 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 723 0304 002B     		cmp	r3, #0
+ 724 0306 33D1     		bne	.L15
+ 131:../src/powerSensor.c **** 	{
+ 132:../src/powerSensor.c **** 		#ifdef PS_ENABLETIMEOUT
+ 133:../src/powerSensor.c **** 		if(PS_TIMER < PS_3CHAR)
+ 725              		.loc 1 133 0
+ 726 0308 40F20003 		movw	r3, #:lower16:PS_TIMER
+ 727 030c C0F20003 		movt	r3, #:upper16:PS_TIMER
+ 728 0310 1B68     		ldr	r3, [r3, #0]
+ 729 0312 312B     		cmp	r3, #49
+ 730 0314 02DC     		bgt	.L16
+ 134:../src/powerSensor.c **** 		{
+ 135:../src/powerSensor.c **** 			data = 0;
+ 731              		.loc 1 135 0
+ 732 0316 4FF00003 		mov	r3, #0
+ 733 031a FB71     		strb	r3, [r7, #7]
+ 734              	.L16:
+ 136:../src/powerSensor.c **** 		}
+ 137:../src/powerSensor.c **** 		#endif
+ 138:../src/powerSensor.c **** 		if((data & 0xF0) == PS_SENSORID)
+ 735              		.loc 1 138 0
+ 736 031c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 737 031e 03F0F003 		and	r3, r3, #240
+ 738 0322 502B     		cmp	r3, #80
+ 739 0324 40F05381 		bne	.L17
+ 139:../src/powerSensor.c **** 		{
+ 140:../src/powerSensor.c **** 			// Initialize CRC
+ 141:../src/powerSensor.c **** 			PS_CRC = 0xFF;
+ 740              		.loc 1 141 0
+ 741 0328 40F20003 		movw	r3, #:lower16:PS_CRC
+ 742 032c C0F20003 		movt	r3, #:upper16:PS_CRC
+ 743 0330 4FF0FF02 		mov	r2, #255
+ 744 0334 1A70     		strb	r2, [r3, #0]
+ 142:../src/powerSensor.c **** 			// Calculate CRC
+ 143:../src/powerSensor.c **** 			PS_CalculateCRC(data);
+ 745              		.loc 1 143 0
+ 746 0336 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 747 0338 1846     		mov	r0, r3
+ 748 033a FFF7FEFF 		bl	PS_CalculateCRC
+ 144:../src/powerSensor.c **** 			// Store data
+ 145:../src/powerSensor.c **** 			PS_DATA.bytes.IDFCODE = data;
+ 749              		.loc 1 145 0
+ 750 033e 40F20003 		movw	r3, #:lower16:PS_DATA
+ 751 0342 C0F20003 		movt	r3, #:upper16:PS_DATA
+ 752 0346 1A78     		ldrb	r2, [r3, #0]
+ 753 0348 F979     		ldrb	r1, [r7, #7]
+ 754 034a 61F30702 		bfi	r2, r1, #0, #8
+ 755 034e 1A70     		strb	r2, [r3, #0]
+ 146:../src/powerSensor.c **** 			PS_ReceiveStateVar = PS_GETCURRENTLOW;
+ 756              		.loc 1 146 0
+ 757 0350 40F20003 		movw	r3, #:lower16:PS_ReceiveStateVar
+ 758 0354 C0F20003 		movt	r3, #:upper16:PS_ReceiveStateVar
+ 759 0358 4FF00202 		mov	r2, #2
+ 760 035c 1A70     		strb	r2, [r3, #0]
+ 147:../src/powerSensor.c **** 			// Mark not waiting for data anymore
+ 148:../src/powerSensor.c **** 			PS_WAITINGDATA = 0;
+ 761              		.loc 1 148 0
+ 762 035e 40F20003 		movw	r3, #:lower16:flag0
+ 763 0362 C0F20003 		movt	r3, #:upper16:flag0
+ 764 0366 1A78     		ldrb	r2, [r3, #0]
+ 765 0368 6FF38202 		bfc	r2, #2, #1
+ 766 036c 1A70     		strb	r2, [r3, #0]
+ 767 036e 2EE1     		b	.L17
+ 768              	.L15:
+ 149:../src/powerSensor.c **** 		}
+ 150:../src/powerSensor.c **** 	}
+ 151:../src/powerSensor.c **** 	else
+ 152:../src/powerSensor.c **** 	{
+ 153:../src/powerSensor.c **** 		#ifdef PS_ENABLETIMEOUT
+ 154:../src/powerSensor.c **** 		if(PS_TIMER > PS_1CHAR)
+ 769              		.loc 1 154 0
+ 770 0370 40F20003 		movw	r3, #:lower16:PS_TIMER
+ 771 0374 C0F20003 		movt	r3, #:upper16:PS_TIMER
+ 772 0378 1B68     		ldr	r3, [r3, #0]
+ 773 037a 0A2B     		cmp	r3, #10
+ 774 037c 09DD     		ble	.L18
+ 155:../src/powerSensor.c **** 		{
+ 156:../src/powerSensor.c **** 			data = 0;
+ 775              		.loc 1 156 0
+ 776 037e 4FF00003 		mov	r3, #0
+ 777 0382 FB71     		strb	r3, [r7, #7]
+ 157:../src/powerSensor.c **** 			PS_ReceiveStateVar = PS_IDLE;
+ 778              		.loc 1 157 0
+ 779 0384 40F20003 		movw	r3, #:lower16:PS_ReceiveStateVar
+ 780 0388 C0F20003 		movt	r3, #:upper16:PS_ReceiveStateVar
+ 781 038c 4FF00002 		mov	r2, #0
+ 782 0390 1A70     		strb	r2, [r3, #0]
+ 783              	.L18:
+ 158:../src/powerSensor.c **** 		}
+ 159:../src/powerSensor.c **** 		#endif
+ 160:../src/powerSensor.c **** 		switch(PS_ReceiveStateVar)
+ 784              		.loc 1 160 0
+ 785 0392 40F20003 		movw	r3, #:lower16:PS_ReceiveStateVar
+ 786 0396 C0F20003 		movt	r3, #:upper16:PS_ReceiveStateVar
+ 787 039a 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 788 039c 03F1FF33 		add	r3, r3, #-1
+ 789 03a0 0D2B     		cmp	r3, #13
+ 790 03a2 00F20B81 		bhi	.L19
+ 791 03a6 01A2     		adr	r2, .L34
+ 792 03a8 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+ 793              		.align	2
+ 794              	.L34:
+ 795 03ac 07040000 		.word	.L20+1
+ 796 03b0 E5030000 		.word	.L21+1
+ 797 03b4 4B040000 		.word	.L22+1
+ 798 03b8 29040000 		.word	.L23+1
+ 799 03bc 8F040000 		.word	.L24+1
+ 800 03c0 6D040000 		.word	.L25+1
+ 801 03c4 D3040000 		.word	.L26+1
+ 802 03c8 B1040000 		.word	.L27+1
+ 803 03cc 17050000 		.word	.L28+1
+ 804 03d0 F5040000 		.word	.L29+1
+ 805 03d4 5B050000 		.word	.L30+1
+ 806 03d8 39050000 		.word	.L31+1
+ 807 03dc 7D050000 		.word	.L32+1
+ 808 03e0 CD050000 		.word	.L37+1
+ 809              	.L21:
+ 161:../src/powerSensor.c **** 		{
+ 162:../src/powerSensor.c **** 			case PS_GETCURRENTLOW:
+ 163:../src/powerSensor.c **** 			{
+ 164:../src/powerSensor.c **** 				PS_DATA.bytes.CurrentLow = data;
+ 810              		.loc 1 164 0
+ 811 03e4 40F20003 		movw	r3, #:lower16:PS_DATA
+ 812 03e8 C0F20003 		movt	r3, #:upper16:PS_DATA
+ 813 03ec 9A78     		ldrb	r2, [r3, #2]
+ 814 03ee F979     		ldrb	r1, [r7, #7]
+ 815 03f0 61F30702 		bfi	r2, r1, #0, #8
+ 816 03f4 9A70     		strb	r2, [r3, #2]
+ 165:../src/powerSensor.c **** 				PS_ReceiveStateVar = PS_GETCURRENTHI;
+ 817              		.loc 1 165 0
+ 818 03f6 40F20003 		movw	r3, #:lower16:PS_ReceiveStateVar
+ 819 03fa C0F20003 		movt	r3, #:upper16:PS_ReceiveStateVar
+ 820 03fe 4FF00102 		mov	r2, #1
+ 821 0402 1A70     		strb	r2, [r3, #0]
+ 166:../src/powerSensor.c **** 				break;
+ 822              		.loc 1 166 0
+ 823 0404 E3E0     		b	.L17
+ 824              	.L20:
+ 167:../src/powerSensor.c **** 			}
+ 168:../src/powerSensor.c **** 			case PS_GETCURRENTHI:
+ 169:../src/powerSensor.c **** 			{
+ 170:../src/powerSensor.c **** 				PS_DATA.bytes.CurrentHi = data;
+ 825              		.loc 1 170 0
+ 826 0406 40F20003 		movw	r3, #:lower16:PS_DATA
+ 827 040a C0F20003 		movt	r3, #:upper16:PS_DATA
+ 828 040e DA78     		ldrb	r2, [r3, #3]
+ 829 0410 F979     		ldrb	r1, [r7, #7]
+ 830 0412 61F30702 		bfi	r2, r1, #0, #8
+ 831 0416 DA70     		strb	r2, [r3, #3]
+ 171:../src/powerSensor.c **** 				PS_ReceiveStateVar = PS_GETMAHLOW;
+ 832              		.loc 1 171 0
+ 833 0418 40F20003 		movw	r3, #:lower16:PS_ReceiveStateVar
+ 834 041c C0F20003 		movt	r3, #:upper16:PS_ReceiveStateVar
+ 835 0420 4FF00402 		mov	r2, #4
+ 836 0424 1A70     		strb	r2, [r3, #0]
+ 172:../src/powerSensor.c **** 				break;
+ 837              		.loc 1 172 0
+ 838 0426 D2E0     		b	.L17
+ 839              	.L23:
+ 173:../src/powerSensor.c **** 			}
+ 174:../src/powerSensor.c **** 			case PS_GETMAHLOW:
+ 175:../src/powerSensor.c **** 			{
+ 176:../src/powerSensor.c **** 				PS_DATA.bytes.mAhLow = data;
+ 840              		.loc 1 176 0
+ 841 0428 40F20003 		movw	r3, #:lower16:PS_DATA
+ 842 042c C0F20003 		movt	r3, #:upper16:PS_DATA
+ 843 0430 1A79     		ldrb	r2, [r3, #4]
+ 844 0432 F979     		ldrb	r1, [r7, #7]
+ 845 0434 61F30702 		bfi	r2, r1, #0, #8
+ 846 0438 1A71     		strb	r2, [r3, #4]
+ 177:../src/powerSensor.c **** 				PS_ReceiveStateVar = PS_GETMAHHI;
+ 847              		.loc 1 177 0
+ 848 043a 40F20003 		movw	r3, #:lower16:PS_ReceiveStateVar
+ 849 043e C0F20003 		movt	r3, #:upper16:PS_ReceiveStateVar
+ 850 0442 4FF00302 		mov	r2, #3
+ 851 0446 1A70     		strb	r2, [r3, #0]
+ 178:../src/powerSensor.c **** 				break;
+ 852              		.loc 1 178 0
+ 853 0448 C1E0     		b	.L17
+ 854              	.L22:
+ 179:../src/powerSensor.c **** 			}
+ 180:../src/powerSensor.c **** 			case PS_GETMAHHI:
+ 181:../src/powerSensor.c **** 			{
+ 182:../src/powerSensor.c **** 				PS_DATA.bytes.mAhHi = data;
+ 855              		.loc 1 182 0
+ 856 044a 40F20003 		movw	r3, #:lower16:PS_DATA
+ 857 044e C0F20003 		movt	r3, #:upper16:PS_DATA
+ 858 0452 5A79     		ldrb	r2, [r3, #5]
+ 859 0454 F979     		ldrb	r1, [r7, #7]
+ 860 0456 61F30702 		bfi	r2, r1, #0, #8
+ 861 045a 5A71     		strb	r2, [r3, #5]
+ 183:../src/powerSensor.c **** 				PS_ReceiveStateVar = PS_GETVOLTAGELOW;
+ 862              		.loc 1 183 0
+ 863 045c 40F20003 		movw	r3, #:lower16:PS_ReceiveStateVar
+ 864 0460 C0F20003 		movt	r3, #:upper16:PS_ReceiveStateVar
+ 865 0464 4FF00602 		mov	r2, #6
+ 866 0468 1A70     		strb	r2, [r3, #0]
+ 184:../src/powerSensor.c **** 				break;
+ 867              		.loc 1 184 0
+ 868 046a B0E0     		b	.L17
+ 869              	.L25:
+ 185:../src/powerSensor.c **** 			}
+ 186:../src/powerSensor.c **** 			case PS_GETVOLTAGELOW:
+ 187:../src/powerSensor.c **** 			{
+ 188:../src/powerSensor.c **** 				PS_DATA.bytes.VoltageLow = data;
+ 870              		.loc 1 188 0
+ 871 046c 40F20003 		movw	r3, #:lower16:PS_DATA
+ 872 0470 C0F20003 		movt	r3, #:upper16:PS_DATA
+ 873 0474 9A79     		ldrb	r2, [r3, #6]
+ 874 0476 F979     		ldrb	r1, [r7, #7]
+ 875 0478 61F30702 		bfi	r2, r1, #0, #8
+ 876 047c 9A71     		strb	r2, [r3, #6]
+ 189:../src/powerSensor.c **** 				PS_ReceiveStateVar = PS_GETVOLTAGEHI;
+ 877              		.loc 1 189 0
+ 878 047e 40F20003 		movw	r3, #:lower16:PS_ReceiveStateVar
+ 879 0482 C0F20003 		movt	r3, #:upper16:PS_ReceiveStateVar
+ 880 0486 4FF00502 		mov	r2, #5
+ 881 048a 1A70     		strb	r2, [r3, #0]
+ 190:../src/powerSensor.c **** 				break;
+ 882              		.loc 1 190 0
+ 883 048c 9FE0     		b	.L17
+ 884              	.L24:
+ 191:../src/powerSensor.c **** 			}
+ 192:../src/powerSensor.c **** 			case PS_GETVOLTAGEHI:
+ 193:../src/powerSensor.c **** 			{
+ 194:../src/powerSensor.c **** 				PS_DATA.bytes.VoltageHi = data;
+ 885              		.loc 1 194 0
+ 886 048e 40F20003 		movw	r3, #:lower16:PS_DATA
+ 887 0492 C0F20003 		movt	r3, #:upper16:PS_DATA
+ 888 0496 DA79     		ldrb	r2, [r3, #7]
+ 889 0498 F979     		ldrb	r1, [r7, #7]
+ 890 049a 61F30702 		bfi	r2, r1, #0, #8
+ 891 049e DA71     		strb	r2, [r3, #7]
+ 195:../src/powerSensor.c **** 				PS_ReceiveStateVar = PS_GETTEMP1LOW;
+ 892              		.loc 1 195 0
+ 893 04a0 40F20003 		movw	r3, #:lower16:PS_ReceiveStateVar
+ 894 04a4 C0F20003 		movt	r3, #:upper16:PS_ReceiveStateVar
+ 895 04a8 4FF00802 		mov	r2, #8
+ 896 04ac 1A70     		strb	r2, [r3, #0]
+ 196:../src/powerSensor.c **** 				break;
+ 897              		.loc 1 196 0
+ 898 04ae 8EE0     		b	.L17
+ 899              	.L27:
+ 197:../src/powerSensor.c **** 			}
+ 198:../src/powerSensor.c **** 			case PS_GETTEMP1LOW:
+ 199:../src/powerSensor.c **** 			{
+ 200:../src/powerSensor.c **** 				PS_DATA.bytes.T1Low = data;
+ 900              		.loc 1 200 0
+ 901 04b0 40F20003 		movw	r3, #:lower16:PS_DATA
+ 902 04b4 C0F20003 		movt	r3, #:upper16:PS_DATA
+ 903 04b8 1A7A     		ldrb	r2, [r3, #8]
+ 904 04ba F979     		ldrb	r1, [r7, #7]
+ 905 04bc 61F30702 		bfi	r2, r1, #0, #8
+ 906 04c0 1A72     		strb	r2, [r3, #8]
+ 201:../src/powerSensor.c **** 				PS_ReceiveStateVar = PS_GETTEMP1HI;
+ 907              		.loc 1 201 0
+ 908 04c2 40F20003 		movw	r3, #:lower16:PS_ReceiveStateVar
+ 909 04c6 C0F20003 		movt	r3, #:upper16:PS_ReceiveStateVar
+ 910 04ca 4FF00702 		mov	r2, #7
+ 911 04ce 1A70     		strb	r2, [r3, #0]
+ 202:../src/powerSensor.c **** 				break;
+ 912              		.loc 1 202 0
+ 913 04d0 7DE0     		b	.L17
+ 914              	.L26:
+ 203:../src/powerSensor.c **** 			}
+ 204:../src/powerSensor.c **** 			case PS_GETTEMP1HI:
+ 205:../src/powerSensor.c **** 			{
+ 206:../src/powerSensor.c **** 				PS_DATA.bytes.T1Hi = data;
+ 915              		.loc 1 206 0
+ 916 04d2 40F20003 		movw	r3, #:lower16:PS_DATA
+ 917 04d6 C0F20003 		movt	r3, #:upper16:PS_DATA
+ 918 04da 5A7A     		ldrb	r2, [r3, #9]
+ 919 04dc F979     		ldrb	r1, [r7, #7]
+ 920 04de 61F30702 		bfi	r2, r1, #0, #8
+ 921 04e2 5A72     		strb	r2, [r3, #9]
+ 207:../src/powerSensor.c **** 				PS_ReceiveStateVar = PS_GETTEMP2LOW;
+ 922              		.loc 1 207 0
+ 923 04e4 40F20003 		movw	r3, #:lower16:PS_ReceiveStateVar
+ 924 04e8 C0F20003 		movt	r3, #:upper16:PS_ReceiveStateVar
+ 925 04ec 4FF00A02 		mov	r2, #10
+ 926 04f0 1A70     		strb	r2, [r3, #0]
+ 208:../src/powerSensor.c **** 				break;
+ 927              		.loc 1 208 0
+ 928 04f2 6CE0     		b	.L17
+ 929              	.L29:
+ 209:../src/powerSensor.c **** 			}
+ 210:../src/powerSensor.c **** 			case PS_GETTEMP2LOW:
+ 211:../src/powerSensor.c **** 			{
+ 212:../src/powerSensor.c **** 				PS_DATA.bytes.T2Low = data;
+ 930              		.loc 1 212 0
+ 931 04f4 40F20003 		movw	r3, #:lower16:PS_DATA
+ 932 04f8 C0F20003 		movt	r3, #:upper16:PS_DATA
+ 933 04fc 9A7A     		ldrb	r2, [r3, #10]
+ 934 04fe F979     		ldrb	r1, [r7, #7]
+ 935 0500 61F30702 		bfi	r2, r1, #0, #8
+ 936 0504 9A72     		strb	r2, [r3, #10]
+ 213:../src/powerSensor.c **** 				PS_ReceiveStateVar = PS_GETTEMP2HI;
+ 937              		.loc 1 213 0
+ 938 0506 40F20003 		movw	r3, #:lower16:PS_ReceiveStateVar
+ 939 050a C0F20003 		movt	r3, #:upper16:PS_ReceiveStateVar
+ 940 050e 4FF00902 		mov	r2, #9
+ 941 0512 1A70     		strb	r2, [r3, #0]
+ 214:../src/powerSensor.c **** 				break;
+ 942              		.loc 1 214 0
+ 943 0514 5BE0     		b	.L17
+ 944              	.L28:
+ 215:../src/powerSensor.c **** 			}
+ 216:../src/powerSensor.c **** 			case PS_GETTEMP2HI:
+ 217:../src/powerSensor.c **** 			{
+ 218:../src/powerSensor.c **** 				PS_DATA.bytes.T2Hi = data;
+ 945              		.loc 1 218 0
+ 946 0516 40F20003 		movw	r3, #:lower16:PS_DATA
+ 947 051a C0F20003 		movt	r3, #:upper16:PS_DATA
+ 948 051e DA7A     		ldrb	r2, [r3, #11]
+ 949 0520 F979     		ldrb	r1, [r7, #7]
+ 950 0522 61F30702 		bfi	r2, r1, #0, #8
+ 951 0526 DA72     		strb	r2, [r3, #11]
+ 219:../src/powerSensor.c **** 				PS_ReceiveStateVar = PS_GETTEMP3LOW;
+ 952              		.loc 1 219 0
+ 953 0528 40F20003 		movw	r3, #:lower16:PS_ReceiveStateVar
+ 954 052c C0F20003 		movt	r3, #:upper16:PS_ReceiveStateVar
+ 955 0530 4FF00C02 		mov	r2, #12
+ 956 0534 1A70     		strb	r2, [r3, #0]
+ 220:../src/powerSensor.c **** 				break;
+ 957              		.loc 1 220 0
+ 958 0536 4AE0     		b	.L17
+ 959              	.L31:
+ 221:../src/powerSensor.c **** 			}
+ 222:../src/powerSensor.c **** 			case PS_GETTEMP3LOW:
+ 223:../src/powerSensor.c **** 			{
+ 224:../src/powerSensor.c **** 				PS_DATA.bytes.T3Low = data;
+ 960              		.loc 1 224 0
+ 961 0538 40F20003 		movw	r3, #:lower16:PS_DATA
+ 962 053c C0F20003 		movt	r3, #:upper16:PS_DATA
+ 963 0540 1A7B     		ldrb	r2, [r3, #12]
+ 964 0542 F979     		ldrb	r1, [r7, #7]
+ 965 0544 61F30702 		bfi	r2, r1, #0, #8
+ 966 0548 1A73     		strb	r2, [r3, #12]
+ 225:../src/powerSensor.c **** 				PS_ReceiveStateVar = PS_GETTEMP3HI;
+ 967              		.loc 1 225 0
+ 968 054a 40F20003 		movw	r3, #:lower16:PS_ReceiveStateVar
+ 969 054e C0F20003 		movt	r3, #:upper16:PS_ReceiveStateVar
+ 970 0552 4FF00B02 		mov	r2, #11
+ 971 0556 1A70     		strb	r2, [r3, #0]
+ 226:../src/powerSensor.c **** 				break;
+ 972              		.loc 1 226 0
+ 973 0558 39E0     		b	.L17
+ 974              	.L30:
+ 227:../src/powerSensor.c **** 			}
+ 228:../src/powerSensor.c **** 			case PS_GETTEMP3HI:
+ 229:../src/powerSensor.c **** 			{
+ 230:../src/powerSensor.c **** 				PS_DATA.bytes.T3Hi = data;
+ 975              		.loc 1 230 0
+ 976 055a 40F20003 		movw	r3, #:lower16:PS_DATA
+ 977 055e C0F20003 		movt	r3, #:upper16:PS_DATA
+ 978 0562 5A7B     		ldrb	r2, [r3, #13]
+ 979 0564 F979     		ldrb	r1, [r7, #7]
+ 980 0566 61F30702 		bfi	r2, r1, #0, #8
+ 981 056a 5A73     		strb	r2, [r3, #13]
+ 231:../src/powerSensor.c **** 				PS_ReceiveStateVar = PS_GETCRC;
+ 982              		.loc 1 231 0
+ 983 056c 40F20003 		movw	r3, #:lower16:PS_ReceiveStateVar
+ 984 0570 C0F20003 		movt	r3, #:upper16:PS_ReceiveStateVar
+ 985 0574 4FF00D02 		mov	r2, #13
+ 986 0578 1A70     		strb	r2, [r3, #0]
+ 232:../src/powerSensor.c **** 				break;
+ 987              		.loc 1 232 0
+ 988 057a 28E0     		b	.L17
+ 989              	.L32:
+ 233:../src/powerSensor.c **** 			}
+ 234:../src/powerSensor.c **** 			case PS_GETCRC:
+ 235:../src/powerSensor.c **** 			{
+ 236:../src/powerSensor.c **** 				PS_DATA.bytes.PSCRC = data;
+ 990              		.loc 1 236 0
+ 991 057c 40F20003 		movw	r3, #:lower16:PS_DATA
+ 992 0580 C0F20003 		movt	r3, #:upper16:PS_DATA
+ 993 0584 5A78     		ldrb	r2, [r3, #1]
+ 994 0586 F979     		ldrb	r1, [r7, #7]
+ 995 0588 61F30702 		bfi	r2, r1, #0, #8
+ 996 058c 5A70     		strb	r2, [r3, #1]
+ 237:../src/powerSensor.c **** 				// Check CRC
+ 238:../src/powerSensor.c **** 				if(PS_CRC == 0)
+ 997              		.loc 1 238 0
+ 998 058e 40F20003 		movw	r3, #:lower16:PS_CRC
+ 999 0592 C0F20003 		movt	r3, #:upper16:PS_CRC
+ 1000 0596 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1001 0598 002B     		cmp	r3, #0
+ 1002 059a 07D1     		bne	.L35
+ 239:../src/powerSensor.c **** 				{
+ 240:../src/powerSensor.c **** 					// CRC is OK
+ 241:../src/powerSensor.c **** 					PS_ReceiveStateVar = PS_DATAREADY;
+ 1003              		.loc 1 241 0
+ 1004 059c 40F20003 		movw	r3, #:lower16:PS_ReceiveStateVar
+ 1005 05a0 C0F20003 		movt	r3, #:upper16:PS_ReceiveStateVar
+ 1006 05a4 4FF00E02 		mov	r2, #14
+ 1007 05a8 1A70     		strb	r2, [r3, #0]
+ 242:../src/powerSensor.c **** 				}
+ 243:../src/powerSensor.c **** 				else
+ 244:../src/powerSensor.c **** 				{
+ 245:../src/powerSensor.c **** 					PS_ReceiveStateVar = PS_IDLE;
+ 246:../src/powerSensor.c **** 				}
+ 247:../src/powerSensor.c **** 				break;
+ 1008              		.loc 1 247 0
+ 1009 05aa 10E0     		b	.L17
+ 1010              	.L35:
+ 245:../src/powerSensor.c **** 					PS_ReceiveStateVar = PS_IDLE;
+ 1011              		.loc 1 245 0
+ 1012 05ac 40F20003 		movw	r3, #:lower16:PS_ReceiveStateVar
+ 1013 05b0 C0F20003 		movt	r3, #:upper16:PS_ReceiveStateVar
+ 1014 05b4 4FF00002 		mov	r2, #0
+ 1015 05b8 1A70     		strb	r2, [r3, #0]
+ 1016              		.loc 1 247 0
+ 1017 05ba 08E0     		b	.L17
+ 1018              	.L19:
+ 248:../src/powerSensor.c **** 			}
+ 249:../src/powerSensor.c **** 			case PS_DATAREADY:
+ 250:../src/powerSensor.c **** 			{
+ 251:../src/powerSensor.c **** 				break;
+ 252:../src/powerSensor.c **** 			}
+ 253:../src/powerSensor.c **** 			default:
+ 254:../src/powerSensor.c **** 			{
+ 255:../src/powerSensor.c **** 				PS_ReceiveStateVar = PS_IDLE;
+ 1019              		.loc 1 255 0
+ 1020 05bc 40F20003 		movw	r3, #:lower16:PS_ReceiveStateVar
+ 1021 05c0 C0F20003 		movt	r3, #:upper16:PS_ReceiveStateVar
+ 1022 05c4 4FF00002 		mov	r2, #0
+ 1023 05c8 1A70     		strb	r2, [r3, #0]
+ 256:../src/powerSensor.c **** 				break;
+ 1024              		.loc 1 256 0
+ 1025 05ca 00E0     		b	.L17
+ 1026              	.L37:
+ 251:../src/powerSensor.c **** 				break;
+ 1027              		.loc 1 251 0
+ 1028 05cc 00BF     		nop
+ 1029              	.L17:
+ 257:../src/powerSensor.c **** 			}
+ 258:../src/powerSensor.c **** 		}
+ 259:../src/powerSensor.c **** 	}
+ 260:../src/powerSensor.c **** #ifdef PS_ENABLETIMEOUT
+ 261:../src/powerSensor.c **** 	// Reset timeout timer
+ 262:../src/powerSensor.c **** 	PS_TIMER = 0;
+ 1030              		.loc 1 262 0
+ 1031 05ce 40F20003 		movw	r3, #:lower16:PS_TIMER
+ 1032 05d2 C0F20003 		movt	r3, #:upper16:PS_TIMER
+ 1033 05d6 4FF00002 		mov	r2, #0
+ 1034 05da 1A60     		str	r2, [r3, #0]
+ 263:../src/powerSensor.c **** #endif
+ 264:../src/powerSensor.c **** }
+ 1035              		.loc 1 264 0
+ 1036 05dc 07F10807 		add	r7, r7, #8
+ 1037 05e0 BD46     		mov	sp, r7
+ 1038 05e2 80BD     		pop	{r7, pc}
+ 1039              		.cfi_endproc
+ 1040              	.LFE115:
+ 1042              		.align	2
+ 1043              		.global	PS_CalculateCRC
+ 1044              		.thumb
+ 1045              		.thumb_func
+ 1047              	PS_CalculateCRC:
+ 1048              	.LFB116:
+ 265:../src/powerSensor.c **** 
+ 266:../src/powerSensor.c **** void PS_CalculateCRC(uint8_t data)
+ 267:../src/powerSensor.c **** {
+ 1049              		.loc 1 267 0
+ 1050              		.cfi_startproc
+ 1051              		@ args = 0, pretend = 0, frame = 8
+ 1052              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1053              		@ link register save eliminated.
+ 1054 05e4 80B4     		push	{r7}
+ 1055              	.LCFI13:
+ 1056              		.cfi_def_cfa_offset 4
+ 1057              		.cfi_offset 7, -4
+ 1058 05e6 83B0     		sub	sp, sp, #12
+ 1059              	.LCFI14:
+ 1060              		.cfi_def_cfa_offset 16
+ 1061 05e8 00AF     		add	r7, sp, #0
+ 1062              	.LCFI15:
+ 1063              		.cfi_def_cfa_register 7
+ 1064 05ea 0346     		mov	r3, r0
+ 1065 05ec FB71     		strb	r3, [r7, #7]
+ 268:../src/powerSensor.c **** 	PS_CRC = (uint8_t)crc8_Table[PS_CRC ^ data];
+ 1066              		.loc 1 268 0
+ 1067 05ee 40F20003 		movw	r3, #:lower16:PS_CRC
+ 1068 05f2 C0F20003 		movt	r3, #:upper16:PS_CRC
+ 1069 05f6 1A78     		ldrb	r2, [r3, #0]	@ zero_extendqisi2
+ 1070 05f8 FB79     		ldrb	r3, [r7, #7]
+ 1071 05fa 5340     		eors	r3, r3, r2
+ 1072 05fc DBB2     		uxtb	r3, r3
+ 1073 05fe 1A46     		mov	r2, r3
+ 1074 0600 40F20003 		movw	r3, #:lower16:crc8_Table
+ 1075 0604 C0F20003 		movt	r3, #:upper16:crc8_Table
+ 1076 0608 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 1077 060c DAB2     		uxtb	r2, r3
+ 1078 060e 40F20003 		movw	r3, #:lower16:PS_CRC
+ 1079 0612 C0F20003 		movt	r3, #:upper16:PS_CRC
+ 1080 0616 1A70     		strb	r2, [r3, #0]
+ 269:../src/powerSensor.c **** }
+ 1081              		.loc 1 269 0
+ 1082 0618 07F10C07 		add	r7, r7, #12
+ 1083 061c BD46     		mov	sp, r7
+ 1084 061e 80BC     		pop	{r7}
+ 1085 0620 7047     		bx	lr
+ 1086              		.cfi_endproc
+ 1087              	.LFE116:
+ 1089              	.Letext0:
+ 1090              		.file 2 "c:\\program files (x86)\\codesourcery\\eabi\\bin\\../lib/gcc/arm-none-eabi/4.6.3/../../..
+ 1091              		.file 3 "C:\\Users\\Jure\\workspace\\TemplateProject\\Libraries\\Device\\STM32F4xx\\Include/stm32f
+ 1092              		.file 4 "../src/var.h"
+ 1093              		.file 5 "../src/powerSensor.h"
+ 1094              		.file 6 "C:\\Users\\Jure\\workspace\\TemplateProject\\Libraries\\CMSIS\\Include/core_cm4.h"
+ 1095              		.file 7 "../src/modbus.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 powerSensor.c
+C:\Users\Jure\AppData\Local\Temp\ccXLABVj.s:23     .rodata:00000000 crc8_Table
+C:\Users\Jure\AppData\Local\Temp\ccXLABVj.s:20     .rodata:00000000 $d
+                            *COM*:00000001 PS_CRC
+C:\Users\Jure\AppData\Local\Temp\ccXLABVj.s:285    .bss:00000000 PS_ReceiveStateVar
+C:\Users\Jure\AppData\Local\Temp\ccXLABVj.s:286    .bss:00000000 $d
+C:\Users\Jure\AppData\Local\Temp\ccXLABVj.s:291    .bss:00000004 PS_TIMER
+                            *COM*:00000010 PS_DATA
+C:\Users\Jure\AppData\Local\Temp\ccXLABVj.s:298    .bss:00000008 PS_PollTimer
+C:\Users\Jure\AppData\Local\Temp\ccXLABVj.s:301    .text:00000000 $t
+C:\Users\Jure\AppData\Local\Temp\ccXLABVj.s:306    .text:00000000 PS_Timer
+C:\Users\Jure\AppData\Local\Temp\ccXLABVj.s:434    .text:00000114 PSRequestData
+C:\Users\Jure\AppData\Local\Temp\ccXLABVj.s:499    .text:00000188 PSSetI0
+C:\Users\Jure\AppData\Local\Temp\ccXLABVj.s:558    .text:000001e8 PSReset
+C:\Users\Jure\AppData\Local\Temp\ccXLABVj.s:623    .text:00000258 processPSData
+C:\Users\Jure\AppData\Local\Temp\ccXLABVj.s:696    .text:000002e8 PowerSensorCommProcess
+C:\Users\Jure\AppData\Local\Temp\ccXLABVj.s:1047   .text:000005e4 PS_CalculateCRC
+C:\Users\Jure\AppData\Local\Temp\ccXLABVj.s:795    .text:000003ac $d
+C:\Users\Jure\AppData\Local\Temp\ccXLABVj.s:811    .text:000003e4 $t
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+flag0
+MODBUSReg
+USART_SendData
+USART_GetFlagStatus
+Delaynus

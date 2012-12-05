@@ -1,0 +1,932 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"functions.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.align	2
+  19              		.global	NVIC_EnableInterrupts
+  20              		.thumb
+  21              		.thumb_func
+  23              	NVIC_EnableInterrupts:
+  24              	.LFB110:
+  25              		.file 1 "../src/functions.c"
+   1:../src/functions.c **** /*
+   2:../src/functions.c ****  * functions.c
+   3:../src/functions.c ****  *
+   4:../src/functions.c ****  *  Created on: Oct 7, 2012
+   5:../src/functions.c ****  *      Author: Jure
+   6:../src/functions.c ****  */
+   7:../src/functions.c **** #include "allinclude.h"
+   8:../src/functions.c **** 
+   9:../src/functions.c **** void NVIC_EnableInterrupts(FunctionalState newState)
+  10:../src/functions.c **** {
+  26              		.loc 1 10 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 16
+  29              		@ frame_needed = 1, uses_anonymous_args = 0
+  30 0000 80B5     		push	{r7, lr}
+  31              	.LCFI0:
+  32              		.cfi_def_cfa_offset 8
+  33              		.cfi_offset 14, -4
+  34              		.cfi_offset 7, -8
+  35 0002 84B0     		sub	sp, sp, #16
+  36              	.LCFI1:
+  37              		.cfi_def_cfa_offset 24
+  38 0004 00AF     		add	r7, sp, #0
+  39              	.LCFI2:
+  40              		.cfi_def_cfa_register 7
+  41 0006 0346     		mov	r3, r0
+  42 0008 FB71     		strb	r3, [r7, #7]
+  11:../src/functions.c **** 	//interrupt controller
+  12:../src/functions.c **** 	NVIC_InitTypeDef NVCInitStructure;
+  13:../src/functions.c **** 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
+  43              		.loc 1 13 0
+  44 000a 4FF4E060 		mov	r0, #1792
+  45 000e FFF7FEFF 		bl	NVIC_PriorityGroupConfig
+  14:../src/functions.c **** 	//init ADC interrupt
+  15:../src/functions.c **** 	//set IRQ channel
+  16:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannel = ADC_IRQn;
+  46              		.loc 1 16 0
+  47 0012 4FF01203 		mov	r3, #18
+  48 0016 3B73     		strb	r3, [r7, #12]
+  17:../src/functions.c **** 	//set priority 0 - 15
+  18:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+  49              		.loc 1 18 0
+  50 0018 4FF00F03 		mov	r3, #15
+  51 001c 7B73     		strb	r3, [r7, #13]
+  19:../src/functions.c **** 	//set priority 0 - 15
+  20:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+  52              		.loc 1 20 0
+  53 001e 4FF00F03 		mov	r3, #15
+  54 0022 BB73     		strb	r3, [r7, #14]
+  21:../src/functions.c **** 	//enable IRQ channel
+  22:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
+  55              		.loc 1 22 0
+  56 0024 FB79     		ldrb	r3, [r7, #7]
+  57 0026 FB73     		strb	r3, [r7, #15]
+  23:../src/functions.c **** 	NVIC_Init(&NVCInitStructure);
+  58              		.loc 1 23 0
+  59 0028 07F10C03 		add	r3, r7, #12
+  60 002c 1846     		mov	r0, r3
+  61 002e FFF7FEFF 		bl	NVIC_Init
+  24:../src/functions.c **** 
+  25:../src/functions.c **** 	//init USART1 interrupt
+  26:../src/functions.c **** 	//set IRQ channel
+  27:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannel = USART1_IRQn;
+  62              		.loc 1 27 0
+  63 0032 4FF02503 		mov	r3, #37
+  64 0036 3B73     		strb	r3, [r7, #12]
+  28:../src/functions.c **** 	//set priority 0 - 15
+  29:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+  65              		.loc 1 29 0
+  66 0038 4FF00F03 		mov	r3, #15
+  67 003c 7B73     		strb	r3, [r7, #13]
+  30:../src/functions.c **** 	//set priority 0 - 15
+  31:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+  68              		.loc 1 31 0
+  69 003e 4FF00F03 		mov	r3, #15
+  70 0042 BB73     		strb	r3, [r7, #14]
+  32:../src/functions.c **** 	//enable IRQ channel
+  33:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
+  71              		.loc 1 33 0
+  72 0044 FB79     		ldrb	r3, [r7, #7]
+  73 0046 FB73     		strb	r3, [r7, #15]
+  34:../src/functions.c **** 	NVIC_Init(&NVCInitStructure);
+  74              		.loc 1 34 0
+  75 0048 07F10C03 		add	r3, r7, #12
+  76 004c 1846     		mov	r0, r3
+  77 004e FFF7FEFF 		bl	NVIC_Init
+  35:../src/functions.c **** 
+  36:../src/functions.c **** 	//init USART2 interrupt
+  37:../src/functions.c **** 	//set IRQ channel
+  38:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannel = USART2_IRQn;
+  78              		.loc 1 38 0
+  79 0052 4FF02603 		mov	r3, #38
+  80 0056 3B73     		strb	r3, [r7, #12]
+  39:../src/functions.c **** 	//set priority 0 - 15
+  40:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+  81              		.loc 1 40 0
+  82 0058 4FF00F03 		mov	r3, #15
+  83 005c 7B73     		strb	r3, [r7, #13]
+  41:../src/functions.c **** 	//set priority 0 - 15
+  42:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+  84              		.loc 1 42 0
+  85 005e 4FF00F03 		mov	r3, #15
+  86 0062 BB73     		strb	r3, [r7, #14]
+  43:../src/functions.c **** 	//enable IRQ channel
+  44:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
+  87              		.loc 1 44 0
+  88 0064 FB79     		ldrb	r3, [r7, #7]
+  89 0066 FB73     		strb	r3, [r7, #15]
+  45:../src/functions.c **** 	NVIC_Init(&NVCInitStructure);
+  90              		.loc 1 45 0
+  91 0068 07F10C03 		add	r3, r7, #12
+  92 006c 1846     		mov	r0, r3
+  93 006e FFF7FEFF 		bl	NVIC_Init
+  46:../src/functions.c **** 
+  47:../src/functions.c **** 	//init USART3 interrupt
+  48:../src/functions.c **** 	//set IRQ channel
+  49:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannel = USART3_IRQn;
+  94              		.loc 1 49 0
+  95 0072 4FF02703 		mov	r3, #39
+  96 0076 3B73     		strb	r3, [r7, #12]
+  50:../src/functions.c **** 	//set priority 0 - 15
+  51:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+  97              		.loc 1 51 0
+  98 0078 4FF00F03 		mov	r3, #15
+  99 007c 7B73     		strb	r3, [r7, #13]
+  52:../src/functions.c **** 	//set priority 0 - 15
+  53:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+ 100              		.loc 1 53 0
+ 101 007e 4FF00F03 		mov	r3, #15
+ 102 0082 BB73     		strb	r3, [r7, #14]
+  54:../src/functions.c **** 	//enable IRQ channel
+  55:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
+ 103              		.loc 1 55 0
+ 104 0084 FB79     		ldrb	r3, [r7, #7]
+ 105 0086 FB73     		strb	r3, [r7, #15]
+  56:../src/functions.c **** 	NVIC_Init(&NVCInitStructure);
+ 106              		.loc 1 56 0
+ 107 0088 07F10C03 		add	r3, r7, #12
+ 108 008c 1846     		mov	r0, r3
+ 109 008e FFF7FEFF 		bl	NVIC_Init
+  57:../src/functions.c **** 
+  58:../src/functions.c **** 	//init DMA1 stream3 interrupt
+  59:../src/functions.c **** 	//set IRQ channel
+  60:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannel = DMA1_Stream3_IRQn;
+ 110              		.loc 1 60 0
+ 111 0092 4FF00E03 		mov	r3, #14
+ 112 0096 3B73     		strb	r3, [r7, #12]
+  61:../src/functions.c **** 	//set priority 0 - 15
+  62:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+ 113              		.loc 1 62 0
+ 114 0098 4FF00F03 		mov	r3, #15
+ 115 009c 7B73     		strb	r3, [r7, #13]
+  63:../src/functions.c **** 	//set priority 0 - 15
+  64:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+ 116              		.loc 1 64 0
+ 117 009e 4FF00F03 		mov	r3, #15
+ 118 00a2 BB73     		strb	r3, [r7, #14]
+  65:../src/functions.c **** 	//enable IRQ channel
+  66:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
+ 119              		.loc 1 66 0
+ 120 00a4 FB79     		ldrb	r3, [r7, #7]
+ 121 00a6 FB73     		strb	r3, [r7, #15]
+  67:../src/functions.c **** 	NVIC_Init(&NVCInitStructure);
+ 122              		.loc 1 67 0
+ 123 00a8 07F10C03 		add	r3, r7, #12
+ 124 00ac 1846     		mov	r0, r3
+ 125 00ae FFF7FEFF 		bl	NVIC_Init
+  68:../src/functions.c **** 
+  69:../src/functions.c **** 	//init DMA1 stream4 interrupt
+  70:../src/functions.c **** 	//set IRQ channel
+  71:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannel = DMA1_Stream4_IRQn;
+ 126              		.loc 1 71 0
+ 127 00b2 4FF00F03 		mov	r3, #15
+ 128 00b6 3B73     		strb	r3, [r7, #12]
+  72:../src/functions.c **** 	//set priority 0 - 15
+  73:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+ 129              		.loc 1 73 0
+ 130 00b8 4FF00F03 		mov	r3, #15
+ 131 00bc 7B73     		strb	r3, [r7, #13]
+  74:../src/functions.c **** 	//set priority 0 - 15
+  75:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+ 132              		.loc 1 75 0
+ 133 00be 4FF00F03 		mov	r3, #15
+ 134 00c2 BB73     		strb	r3, [r7, #14]
+  76:../src/functions.c **** 	//enable IRQ channel
+  77:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
+ 135              		.loc 1 77 0
+ 136 00c4 FB79     		ldrb	r3, [r7, #7]
+ 137 00c6 FB73     		strb	r3, [r7, #15]
+  78:../src/functions.c **** 	NVIC_Init(&NVCInitStructure);
+ 138              		.loc 1 78 0
+ 139 00c8 07F10C03 		add	r3, r7, #12
+ 140 00cc 1846     		mov	r0, r3
+ 141 00ce FFF7FEFF 		bl	NVIC_Init
+  79:../src/functions.c **** 
+  80:../src/functions.c **** 	//init DMA1 stream6 interrupt
+  81:../src/functions.c **** 	//set IRQ channel
+  82:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannel = DMA1_Stream6_IRQn;
+ 142              		.loc 1 82 0
+ 143 00d2 4FF01103 		mov	r3, #17
+ 144 00d6 3B73     		strb	r3, [r7, #12]
+  83:../src/functions.c **** 	//set priority 0 - 15
+  84:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+ 145              		.loc 1 84 0
+ 146 00d8 4FF00F03 		mov	r3, #15
+ 147 00dc 7B73     		strb	r3, [r7, #13]
+  85:../src/functions.c **** 	//set priority 0 - 15
+  86:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+ 148              		.loc 1 86 0
+ 149 00de 4FF00F03 		mov	r3, #15
+ 150 00e2 BB73     		strb	r3, [r7, #14]
+  87:../src/functions.c **** 	//enable IRQ channel
+  88:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
+ 151              		.loc 1 88 0
+ 152 00e4 FB79     		ldrb	r3, [r7, #7]
+ 153 00e6 FB73     		strb	r3, [r7, #15]
+  89:../src/functions.c **** 	NVIC_Init(&NVCInitStructure);
+ 154              		.loc 1 89 0
+ 155 00e8 07F10C03 		add	r3, r7, #12
+ 156 00ec 1846     		mov	r0, r3
+ 157 00ee FFF7FEFF 		bl	NVIC_Init
+  90:../src/functions.c **** 
+  91:../src/functions.c **** 	//init TIM4 interrupt
+  92:../src/functions.c **** 	//set IRQ channel
+  93:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannel = TIM4_IRQn;
+ 158              		.loc 1 93 0
+ 159 00f2 4FF01E03 		mov	r3, #30
+ 160 00f6 3B73     		strb	r3, [r7, #12]
+  94:../src/functions.c **** 	//set priority 0 - 15
+  95:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+ 161              		.loc 1 95 0
+ 162 00f8 4FF00F03 		mov	r3, #15
+ 163 00fc 7B73     		strb	r3, [r7, #13]
+  96:../src/functions.c **** 	//set priority 0 - 15
+  97:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+ 164              		.loc 1 97 0
+ 165 00fe 4FF00F03 		mov	r3, #15
+ 166 0102 BB73     		strb	r3, [r7, #14]
+  98:../src/functions.c **** 	//enable IRQ channel
+  99:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
+ 167              		.loc 1 99 0
+ 168 0104 FB79     		ldrb	r3, [r7, #7]
+ 169 0106 FB73     		strb	r3, [r7, #15]
+ 100:../src/functions.c **** 	NVIC_Init(&NVCInitStructure);
+ 170              		.loc 1 100 0
+ 171 0108 07F10C03 		add	r3, r7, #12
+ 172 010c 1846     		mov	r0, r3
+ 173 010e FFF7FEFF 		bl	NVIC_Init
+ 101:../src/functions.c **** 
+ 102:../src/functions.c **** 	//init TIM8 interrupt
+ 103:../src/functions.c **** 	//set IRQ channel
+ 104:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannel = TIM8_CC_IRQn;
+ 174              		.loc 1 104 0
+ 175 0112 4FF02E03 		mov	r3, #46
+ 176 0116 3B73     		strb	r3, [r7, #12]
+ 105:../src/functions.c **** 	//set priority 0 - 15
+ 106:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+ 177              		.loc 1 106 0
+ 178 0118 4FF00F03 		mov	r3, #15
+ 179 011c 7B73     		strb	r3, [r7, #13]
+ 107:../src/functions.c **** 	//set priority 0 - 15
+ 108:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+ 180              		.loc 1 108 0
+ 181 011e 4FF00F03 		mov	r3, #15
+ 182 0122 BB73     		strb	r3, [r7, #14]
+ 109:../src/functions.c **** 	//enable IRQ channel
+ 110:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
+ 183              		.loc 1 110 0
+ 184 0124 FB79     		ldrb	r3, [r7, #7]
+ 185 0126 FB73     		strb	r3, [r7, #15]
+ 111:../src/functions.c **** 	NVIC_Init(&NVCInitStructure);
+ 186              		.loc 1 111 0
+ 187 0128 07F10C03 		add	r3, r7, #12
+ 188 012c 1846     		mov	r0, r3
+ 189 012e FFF7FEFF 		bl	NVIC_Init
+ 112:../src/functions.c **** 
+ 113:../src/functions.c **** 	//init TIM14 interrupt
+ 114:../src/functions.c **** 	//set IRQ channel
+ 115:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannel = TIM8_TRG_COM_TIM14_IRQn;
+ 190              		.loc 1 115 0
+ 191 0132 4FF02D03 		mov	r3, #45
+ 192 0136 3B73     		strb	r3, [r7, #12]
+ 116:../src/functions.c **** 	//set priority 0 - 15
+ 117:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+ 193              		.loc 1 117 0
+ 194 0138 4FF00F03 		mov	r3, #15
+ 195 013c 7B73     		strb	r3, [r7, #13]
+ 118:../src/functions.c **** 	//set priority 0 - 15
+ 119:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+ 196              		.loc 1 119 0
+ 197 013e 4FF00F03 		mov	r3, #15
+ 198 0142 BB73     		strb	r3, [r7, #14]
+ 120:../src/functions.c **** 	//enable IRQ channel
+ 121:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
+ 199              		.loc 1 121 0
+ 200 0144 FB79     		ldrb	r3, [r7, #7]
+ 201 0146 FB73     		strb	r3, [r7, #15]
+ 122:../src/functions.c **** 	NVIC_Init(&NVCInitStructure);
+ 202              		.loc 1 122 0
+ 203 0148 07F10C03 		add	r3, r7, #12
+ 204 014c 1846     		mov	r0, r3
+ 205 014e FFF7FEFF 		bl	NVIC_Init
+ 123:../src/functions.c **** 
+ 124:../src/functions.c **** 	//init I2C2 interrupt
+ 125:../src/functions.c **** 	//set IRQ channel
+ 126:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannel = I2C2_EV_IRQn;
+ 206              		.loc 1 126 0
+ 207 0152 4FF02103 		mov	r3, #33
+ 208 0156 3B73     		strb	r3, [r7, #12]
+ 127:../src/functions.c **** 	//set priority 0 - 15
+ 128:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+ 209              		.loc 1 128 0
+ 210 0158 4FF00F03 		mov	r3, #15
+ 211 015c 7B73     		strb	r3, [r7, #13]
+ 129:../src/functions.c **** 	//set priority 0 - 15
+ 130:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+ 212              		.loc 1 130 0
+ 213 015e 4FF00F03 		mov	r3, #15
+ 214 0162 BB73     		strb	r3, [r7, #14]
+ 131:../src/functions.c **** 	//enable IRQ channel
+ 132:../src/functions.c **** 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
+ 215              		.loc 1 132 0
+ 216 0164 FB79     		ldrb	r3, [r7, #7]
+ 217 0166 FB73     		strb	r3, [r7, #15]
+ 133:../src/functions.c **** 	NVIC_Init(&NVCInitStructure);
+ 218              		.loc 1 133 0
+ 219 0168 07F10C03 		add	r3, r7, #12
+ 220 016c 1846     		mov	r0, r3
+ 221 016e FFF7FEFF 		bl	NVIC_Init
+ 134:../src/functions.c **** 
+ 135:../src/functions.c **** 	if(newState)
+ 222              		.loc 1 135 0
+ 223 0172 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 224 0174 002B     		cmp	r3, #0
+ 225 0176 08D0     		beq	.L2
+ 136:../src/functions.c **** 	{
+ 137:../src/functions.c **** 		SYSTEM_INTERRUPTS_ON = 1;
+ 226              		.loc 1 137 0
+ 227 0178 40F20003 		movw	r3, #:lower16:flag0
+ 228 017c C0F20003 		movt	r3, #:upper16:flag0
+ 229 0180 5A78     		ldrb	r2, [r3, #1]
+ 230 0182 42F00202 		orr	r2, r2, #2
+ 231 0186 5A70     		strb	r2, [r3, #1]
+ 232 0188 07E0     		b	.L1
+ 233              	.L2:
+ 138:../src/functions.c **** 	}
+ 139:../src/functions.c **** 	else
+ 140:../src/functions.c **** 	{
+ 141:../src/functions.c **** 		SYSTEM_INTERRUPTS_ON = 0;
+ 234              		.loc 1 141 0
+ 235 018a 40F20003 		movw	r3, #:lower16:flag0
+ 236 018e C0F20003 		movt	r3, #:upper16:flag0
+ 237 0192 5A78     		ldrb	r2, [r3, #1]
+ 238 0194 6FF34102 		bfc	r2, #1, #1
+ 239 0198 5A70     		strb	r2, [r3, #1]
+ 240              	.L1:
+ 142:../src/functions.c **** 	}
+ 143:../src/functions.c **** }
+ 241              		.loc 1 143 0
+ 242 019a 07F11007 		add	r7, r7, #16
+ 243 019e BD46     		mov	sp, r7
+ 244 01a0 80BD     		pop	{r7, pc}
+ 245              		.cfi_endproc
+ 246              	.LFE110:
+ 248 01a2 00BF     		.align	2
+ 249              		.global	extPeripheralInit
+ 250              		.thumb
+ 251              		.thumb_func
+ 253              	extPeripheralInit:
+ 254              	.LFB111:
+ 144:../src/functions.c **** 
+ 145:../src/functions.c **** void extPeripheralInit(void)
+ 146:../src/functions.c **** {
+ 255              		.loc 1 146 0
+ 256              		.cfi_startproc
+ 257              		@ args = 0, pretend = 0, frame = 0
+ 258              		@ frame_needed = 1, uses_anonymous_args = 0
+ 259 01a4 80B5     		push	{r7, lr}
+ 260              	.LCFI3:
+ 261              		.cfi_def_cfa_offset 8
+ 262              		.cfi_offset 14, -4
+ 263              		.cfi_offset 7, -8
+ 264 01a6 00AF     		add	r7, sp, #0
+ 265              	.LCFI4:
+ 266              		.cfi_def_cfa_register 7
+ 147:../src/functions.c **** 	// Wait some time
+ 148:../src/functions.c **** 	Delaynus(50000);
+ 267              		.loc 1 148 0
+ 268 01a8 4CF25030 		movw	r0, #50000
+ 269 01ac FFF7FEFF 		bl	Delaynus
+ 149:../src/functions.c **** 	// Set LED OK = 1
+ 150:../src/functions.c **** 	LED_OK_OFF;
+ 270              		.loc 1 150 0
+ 271 01b0 4FF44060 		mov	r0, #3072
+ 272 01b4 C4F20200 		movt	r0, 16386
+ 273 01b8 4FF40071 		mov	r1, #512
+ 274 01bc 4FF00002 		mov	r2, #0
+ 275 01c0 FFF7FEFF 		bl	GPIO_WriteBit
+ 151:../src/functions.c **** 	// Short delay
+ 152:../src/functions.c **** 	Delaynus(50000);
+ 276              		.loc 1 152 0
+ 277 01c4 4CF25030 		movw	r0, #50000
+ 278 01c8 FFF7FEFF 		bl	Delaynus
+ 153:../src/functions.c **** 	// Set LED OK = 0
+ 154:../src/functions.c **** 	LED_OK_ON;
+ 279              		.loc 1 154 0
+ 280 01cc 4FF44060 		mov	r0, #3072
+ 281 01d0 C4F20200 		movt	r0, 16386
+ 282 01d4 4FF40071 		mov	r1, #512
+ 283 01d8 4FF00102 		mov	r2, #1
+ 284 01dc FFF7FEFF 		bl	GPIO_WriteBit
+ 155:../src/functions.c **** 	// Do a long delay, ca. 1 sec
+ 156:../src/functions.c **** 	Delaynus(1000000);
+ 285              		.loc 1 156 0
+ 286 01e0 44F24020 		movw	r0, #16960
+ 287 01e4 C0F20F00 		movt	r0, 15
+ 288 01e8 FFF7FEFF 		bl	Delaynus
+ 157:../src/functions.c **** 	// set PS busy
+ 158:../src/functions.c **** 	PSBUSY = 1;
+ 289              		.loc 1 158 0
+ 290 01ec 40F20003 		movw	r3, #:lower16:flag0
+ 291 01f0 C0F20003 		movt	r3, #:upper16:flag0
+ 292 01f4 1A78     		ldrb	r2, [r3, #0]
+ 293 01f6 42F00202 		orr	r2, r2, #2
+ 294 01fa 1A70     		strb	r2, [r3, #0]
+ 159:../src/functions.c **** 	// Set I0 current for sensor
+ 160:../src/functions.c **** 	PSSetI0();
+ 295              		.loc 1 160 0
+ 296 01fc FFF7FEFF 		bl	PSSetI0
+ 161:../src/functions.c **** 	LED_OK_OFF;
+ 297              		.loc 1 161 0
+ 298 0200 4FF44060 		mov	r0, #3072
+ 299 0204 C4F20200 		movt	r0, 16386
+ 300 0208 4FF40071 		mov	r1, #512
+ 301 020c 4FF00002 		mov	r2, #0
+ 302 0210 FFF7FEFF 		bl	GPIO_WriteBit
+ 162:../src/functions.c **** 	// Short delay
+ 163:../src/functions.c **** 	Delaynus(50000);
+ 303              		.loc 1 163 0
+ 304 0214 4CF25030 		movw	r0, #50000
+ 305 0218 FFF7FEFF 		bl	Delaynus
+ 164:../src/functions.c **** 	// Set LED OK = 0
+ 165:../src/functions.c **** 	LED_OK_ON;
+ 306              		.loc 1 165 0
+ 307 021c 4FF44060 		mov	r0, #3072
+ 308 0220 C4F20200 		movt	r0, 16386
+ 309 0224 4FF40071 		mov	r1, #512
+ 310 0228 4FF00102 		mov	r2, #1
+ 311 022c FFF7FEFF 		bl	GPIO_WriteBit
+ 166:../src/functions.c **** 	// Reset PS
+ 167:../src/functions.c **** 	PSReset();
+ 312              		.loc 1 167 0
+ 313 0230 FFF7FEFF 		bl	PSReset
+ 168:../src/functions.c **** 	LED_OK_OFF;
+ 314              		.loc 1 168 0
+ 315 0234 4FF44060 		mov	r0, #3072
+ 316 0238 C4F20200 		movt	r0, 16386
+ 317 023c 4FF40071 		mov	r1, #512
+ 318 0240 4FF00002 		mov	r2, #0
+ 319 0244 FFF7FEFF 		bl	GPIO_WriteBit
+ 169:../src/functions.c **** 	// Long delay
+ 170:../src/functions.c **** 	Delaynus(2000000);
+ 320              		.loc 1 170 0
+ 321 0248 48F28040 		movw	r0, #33920
+ 322 024c C0F21E00 		movt	r0, 30
+ 323 0250 FFF7FEFF 		bl	Delaynus
+ 171:../src/functions.c **** 	// Set LED OK = 0
+ 172:../src/functions.c **** 	LED_OK_ON;
+ 324              		.loc 1 172 0
+ 325 0254 4FF44060 		mov	r0, #3072
+ 326 0258 C4F20200 		movt	r0, 16386
+ 327 025c 4FF40071 		mov	r1, #512
+ 328 0260 4FF00102 		mov	r2, #1
+ 329 0264 FFF7FEFF 		bl	GPIO_WriteBit
+ 173:../src/functions.c **** 	// Reset PS busy
+ 174:../src/functions.c **** 	PSBUSY = 0;
+ 330              		.loc 1 174 0
+ 331 0268 40F20003 		movw	r3, #:lower16:flag0
+ 332 026c C0F20003 		movt	r3, #:upper16:flag0
+ 333 0270 1A78     		ldrb	r2, [r3, #0]
+ 334 0272 6FF34102 		bfc	r2, #1, #1
+ 335 0276 1A70     		strb	r2, [r3, #0]
+ 175:../src/functions.c **** 	// Configure GPS
+ 176:../src/functions.c **** 	GPSSetDataOutput();
+ 336              		.loc 1 176 0
+ 337 0278 FFF7FEFF 		bl	GPSSetDataOutput
+ 177:../src/functions.c **** 	LED_OK_OFF;
+ 338              		.loc 1 177 0
+ 339 027c 4FF44060 		mov	r0, #3072
+ 340 0280 C4F20200 		movt	r0, 16386
+ 341 0284 4FF40071 		mov	r1, #512
+ 342 0288 4FF00002 		mov	r2, #0
+ 343 028c FFF7FEFF 		bl	GPIO_WriteBit
+ 178:../src/functions.c **** 	// Short delay
+ 179:../src/functions.c **** 	Delaynus(50000);
+ 344              		.loc 1 179 0
+ 345 0290 4CF25030 		movw	r0, #50000
+ 346 0294 FFF7FEFF 		bl	Delaynus
+ 180:../src/functions.c **** 	// Set LED OK = 0
+ 181:../src/functions.c **** 	LED_OK_ON;
+ 347              		.loc 1 181 0
+ 348 0298 4FF44060 		mov	r0, #3072
+ 349 029c C4F20200 		movt	r0, 16386
+ 350 02a0 4FF40071 		mov	r1, #512
+ 351 02a4 4FF00102 		mov	r2, #1
+ 352 02a8 FFF7FEFF 		bl	GPIO_WriteBit
+ 182:../src/functions.c **** 	// Disable interrupts before configuring I2C
+ 183:../src/functions.c **** 	NVIC_EnableInterrupts(DISABLE);
+ 353              		.loc 1 183 0
+ 354 02ac 4FF00000 		mov	r0, #0
+ 355 02b0 FFF7FEFF 		bl	NVIC_EnableInterrupts
+ 184:../src/functions.c **** 	// Configure I2C sensors
+ 185:../src/functions.c **** 	sensorInit();
+ 356              		.loc 1 185 0
+ 357 02b4 FFF7FEFF 		bl	sensorInit
+ 186:../src/functions.c **** 	// Mark sensors initiated
+ 187:../src/functions.c **** 	EXTSENS_INIT_DONE = 1;
+ 358              		.loc 1 187 0
+ 359 02b8 40F20003 		movw	r3, #:lower16:flag0
+ 360 02bc C0F20003 		movt	r3, #:upper16:flag0
+ 361 02c0 5A78     		ldrb	r2, [r3, #1]
+ 362 02c2 42F00102 		orr	r2, r2, #1
+ 363 02c6 5A70     		strb	r2, [r3, #1]
+ 188:../src/functions.c **** 	// Reenable interrupts
+ 189:../src/functions.c **** 	NVIC_EnableInterrupts(ENABLE);
+ 364              		.loc 1 189 0
+ 365 02c8 4FF00100 		mov	r0, #1
+ 366 02cc FFF7FEFF 		bl	NVIC_EnableInterrupts
+ 190:../src/functions.c **** }
+ 367              		.loc 1 190 0
+ 368 02d0 80BD     		pop	{r7, pc}
+ 369              		.cfi_endproc
+ 370              	.LFE111:
+ 372 02d2 00BF     		.align	2
+ 373              		.global	Delaynus
+ 374              		.thumb
+ 375              		.thumb_func
+ 377              	Delaynus:
+ 378              	.LFB112:
+ 191:../src/functions.c **** 
+ 192:../src/functions.c **** /*
+ 193:../src/functions.c ****  * Function Name  : Delaynus
+ 194:../src/functions.c ****  * Description    : Inserts a delay time abort nus.
+ 195:../src/functions.c ****  * Input          :nus
+ 196:../src/functions.c ****  * Output         : None
+ 197:../src/functions.c ****  * Return         : None
+ 198:../src/functions.c ****  */
+ 199:../src/functions.c **** void Delaynus(vu32 nus)
+ 200:../src/functions.c **** {
+ 379              		.loc 1 200 0
+ 380              		.cfi_startproc
+ 381              		@ args = 0, pretend = 0, frame = 16
+ 382              		@ frame_needed = 1, uses_anonymous_args = 0
+ 383              		@ link register save eliminated.
+ 384 02d4 80B4     		push	{r7}
+ 385              	.LCFI5:
+ 386              		.cfi_def_cfa_offset 4
+ 387              		.cfi_offset 7, -4
+ 388 02d6 85B0     		sub	sp, sp, #20
+ 389              	.LCFI6:
+ 390              		.cfi_def_cfa_offset 24
+ 391 02d8 00AF     		add	r7, sp, #0
+ 392              	.LCFI7:
+ 393              		.cfi_def_cfa_register 7
+ 394 02da 7860     		str	r0, [r7, #4]
+ 201:../src/functions.c ****     u8 nCount;
+ 202:../src/functions.c **** 
+ 203:../src/functions.c ****     while (nus--)
+ 395              		.loc 1 203 0
+ 396 02dc 0AE0     		b	.L6
+ 397              	.L9:
+ 204:../src/functions.c ****     {
+ 205:../src/functions.c ****         for (nCount = 6; nCount != 0; nCount--);
+ 398              		.loc 1 205 0
+ 399 02de 4FF00603 		mov	r3, #6
+ 400 02e2 FB73     		strb	r3, [r7, #15]
+ 401 02e4 03E0     		b	.L7
+ 402              	.L8:
+ 403              		.loc 1 205 0 is_stmt 0 discriminator 2
+ 404 02e6 FB7B     		ldrb	r3, [r7, #15]
+ 405 02e8 03F1FF33 		add	r3, r3, #-1
+ 406 02ec FB73     		strb	r3, [r7, #15]
+ 407              	.L7:
+ 408              		.loc 1 205 0 discriminator 1
+ 409 02ee FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 410 02f0 002B     		cmp	r3, #0
+ 411 02f2 F8D1     		bne	.L8
+ 412              	.L6:
+ 203:../src/functions.c ****     while (nus--)
+ 413              		.loc 1 203 0 is_stmt 1 discriminator 1
+ 414 02f4 7B68     		ldr	r3, [r7, #4]
+ 415 02f6 002B     		cmp	r3, #0
+ 416 02f8 0CBF     		ite	eq
+ 417 02fa 0022     		moveq	r2, #0
+ 418 02fc 0122     		movne	r2, #1
+ 419 02fe D2B2     		uxtb	r2, r2
+ 420 0300 03F1FF33 		add	r3, r3, #-1
+ 421 0304 7B60     		str	r3, [r7, #4]
+ 422 0306 002A     		cmp	r2, #0
+ 423 0308 E9D1     		bne	.L9
+ 206:../src/functions.c ****     }
+ 207:../src/functions.c **** }
+ 424              		.loc 1 207 0
+ 425 030a 07F11407 		add	r7, r7, #20
+ 426 030e BD46     		mov	sp, r7
+ 427 0310 80BC     		pop	{r7}
+ 428 0312 7047     		bx	lr
+ 429              		.cfi_endproc
+ 430              	.LFE112:
+ 432              		.align	2
+ 433              		.global	transferDMA_USART2
+ 434              		.thumb
+ 435              		.thumb_func
+ 437              	transferDMA_USART2:
+ 438              	.LFB113:
+ 208:../src/functions.c **** 
+ 209:../src/functions.c **** void transferDMA_USART2(uint8_t *data, int length)
+ 210:../src/functions.c **** {
+ 439              		.loc 1 210 0
+ 440              		.cfi_startproc
+ 441              		@ args = 0, pretend = 0, frame = 72
+ 442              		@ frame_needed = 1, uses_anonymous_args = 0
+ 443 0314 80B5     		push	{r7, lr}
+ 444              	.LCFI8:
+ 445              		.cfi_def_cfa_offset 8
+ 446              		.cfi_offset 14, -4
+ 447              		.cfi_offset 7, -8
+ 448 0316 92B0     		sub	sp, sp, #72
+ 449              	.LCFI9:
+ 450              		.cfi_def_cfa_offset 80
+ 451 0318 00AF     		add	r7, sp, #0
+ 452              	.LCFI10:
+ 453              		.cfi_def_cfa_register 7
+ 454 031a 7860     		str	r0, [r7, #4]
+ 455 031c 3960     		str	r1, [r7, #0]
+ 211:../src/functions.c **** 	DMA_InitTypeDef DMAInitStructure;
+ 212:../src/functions.c **** 	// Configure USART2 DMA
+ 213:../src/functions.c **** 	//deinit DMA channel
+ 214:../src/functions.c **** 	DMA_DeInit(DMA_USART2);
+ 456              		.loc 1 214 0
+ 457 031e 46F2A000 		movw	r0, #24736
+ 458 0322 C4F20200 		movt	r0, 16386
+ 459 0326 FFF7FEFF 		bl	DMA_DeInit
+ 215:../src/functions.c **** 	//set init structure
+ 216:../src/functions.c **** 	//channel to use
+ 217:../src/functions.c **** 	DMAInitStructure.DMA_Channel = DMA_Channel_4;
+ 460              		.loc 1 217 0
+ 461 032a 4FF00063 		mov	r3, #134217728
+ 462 032e FB60     		str	r3, [r7, #12]
+ 218:../src/functions.c **** 	//peripheral data address
+ 219:../src/functions.c **** 	DMAInitStructure.DMA_PeripheralBaseAddr = (uint32_t)&USART2->DR;//    USART2_DR_ADDRESS;
+ 463              		.loc 1 219 0
+ 464 0330 44F20443 		movw	r3, #17412
+ 465 0334 C4F20003 		movt	r3, 16384
+ 466 0338 3B61     		str	r3, [r7, #16]
+ 220:../src/functions.c **** 	// DMA buffer address
+ 221:../src/functions.c **** 	DMAInitStructure.DMA_Memory0BaseAddr = (uint32_t)data;
+ 467              		.loc 1 221 0
+ 468 033a 7B68     		ldr	r3, [r7, #4]
+ 469 033c 7B61     		str	r3, [r7, #20]
+ 222:../src/functions.c **** 	DMAInitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
+ 470              		.loc 1 222 0
+ 471 033e 4FF04003 		mov	r3, #64
+ 472 0342 BB61     		str	r3, [r7, #24]
+ 223:../src/functions.c **** 	DMAInitStructure.DMA_BufferSize = length;
+ 473              		.loc 1 223 0
+ 474 0344 3B68     		ldr	r3, [r7, #0]
+ 475 0346 FB61     		str	r3, [r7, #28]
+ 224:../src/functions.c **** 	DMAInitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+ 476              		.loc 1 224 0
+ 477 0348 4FF00003 		mov	r3, #0
+ 478 034c 3B62     		str	r3, [r7, #32]
+ 225:../src/functions.c **** 	DMAInitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+ 479              		.loc 1 225 0
+ 480 034e 4FF48063 		mov	r3, #1024
+ 481 0352 7B62     		str	r3, [r7, #36]
+ 226:../src/functions.c **** 	DMAInitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+ 482              		.loc 1 226 0
+ 483 0354 4FF00003 		mov	r3, #0
+ 484 0358 BB62     		str	r3, [r7, #40]
+ 227:../src/functions.c **** 	DMAInitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+ 485              		.loc 1 227 0
+ 486 035a 4FF00003 		mov	r3, #0
+ 487 035e FB62     		str	r3, [r7, #44]
+ 228:../src/functions.c **** 	DMAInitStructure.DMA_Mode = DMA_Mode_Normal;
+ 488              		.loc 1 228 0
+ 489 0360 4FF00003 		mov	r3, #0
+ 490 0364 3B63     		str	r3, [r7, #48]
+ 229:../src/functions.c **** 	DMAInitStructure.DMA_Priority = DMA_Priority_Low;
+ 491              		.loc 1 229 0
+ 492 0366 4FF00003 		mov	r3, #0
+ 493 036a 7B63     		str	r3, [r7, #52]
+ 230:../src/functions.c **** 	DMAInitStructure.DMA_FIFOMode = DMA_FIFOMode_Enable;
+ 494              		.loc 1 230 0
+ 495 036c 4FF00403 		mov	r3, #4
+ 496 0370 BB63     		str	r3, [r7, #56]
+ 231:../src/functions.c **** 	DMAInitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_Full;
+ 497              		.loc 1 231 0
+ 498 0372 4FF00303 		mov	r3, #3
+ 499 0376 FB63     		str	r3, [r7, #60]
+ 232:../src/functions.c **** 	DMAInitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
+ 500              		.loc 1 232 0
+ 501 0378 4FF00003 		mov	r3, #0
+ 502 037c 3B64     		str	r3, [r7, #64]
+ 233:../src/functions.c **** 	DMAInitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
+ 503              		.loc 1 233 0
+ 504 037e 4FF00003 		mov	r3, #0
+ 505 0382 7B64     		str	r3, [r7, #68]
+ 234:../src/functions.c **** 	//configure peripheral
+ 235:../src/functions.c **** 	DMA_Init(DMA_USART2, &DMAInitStructure);
+ 506              		.loc 1 235 0
+ 507 0384 46F2A000 		movw	r0, #24736
+ 508 0388 C4F20200 		movt	r0, 16386
+ 509 038c 07F10C03 		add	r3, r7, #12
+ 510 0390 1946     		mov	r1, r3
+ 511 0392 FFF7FEFF 		bl	DMA_Init
+ 236:../src/functions.c **** 
+ 237:../src/functions.c **** 	//Enable DMA1 stream 0 - USART2 TX
+ 238:../src/functions.c **** 	DMA_Cmd(DMA_USART2, ENABLE);
+ 512              		.loc 1 238 0
+ 513 0396 46F2A000 		movw	r0, #24736
+ 514 039a C4F20200 		movt	r0, 16386
+ 515 039e 4FF00101 		mov	r1, #1
+ 516 03a2 FFF7FEFF 		bl	DMA_Cmd
+ 239:../src/functions.c **** 	//configure to use DMA
+ 240:../src/functions.c **** 	USART_DMACmd(USART2, USART_DMAReq_Tx, ENABLE);
+ 517              		.loc 1 240 0
+ 518 03a6 4FF48840 		mov	r0, #17408
+ 519 03aa C4F20000 		movt	r0, 16384
+ 520 03ae 4FF08001 		mov	r1, #128
+ 521 03b2 4FF00102 		mov	r2, #1
+ 522 03b6 FFF7FEFF 		bl	USART_DMACmd
+ 241:../src/functions.c **** }
+ 523              		.loc 1 241 0
+ 524 03ba 07F14807 		add	r7, r7, #72
+ 525 03be BD46     		mov	sp, r7
+ 526 03c0 80BD     		pop	{r7, pc}
+ 527              		.cfi_endproc
+ 528              	.LFE113:
+ 530 03c2 00BF     		.align	2
+ 531              		.global	transferDMA_USART3
+ 532              		.thumb
+ 533              		.thumb_func
+ 535              	transferDMA_USART3:
+ 536              	.LFB114:
+ 242:../src/functions.c **** 
+ 243:../src/functions.c **** void transferDMA_USART3(uint8_t *data, int length)
+ 244:../src/functions.c **** {
+ 537              		.loc 1 244 0
+ 538              		.cfi_startproc
+ 539              		@ args = 0, pretend = 0, frame = 72
+ 540              		@ frame_needed = 1, uses_anonymous_args = 0
+ 541 03c4 80B5     		push	{r7, lr}
+ 542              	.LCFI11:
+ 543              		.cfi_def_cfa_offset 8
+ 544              		.cfi_offset 14, -4
+ 545              		.cfi_offset 7, -8
+ 546 03c6 92B0     		sub	sp, sp, #72
+ 547              	.LCFI12:
+ 548              		.cfi_def_cfa_offset 80
+ 549 03c8 00AF     		add	r7, sp, #0
+ 550              	.LCFI13:
+ 551              		.cfi_def_cfa_register 7
+ 552 03ca 7860     		str	r0, [r7, #4]
+ 553 03cc 3960     		str	r1, [r7, #0]
+ 245:../src/functions.c **** 	DMA_InitTypeDef DMAInitStructure;
+ 246:../src/functions.c **** 	// Configure USART3 DMA
+ 247:../src/functions.c **** 	//deinit DMA channel
+ 248:../src/functions.c **** 	DMA_DeInit(DMA_USART3);
+ 554              		.loc 1 248 0
+ 555 03ce 46F27000 		movw	r0, #24688
+ 556 03d2 C4F20200 		movt	r0, 16386
+ 557 03d6 FFF7FEFF 		bl	DMA_DeInit
+ 249:../src/functions.c **** 	//set init structure
+ 250:../src/functions.c **** 	//channel to use
+ 251:../src/functions.c **** 	DMAInitStructure.DMA_Channel = DMA_Channel_7;
+ 558              		.loc 1 251 0
+ 559 03da 4FF06063 		mov	r3, #234881024
+ 560 03de FB60     		str	r3, [r7, #12]
+ 252:../src/functions.c **** 	//peripheral data address
+ 253:../src/functions.c **** 	DMAInitStructure.DMA_PeripheralBaseAddr = (uint32_t)&USART3->DR;//    USART3_DR_ADDRESS;
+ 561              		.loc 1 253 0
+ 562 03e0 44F60403 		movw	r3, #18436
+ 563 03e4 C4F20003 		movt	r3, 16384
+ 564 03e8 3B61     		str	r3, [r7, #16]
+ 254:../src/functions.c **** 	// DMA buffer address
+ 255:../src/functions.c **** 	DMAInitStructure.DMA_Memory0BaseAddr = (uint32_t)data;
+ 565              		.loc 1 255 0
+ 566 03ea 7B68     		ldr	r3, [r7, #4]
+ 567 03ec 7B61     		str	r3, [r7, #20]
+ 256:../src/functions.c **** 	DMAInitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
+ 568              		.loc 1 256 0
+ 569 03ee 4FF04003 		mov	r3, #64
+ 570 03f2 BB61     		str	r3, [r7, #24]
+ 257:../src/functions.c **** 	DMAInitStructure.DMA_BufferSize = length;
+ 571              		.loc 1 257 0
+ 572 03f4 3B68     		ldr	r3, [r7, #0]
+ 573 03f6 FB61     		str	r3, [r7, #28]
+ 258:../src/functions.c **** 	DMAInitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+ 574              		.loc 1 258 0
+ 575 03f8 4FF00003 		mov	r3, #0
+ 576 03fc 3B62     		str	r3, [r7, #32]
+ 259:../src/functions.c **** 	DMAInitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+ 577              		.loc 1 259 0
+ 578 03fe 4FF48063 		mov	r3, #1024
+ 579 0402 7B62     		str	r3, [r7, #36]
+ 260:../src/functions.c **** 	DMAInitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+ 580              		.loc 1 260 0
+ 581 0404 4FF00003 		mov	r3, #0
+ 582 0408 BB62     		str	r3, [r7, #40]
+ 261:../src/functions.c **** 	DMAInitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+ 583              		.loc 1 261 0
+ 584 040a 4FF00003 		mov	r3, #0
+ 585 040e FB62     		str	r3, [r7, #44]
+ 262:../src/functions.c **** 	DMAInitStructure.DMA_Mode = DMA_Mode_Normal;
+ 586              		.loc 1 262 0
+ 587 0410 4FF00003 		mov	r3, #0
+ 588 0414 3B63     		str	r3, [r7, #48]
+ 263:../src/functions.c **** 	DMAInitStructure.DMA_Priority = DMA_Priority_Low;
+ 589              		.loc 1 263 0
+ 590 0416 4FF00003 		mov	r3, #0
+ 591 041a 7B63     		str	r3, [r7, #52]
+ 264:../src/functions.c **** 	DMAInitStructure.DMA_FIFOMode = DMA_FIFOMode_Enable;
+ 592              		.loc 1 264 0
+ 593 041c 4FF00403 		mov	r3, #4
+ 594 0420 BB63     		str	r3, [r7, #56]
+ 265:../src/functions.c **** 	DMAInitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_Full;
+ 595              		.loc 1 265 0
+ 596 0422 4FF00303 		mov	r3, #3
+ 597 0426 FB63     		str	r3, [r7, #60]
+ 266:../src/functions.c **** 	DMAInitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
+ 598              		.loc 1 266 0
+ 599 0428 4FF00003 		mov	r3, #0
+ 600 042c 3B64     		str	r3, [r7, #64]
+ 267:../src/functions.c **** 	DMAInitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
+ 601              		.loc 1 267 0
+ 602 042e 4FF00003 		mov	r3, #0
+ 603 0432 7B64     		str	r3, [r7, #68]
+ 268:../src/functions.c **** 	//configure peripheral
+ 269:../src/functions.c **** 	DMA_Init(DMA_USART3, &DMAInitStructure);
+ 604              		.loc 1 269 0
+ 605 0434 46F27000 		movw	r0, #24688
+ 606 0438 C4F20200 		movt	r0, 16386
+ 607 043c 07F10C03 		add	r3, r7, #12
+ 608 0440 1946     		mov	r1, r3
+ 609 0442 FFF7FEFF 		bl	DMA_Init
+ 270:../src/functions.c **** 
+ 271:../src/functions.c **** 	//Enable DMA1 stream 4 - USART3 TX
+ 272:../src/functions.c **** 	DMA_Cmd(DMA_USART3, ENABLE);
+ 610              		.loc 1 272 0
+ 611 0446 46F27000 		movw	r0, #24688
+ 612 044a C4F20200 		movt	r0, 16386
+ 613 044e 4FF00101 		mov	r1, #1
+ 614 0452 FFF7FEFF 		bl	DMA_Cmd
+ 273:../src/functions.c **** 	//configure to use DMA
+ 274:../src/functions.c **** 	USART_DMACmd(USART3, USART_DMAReq_Tx, ENABLE);
+ 615              		.loc 1 274 0
+ 616 0456 4FF49040 		mov	r0, #18432
+ 617 045a C4F20000 		movt	r0, 16384
+ 618 045e 4FF08001 		mov	r1, #128
+ 619 0462 4FF00102 		mov	r2, #1
+ 620 0466 FFF7FEFF 		bl	USART_DMACmd
+ 275:../src/functions.c **** 	// Configure end of transfer interrupt
+ 276:../src/functions.c **** 	DMA_ITConfig(DMA_USART3, DMA_IT_TC, ENABLE);
+ 621              		.loc 1 276 0
+ 622 046a 46F27000 		movw	r0, #24688
+ 623 046e C4F20200 		movt	r0, 16386
+ 624 0472 4FF01001 		mov	r1, #16
+ 625 0476 4FF00102 		mov	r2, #1
+ 626 047a FFF7FEFF 		bl	DMA_ITConfig
+ 277:../src/functions.c **** }
+ 627              		.loc 1 277 0
+ 628 047e 07F14807 		add	r7, r7, #72
+ 629 0482 BD46     		mov	sp, r7
+ 630 0484 80BD     		pop	{r7, pc}
+ 631              		.cfi_endproc
+ 632              	.LFE114:
+ 634              	.Letext0:
+ 635              		.file 2 "c:\\program files (x86)\\codesourcery\\eabi\\bin\\../lib/gcc/arm-none-eabi/4.6.3/../../..
+ 636              		.file 3 "C:\\Users\\Jure\\workspace\\TemplateProject\\Libraries\\Device\\STM32F4xx\\Include/stm32f
+ 637              		.file 4 "C:\\Users\\Jure\\workspace\\TemplateProject\\Libraries\\STM32F4xx_StdPeriph_Driver\\inc/s
+ 638              		.file 5 "C:\\Users\\Jure\\workspace\\TemplateProject\\Libraries\\STM32F4xx_StdPeriph_Driver\\inc/m
+ 639              		.file 6 "../src/var.h"
+ 640              		.file 7 "C:\\Users\\Jure\\workspace\\TemplateProject\\Libraries\\CMSIS\\Include/core_cm4.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 functions.c
+C:\Users\Jure\AppData\Local\Temp\ccjdowaG.s:18     .text:00000000 $t
+C:\Users\Jure\AppData\Local\Temp\ccjdowaG.s:23     .text:00000000 NVIC_EnableInterrupts
+C:\Users\Jure\AppData\Local\Temp\ccjdowaG.s:253    .text:000001a4 extPeripheralInit
+C:\Users\Jure\AppData\Local\Temp\ccjdowaG.s:377    .text:000002d4 Delaynus
+C:\Users\Jure\AppData\Local\Temp\ccjdowaG.s:437    .text:00000314 transferDMA_USART2
+C:\Users\Jure\AppData\Local\Temp\ccjdowaG.s:535    .text:000003c4 transferDMA_USART3
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+NVIC_PriorityGroupConfig
+NVIC_Init
+flag0
+GPIO_WriteBit
+PSSetI0
+PSReset
+GPSSetDataOutput
+sensorInit
+DMA_DeInit
+DMA_Init
+DMA_Cmd
+USART_DMACmd
+DMA_ITConfig

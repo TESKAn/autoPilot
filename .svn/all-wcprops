@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/STM32-Discovery-Board/!svn/ver/3/Template
+END
+.cproject
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/STM32-Discovery-Board/!svn/ver/6/Template/.cproject
+END
+stm32_flash.ld
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/STM32-Discovery-Board/!svn/ver/3/Template/stm32_flash.ld
+END
+.project
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/STM32-Discovery-Board/!svn/ver/6/Template/.project
+END

@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/STM32-Discovery-Board/!svn/ver/3/Template/Libraries/Device/STM32F4xx/Include
+END
+stm32f4xx.h
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/STM32-Discovery-Board/!svn/ver/3/Template/Libraries/Device/STM32F4xx/Include/stm32f4xx.h
+END
+system_stm32f4xx.h
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/STM32-Discovery-Board/!svn/ver/3/Template/Libraries/Device/STM32F4xx/Include/system_stm32f4xx.h
+END
