@@ -26,6 +26,5 @@
 #include "powerSensor.h"
 #include "gps.h"
 #include "sensors.h"
-#include "adc.h"
 
 #endif /* ALLINCLUDE_H_ */

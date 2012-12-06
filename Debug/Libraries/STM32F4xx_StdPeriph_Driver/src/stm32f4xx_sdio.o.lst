@@ -2255,42 +2255,42 @@
  1323              	.LFE139:
  1325              	.Letext0:
  1326              		.file 2 "c:\\program files (x86)\\codesourcery\\eabi\\bin\\../lib/gcc/arm-none-eabi/4.6.3/../../..
- 1327              		.file 3 "C:\\Users\\Jure\\workspace\\TemplateProject\\Libraries\\Device\\STM32F4xx\\Include/stm32f
- 1328              		.file 4 "C:\\Users\\Jure\\workspace\\TemplateProject\\Libraries\\STM32F4xx_StdPeriph_Driver\\inc/s
- 1329              		.file 5 "C:\\Users\\Jure\\workspace\\TemplateProject\\Libraries\\CMSIS\\Include/core_cm4.h"
+ 1327              		.file 3 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\Device\\STM32F4xx\\Include/s
+ 1328              		.file 4 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\STM32F4xx_StdPeriph_Driver\\
+ 1329              		.file 5 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\CMSIS\\Include/core_cm4.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 stm32f4xx_sdio.c
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:18     .text:00000000 $t
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:23     .text:00000000 SDIO_DeInit
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:56     .text:00000020 SDIO_Init
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:134    .text:00000088 SDIO_StructInit
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:189    .text:000000cc SDIO_ClockCmd
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:226    .text:000000ec SDIO_SetPowerState
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:262    .text:0000010c SDIO_GetPowerState
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:294    .text:00000128 SDIO_SendCommand
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:366    .text:00000190 SDIO_CmdStructInit
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:417    .text:000001cc SDIO_GetCommandResponse
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:449    .text:000001e4 SDIO_GetResponse
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:493    .text:00000210 SDIO_DataConfig
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:570    .text:00000280 SDIO_DataStructInit
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:625    .text:000002c4 SDIO_GetDataCounter
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:656    .text:000002dc SDIO_ReadData
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:687    .text:000002f4 SDIO_WriteData
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:723    .text:00000314 SDIO_GetFIFOCount
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:754    .text:0000032c SDIO_StartSDIOReadWait
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:791    .text:0000034c SDIO_StopSDIOReadWait
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:828    .text:0000036c SDIO_SetSDIOReadWaitMode
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:864    .text:0000038c SDIO_SetSDIOOperation
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:901    .text:000003ac SDIO_SendSDIOSuspendCmd
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:938    .text:000003cc SDIO_CommandCompletionCmd
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:975    .text:000003ec SDIO_CEATAITCmd
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:1017   .text:00000418 SDIO_SendCEATACmd
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:1054   .text:00000438 SDIO_DMACmd
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:1091   .text:00000458 SDIO_ITConfig
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:1150   .text:000004ac SDIO_GetFlagStatus
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:1204   .text:000004e8 SDIO_ClearFlag
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:1240   .text:00000508 SDIO_GetITStatus
-C:\Users\Jure\AppData\Local\Temp\ccKmYb7o.s:1294   .text:00000544 SDIO_ClearITPendingBit
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:18     .text:00000000 $t
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:23     .text:00000000 SDIO_DeInit
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:56     .text:00000020 SDIO_Init
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:134    .text:00000088 SDIO_StructInit
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:189    .text:000000cc SDIO_ClockCmd
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:226    .text:000000ec SDIO_SetPowerState
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:262    .text:0000010c SDIO_GetPowerState
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:294    .text:00000128 SDIO_SendCommand
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:366    .text:00000190 SDIO_CmdStructInit
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:417    .text:000001cc SDIO_GetCommandResponse
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:449    .text:000001e4 SDIO_GetResponse
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:493    .text:00000210 SDIO_DataConfig
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:570    .text:00000280 SDIO_DataStructInit
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:625    .text:000002c4 SDIO_GetDataCounter
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:656    .text:000002dc SDIO_ReadData
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:687    .text:000002f4 SDIO_WriteData
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:723    .text:00000314 SDIO_GetFIFOCount
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:754    .text:0000032c SDIO_StartSDIOReadWait
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:791    .text:0000034c SDIO_StopSDIOReadWait
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:828    .text:0000036c SDIO_SetSDIOReadWaitMode
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:864    .text:0000038c SDIO_SetSDIOOperation
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:901    .text:000003ac SDIO_SendSDIOSuspendCmd
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:938    .text:000003cc SDIO_CommandCompletionCmd
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:975    .text:000003ec SDIO_CEATAITCmd
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:1017   .text:00000418 SDIO_SendCEATACmd
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:1054   .text:00000438 SDIO_DMACmd
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:1091   .text:00000458 SDIO_ITConfig
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:1150   .text:000004ac SDIO_GetFlagStatus
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:1204   .text:000004e8 SDIO_ClearFlag
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:1240   .text:00000508 SDIO_GetITStatus
+C:\Users\Jure\AppData\Local\Temp\ccHNDnH4.s:1294   .text:00000544 SDIO_ClearITPendingBit
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

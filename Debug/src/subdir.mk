@@ -4,7 +4,6 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../src/adc.c \
 ../src/events.c \
 ../src/functions.c \
 ../src/gps.c \
@@ -22,7 +21,6 @@ S_UPPER_SRCS += \
 ../src/startup_stm32f4xx.S 
 
 OBJS += \
-./src/adc.o \
 ./src/events.o \
 ./src/functions.o \
 ./src/gps.o \
@@ -38,7 +36,6 @@ OBJS += \
 ./src/var.o 
 
 C_DEPS += \
-./src/adc.d \
 ./src/events.d \
 ./src/functions.d \
 ./src/gps.d \
@@ -60,14 +57,14 @@ S_UPPER_DEPS += \
 src/%.o: ../src/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: ARM Sourcery Windows GCC C Compiler'
-	arm-none-eabi-gcc -DUSE_STDPERIPH_DRIVER -DUSE_STM32F4_DISCOVERY -DSTM32F4XX -I"C:\Users\Jure\workspace\TemplateProject\src" -I"C:\Users\Jure\workspace\TemplateProject\Libraries\CMSIS\Include" -I"C:\Users\Jure\workspace\TemplateProject\Libraries\Device\STM32F4xx\Include" -I"C:\Users\Jure\workspace\TemplateProject\Libraries\STM32F4xx_StdPeriph_Driver\inc" -O0 -Wall -Wa,-adhlns="$@.lst" -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -mcpu=cortex-m4 -mthumb -g -gdwarf-2 -o "$@" "$<"
+	arm-none-eabi-gcc -DUSE_STDPERIPH_DRIVER -DUSE_STM32F4_DISCOVERY -DSTM32F4XX -I"D:\Jure\Projekti\Git\AutoPilot\AutoPilot_SW\src" -I"D:\Jure\Projekti\Git\AutoPilot\AutoPilot_SW\Libraries\CMSIS\Include" -I"D:\Jure\Projekti\Git\AutoPilot\AutoPilot_SW\Libraries\Device\STM32F4xx\Include" -I"D:\Jure\Projekti\Git\AutoPilot\AutoPilot_SW\Libraries\STM32F4xx_StdPeriph_Driver\inc" -O0 -Wall -Wa,-adhlns="$@.lst" -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -mcpu=cortex-m4 -mthumb -g -gdwarf-2 -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
 src/%.o: ../src/%.S
 	@echo 'Building file: $<'
 	@echo 'Invoking: ARM Sourcery Windows GCC Assembler'
-	arm-none-eabi-gcc -x assembler-with-cpp -I"C:\Users\Jure\workspace\TemplateProject\src" -I"C:\Users\Jure\workspace\TemplateProject\Libraries\STM32F4xx_StdPeriph_Driver\inc" -I"C:\Users\Jure\workspace\TemplateProject\Libraries\Device\STM32F4xx\Include" -I"C:\Users\Jure\workspace\TemplateProject\Libraries\CMSIS\Include" -I"C:\Program Files (x86)\CodeSourcery\EABI\arm-none-eabi\include" -I"C:\Program Files (x86)\CodeSourcery\EABI\lib\gcc\arm-none-eabi\4.6.3\include" -I"C:\Program Files (x86)\CodeSourcery\EABI\lib\gcc\arm-none-eabi\4.6.3\include-fixed" -Wall -Wa,-adhlns="$@.lst" -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -mcpu=cortex-m4 -mthumb -g -gdwarf-2 -o "$@" "$<"
+	arm-none-eabi-gcc -x assembler-with-cpp -I"D:\Jure\Projekti\Git\AutoPilot\AutoPilot_SW\src" -I"D:\Jure\Projekti\Git\AutoPilot\AutoPilot_SW\Libraries\STM32F4xx_StdPeriph_Driver\inc" -I"D:\Jure\Projekti\Git\AutoPilot\AutoPilot_SW\Libraries\Device\STM32F4xx\Include" -I"D:\Jure\Projekti\Git\AutoPilot\AutoPilot_SW\Libraries\CMSIS\Include" -I"C:\Program Files (x86)\CodeSourcery\EABI\arm-none-eabi\include" -I"C:\Program Files (x86)\CodeSourcery\EABI\lib\gcc\arm-none-eabi\4.6.3\include" -I"C:\Program Files (x86)\CodeSourcery\EABI\lib\gcc\arm-none-eabi\4.6.3\include-fixed" -Wall -Wa,-adhlns="$@.lst" -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -mcpu=cortex-m4 -mthumb -g -gdwarf-2 -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
