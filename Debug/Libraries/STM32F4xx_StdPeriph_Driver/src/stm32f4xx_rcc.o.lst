@@ -4268,58 +4268,58 @@
  2563              	.LFE153:
  2565              	.Letext0:
  2566              		.file 2 "c:\\program files (x86)\\codesourcery\\eabi\\bin\\../lib/gcc/arm-none-eabi/4.6.3/../../..
- 2567              		.file 3 "C:\\Users\\Jure\\workspace\\TemplateProject\\Libraries\\Device\\STM32F4xx\\Include/stm32f
- 2568              		.file 4 "C:\\Users\\Jure\\workspace\\TemplateProject\\Libraries\\STM32F4xx_StdPeriph_Driver\\inc/s
- 2569              		.file 5 "C:\\Users\\Jure\\workspace\\TemplateProject\\Libraries\\CMSIS\\Include/core_cm4.h"
+ 2567              		.file 3 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\Device\\STM32F4xx\\Include/s
+ 2568              		.file 4 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\STM32F4xx_StdPeriph_Driver\\
+ 2569              		.file 5 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\CMSIS\\Include/core_cm4.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 stm32f4xx_rcc.c
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:19     .data:00000000 $d
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:22     .data:00000000 APBAHBPrescTable
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:40     .text:00000000 $t
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:45     .text:00000000 RCC_DeInit
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:113    .text:00000084 RCC_HSEConfig
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:155    .text:000000b4 RCC_WaitForHSEStartUp
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:2346   .text:00000c78 RCC_GetFlagStatus
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:229    .text:00000118 RCC_AdjustHSICalibrationValue
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:284    .text:00000160 RCC_HSICmd
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:321    .text:00000180 RCC_LSEConfig
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:390    .text:000001e0 RCC_LSICmd
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:427    .text:00000200 RCC_PLLConfig
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:481    .text:00000248 RCC_PLLCmd
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:518    .text:00000268 RCC_PLLI2SConfig
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:559    .text:00000298 RCC_PLLI2SCmd
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:596    .text:000002b8 RCC_ClockSecuritySystemCmd
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:633    .text:000002d8 RCC_MCO1Config
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:689    .text:00000320 RCC_MCO2Config
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:745    .text:00000368 RCC_SYSCLKConfig
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:798    .text:000003a8 RCC_GetSYSCLKSource
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:832    .text:000003c8 RCC_HCLKConfig
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:885    .text:00000408 RCC_PCLK1Config
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:938    .text:00000448 RCC_PCLK2Config
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:992    .text:0000048c RCC_GetClocksFreq
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:1214   .text:00000658 RCC_RTCCLKConfig
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:1286   .text:000006cc RCC_RTCCLKCmd
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:1323   .text:000006ec RCC_BackupResetCmd
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:1360   .text:0000070c RCC_I2SCLKConfig
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:1396   .text:0000072c RCC_AHB1PeriphClockCmd
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:1455   .text:00000780 RCC_AHB2PeriphClockCmd
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:1514   .text:000007d4 RCC_AHB3PeriphClockCmd
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:1573   .text:00000828 RCC_APB1PeriphClockCmd
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:1632   .text:0000087c RCC_APB2PeriphClockCmd
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:1691   .text:000008d0 RCC_AHB1PeriphResetCmd
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:1750   .text:00000924 RCC_AHB2PeriphResetCmd
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:1809   .text:00000978 RCC_AHB3PeriphResetCmd
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:1868   .text:000009cc RCC_APB1PeriphResetCmd
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:1927   .text:00000a20 RCC_APB2PeriphResetCmd
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:1986   .text:00000a74 RCC_AHB1PeriphClockLPModeCmd
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:2045   .text:00000ac8 RCC_AHB2PeriphClockLPModeCmd
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:2104   .text:00000b1c RCC_AHB3PeriphClockLPModeCmd
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:2163   .text:00000b70 RCC_APB1PeriphClockLPModeCmd
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:2222   .text:00000bc4 RCC_APB2PeriphClockLPModeCmd
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:2281   .text:00000c18 RCC_ITConfig
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:2444   .text:00000d08 RCC_ClearFlag
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:2478   .text:00000d2c RCC_GetITStatus
-C:\Users\Jure\AppData\Local\Temp\ccLfxhKV.s:2533   .text:00000d6c RCC_ClearITPendingBit
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:19     .data:00000000 $d
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:22     .data:00000000 APBAHBPrescTable
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:40     .text:00000000 $t
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:45     .text:00000000 RCC_DeInit
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:113    .text:00000084 RCC_HSEConfig
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:155    .text:000000b4 RCC_WaitForHSEStartUp
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:2346   .text:00000c78 RCC_GetFlagStatus
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:229    .text:00000118 RCC_AdjustHSICalibrationValue
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:284    .text:00000160 RCC_HSICmd
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:321    .text:00000180 RCC_LSEConfig
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:390    .text:000001e0 RCC_LSICmd
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:427    .text:00000200 RCC_PLLConfig
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:481    .text:00000248 RCC_PLLCmd
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:518    .text:00000268 RCC_PLLI2SConfig
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:559    .text:00000298 RCC_PLLI2SCmd
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:596    .text:000002b8 RCC_ClockSecuritySystemCmd
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:633    .text:000002d8 RCC_MCO1Config
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:689    .text:00000320 RCC_MCO2Config
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:745    .text:00000368 RCC_SYSCLKConfig
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:798    .text:000003a8 RCC_GetSYSCLKSource
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:832    .text:000003c8 RCC_HCLKConfig
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:885    .text:00000408 RCC_PCLK1Config
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:938    .text:00000448 RCC_PCLK2Config
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:992    .text:0000048c RCC_GetClocksFreq
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:1214   .text:00000658 RCC_RTCCLKConfig
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:1286   .text:000006cc RCC_RTCCLKCmd
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:1323   .text:000006ec RCC_BackupResetCmd
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:1360   .text:0000070c RCC_I2SCLKConfig
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:1396   .text:0000072c RCC_AHB1PeriphClockCmd
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:1455   .text:00000780 RCC_AHB2PeriphClockCmd
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:1514   .text:000007d4 RCC_AHB3PeriphClockCmd
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:1573   .text:00000828 RCC_APB1PeriphClockCmd
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:1632   .text:0000087c RCC_APB2PeriphClockCmd
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:1691   .text:000008d0 RCC_AHB1PeriphResetCmd
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:1750   .text:00000924 RCC_AHB2PeriphResetCmd
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:1809   .text:00000978 RCC_AHB3PeriphResetCmd
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:1868   .text:000009cc RCC_APB1PeriphResetCmd
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:1927   .text:00000a20 RCC_APB2PeriphResetCmd
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:1986   .text:00000a74 RCC_AHB1PeriphClockLPModeCmd
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:2045   .text:00000ac8 RCC_AHB2PeriphClockLPModeCmd
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:2104   .text:00000b1c RCC_AHB3PeriphClockLPModeCmd
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:2163   .text:00000b70 RCC_APB1PeriphClockLPModeCmd
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:2222   .text:00000bc4 RCC_APB2PeriphClockLPModeCmd
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:2281   .text:00000c18 RCC_ITConfig
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:2444   .text:00000d08 RCC_ClearFlag
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:2478   .text:00000d2c RCC_GetITStatus
+C:\Users\Jure\AppData\Local\Temp\cc1BeZmt.s:2533   .text:00000d6c RCC_ClearITPendingBit
                      .debug_frame:00000010 $d
 
 NO UNDEFINED SYMBOLS

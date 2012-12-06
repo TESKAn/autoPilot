@@ -22,6 +22,7 @@ void System_Config(void)
 	ADC_InitTypeDef ADC_InitStruct;
 	ADC_CommonInitTypeDef ADC_CommonInitStructure;
 	DAC_InitTypeDef DAC_InitStruct;
+	DMA_InitTypeDef DMAInitStructure;
 
 
 	//make structure for configuring USART
@@ -568,6 +569,27 @@ void System_Config(void)
 
 	// End of timer 8
 
+	// Timer 6 - timing for DAC
+
+	// TIM6 Periph clock enable
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);
+
+	// Time base configuration
+	//TIM_TimeBaseStructInit(&TIM_TimeBaseInitStruct);
+	TIM_TimeBaseInitStruct.TIM_Period = 0xFF;
+	TIM_TimeBaseInitStruct.TIM_Prescaler = 0;
+	TIM_TimeBaseInitStruct.TIM_ClockDivision = 0;
+	TIM_TimeBaseInitStruct.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseInit(TIM6, &TIM_TimeBaseInitStruct);
+
+	// TIM6 TRGO selection
+	TIM_SelectOutputTrigger(TIM6, TIM_TRGOSource_Update);
+
+	// TIM6 enable counter
+	TIM_Cmd(TIM6, ENABLE);
+
+	// End of timer 6
+
 	// Timer 14 - timing for MODBUS
 	//enable clock(s)
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM14, ENABLE);
@@ -757,22 +779,57 @@ void System_Config(void)
 	ADC_Cmd(ADC3, ENABLE);
 
 	// End of ADC
-/*
+
+	// DMA for DAC
+	// DMA1_Stream5 channel7 configuration
+	DMA_DeInit(DMA_DAC1);
+	DMAInitStructure.DMA_Channel = DMA_Channel_7;
+	DMAInitStructure.DMA_PeripheralBaseAddr = (uint32_t)DAC_DHR12R1_ADDRESS;
+	DMAInitStructure.DMA_Memory0BaseAddr = (uint32_t)&Sine12bit;
+	DMAInitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
+	DMAInitStructure.DMA_BufferSize = 32;
+	DMAInitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+	DMAInitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+	DMAInitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
+	DMAInitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
+	DMAInitStructure.DMA_Mode = DMA_Mode_Circular;
+	DMAInitStructure.DMA_Priority = DMA_Priority_High;
+	DMAInitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;
+	DMAInitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;
+	DMAInitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
+	DMAInitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
+	DMA_Init(DMA_DAC1, &DMAInitStructure);
+
+	// Enable DMA1_Stream5
+	DMA_Cmd(DMA_DAC1, ENABLE);
+
 	// DAC init
 	// Enable clock
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC, ENABLE);
-	DAC_InitStruct.DAC_Trigger = DAC_Trigger_None;
+	// Setup channel 1
+	DAC_InitStruct.DAC_Trigger = DAC_Trigger_T6_TRGO;
 	DAC_InitStruct.DAC_WaveGeneration = DAC_WaveGeneration_None;
-	DAC_InitStruct.DAC_LFSRUnmask_TriangleAmplitude = DAC_TriangleAmplitude_1;
+	DAC_InitStruct.DAC_OutputBuffer = DAC_OutputBuffer_Enable;
+	DAC_Init(DAC_Channel_1, &DAC_InitStruct);
+
+	// Enable DAC Channel1
+	DAC_Cmd(DAC_Channel_1, ENABLE);
+
+	// Enable DMA for DAC Channel1
+	DAC_DMACmd(DAC_Channel_1, ENABLE);
+
+
+	// Setup channel 2
+	DAC_InitStruct.DAC_Trigger = DAC_Trigger_None;
+	DAC_InitStruct.DAC_WaveGeneration = DAC_WaveGeneration_Triangle;//DAC_WaveGeneration_None;
+	DAC_InitStruct.DAC_LFSRUnmask_TriangleAmplitude = DAC_TriangleAmplitude_1023;
 	DAC_InitStruct.DAC_OutputBuffer = DAC_OutputBuffer_Enable;
 
-	DAC_Init(DAC_Channel_1, &DAC_InitStruct);
-	DAC_Cmd(DAC_Channel_1, ENABLE);
 
 	DAC_Init(DAC_Channel_2, &DAC_InitStruct);
 	DAC_Cmd(DAC_Channel_2, ENABLE);
 
-*/
+
 	// End of DAC
 
 	NVIC_EnableInterrupts(ENABLE);

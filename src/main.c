@@ -45,10 +45,25 @@
 
 int main(void)
 {
+	// Startup delay - 0,5 sec
+	Delaynus(500000);
 	//configure hardware
 	System_Config();
 	// Set LED OK = 1
 	LED_OK_ON;
+	// Set default PWM out values
+	PWMOUT_1 = TIM1_PULSE;
+	PWMOUT_2 = TIM1_PULSE;
+	PWMOUT_3 = TIM1_PULSE;
+	PWMOUT_4 = TIM1_PULSE;
+	PWMOUT_5 = TIM1_PULSE;
+	PWMOUT_6 = TIM1_PULSE;
+	PWMOUT_7 = TIM1_PULSE;
+	PWMOUT_8 = TIM1_PULSE;
+	PWMOUT_9 = TIM1_PULSE;
+	PWMOUT_10 = TIM1_PULSE;
+	PWMOUT_11 = TIM1_PULSE;
+	PWMOUT_12 = TIM1_PULSE;
 
     while (1)
     {
@@ -160,6 +175,16 @@ int main(void)
         {
         	extPeripheralInit();
         	SCR1 = SCR1 & ~SCR_INIT_SENSORS;
+        }
+        if(SCR1 & SCR_DEC_DAC_FREQ)
+        {
+        	DAC1_TIM6reloadValue += 0xF;
+        	if(DAC1_TIM6reloadValue > 0x11F)
+        	{
+        		DAC1_TIM6reloadValue = 0xFF;
+        	}
+        	TIM_SetAutoreload(TIM6, DAC1_TIM6reloadValue);
+        	SCR1 = SCR1 & ~SCR_DEC_DAC_FREQ;
         }
 
 

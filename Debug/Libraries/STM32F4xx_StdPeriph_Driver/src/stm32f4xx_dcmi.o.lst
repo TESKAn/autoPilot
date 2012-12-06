@@ -1383,27 +1383,27 @@
  885              	.LFE124:
  887              	.Letext0:
  888              		.file 2 "c:\\program files (x86)\\codesourcery\\eabi\\bin\\../lib/gcc/arm-none-eabi/4.6.3/../../..
- 889              		.file 3 "C:\\Users\\Jure\\workspace\\TemplateProject\\Libraries\\Device\\STM32F4xx\\Include/stm32f
- 890              		.file 4 "C:\\Users\\Jure\\workspace\\TemplateProject\\Libraries\\STM32F4xx_StdPeriph_Driver\\inc/s
- 891              		.file 5 "C:\\Users\\Jure\\workspace\\TemplateProject\\Libraries\\CMSIS\\Include/core_cm4.h"
+ 889              		.file 3 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\Device\\STM32F4xx\\Include/s
+ 890              		.file 4 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\STM32F4xx_StdPeriph_Driver\\
+ 891              		.file 5 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\CMSIS\\Include/core_cm4.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 stm32f4xx_dcmi.c
-C:\Users\Jure\AppData\Local\Temp\ccJlWoPR.s:18     .text:00000000 $t
-C:\Users\Jure\AppData\Local\Temp\ccJlWoPR.s:23     .text:00000000 DCMI_DeInit
-C:\Users\Jure\AppData\Local\Temp\ccJlWoPR.s:85     .text:0000006c DCMI_Init
-C:\Users\Jure\AppData\Local\Temp\ccJlWoPR.s:184    .text:00000100 DCMI_StructInit
-C:\Users\Jure\AppData\Local\Temp\ccJlWoPR.s:243    .text:0000014c DCMI_CROPConfig
-C:\Users\Jure\AppData\Local\Temp\ccJlWoPR.s:300    .text:00000194 DCMI_CROPCmd
-C:\Users\Jure\AppData\Local\Temp\ccJlWoPR.s:355    .text:000001e0 DCMI_SetEmbeddedSynchroCodes
-C:\Users\Jure\AppData\Local\Temp\ccJlWoPR.s:411    .text:00000220 DCMI_JPEGCmd
-C:\Users\Jure\AppData\Local\Temp\ccJlWoPR.s:466    .text:0000026c DCMI_Cmd
-C:\Users\Jure\AppData\Local\Temp\ccJlWoPR.s:521    .text:000002b8 DCMI_CaptureCmd
-C:\Users\Jure\AppData\Local\Temp\ccJlWoPR.s:576    .text:00000304 DCMI_ReadData
-C:\Users\Jure\AppData\Local\Temp\ccJlWoPR.s:607    .text:0000031c DCMI_ITConfig
-C:\Users\Jure\AppData\Local\Temp\ccJlWoPR.s:668    .text:00000374 DCMI_GetFlagStatus
-C:\Users\Jure\AppData\Local\Temp\ccJlWoPR.s:757    .text:000003f0 DCMI_ClearFlag
-C:\Users\Jure\AppData\Local\Temp\ccJlWoPR.s:794    .text:00000410 DCMI_GetITStatus
-C:\Users\Jure\AppData\Local\Temp\ccJlWoPR.s:855    .text:00000458 DCMI_ClearITPendingBit
+C:\Users\Jure\AppData\Local\Temp\ccnGqiiA.s:18     .text:00000000 $t
+C:\Users\Jure\AppData\Local\Temp\ccnGqiiA.s:23     .text:00000000 DCMI_DeInit
+C:\Users\Jure\AppData\Local\Temp\ccnGqiiA.s:85     .text:0000006c DCMI_Init
+C:\Users\Jure\AppData\Local\Temp\ccnGqiiA.s:184    .text:00000100 DCMI_StructInit
+C:\Users\Jure\AppData\Local\Temp\ccnGqiiA.s:243    .text:0000014c DCMI_CROPConfig
+C:\Users\Jure\AppData\Local\Temp\ccnGqiiA.s:300    .text:00000194 DCMI_CROPCmd
+C:\Users\Jure\AppData\Local\Temp\ccnGqiiA.s:355    .text:000001e0 DCMI_SetEmbeddedSynchroCodes
+C:\Users\Jure\AppData\Local\Temp\ccnGqiiA.s:411    .text:00000220 DCMI_JPEGCmd
+C:\Users\Jure\AppData\Local\Temp\ccnGqiiA.s:466    .text:0000026c DCMI_Cmd
+C:\Users\Jure\AppData\Local\Temp\ccnGqiiA.s:521    .text:000002b8 DCMI_CaptureCmd
+C:\Users\Jure\AppData\Local\Temp\ccnGqiiA.s:576    .text:00000304 DCMI_ReadData
+C:\Users\Jure\AppData\Local\Temp\ccnGqiiA.s:607    .text:0000031c DCMI_ITConfig
+C:\Users\Jure\AppData\Local\Temp\ccnGqiiA.s:668    .text:00000374 DCMI_GetFlagStatus
+C:\Users\Jure\AppData\Local\Temp\ccnGqiiA.s:757    .text:000003f0 DCMI_ClearFlag
+C:\Users\Jure\AppData\Local\Temp\ccnGqiiA.s:794    .text:00000410 DCMI_GetITStatus
+C:\Users\Jure\AppData\Local\Temp\ccnGqiiA.s:855    .text:00000458 DCMI_ClearITPendingBit
                      .debug_frame:00000010 $d
 
 NO UNDEFINED SYMBOLS

@@ -47,6 +47,10 @@
 #define DMA_USART3		DMA1_Stream4
 #define DMA_I2C2_TX		DMA1_Stream7
 #define DMA_I2C2_RX		DMA1_Stream3
+#define DMA_DAC1		DMA1_Stream5
+
+// DAC macros
+#define DAC_DHR12R1_ADDRESS    0x40007408
 
 // LED macros
 #define LED_ERR_ON		GPIO_WriteBit(GPIOD, GPIO_Pin_8, 1)
@@ -74,6 +78,7 @@
 #define SCR_STOP_GPS		0x0800
 #define SCR_START_AD		0x1000
 #define SCR_INIT_SENSORS	0x2000
+#define SCR_DEC_DAC_FREQ	0x4000
 
 // SCR2 macros
 #define SCR2_ACCOK			0x0001
