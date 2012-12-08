@@ -3391,40 +3391,40 @@
  2080              		.file 6 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\CMSIS\\Include/core_cm4.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 stm32f4xx_i2c.c
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:18     .text:00000000 $t
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:23     .text:00000000 I2C_DeInit
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:101    .text:00000088 I2C_Init
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:333    .text:00000234 I2C_StructInit
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:388    .text:00000278 I2C_Cmd
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:444    .text:000002b8 I2C_GenerateSTART
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:500    .text:000002f8 I2C_GenerateSTOP
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:556    .text:00000338 I2C_Send7bitAddress
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:611    .text:00000374 I2C_AcknowledgeConfig
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:667    .text:000003b4 I2C_OwnAddress2Config
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:724    .text:000003f8 I2C_DualAddressCmd
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:780    .text:00000438 I2C_GeneralCallCmd
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:836    .text:00000478 I2C_SoftwareResetCmd
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:894    .text:000004c0 I2C_StretchClockCmd
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:950    .text:00000500 I2C_FastModeDutyCycleConfig
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:1006   .text:00000540 I2C_NACKPositionConfig
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:1062   .text:00000580 I2C_SMBusAlertConfig
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:1118   .text:000005c0 I2C_ARPCmd
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:1174   .text:00000600 I2C_SendData
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:1212   .text:00000620 I2C_ReceiveData
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:1249   .text:0000063c I2C_TransmitPEC
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:1305   .text:0000067c I2C_PECPositionConfig
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:1361   .text:000006bc I2C_CalculatePEC
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:1417   .text:000006fc I2C_GetPEC
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:1456   .text:00000720 I2C_DMACmd
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:1512   .text:00000760 I2C_DMALastTransferCmd
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:1568   .text:000007a0 I2C_ReadRegister
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:1617   .text:000007d0 I2C_ITConfig
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:1679   .text:00000818 I2C_CheckEvent
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:1761   .text:00000888 I2C_GetLastEvent
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:1823   .text:000008d4 I2C_GetFlagStatus
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:1912   .text:0000094c I2C_ClearFlag
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:1958   .text:0000097c I2C_GetITStatus
-C:\Users\Jure\AppData\Local\Temp\ccavV1S8.s:2034   .text:000009e0 I2C_ClearITPendingBit
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:18     .text:00000000 $t
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:23     .text:00000000 I2C_DeInit
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:101    .text:00000088 I2C_Init
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:333    .text:00000234 I2C_StructInit
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:388    .text:00000278 I2C_Cmd
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:444    .text:000002b8 I2C_GenerateSTART
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:500    .text:000002f8 I2C_GenerateSTOP
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:556    .text:00000338 I2C_Send7bitAddress
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:611    .text:00000374 I2C_AcknowledgeConfig
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:667    .text:000003b4 I2C_OwnAddress2Config
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:724    .text:000003f8 I2C_DualAddressCmd
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:780    .text:00000438 I2C_GeneralCallCmd
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:836    .text:00000478 I2C_SoftwareResetCmd
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:894    .text:000004c0 I2C_StretchClockCmd
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:950    .text:00000500 I2C_FastModeDutyCycleConfig
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:1006   .text:00000540 I2C_NACKPositionConfig
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:1062   .text:00000580 I2C_SMBusAlertConfig
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:1118   .text:000005c0 I2C_ARPCmd
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:1174   .text:00000600 I2C_SendData
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:1212   .text:00000620 I2C_ReceiveData
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:1249   .text:0000063c I2C_TransmitPEC
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:1305   .text:0000067c I2C_PECPositionConfig
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:1361   .text:000006bc I2C_CalculatePEC
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:1417   .text:000006fc I2C_GetPEC
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:1456   .text:00000720 I2C_DMACmd
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:1512   .text:00000760 I2C_DMALastTransferCmd
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:1568   .text:000007a0 I2C_ReadRegister
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:1617   .text:000007d0 I2C_ITConfig
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:1679   .text:00000818 I2C_CheckEvent
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:1761   .text:00000888 I2C_GetLastEvent
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:1823   .text:000008d4 I2C_GetFlagStatus
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:1912   .text:0000094c I2C_ClearFlag
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:1958   .text:0000097c I2C_GetITStatus
+C:\Users\Jure\AppData\Local\Temp\ccXM0omi.s:2034   .text:000009e0 I2C_ClearITPendingBit
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

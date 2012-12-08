@@ -1065,15 +1065,15 @@
  806              		.file 8 "c:\\program files (x86)\\codesourcery\\eabi\\bin\\../lib/gcc/arm-none-eabi/4.6.3/../../..
 DEFINED SYMBOLS
                             *ABS*:00000000 tiny_printf.c
-C:\Users\Jure\AppData\Local\Temp\ccpYP3Fx.s:18     .text:00000000 $t
-C:\Users\Jure\AppData\Local\Temp\ccpYP3Fx.s:23     .text:00000000 ts_itoa
-C:\Users\Jure\AppData\Local\Temp\ccpYP3Fx.s:131    .text:0000009c ts_formatstring
-C:\Users\Jure\AppData\Local\Temp\ccpYP3Fx.s:349    .text:00000200 ts_formatlength
-C:\Users\Jure\AppData\Local\Temp\ccpYP3Fx.s:393    .text:00000238 $d
-C:\Users\Jure\AppData\Local\Temp\ccpYP3Fx.s:428    .text:000002bc $t
-C:\Users\Jure\AppData\Local\Temp\ccpYP3Fx.s:531    .text:00000358 sprintf
-C:\Users\Jure\AppData\Local\Temp\ccpYP3Fx.s:581    .text:00000388 fprintf
-C:\Users\Jure\AppData\Local\Temp\ccpYP3Fx.s:694    .text:00000448 printf
+C:\Users\Jure\AppData\Local\Temp\cc0t0huO.s:18     .text:00000000 $t
+C:\Users\Jure\AppData\Local\Temp\cc0t0huO.s:23     .text:00000000 ts_itoa
+C:\Users\Jure\AppData\Local\Temp\cc0t0huO.s:131    .text:0000009c ts_formatstring
+C:\Users\Jure\AppData\Local\Temp\cc0t0huO.s:349    .text:00000200 ts_formatlength
+C:\Users\Jure\AppData\Local\Temp\cc0t0huO.s:393    .text:00000238 $d
+C:\Users\Jure\AppData\Local\Temp\cc0t0huO.s:428    .text:000002bc $t
+C:\Users\Jure\AppData\Local\Temp\cc0t0huO.s:531    .text:00000358 sprintf
+C:\Users\Jure\AppData\Local\Temp\cc0t0huO.s:581    .text:00000388 fprintf
+C:\Users\Jure\AppData\Local\Temp\cc0t0huO.s:694    .text:00000448 printf
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

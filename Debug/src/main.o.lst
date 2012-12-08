@@ -889,10 +889,10 @@
  607              		.file 8 "../src/sensors.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 main.c
-C:\Users\Jure\AppData\Local\Temp\ccpNKGg8.s:18     .text:00000000 $t
-C:\Users\Jure\AppData\Local\Temp\ccpNKGg8.s:23     .text:00000000 main
-C:\Users\Jure\AppData\Local\Temp\ccpNKGg8.s:420    .text:00000408 $d
-C:\Users\Jure\AppData\Local\Temp\ccpNKGg8.s:424    .text:0000040c $t
+C:\Users\Jure\AppData\Local\Temp\ccJXhI52.s:18     .text:00000000 $t
+C:\Users\Jure\AppData\Local\Temp\ccJXhI52.s:23     .text:00000000 main
+C:\Users\Jure\AppData\Local\Temp\ccJXhI52.s:420    .text:00000408 $d
+C:\Users\Jure\AppData\Local\Temp\ccJXhI52.s:424    .text:0000040c $t
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

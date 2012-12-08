@@ -4599,32 +4599,32 @@
  2928              		.file 5 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\CMSIS\\Include/core_cm4.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 stm32f4xx_can.c
-C:\Users\Jure\AppData\Local\Temp\ccS0N8lb.s:18     .text:00000000 $t
-C:\Users\Jure\AppData\Local\Temp\ccS0N8lb.s:23     .text:00000000 CAN_DeInit
-C:\Users\Jure\AppData\Local\Temp\ccS0N8lb.s:79     .text:00000050 CAN_Init
-C:\Users\Jure\AppData\Local\Temp\ccS0N8lb.s:360    .text:00000210 CAN_FilterInit
-C:\Users\Jure\AppData\Local\Temp\ccS0N8lb.s:602    .text:00000420 CAN_StructInit
-C:\Users\Jure\AppData\Local\Temp\ccS0N8lb.s:677    .text:0000048c CAN_SlaveStartBank
-C:\Users\Jure\AppData\Local\Temp\ccS0N8lb.s:744    .text:00000518 CAN_DBGFreeze
-C:\Users\Jure\AppData\Local\Temp\ccS0N8lb.s:796    .text:00000550 CAN_TTComModeCmd
-C:\Users\Jure\AppData\Local\Temp\ccS0N8lb.s:884    .text:000005e8 CAN_Transmit
-C:\Users\Jure\AppData\Local\Temp\ccS0N8lb.s:1143   .text:000007c4 CAN_TransmitStatus
-C:\Users\Jure\AppData\Local\Temp\ccS0N8lb.s:1312   .text:000008d0 CAN_CancelTransmit
-C:\Users\Jure\AppData\Local\Temp\ccS0N8lb.s:1384   .text:00000920 CAN_Receive
-C:\Users\Jure\AppData\Local\Temp\ccS0N8lb.s:1598   .text:00000ac8 CAN_FIFORelease
-C:\Users\Jure\AppData\Local\Temp\ccS0N8lb.s:1650   .text:00000b00 CAN_MessagePending
-C:\Users\Jure\AppData\Local\Temp\ccS0N8lb.s:1717   .text:00000b50 CAN_OperatingModeRequest
-C:\Users\Jure\AppData\Local\Temp\ccS0N8lb.s:1900   .text:00000c64 CAN_Sleep
-C:\Users\Jure\AppData\Local\Temp\ccS0N8lb.s:1954   .text:00000ca4 CAN_WakeUp
-C:\Users\Jure\AppData\Local\Temp\ccS0N8lb.s:2029   .text:00000d00 CAN_GetLastErrorCode
-C:\Users\Jure\AppData\Local\Temp\ccS0N8lb.s:2072   .text:00000d28 CAN_GetReceiveErrorCounter
-C:\Users\Jure\AppData\Local\Temp\ccS0N8lb.s:2114   .text:00000d50 CAN_GetLSBTransmitErrorCounter
-C:\Users\Jure\AppData\Local\Temp\ccS0N8lb.s:2157   .text:00000d7c CAN_ITConfig
-C:\Users\Jure\AppData\Local\Temp\ccS0N8lb.s:2213   .text:00000db8 CAN_GetFlagStatus
-C:\Users\Jure\AppData\Local\Temp\ccS0N8lb.s:2365   .text:00000eb0 CAN_ClearFlag
-C:\Users\Jure\AppData\Local\Temp\ccS0N8lb.s:2455   .text:00000f2c CAN_GetITStatus
-C:\Users\Jure\AppData\Local\Temp\ccS0N8lb.s:2876   .text:000011e0 CheckITStatus
-C:\Users\Jure\AppData\Local\Temp\ccS0N8lb.s:2709   .text:000010e4 CAN_ClearITPendingBit
+C:\Users\Jure\AppData\Local\Temp\ccbLIrVp.s:18     .text:00000000 $t
+C:\Users\Jure\AppData\Local\Temp\ccbLIrVp.s:23     .text:00000000 CAN_DeInit
+C:\Users\Jure\AppData\Local\Temp\ccbLIrVp.s:79     .text:00000050 CAN_Init
+C:\Users\Jure\AppData\Local\Temp\ccbLIrVp.s:360    .text:00000210 CAN_FilterInit
+C:\Users\Jure\AppData\Local\Temp\ccbLIrVp.s:602    .text:00000420 CAN_StructInit
+C:\Users\Jure\AppData\Local\Temp\ccbLIrVp.s:677    .text:0000048c CAN_SlaveStartBank
+C:\Users\Jure\AppData\Local\Temp\ccbLIrVp.s:744    .text:00000518 CAN_DBGFreeze
+C:\Users\Jure\AppData\Local\Temp\ccbLIrVp.s:796    .text:00000550 CAN_TTComModeCmd
+C:\Users\Jure\AppData\Local\Temp\ccbLIrVp.s:884    .text:000005e8 CAN_Transmit
+C:\Users\Jure\AppData\Local\Temp\ccbLIrVp.s:1143   .text:000007c4 CAN_TransmitStatus
+C:\Users\Jure\AppData\Local\Temp\ccbLIrVp.s:1312   .text:000008d0 CAN_CancelTransmit
+C:\Users\Jure\AppData\Local\Temp\ccbLIrVp.s:1384   .text:00000920 CAN_Receive
+C:\Users\Jure\AppData\Local\Temp\ccbLIrVp.s:1598   .text:00000ac8 CAN_FIFORelease
+C:\Users\Jure\AppData\Local\Temp\ccbLIrVp.s:1650   .text:00000b00 CAN_MessagePending
+C:\Users\Jure\AppData\Local\Temp\ccbLIrVp.s:1717   .text:00000b50 CAN_OperatingModeRequest
+C:\Users\Jure\AppData\Local\Temp\ccbLIrVp.s:1900   .text:00000c64 CAN_Sleep
+C:\Users\Jure\AppData\Local\Temp\ccbLIrVp.s:1954   .text:00000ca4 CAN_WakeUp
+C:\Users\Jure\AppData\Local\Temp\ccbLIrVp.s:2029   .text:00000d00 CAN_GetLastErrorCode
+C:\Users\Jure\AppData\Local\Temp\ccbLIrVp.s:2072   .text:00000d28 CAN_GetReceiveErrorCounter
+C:\Users\Jure\AppData\Local\Temp\ccbLIrVp.s:2114   .text:00000d50 CAN_GetLSBTransmitErrorCounter
+C:\Users\Jure\AppData\Local\Temp\ccbLIrVp.s:2157   .text:00000d7c CAN_ITConfig
+C:\Users\Jure\AppData\Local\Temp\ccbLIrVp.s:2213   .text:00000db8 CAN_GetFlagStatus
+C:\Users\Jure\AppData\Local\Temp\ccbLIrVp.s:2365   .text:00000eb0 CAN_ClearFlag
+C:\Users\Jure\AppData\Local\Temp\ccbLIrVp.s:2455   .text:00000f2c CAN_GetITStatus
+C:\Users\Jure\AppData\Local\Temp\ccbLIrVp.s:2876   .text:000011e0 CheckITStatus
+C:\Users\Jure\AppData\Local\Temp\ccbLIrVp.s:2709   .text:000010e4 CAN_ClearITPendingBit
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

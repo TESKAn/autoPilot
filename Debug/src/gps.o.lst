@@ -3396,30 +3396,30 @@ DEFINED SYMBOLS
                             *COM*:00000040 GPS_DataBuffer
                             *COM*:00000040 GPS_RECDATA
                             *COM*:00000010 GPS_Digits
-C:\Users\Jure\AppData\Local\Temp\ccETy017.s:25     .bss:00000000 GPS_ProcesState
-C:\Users\Jure\AppData\Local\Temp\ccETy017.s:26     .bss:00000000 $d
-C:\Users\Jure\AppData\Local\Temp\ccETy017.s:30     .bss:00000001 GPS_NextData
-C:\Users\Jure\AppData\Local\Temp\ccETy017.s:35     .bss:00000002 GPS_Checksum
-C:\Users\Jure\AppData\Local\Temp\ccETy017.s:40     .bss:00000003 GPS_Checksum_Save
+C:\Users\Jure\AppData\Local\Temp\cczwSIhU.s:25     .bss:00000000 GPS_ProcesState
+C:\Users\Jure\AppData\Local\Temp\cczwSIhU.s:26     .bss:00000000 $d
+C:\Users\Jure\AppData\Local\Temp\cczwSIhU.s:30     .bss:00000001 GPS_NextData
+C:\Users\Jure\AppData\Local\Temp\cczwSIhU.s:35     .bss:00000002 GPS_Checksum
+C:\Users\Jure\AppData\Local\Temp\cczwSIhU.s:40     .bss:00000003 GPS_Checksum_Save
                             *COM*:00000002 GPS_ReceivedChecksum
-C:\Users\Jure\AppData\Local\Temp\ccETy017.s:46     .bss:00000004 GPS_ChecksumCounter
-C:\Users\Jure\AppData\Local\Temp\ccETy017.s:52     .bss:00000006 GPS_DataTemp
-C:\Users\Jure\AppData\Local\Temp\ccETy017.s:57     .bss:00000008 GPS_DataTemp_Count
-C:\Users\Jure\AppData\Local\Temp\ccETy017.s:62     .bss:00000009 GPS_Digits_Count
+C:\Users\Jure\AppData\Local\Temp\cczwSIhU.s:46     .bss:00000004 GPS_ChecksumCounter
+C:\Users\Jure\AppData\Local\Temp\cczwSIhU.s:52     .bss:00000006 GPS_DataTemp
+C:\Users\Jure\AppData\Local\Temp\cczwSIhU.s:57     .bss:00000008 GPS_DataTemp_Count
+C:\Users\Jure\AppData\Local\Temp\cczwSIhU.s:62     .bss:00000009 GPS_Digits_Count
                             *COM*:00000008 GPSFlag
-C:\Users\Jure\AppData\Local\Temp\ccETy017.s:66     .text:00000000 $t
-C:\Users\Jure\AppData\Local\Temp\ccETy017.s:71     .text:00000000 GPSStopOutput
-C:\Users\Jure\AppData\Local\Temp\ccETy017.s:546    .text:000003c8 GPS_CalculateChecksum
-C:\Users\Jure\AppData\Local\Temp\ccETy017.s:476    .text:00000374 GPS_GetChar
-C:\Users\Jure\AppData\Local\Temp\ccETy017.s:269    .text:000001ac GPSSetDataOutput
-C:\Users\Jure\AppData\Local\Temp\ccETy017.s:617    .text:00000428 GPS_CharToByte
-C:\Users\Jure\AppData\Local\Temp\ccETy017.s:654    .text:00000448 GPS_ReceiveProcess
-C:\Users\Jure\AppData\Local\Temp\ccETy017.s:695    .text:00000484 $d
-C:\Users\Jure\AppData\Local\Temp\ccETy017.s:701    .text:00000494 $t
-C:\Users\Jure\AppData\Local\Temp\ccETy017.s:758    .text:00000524 $d
-C:\Users\Jure\AppData\Local\Temp\ccETy017.s:780    .text:00000574 $t
-C:\Users\Jure\AppData\Local\Temp\ccETy017.s:1718   .text:00000ebc $d
-C:\Users\Jure\AppData\Local\Temp\ccETy017.s:1740   .text:00000f0c $t
+C:\Users\Jure\AppData\Local\Temp\cczwSIhU.s:66     .text:00000000 $t
+C:\Users\Jure\AppData\Local\Temp\cczwSIhU.s:71     .text:00000000 GPSStopOutput
+C:\Users\Jure\AppData\Local\Temp\cczwSIhU.s:546    .text:000003c8 GPS_CalculateChecksum
+C:\Users\Jure\AppData\Local\Temp\cczwSIhU.s:476    .text:00000374 GPS_GetChar
+C:\Users\Jure\AppData\Local\Temp\cczwSIhU.s:269    .text:000001ac GPSSetDataOutput
+C:\Users\Jure\AppData\Local\Temp\cczwSIhU.s:617    .text:00000428 GPS_CharToByte
+C:\Users\Jure\AppData\Local\Temp\cczwSIhU.s:654    .text:00000448 GPS_ReceiveProcess
+C:\Users\Jure\AppData\Local\Temp\cczwSIhU.s:695    .text:00000484 $d
+C:\Users\Jure\AppData\Local\Temp\cczwSIhU.s:701    .text:00000494 $t
+C:\Users\Jure\AppData\Local\Temp\cczwSIhU.s:758    .text:00000524 $d
+C:\Users\Jure\AppData\Local\Temp\cczwSIhU.s:780    .text:00000574 $t
+C:\Users\Jure\AppData\Local\Temp\cczwSIhU.s:1718   .text:00000ebc $d
+C:\Users\Jure\AppData\Local\Temp\cczwSIhU.s:1740   .text:00000f0c $t
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS
