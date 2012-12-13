@@ -2,5 +2,11 @@
 *~
 Debug/src/
 Debug/Libraries
+Debug/USB
 .svn/
 *.o
+*.map
+*.bin
+*.hex
+*.elf
+*.lst
