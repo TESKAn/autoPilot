@@ -2700,38 +2700,38 @@
  2068              	.LFE121:
  2070              	.Letext0:
  2071              		.file 2 "c:\\program files (x86)\\codesourcery\\eabi\\bin\\../lib/gcc/arm-none-eabi/4.6.3/../../..
- 2072              		.file 3 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\Device\\STM32F4xx\\Include/s
- 2073              		.file 4 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\STM32F4xx_StdPeriph_Driver\\
+ 2072              		.file 3 "D:\\Jure\\Projekti\\Git\\AutoPilot\\autopilot_sw\\Libraries\\Device\\STM32F4xx\\Include/s
+ 2073              		.file 4 "D:\\Jure\\Projekti\\Git\\AutoPilot\\autopilot_sw\\Libraries\\STM32F4xx_StdPeriph_Driver\\
  2074              		.file 5 "../src/var.h"
- 2075              		.file 6 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\CMSIS\\Include/core_cm4.h"
+ 2075              		.file 6 "D:\\Jure\\Projekti\\Git\\AutoPilot\\autopilot_sw\\Libraries\\CMSIS\\Include/core_cm4.h"
  2076              		.file 7 "../src/modbus.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 sensors.c
-C:\Users\Jure\AppData\Local\Temp\ccizSWlj.s:23     .bss:00000000 I2C2_ProcesState
-C:\Users\Jure\AppData\Local\Temp\ccizSWlj.s:20     .bss:00000000 $d
+C:\Users\Jure\AppData\Local\Temp\ccW4tMgc.s:23     .bss:00000000 I2C2_ProcesState
+C:\Users\Jure\AppData\Local\Temp\ccW4tMgc.s:20     .bss:00000000 $d
                             *COM*:00000008 I2C2_Flags
-C:\Users\Jure\AppData\Local\Temp\ccizSWlj.s:30     .bss:00000002 I2C2_StartReg
-C:\Users\Jure\AppData\Local\Temp\ccizSWlj.s:36     .bss:00000004 I2C2_ReadData
-C:\Users\Jure\AppData\Local\Temp\ccizSWlj.s:42     .bss:00000006 I2C2_WriteData
-C:\Users\Jure\AppData\Local\Temp\ccizSWlj.s:47     .bss:00000008 I2C2_DeviceAddress
+C:\Users\Jure\AppData\Local\Temp\ccW4tMgc.s:30     .bss:00000002 I2C2_StartReg
+C:\Users\Jure\AppData\Local\Temp\ccW4tMgc.s:36     .bss:00000004 I2C2_ReadData
+C:\Users\Jure\AppData\Local\Temp\ccW4tMgc.s:42     .bss:00000006 I2C2_WriteData
+C:\Users\Jure\AppData\Local\Temp\ccW4tMgc.s:47     .bss:00000008 I2C2_DeviceAddress
                             *COM*:00000080 I2C2_DMABufTX
                             *COM*:00000080 I2C2_DMABufRX
-C:\Users\Jure\AppData\Local\Temp\ccizSWlj.s:55     .bss:0000000c I2C2_DMABufTXCount
-C:\Users\Jure\AppData\Local\Temp\ccizSWlj.s:61     .bss:00000010 I2C2_DMABufRXCount
-C:\Users\Jure\AppData\Local\Temp\ccizSWlj.s:67     .bss:00000014 I2C2_PollTimer
-C:\Users\Jure\AppData\Local\Temp\ccizSWlj.s:70     .text:00000000 $t
-C:\Users\Jure\AppData\Local\Temp\ccizSWlj.s:75     .text:00000000 sensorInit
-C:\Users\Jure\AppData\Local\Temp\ccizSWlj.s:1547   .text:00000cb4 masterReceive
-C:\Users\Jure\AppData\Local\Temp\ccizSWlj.s:1026   .text:0000082c masterSend
-C:\Users\Jure\AppData\Local\Temp\ccizSWlj.s:482    .text:0000042c MPU6000_Enable
-C:\Users\Jure\AppData\Local\Temp\ccizSWlj.s:602    .text:00000524 MPU6000_EnableI2CBypass
-C:\Users\Jure\AppData\Local\Temp\ccizSWlj.s:860    .text:00000700 HMC5883_Enable
-C:\Users\Jure\AppData\Local\Temp\ccizSWlj.s:938    .text:00000788 MPL3115A2_Enable
-C:\Users\Jure\AppData\Local\Temp\ccizSWlj.s:689    .text:000005c0 MPU6000_ConfigureI2CMaster
-C:\Users\Jure\AppData\Local\Temp\ccizSWlj.s:773    .text:00000664 MPU6000_EnableI2CMaster
-C:\Users\Jure\AppData\Local\Temp\ccizSWlj.s:204    .text:00000120 copySensorData
-C:\Users\Jure\AppData\Local\Temp\ccizSWlj.s:1290   .text:00000a6c masterReceive_beginDMA
-C:\Users\Jure\AppData\Local\Temp\ccizSWlj.s:1838   .text:00000f48 masterReceive_HMC5883L
+C:\Users\Jure\AppData\Local\Temp\ccW4tMgc.s:55     .bss:0000000c I2C2_DMABufTXCount
+C:\Users\Jure\AppData\Local\Temp\ccW4tMgc.s:61     .bss:00000010 I2C2_DMABufRXCount
+C:\Users\Jure\AppData\Local\Temp\ccW4tMgc.s:67     .bss:00000014 I2C2_PollTimer
+C:\Users\Jure\AppData\Local\Temp\ccW4tMgc.s:70     .text:00000000 $t
+C:\Users\Jure\AppData\Local\Temp\ccW4tMgc.s:75     .text:00000000 sensorInit
+C:\Users\Jure\AppData\Local\Temp\ccW4tMgc.s:1547   .text:00000cb4 masterReceive
+C:\Users\Jure\AppData\Local\Temp\ccW4tMgc.s:1026   .text:0000082c masterSend
+C:\Users\Jure\AppData\Local\Temp\ccW4tMgc.s:482    .text:0000042c MPU6000_Enable
+C:\Users\Jure\AppData\Local\Temp\ccW4tMgc.s:602    .text:00000524 MPU6000_EnableI2CBypass
+C:\Users\Jure\AppData\Local\Temp\ccW4tMgc.s:860    .text:00000700 HMC5883_Enable
+C:\Users\Jure\AppData\Local\Temp\ccW4tMgc.s:938    .text:00000788 MPL3115A2_Enable
+C:\Users\Jure\AppData\Local\Temp\ccW4tMgc.s:689    .text:000005c0 MPU6000_ConfigureI2CMaster
+C:\Users\Jure\AppData\Local\Temp\ccW4tMgc.s:773    .text:00000664 MPU6000_EnableI2CMaster
+C:\Users\Jure\AppData\Local\Temp\ccW4tMgc.s:204    .text:00000120 copySensorData
+C:\Users\Jure\AppData\Local\Temp\ccW4tMgc.s:1290   .text:00000a6c masterReceive_beginDMA
+C:\Users\Jure\AppData\Local\Temp\ccW4tMgc.s:1838   .text:00000f48 masterReceive_HMC5883L
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

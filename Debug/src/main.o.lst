@@ -66,10 +66,12 @@
   42:../src/main.c ****  * ===========================================================================
   43:../src/main.c ****  */
   44:../src/main.c **** 
-  45:../src/main.c **** 
-  46:../src/main.c **** int main(void)
-  47:../src/main.c **** {
-  26              		.loc 1 47 0
+  45:../src/main.c **** // Using Git for versioning
+  46:../src/main.c **** 
+  47:../src/main.c **** 
+  48:../src/main.c **** int main(void)
+  49:../src/main.c **** {
+  26              		.loc 1 49 0
   27              		.cfi_startproc
   28              		@ args = 0, pretend = 0, frame = 0
   29              		@ frame_needed = 1, uses_anonymous_args = 0
@@ -81,277 +83,277 @@
   35 0002 00AF     		add	r7, sp, #0
   36              	.LCFI1:
   37              		.cfi_def_cfa_register 7
-  48:../src/main.c **** 	// Startup delay - 0,5 sec
-  49:../src/main.c **** 	Delaynus(500000);
-  38              		.loc 1 49 0
+  50:../src/main.c **** 	// Startup delay - 0,5 sec
+  51:../src/main.c **** 	Delaynus(500000);
+  38              		.loc 1 51 0
   39 0004 4AF22010 		movw	r0, #41248
   40 0008 C0F20700 		movt	r0, 7
   41 000c FFF7FEFF 		bl	Delaynus
-  50:../src/main.c **** 	//configure hardware
-  51:../src/main.c **** 	System_Config();
-  42              		.loc 1 51 0
+  52:../src/main.c **** 	//configure hardware
+  53:../src/main.c **** 	System_Config();
+  42              		.loc 1 53 0
   43 0010 FFF7FEFF 		bl	System_Config
-  52:../src/main.c **** 	// Set LED OK = 1
-  53:../src/main.c **** 	LED_OK_ON;
-  44              		.loc 1 53 0
+  54:../src/main.c **** 	// Set LED OK = 1
+  55:../src/main.c **** 	LED_OK_ON;
+  44              		.loc 1 55 0
   45 0014 4FF44060 		mov	r0, #3072
   46 0018 C4F20200 		movt	r0, 16386
   47 001c 4FF40071 		mov	r1, #512
   48 0020 4FF00102 		mov	r2, #1
   49 0024 FFF7FEFF 		bl	GPIO_WriteBit
-  54:../src/main.c **** 	// Set default PWM out values
-  55:../src/main.c **** 	PWMOUT_1 = TIM1_PULSE;
-  50              		.loc 1 55 0
+  56:../src/main.c **** 	// Set default PWM out values
+  57:../src/main.c **** 	PWMOUT_1 = TIM1_PULSE;
+  50              		.loc 1 57 0
   51 0028 40F20003 		movw	r3, #:lower16:MODBUSReg
   52 002c C0F20003 		movt	r3, #:upper16:MODBUSReg
   53 0030 40F63402 		movw	r2, #2100
   54 0034 A3F86C20 		strh	r2, [r3, #108]	@ movhi
-  56:../src/main.c **** 	PWMOUT_2 = TIM1_PULSE;
-  55              		.loc 1 56 0
+  58:../src/main.c **** 	PWMOUT_2 = TIM1_PULSE;
+  55              		.loc 1 58 0
   56 0038 40F20003 		movw	r3, #:lower16:MODBUSReg
   57 003c C0F20003 		movt	r3, #:upper16:MODBUSReg
   58 0040 40F63402 		movw	r2, #2100
   59 0044 A3F86E20 		strh	r2, [r3, #110]	@ movhi
-  57:../src/main.c **** 	PWMOUT_3 = TIM1_PULSE;
-  60              		.loc 1 57 0
+  59:../src/main.c **** 	PWMOUT_3 = TIM1_PULSE;
+  60              		.loc 1 59 0
   61 0048 40F20003 		movw	r3, #:lower16:MODBUSReg
   62 004c C0F20003 		movt	r3, #:upper16:MODBUSReg
   63 0050 40F63402 		movw	r2, #2100
   64 0054 A3F87020 		strh	r2, [r3, #112]	@ movhi
-  58:../src/main.c **** 	PWMOUT_4 = TIM1_PULSE;
-  65              		.loc 1 58 0
+  60:../src/main.c **** 	PWMOUT_4 = TIM1_PULSE;
+  65              		.loc 1 60 0
   66 0058 40F20003 		movw	r3, #:lower16:MODBUSReg
   67 005c C0F20003 		movt	r3, #:upper16:MODBUSReg
   68 0060 40F63402 		movw	r2, #2100
   69 0064 A3F87220 		strh	r2, [r3, #114]	@ movhi
-  59:../src/main.c **** 	PWMOUT_5 = TIM1_PULSE;
-  70              		.loc 1 59 0
+  61:../src/main.c **** 	PWMOUT_5 = TIM1_PULSE;
+  70              		.loc 1 61 0
   71 0068 40F20003 		movw	r3, #:lower16:MODBUSReg
   72 006c C0F20003 		movt	r3, #:upper16:MODBUSReg
   73 0070 40F63402 		movw	r2, #2100
   74 0074 A3F87420 		strh	r2, [r3, #116]	@ movhi
-  60:../src/main.c **** 	PWMOUT_6 = TIM1_PULSE;
-  75              		.loc 1 60 0
+  62:../src/main.c **** 	PWMOUT_6 = TIM1_PULSE;
+  75              		.loc 1 62 0
   76 0078 40F20003 		movw	r3, #:lower16:MODBUSReg
   77 007c C0F20003 		movt	r3, #:upper16:MODBUSReg
   78 0080 40F63402 		movw	r2, #2100
   79 0084 A3F87620 		strh	r2, [r3, #118]	@ movhi
-  61:../src/main.c **** 	PWMOUT_7 = TIM1_PULSE;
-  80              		.loc 1 61 0
+  63:../src/main.c **** 	PWMOUT_7 = TIM1_PULSE;
+  80              		.loc 1 63 0
   81 0088 40F20003 		movw	r3, #:lower16:MODBUSReg
   82 008c C0F20003 		movt	r3, #:upper16:MODBUSReg
   83 0090 40F63402 		movw	r2, #2100
   84 0094 A3F87820 		strh	r2, [r3, #120]	@ movhi
-  62:../src/main.c **** 	PWMOUT_8 = TIM1_PULSE;
-  85              		.loc 1 62 0
+  64:../src/main.c **** 	PWMOUT_8 = TIM1_PULSE;
+  85              		.loc 1 64 0
   86 0098 40F20003 		movw	r3, #:lower16:MODBUSReg
   87 009c C0F20003 		movt	r3, #:upper16:MODBUSReg
   88 00a0 40F63402 		movw	r2, #2100
   89 00a4 A3F87A20 		strh	r2, [r3, #122]	@ movhi
-  63:../src/main.c **** 	PWMOUT_9 = TIM1_PULSE;
-  90              		.loc 1 63 0
+  65:../src/main.c **** 	PWMOUT_9 = TIM1_PULSE;
+  90              		.loc 1 65 0
   91 00a8 40F20003 		movw	r3, #:lower16:MODBUSReg
   92 00ac C0F20003 		movt	r3, #:upper16:MODBUSReg
   93 00b0 40F63402 		movw	r2, #2100
   94 00b4 A3F87C20 		strh	r2, [r3, #124]	@ movhi
-  64:../src/main.c **** 	PWMOUT_10 = TIM1_PULSE;
-  95              		.loc 1 64 0
+  66:../src/main.c **** 	PWMOUT_10 = TIM1_PULSE;
+  95              		.loc 1 66 0
   96 00b8 40F20003 		movw	r3, #:lower16:MODBUSReg
   97 00bc C0F20003 		movt	r3, #:upper16:MODBUSReg
   98 00c0 40F63402 		movw	r2, #2100
   99 00c4 A3F87E20 		strh	r2, [r3, #126]	@ movhi
-  65:../src/main.c **** 	PWMOUT_11 = TIM1_PULSE;
- 100              		.loc 1 65 0
+  67:../src/main.c **** 	PWMOUT_11 = TIM1_PULSE;
+ 100              		.loc 1 67 0
  101 00c8 40F20003 		movw	r3, #:lower16:MODBUSReg
  102 00cc C0F20003 		movt	r3, #:upper16:MODBUSReg
  103 00d0 40F63402 		movw	r2, #2100
  104 00d4 A3F88020 		strh	r2, [r3, #128]	@ movhi
-  66:../src/main.c **** 	PWMOUT_12 = TIM1_PULSE;
- 105              		.loc 1 66 0
+  68:../src/main.c **** 	PWMOUT_12 = TIM1_PULSE;
+ 105              		.loc 1 68 0
  106 00d8 40F20003 		movw	r3, #:lower16:MODBUSReg
  107 00dc C0F20003 		movt	r3, #:upper16:MODBUSReg
  108 00e0 40F63402 		movw	r2, #2100
  109 00e4 A3F88220 		strh	r2, [r3, #130]	@ movhi
  110 00e8 00E0     		b	.L21
  111              	.L22:
-  67:../src/main.c **** 
-  68:../src/main.c ****     while (1)
-  69:../src/main.c ****     {
-  70:../src/main.c ****         //Delaynus(1000000 / 2000);    /* A short delay */
-  71:../src/main.c ****         //Delaynus(1000000 / 2000);
-  72:../src/main.c ****         // Check MODBUS for messages
-  73:../src/main.c ****         if(MB_HASDATA)
-  74:../src/main.c ****         {
-  75:../src/main.c ****         	// Execute process data function
-  76:../src/main.c ****         	MODBUS_ExecuteFunction();
-  77:../src/main.c ****         	// Send data
-  78:../src/main.c ****         	// Enable DMA transfer
-  79:../src/main.c ****         	transferDMA_USART2(MODBUSData.bytes.cdata, MODBUSData.bytes.uiDataCount);
-  80:../src/main.c ****         	// Set MODBUS to IDLE
-  81:../src/main.c ****         	MB_SETTOIDLE;
-  82:../src/main.c ****         }
-  83:../src/main.c **** 
-  84:../src/main.c ****         //check SCR
-  85:../src/main.c ****         if(SCR1 & SCR_GETPSDATA)
-  86:../src/main.c ****         {
-  87:../src/main.c ****         	PSRequestData();
-  88:../src/main.c ****         	SCR1 = SCR1 & ~SCR_GETPSDATA;
-  89:../src/main.c ****         }
-  90:../src/main.c ****         if(SCR1 & SCR_SETPSI0)
-  91:../src/main.c ****         {
-  92:../src/main.c ****         	PSSetI0();
-  93:../src/main.c ****         	SCR1 = SCR1 & ~SCR_SETPSI0;
-  94:../src/main.c ****         }
-  95:../src/main.c ****         if(SCR1 & SCR_PSRESET)
-  96:../src/main.c ****         {
-  97:../src/main.c ****         	PSReset();
-  98:../src/main.c ****            	SCR1 = SCR1 & ~SCR_PSRESET;
-  99:../src/main.c ****         }
- 100:../src/main.c ****         if(SCR1 & SCR_GETGPSDATA)
- 101:../src/main.c ****         {
- 102:../src/main.c ****         	GPSSetDataOutput();
- 103:../src/main.c ****         	SCR1 = SCR1 & ~SCR_GETGPSDATA;
- 104:../src/main.c ****         }
- 105:../src/main.c ****         if(SCR1 & SCR_STOP_GPS)
- 106:../src/main.c ****         {
- 107:../src/main.c ****         	GPSStopOutput();
- 108:../src/main.c ****         	SCR1 = SCR1 & ~SCR_STOP_GPS;
- 109:../src/main.c ****         }
- 110:../src/main.c ****         if(SCR1 & SCR_INCPWM)
- 111:../src/main.c ****         {
- 112:../src/main.c ****         	TIM_SetCompare4(TIM1, PWMOUT_1);
- 113:../src/main.c ****         	SCR1 = SCR1 & ~SCR_INCPWM;
- 114:../src/main.c ****         }
- 115:../src/main.c ****         if(SCR1 & SCR_READI2C2)
- 116:../src/main.c ****         {
- 117:../src/main.c ****         	// Begin read of 21 registers from MPU6000
- 118:../src/main.c ****         	masterReceive_beginDMA(MPU6000_ADDRESS, 59, I2C2_DMABufRX, 22);
- 119:../src/main.c ****         	SCR1 = SCR1 & ~SCR_READI2C2;
- 120:../src/main.c ****         }
- 121:../src/main.c ****         if(SCR1 & SCR_WRITEI2C2)
- 122:../src/main.c ****         {
- 123:../src/main.c **** 
- 124:../src/main.c ****         	SCR1 = SCR1 & ~SCR_WRITEI2C2;
- 125:../src/main.c ****         }
- 126:../src/main.c ****         if(SCR1 & SCR_TESTI2C2AUTO)
- 127:../src/main.c ****         {
- 128:../src/main.c ****         	// Enable MPU
- 129:../src/main.c ****         	MPU6000_Enable(ENABLE);
- 130:../src/main.c ****         	// Enable I2C bypass to write to HMC5883
- 131:../src/main.c ****         	MPU6000_EnableI2CBypass(ENABLE);
- 132:../src/main.c ****         	// Configure HMC5883
- 133:../src/main.c ****         	HMC5883_Enable(ENABLE);
- 134:../src/main.c ****         	// Configure MPL3115A2
- 135:../src/main.c ****         	MPL3115A2_Enable(ENABLE);
- 136:../src/main.c ****         	// Test read HMC
- 137:../src/main.c ****         	//masterReceive_HMC5883L(HMC5883_ADDRESS, 3, I2C2_DMABufRX, 6);
- 138:../src/main.c ****         	// Test read MPL
- 139:../src/main.c ****         	//masterReceive(MPL3115A2_ADDRESS, 0, I2C2_DMABufRX, 45);
- 140:../src/main.c ****         	// Test read MPU
- 141:../src/main.c ****         	//masterReceive(MPU6000_ADDRESS, 59, I2C2_DMABufRX, 21);
- 142:../src/main.c ****         	// Disable I2C bypass
- 143:../src/main.c ****         	MPU6000_EnableI2CBypass(DISABLE);
- 144:../src/main.c ****         	// Configure MPU I2C master mode
- 145:../src/main.c ****         	MPU6000_ConfigureI2CMaster();
- 146:../src/main.c ****         	// Enable MPU I2C master
- 147:../src/main.c ****         	MPU6000_EnableI2CMaster(ENABLE);
- 148:../src/main.c **** 
- 149:../src/main.c ****         	I2C2_INITDONE = 1;
+  69:../src/main.c **** 
+  70:../src/main.c ****     while (1)
+  71:../src/main.c ****     {
+  72:../src/main.c ****         //Delaynus(1000000 / 2000);    /* A short delay */
+  73:../src/main.c ****         //Delaynus(1000000 / 2000);
+  74:../src/main.c ****         // Check MODBUS for messages
+  75:../src/main.c ****         if(MB_HASDATA)
+  76:../src/main.c ****         {
+  77:../src/main.c ****         	// Execute process data function
+  78:../src/main.c ****         	MODBUS_ExecuteFunction();
+  79:../src/main.c ****         	// Send data
+  80:../src/main.c ****         	// Enable DMA transfer
+  81:../src/main.c ****         	transferDMA_USART2(MODBUSData.bytes.cdata, MODBUSData.bytes.uiDataCount);
+  82:../src/main.c ****         	// Set MODBUS to IDLE
+  83:../src/main.c ****         	MB_SETTOIDLE;
+  84:../src/main.c ****         }
+  85:../src/main.c **** 
+  86:../src/main.c ****         //check SCR
+  87:../src/main.c ****         if(SCR1 & SCR_GETPSDATA)
+  88:../src/main.c ****         {
+  89:../src/main.c ****         	PSRequestData();
+  90:../src/main.c ****         	SCR1 = SCR1 & ~SCR_GETPSDATA;
+  91:../src/main.c ****         }
+  92:../src/main.c ****         if(SCR1 & SCR_SETPSI0)
+  93:../src/main.c ****         {
+  94:../src/main.c ****         	PSSetI0();
+  95:../src/main.c ****         	SCR1 = SCR1 & ~SCR_SETPSI0;
+  96:../src/main.c ****         }
+  97:../src/main.c ****         if(SCR1 & SCR_PSRESET)
+  98:../src/main.c ****         {
+  99:../src/main.c ****         	PSReset();
+ 100:../src/main.c ****            	SCR1 = SCR1 & ~SCR_PSRESET;
+ 101:../src/main.c ****         }
+ 102:../src/main.c ****         if(SCR1 & SCR_GETGPSDATA)
+ 103:../src/main.c ****         {
+ 104:../src/main.c ****         	GPSSetDataOutput();
+ 105:../src/main.c ****         	SCR1 = SCR1 & ~SCR_GETGPSDATA;
+ 106:../src/main.c ****         }
+ 107:../src/main.c ****         if(SCR1 & SCR_STOP_GPS)
+ 108:../src/main.c ****         {
+ 109:../src/main.c ****         	GPSStopOutput();
+ 110:../src/main.c ****         	SCR1 = SCR1 & ~SCR_STOP_GPS;
+ 111:../src/main.c ****         }
+ 112:../src/main.c ****         if(SCR1 & SCR_INCPWM)
+ 113:../src/main.c ****         {
+ 114:../src/main.c ****         	TIM_SetCompare4(TIM1, PWMOUT_1);
+ 115:../src/main.c ****         	SCR1 = SCR1 & ~SCR_INCPWM;
+ 116:../src/main.c ****         }
+ 117:../src/main.c ****         if(SCR1 & SCR_READI2C2)
+ 118:../src/main.c ****         {
+ 119:../src/main.c ****         	// Begin read of 21 registers from MPU6000
+ 120:../src/main.c ****         	masterReceive_beginDMA(MPU6000_ADDRESS, 59, I2C2_DMABufRX, 22);
+ 121:../src/main.c ****         	SCR1 = SCR1 & ~SCR_READI2C2;
+ 122:../src/main.c ****         }
+ 123:../src/main.c ****         if(SCR1 & SCR_WRITEI2C2)
+ 124:../src/main.c ****         {
+ 125:../src/main.c **** 
+ 126:../src/main.c ****         	SCR1 = SCR1 & ~SCR_WRITEI2C2;
+ 127:../src/main.c ****         }
+ 128:../src/main.c ****         if(SCR1 & SCR_TESTI2C2AUTO)
+ 129:../src/main.c ****         {
+ 130:../src/main.c ****         	// Enable MPU
+ 131:../src/main.c ****         	MPU6000_Enable(ENABLE);
+ 132:../src/main.c ****         	// Enable I2C bypass to write to HMC5883
+ 133:../src/main.c ****         	MPU6000_EnableI2CBypass(ENABLE);
+ 134:../src/main.c ****         	// Configure HMC5883
+ 135:../src/main.c ****         	HMC5883_Enable(ENABLE);
+ 136:../src/main.c ****         	// Configure MPL3115A2
+ 137:../src/main.c ****         	MPL3115A2_Enable(ENABLE);
+ 138:../src/main.c ****         	// Test read HMC
+ 139:../src/main.c ****         	//masterReceive_HMC5883L(HMC5883_ADDRESS, 3, I2C2_DMABufRX, 6);
+ 140:../src/main.c ****         	// Test read MPL
+ 141:../src/main.c ****         	//masterReceive(MPL3115A2_ADDRESS, 0, I2C2_DMABufRX, 45);
+ 142:../src/main.c ****         	// Test read MPU
+ 143:../src/main.c ****         	//masterReceive(MPU6000_ADDRESS, 59, I2C2_DMABufRX, 21);
+ 144:../src/main.c ****         	// Disable I2C bypass
+ 145:../src/main.c ****         	MPU6000_EnableI2CBypass(DISABLE);
+ 146:../src/main.c ****         	// Configure MPU I2C master mode
+ 147:../src/main.c ****         	MPU6000_ConfigureI2CMaster();
+ 148:../src/main.c ****         	// Enable MPU I2C master
+ 149:../src/main.c ****         	MPU6000_EnableI2CMaster(ENABLE);
  150:../src/main.c **** 
- 151:../src/main.c ****         	SCR1 = SCR1 & ~SCR_TESTI2C2AUTO;
- 152:../src/main.c ****         }
- 153:../src/main.c ****         if(SCR1 & SCR_SET_PWM_0)
- 154:../src/main.c ****         {
- 155:../src/main.c ****         	PWMOUT_1 = 2100;
- 156:../src/main.c ****        		TIM_SetCompare4(TIM1, PWMOUT_1);
- 157:../src/main.c ****         	SCR1 = SCR1 & ~SCR_SET_PWM_0;
- 158:../src/main.c ****         }
- 159:../src/main.c ****         if(SCR1 & SCR_SET_PWM_PASSON)
- 160:../src/main.c ****         {
- 161:../src/main.c ****         	PWM_PASSTHROUGH = 1;
- 162:../src/main.c ****         	SCR1 = SCR1 & ~SCR_SET_PWM_PASSON;
- 163:../src/main.c ****         }
- 164:../src/main.c ****         if(SCR1 & SCR_SET_PWM_PASSOFF)
- 165:../src/main.c ****         {
- 166:../src/main.c ****         	PWM_PASSTHROUGH = 0;
- 167:../src/main.c ****         	SCR1 = SCR1 & ~SCR_SET_PWM_PASSOFF;
- 168:../src/main.c ****         }
- 169:../src/main.c ****         if(SCR1 & SCR_START_AD)
- 170:../src/main.c ****         {
- 171:../src/main.c ****         	ADC_ENABLED = ~ADC_ENABLED;
- 172:../src/main.c ****         	SCR1 = SCR1 & ~SCR_START_AD;
- 173:../src/main.c ****         }
- 174:../src/main.c ****         if(SCR1 & SCR_INIT_SENSORS)
- 175:../src/main.c ****         {
- 176:../src/main.c ****         	extPeripheralInit();
- 177:../src/main.c ****         	SCR1 = SCR1 & ~SCR_INIT_SENSORS;
- 178:../src/main.c ****         }
- 179:../src/main.c ****         if(SCR1 & SCR_DEC_DAC_FREQ)
- 180:../src/main.c ****         {
- 181:../src/main.c ****         	DAC1_TIM6reloadValue += 0xF;
- 182:../src/main.c ****         	if(DAC1_TIM6reloadValue > 0x11F)
- 183:../src/main.c ****         	{
- 184:../src/main.c ****         		DAC1_TIM6reloadValue = 0xFF;
- 185:../src/main.c ****         	}
- 186:../src/main.c ****         	TIM_SetAutoreload(TIM6, DAC1_TIM6reloadValue);
- 187:../src/main.c ****         	SCR1 = SCR1 & ~SCR_DEC_DAC_FREQ;
- 188:../src/main.c ****         }
- 189:../src/main.c **** 
- 190:../src/main.c **** 
+ 151:../src/main.c ****         	I2C2_INITDONE = 1;
+ 152:../src/main.c **** 
+ 153:../src/main.c ****         	SCR1 = SCR1 & ~SCR_TESTI2C2AUTO;
+ 154:../src/main.c ****         }
+ 155:../src/main.c ****         if(SCR1 & SCR_SET_PWM_0)
+ 156:../src/main.c ****         {
+ 157:../src/main.c ****         	PWMOUT_1 = 2100;
+ 158:../src/main.c ****        		TIM_SetCompare4(TIM1, PWMOUT_1);
+ 159:../src/main.c ****         	SCR1 = SCR1 & ~SCR_SET_PWM_0;
+ 160:../src/main.c ****         }
+ 161:../src/main.c ****         if(SCR1 & SCR_SET_PWM_PASSON)
+ 162:../src/main.c ****         {
+ 163:../src/main.c ****         	PWM_PASSTHROUGH = 1;
+ 164:../src/main.c ****         	SCR1 = SCR1 & ~SCR_SET_PWM_PASSON;
+ 165:../src/main.c ****         }
+ 166:../src/main.c ****         if(SCR1 & SCR_SET_PWM_PASSOFF)
+ 167:../src/main.c ****         {
+ 168:../src/main.c ****         	PWM_PASSTHROUGH = 0;
+ 169:../src/main.c ****         	SCR1 = SCR1 & ~SCR_SET_PWM_PASSOFF;
+ 170:../src/main.c ****         }
+ 171:../src/main.c ****         if(SCR1 & SCR_START_AD)
+ 172:../src/main.c ****         {
+ 173:../src/main.c ****         	ADC_ENABLED = ~ADC_ENABLED;
+ 174:../src/main.c ****         	SCR1 = SCR1 & ~SCR_START_AD;
+ 175:../src/main.c ****         }
+ 176:../src/main.c ****         if(SCR1 & SCR_INIT_SENSORS)
+ 177:../src/main.c ****         {
+ 178:../src/main.c ****         	extPeripheralInit();
+ 179:../src/main.c ****         	SCR1 = SCR1 & ~SCR_INIT_SENSORS;
+ 180:../src/main.c ****         }
+ 181:../src/main.c ****         if(SCR1 & SCR_DEC_DAC_FREQ)
+ 182:../src/main.c ****         {
+ 183:../src/main.c ****         	DAC1_TIM6reloadValue += 0xF;
+ 184:../src/main.c ****         	if(DAC1_TIM6reloadValue > 0x11F)
+ 185:../src/main.c ****         	{
+ 186:../src/main.c ****         		DAC1_TIM6reloadValue = 0xFF;
+ 187:../src/main.c ****         	}
+ 188:../src/main.c ****         	TIM_SetAutoreload(TIM6, DAC1_TIM6reloadValue);
+ 189:../src/main.c ****         	SCR1 = SCR1 & ~SCR_DEC_DAC_FREQ;
+ 190:../src/main.c ****         }
  191:../src/main.c **** 
- 192:../src/main.c ****         // Check PS for messages
- 193:../src/main.c ****         if(PS_HASDATA)
- 194:../src/main.c ****         {
- 195:../src/main.c ****         	// Execute process data function
- 196:../src/main.c ****         	processPSData();
- 197:../src/main.c ****         	// Set PS process to IDLE
- 198:../src/main.c ****         	PS_SETIDLE;
- 199:../src/main.c ****         	// Mark PS not busy
- 200:../src/main.c ****         	PSBUSY = 0;
- 201:../src/main.c ****         	// Mark sensor OK
- 202:../src/main.c ****         	SCR2 = SCR2 | SCR2_POWEROK;
- 203:../src/main.c ****         }
- 204:../src/main.c ****         // Check I2C data
- 205:../src/main.c ****         if(COPYI2C)
- 206:../src/main.c ****         {
- 207:../src/main.c ****         	copySensorData();
- 208:../src/main.c ****         	// Mark sensors OK
- 209:../src/main.c ****         	SCR2 = SCR2 | SCR2_ACCOK;
- 210:../src/main.c ****         	SCR2 = SCR2 | SCR2_GYROOK;
- 211:../src/main.c ****         	SCR2 = SCR2 | SCR2_MAGOK;
- 212:../src/main.c ****         	SCR2 = SCR2 | SCR2_BAROK;
- 213:../src/main.c ****         }
- 214:../src/main.c ****     }
- 112              		.loc 1 214 0
+ 192:../src/main.c **** 
+ 193:../src/main.c **** 
+ 194:../src/main.c ****         // Check PS for messages
+ 195:../src/main.c ****         if(PS_HASDATA)
+ 196:../src/main.c ****         {
+ 197:../src/main.c ****         	// Execute process data function
+ 198:../src/main.c ****         	processPSData();
+ 199:../src/main.c ****         	// Set PS process to IDLE
+ 200:../src/main.c ****         	PS_SETIDLE;
+ 201:../src/main.c ****         	// Mark PS not busy
+ 202:../src/main.c ****         	PSBUSY = 0;
+ 203:../src/main.c ****         	// Mark sensor OK
+ 204:../src/main.c ****         	SCR2 = SCR2 | SCR2_POWEROK;
+ 205:../src/main.c ****         }
+ 206:../src/main.c ****         // Check I2C data
+ 207:../src/main.c ****         if(COPYI2C)
+ 208:../src/main.c ****         {
+ 209:../src/main.c ****         	copySensorData();
+ 210:../src/main.c ****         	// Mark sensors OK
+ 211:../src/main.c ****         	SCR2 = SCR2 | SCR2_ACCOK;
+ 212:../src/main.c ****         	SCR2 = SCR2 | SCR2_GYROOK;
+ 213:../src/main.c ****         	SCR2 = SCR2 | SCR2_MAGOK;
+ 214:../src/main.c ****         	SCR2 = SCR2 | SCR2_BAROK;
+ 215:../src/main.c ****         }
+ 216:../src/main.c ****     }
+ 112              		.loc 1 216 0
  113 00ea 00BF     		nop
  114              	.L21:
-  73:../src/main.c ****         if(MB_HASDATA)
- 115              		.loc 1 73 0
+  75:../src/main.c ****         if(MB_HASDATA)
+ 115              		.loc 1 75 0
  116 00ec 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
  117 00f0 C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
  118 00f4 1B68     		ldr	r3, [r3, #0]
  119 00f6 0F2B     		cmp	r3, #15
  120 00f8 11D1     		bne	.L2
-  76:../src/main.c ****         	MODBUS_ExecuteFunction();
- 121              		.loc 1 76 0
+  78:../src/main.c ****         	MODBUS_ExecuteFunction();
+ 121              		.loc 1 78 0
  122 00fa FFF7FEFF 		bl	MODBUS_ExecuteFunction
-  79:../src/main.c ****         	transferDMA_USART2(MODBUSData.bytes.cdata, MODBUSData.bytes.uiDataCount);
- 123              		.loc 1 79 0
+  81:../src/main.c ****         	transferDMA_USART2(MODBUSData.bytes.cdata, MODBUSData.bytes.uiDataCount);
+ 123              		.loc 1 81 0
  124 00fe 40F20003 		movw	r3, #:lower16:MODBUSData
  125 0102 C0F20003 		movt	r3, #:upper16:MODBUSData
  126 0106 DB89     		ldrh	r3, [r3, #14]
  127 0108 BF48     		ldr	r0, .L23
  128 010a 1946     		mov	r1, r3
  129 010c FFF7FEFF 		bl	transferDMA_USART2
-  81:../src/main.c ****         	MB_SETTOIDLE;
- 130              		.loc 1 81 0
+  83:../src/main.c ****         	MB_SETTOIDLE;
+ 130              		.loc 1 83 0
  131 0110 40F20003 		movw	r3, #:lower16:MODBUS_ReceiveState
  132 0114 C0F20003 		movt	r3, #:upper16:MODBUS_ReceiveState
  133 0118 4FF00002 		mov	r2, #0
  134 011c 1A60     		str	r2, [r3, #0]
  135              	.L2:
-  85:../src/main.c ****         if(SCR1 & SCR_GETPSDATA)
- 136              		.loc 1 85 0
+  87:../src/main.c ****         if(SCR1 & SCR_GETPSDATA)
+ 136              		.loc 1 87 0
  137 011e 40F20003 		movw	r3, #:lower16:MODBUSReg
  138 0122 C0F20003 		movt	r3, #:upper16:MODBUSReg
  139 0126 1B88     		ldrh	r3, [r3, #0]
@@ -359,11 +361,11 @@
  141 012c DBB2     		uxtb	r3, r3
  142 012e 002B     		cmp	r3, #0
  143 0130 0ED0     		beq	.L3
-  87:../src/main.c ****         	PSRequestData();
- 144              		.loc 1 87 0
+  89:../src/main.c ****         	PSRequestData();
+ 144              		.loc 1 89 0
  145 0132 FFF7FEFF 		bl	PSRequestData
-  88:../src/main.c ****         	SCR1 = SCR1 & ~SCR_GETPSDATA;
- 146              		.loc 1 88 0
+  90:../src/main.c ****         	SCR1 = SCR1 & ~SCR_GETPSDATA;
+ 146              		.loc 1 90 0
  147 0136 40F20003 		movw	r3, #:lower16:MODBUSReg
  148 013a C0F20003 		movt	r3, #:upper16:MODBUSReg
  149 013e 1B88     		ldrh	r3, [r3, #0]
@@ -373,19 +375,19 @@
  153 014a C0F20003 		movt	r3, #:upper16:MODBUSReg
  154 014e 1A80     		strh	r2, [r3, #0]	@ movhi
  155              	.L3:
-  90:../src/main.c ****         if(SCR1 & SCR_SETPSI0)
- 156              		.loc 1 90 0
+  92:../src/main.c ****         if(SCR1 & SCR_SETPSI0)
+ 156              		.loc 1 92 0
  157 0150 40F20003 		movw	r3, #:lower16:MODBUSReg
  158 0154 C0F20003 		movt	r3, #:upper16:MODBUSReg
  159 0158 1B88     		ldrh	r3, [r3, #0]
  160 015a 03F00203 		and	r3, r3, #2
  161 015e 002B     		cmp	r3, #0
  162 0160 0ED0     		beq	.L4
-  92:../src/main.c ****         	PSSetI0();
- 163              		.loc 1 92 0
+  94:../src/main.c ****         	PSSetI0();
+ 163              		.loc 1 94 0
  164 0162 FFF7FEFF 		bl	PSSetI0
-  93:../src/main.c ****         	SCR1 = SCR1 & ~SCR_SETPSI0;
- 165              		.loc 1 93 0
+  95:../src/main.c ****         	SCR1 = SCR1 & ~SCR_SETPSI0;
+ 165              		.loc 1 95 0
  166 0166 40F20003 		movw	r3, #:lower16:MODBUSReg
  167 016a C0F20003 		movt	r3, #:upper16:MODBUSReg
  168 016e 1B88     		ldrh	r3, [r3, #0]
@@ -395,19 +397,19 @@
  172 017a C0F20003 		movt	r3, #:upper16:MODBUSReg
  173 017e 1A80     		strh	r2, [r3, #0]	@ movhi
  174              	.L4:
-  95:../src/main.c ****         if(SCR1 & SCR_PSRESET)
- 175              		.loc 1 95 0
+  97:../src/main.c ****         if(SCR1 & SCR_PSRESET)
+ 175              		.loc 1 97 0
  176 0180 40F20003 		movw	r3, #:lower16:MODBUSReg
  177 0184 C0F20003 		movt	r3, #:upper16:MODBUSReg
  178 0188 1B88     		ldrh	r3, [r3, #0]
  179 018a 03F00403 		and	r3, r3, #4
  180 018e 002B     		cmp	r3, #0
  181 0190 0ED0     		beq	.L5
-  97:../src/main.c ****         	PSReset();
- 182              		.loc 1 97 0
+  99:../src/main.c ****         	PSReset();
+ 182              		.loc 1 99 0
  183 0192 FFF7FEFF 		bl	PSReset
-  98:../src/main.c ****            	SCR1 = SCR1 & ~SCR_PSRESET;
- 184              		.loc 1 98 0
+ 100:../src/main.c ****            	SCR1 = SCR1 & ~SCR_PSRESET;
+ 184              		.loc 1 100 0
  185 0196 40F20003 		movw	r3, #:lower16:MODBUSReg
  186 019a C0F20003 		movt	r3, #:upper16:MODBUSReg
  187 019e 1B88     		ldrh	r3, [r3, #0]
@@ -417,19 +419,19 @@
  191 01aa C0F20003 		movt	r3, #:upper16:MODBUSReg
  192 01ae 1A80     		strh	r2, [r3, #0]	@ movhi
  193              	.L5:
- 100:../src/main.c ****         if(SCR1 & SCR_GETGPSDATA)
- 194              		.loc 1 100 0
+ 102:../src/main.c ****         if(SCR1 & SCR_GETGPSDATA)
+ 194              		.loc 1 102 0
  195 01b0 40F20003 		movw	r3, #:lower16:MODBUSReg
  196 01b4 C0F20003 		movt	r3, #:upper16:MODBUSReg
  197 01b8 1B88     		ldrh	r3, [r3, #0]
  198 01ba 03F08003 		and	r3, r3, #128
  199 01be 002B     		cmp	r3, #0
  200 01c0 0ED0     		beq	.L6
- 102:../src/main.c ****         	GPSSetDataOutput();
- 201              		.loc 1 102 0
+ 104:../src/main.c ****         	GPSSetDataOutput();
+ 201              		.loc 1 104 0
  202 01c2 FFF7FEFF 		bl	GPSSetDataOutput
- 103:../src/main.c ****         	SCR1 = SCR1 & ~SCR_GETGPSDATA;
- 203              		.loc 1 103 0
+ 105:../src/main.c ****         	SCR1 = SCR1 & ~SCR_GETGPSDATA;
+ 203              		.loc 1 105 0
  204 01c6 40F20003 		movw	r3, #:lower16:MODBUSReg
  205 01ca C0F20003 		movt	r3, #:upper16:MODBUSReg
  206 01ce 1B88     		ldrh	r3, [r3, #0]
@@ -439,19 +441,19 @@
  210 01da C0F20003 		movt	r3, #:upper16:MODBUSReg
  211 01de 1A80     		strh	r2, [r3, #0]	@ movhi
  212              	.L6:
- 105:../src/main.c ****         if(SCR1 & SCR_STOP_GPS)
- 213              		.loc 1 105 0
+ 107:../src/main.c ****         if(SCR1 & SCR_STOP_GPS)
+ 213              		.loc 1 107 0
  214 01e0 40F20003 		movw	r3, #:lower16:MODBUSReg
  215 01e4 C0F20003 		movt	r3, #:upper16:MODBUSReg
  216 01e8 1B88     		ldrh	r3, [r3, #0]
  217 01ea 03F40063 		and	r3, r3, #2048
  218 01ee 002B     		cmp	r3, #0
  219 01f0 0ED0     		beq	.L7
- 107:../src/main.c ****         	GPSStopOutput();
- 220              		.loc 1 107 0
+ 109:../src/main.c ****         	GPSStopOutput();
+ 220              		.loc 1 109 0
  221 01f2 FFF7FEFF 		bl	GPSStopOutput
- 108:../src/main.c ****         	SCR1 = SCR1 & ~SCR_STOP_GPS;
- 222              		.loc 1 108 0
+ 110:../src/main.c ****         	SCR1 = SCR1 & ~SCR_STOP_GPS;
+ 222              		.loc 1 110 0
  223 01f6 40F20003 		movw	r3, #:lower16:MODBUSReg
  224 01fa C0F20003 		movt	r3, #:upper16:MODBUSReg
  225 01fe 1B88     		ldrh	r3, [r3, #0]
@@ -461,16 +463,16 @@
  229 020a C0F20003 		movt	r3, #:upper16:MODBUSReg
  230 020e 1A80     		strh	r2, [r3, #0]	@ movhi
  231              	.L7:
- 110:../src/main.c ****         if(SCR1 & SCR_INCPWM)
- 232              		.loc 1 110 0
+ 112:../src/main.c ****         if(SCR1 & SCR_INCPWM)
+ 232              		.loc 1 112 0
  233 0210 40F20003 		movw	r3, #:lower16:MODBUSReg
  234 0214 C0F20003 		movt	r3, #:upper16:MODBUSReg
  235 0218 1B88     		ldrh	r3, [r3, #0]
  236 021a 03F00803 		and	r3, r3, #8
  237 021e 002B     		cmp	r3, #0
  238 0220 19D0     		beq	.L8
- 112:../src/main.c ****         	TIM_SetCompare4(TIM1, PWMOUT_1);
- 239              		.loc 1 112 0
+ 114:../src/main.c ****         	TIM_SetCompare4(TIM1, PWMOUT_1);
+ 239              		.loc 1 114 0
  240 0222 40F20003 		movw	r3, #:lower16:MODBUSReg
  241 0226 C0F20003 		movt	r3, #:upper16:MODBUSReg
  242 022a B3F86C30 		ldrh	r3, [r3, #108]
@@ -478,8 +480,8 @@
  244 0232 C4F20100 		movt	r0, 16385
  245 0236 1946     		mov	r1, r3
  246 0238 FFF7FEFF 		bl	TIM_SetCompare4
- 113:../src/main.c ****         	SCR1 = SCR1 & ~SCR_INCPWM;
- 247              		.loc 1 113 0
+ 115:../src/main.c ****         	SCR1 = SCR1 & ~SCR_INCPWM;
+ 247              		.loc 1 115 0
  248 023c 40F20003 		movw	r3, #:lower16:MODBUSReg
  249 0240 C0F20003 		movt	r3, #:upper16:MODBUSReg
  250 0244 1B88     		ldrh	r3, [r3, #0]
@@ -489,24 +491,24 @@
  254 0250 C0F20003 		movt	r3, #:upper16:MODBUSReg
  255 0254 1A80     		strh	r2, [r3, #0]	@ movhi
  256              	.L8:
- 115:../src/main.c ****         if(SCR1 & SCR_READI2C2)
- 257              		.loc 1 115 0
+ 117:../src/main.c ****         if(SCR1 & SCR_READI2C2)
+ 257              		.loc 1 117 0
  258 0256 40F20003 		movw	r3, #:lower16:MODBUSReg
  259 025a C0F20003 		movt	r3, #:upper16:MODBUSReg
  260 025e 1B88     		ldrh	r3, [r3, #0]
  261 0260 03F01003 		and	r3, r3, #16
  262 0264 002B     		cmp	r3, #0
  263 0266 18D0     		beq	.L9
- 118:../src/main.c ****         	masterReceive_beginDMA(MPU6000_ADDRESS, 59, I2C2_DMABufRX, 22);
- 264              		.loc 1 118 0
+ 120:../src/main.c ****         	masterReceive_beginDMA(MPU6000_ADDRESS, 59, I2C2_DMABufRX, 22);
+ 264              		.loc 1 120 0
  265 0268 4FF0D000 		mov	r0, #208
  266 026c 4FF03B01 		mov	r1, #59
  267 0270 40F20002 		movw	r2, #:lower16:I2C2_DMABufRX
  268 0274 C0F20002 		movt	r2, #:upper16:I2C2_DMABufRX
  269 0278 4FF01603 		mov	r3, #22
  270 027c FFF7FEFF 		bl	masterReceive_beginDMA
- 119:../src/main.c ****         	SCR1 = SCR1 & ~SCR_READI2C2;
- 271              		.loc 1 119 0
+ 121:../src/main.c ****         	SCR1 = SCR1 & ~SCR_READI2C2;
+ 271              		.loc 1 121 0
  272 0280 40F20003 		movw	r3, #:lower16:MODBUSReg
  273 0284 C0F20003 		movt	r3, #:upper16:MODBUSReg
  274 0288 1B88     		ldrh	r3, [r3, #0]
@@ -516,16 +518,16 @@
  278 0294 C0F20003 		movt	r3, #:upper16:MODBUSReg
  279 0298 1A80     		strh	r2, [r3, #0]	@ movhi
  280              	.L9:
- 121:../src/main.c ****         if(SCR1 & SCR_WRITEI2C2)
- 281              		.loc 1 121 0
+ 123:../src/main.c ****         if(SCR1 & SCR_WRITEI2C2)
+ 281              		.loc 1 123 0
  282 029a 40F20003 		movw	r3, #:lower16:MODBUSReg
  283 029e C0F20003 		movt	r3, #:upper16:MODBUSReg
  284 02a2 1B88     		ldrh	r3, [r3, #0]
  285 02a4 03F02003 		and	r3, r3, #32
  286 02a8 002B     		cmp	r3, #0
  287 02aa 0CD0     		beq	.L10
- 124:../src/main.c ****         	SCR1 = SCR1 & ~SCR_WRITEI2C2;
- 288              		.loc 1 124 0
+ 126:../src/main.c ****         	SCR1 = SCR1 & ~SCR_WRITEI2C2;
+ 288              		.loc 1 126 0
  289 02ac 40F20003 		movw	r3, #:lower16:MODBUSReg
  290 02b0 C0F20003 		movt	r3, #:upper16:MODBUSReg
  291 02b4 1B88     		ldrh	r3, [r3, #0]
@@ -535,50 +537,50 @@
  295 02c0 C0F20003 		movt	r3, #:upper16:MODBUSReg
  296 02c4 1A80     		strh	r2, [r3, #0]	@ movhi
  297              	.L10:
- 126:../src/main.c ****         if(SCR1 & SCR_TESTI2C2AUTO)
- 298              		.loc 1 126 0
+ 128:../src/main.c ****         if(SCR1 & SCR_TESTI2C2AUTO)
+ 298              		.loc 1 128 0
  299 02c6 40F20003 		movw	r3, #:lower16:MODBUSReg
  300 02ca C0F20003 		movt	r3, #:upper16:MODBUSReg
  301 02ce 1B88     		ldrh	r3, [r3, #0]
  302 02d0 03F04003 		and	r3, r3, #64
  303 02d4 002B     		cmp	r3, #0
  304 02d6 2ED0     		beq	.L11
- 129:../src/main.c ****         	MPU6000_Enable(ENABLE);
- 305              		.loc 1 129 0
+ 131:../src/main.c ****         	MPU6000_Enable(ENABLE);
+ 305              		.loc 1 131 0
  306 02d8 4FF00100 		mov	r0, #1
  307 02dc FFF7FEFF 		bl	MPU6000_Enable
- 131:../src/main.c ****         	MPU6000_EnableI2CBypass(ENABLE);
- 308              		.loc 1 131 0
+ 133:../src/main.c ****         	MPU6000_EnableI2CBypass(ENABLE);
+ 308              		.loc 1 133 0
  309 02e0 4FF00100 		mov	r0, #1
  310 02e4 FFF7FEFF 		bl	MPU6000_EnableI2CBypass
- 133:../src/main.c ****         	HMC5883_Enable(ENABLE);
- 311              		.loc 1 133 0
+ 135:../src/main.c ****         	HMC5883_Enable(ENABLE);
+ 311              		.loc 1 135 0
  312 02e8 4FF00100 		mov	r0, #1
  313 02ec FFF7FEFF 		bl	HMC5883_Enable
- 135:../src/main.c ****         	MPL3115A2_Enable(ENABLE);
- 314              		.loc 1 135 0
+ 137:../src/main.c ****         	MPL3115A2_Enable(ENABLE);
+ 314              		.loc 1 137 0
  315 02f0 4FF00100 		mov	r0, #1
  316 02f4 FFF7FEFF 		bl	MPL3115A2_Enable
- 143:../src/main.c ****         	MPU6000_EnableI2CBypass(DISABLE);
- 317              		.loc 1 143 0
+ 145:../src/main.c ****         	MPU6000_EnableI2CBypass(DISABLE);
+ 317              		.loc 1 145 0
  318 02f8 4FF00000 		mov	r0, #0
  319 02fc FFF7FEFF 		bl	MPU6000_EnableI2CBypass
- 145:../src/main.c ****         	MPU6000_ConfigureI2CMaster();
- 320              		.loc 1 145 0
+ 147:../src/main.c ****         	MPU6000_ConfigureI2CMaster();
+ 320              		.loc 1 147 0
  321 0300 FFF7FEFF 		bl	MPU6000_ConfigureI2CMaster
- 147:../src/main.c ****         	MPU6000_EnableI2CMaster(ENABLE);
- 322              		.loc 1 147 0
+ 149:../src/main.c ****         	MPU6000_EnableI2CMaster(ENABLE);
+ 322              		.loc 1 149 0
  323 0304 4FF00100 		mov	r0, #1
  324 0308 FFF7FEFF 		bl	MPU6000_EnableI2CMaster
- 149:../src/main.c ****         	I2C2_INITDONE = 1;
- 325              		.loc 1 149 0
+ 151:../src/main.c ****         	I2C2_INITDONE = 1;
+ 325              		.loc 1 151 0
  326 030c 40F20003 		movw	r3, #:lower16:flag0
  327 0310 C0F20003 		movt	r3, #:upper16:flag0
  328 0314 1A78     		ldrb	r2, [r3, #0]
  329 0316 42F01002 		orr	r2, r2, #16
  330 031a 1A70     		strb	r2, [r3, #0]
- 151:../src/main.c ****         	SCR1 = SCR1 & ~SCR_TESTI2C2AUTO;
- 331              		.loc 1 151 0
+ 153:../src/main.c ****         	SCR1 = SCR1 & ~SCR_TESTI2C2AUTO;
+ 331              		.loc 1 153 0
  332 031c 40F20003 		movw	r3, #:lower16:MODBUSReg
  333 0320 C0F20003 		movt	r3, #:upper16:MODBUSReg
  334 0324 1B88     		ldrh	r3, [r3, #0]
@@ -588,22 +590,22 @@
  338 0330 C0F20003 		movt	r3, #:upper16:MODBUSReg
  339 0334 1A80     		strh	r2, [r3, #0]	@ movhi
  340              	.L11:
- 153:../src/main.c ****         if(SCR1 & SCR_SET_PWM_0)
- 341              		.loc 1 153 0
+ 155:../src/main.c ****         if(SCR1 & SCR_SET_PWM_0)
+ 341              		.loc 1 155 0
  342 0336 40F20003 		movw	r3, #:lower16:MODBUSReg
  343 033a C0F20003 		movt	r3, #:upper16:MODBUSReg
  344 033e 1B88     		ldrh	r3, [r3, #0]
  345 0340 03F48073 		and	r3, r3, #256
  346 0344 002B     		cmp	r3, #0
  347 0346 21D0     		beq	.L12
- 155:../src/main.c ****         	PWMOUT_1 = 2100;
- 348              		.loc 1 155 0
+ 157:../src/main.c ****         	PWMOUT_1 = 2100;
+ 348              		.loc 1 157 0
  349 0348 40F20003 		movw	r3, #:lower16:MODBUSReg
  350 034c C0F20003 		movt	r3, #:upper16:MODBUSReg
  351 0350 40F63402 		movw	r2, #2100
  352 0354 A3F86C20 		strh	r2, [r3, #108]	@ movhi
- 156:../src/main.c ****        		TIM_SetCompare4(TIM1, PWMOUT_1);
- 353              		.loc 1 156 0
+ 158:../src/main.c ****        		TIM_SetCompare4(TIM1, PWMOUT_1);
+ 353              		.loc 1 158 0
  354 0358 40F20003 		movw	r3, #:lower16:MODBUSReg
  355 035c C0F20003 		movt	r3, #:upper16:MODBUSReg
  356 0360 B3F86C30 		ldrh	r3, [r3, #108]
@@ -611,8 +613,8 @@
  358 0368 C4F20100 		movt	r0, 16385
  359 036c 1946     		mov	r1, r3
  360 036e FFF7FEFF 		bl	TIM_SetCompare4
- 157:../src/main.c ****         	SCR1 = SCR1 & ~SCR_SET_PWM_0;
- 361              		.loc 1 157 0
+ 159:../src/main.c ****         	SCR1 = SCR1 & ~SCR_SET_PWM_0;
+ 361              		.loc 1 159 0
  362 0372 40F20003 		movw	r3, #:lower16:MODBUSReg
  363 0376 C0F20003 		movt	r3, #:upper16:MODBUSReg
  364 037a 1B88     		ldrh	r3, [r3, #0]
@@ -622,23 +624,23 @@
  368 0386 C0F20003 		movt	r3, #:upper16:MODBUSReg
  369 038a 1A80     		strh	r2, [r3, #0]	@ movhi
  370              	.L12:
- 159:../src/main.c ****         if(SCR1 & SCR_SET_PWM_PASSON)
- 371              		.loc 1 159 0
+ 161:../src/main.c ****         if(SCR1 & SCR_SET_PWM_PASSON)
+ 371              		.loc 1 161 0
  372 038c 40F20003 		movw	r3, #:lower16:MODBUSReg
  373 0390 C0F20003 		movt	r3, #:upper16:MODBUSReg
  374 0394 1B88     		ldrh	r3, [r3, #0]
  375 0396 03F40073 		and	r3, r3, #512
  376 039a 002B     		cmp	r3, #0
  377 039c 14D0     		beq	.L13
- 161:../src/main.c ****         	PWM_PASSTHROUGH = 1;
- 378              		.loc 1 161 0
+ 163:../src/main.c ****         	PWM_PASSTHROUGH = 1;
+ 378              		.loc 1 163 0
  379 039e 40F20003 		movw	r3, #:lower16:flag0
  380 03a2 C0F20003 		movt	r3, #:upper16:flag0
  381 03a6 1A78     		ldrb	r2, [r3, #0]
  382 03a8 42F08002 		orr	r2, r2, #128
  383 03ac 1A70     		strb	r2, [r3, #0]
- 162:../src/main.c ****         	SCR1 = SCR1 & ~SCR_SET_PWM_PASSON;
- 384              		.loc 1 162 0
+ 164:../src/main.c ****         	SCR1 = SCR1 & ~SCR_SET_PWM_PASSON;
+ 384              		.loc 1 164 0
  385 03ae 40F20003 		movw	r3, #:lower16:MODBUSReg
  386 03b2 C0F20003 		movt	r3, #:upper16:MODBUSReg
  387 03b6 1B88     		ldrh	r3, [r3, #0]
@@ -648,23 +650,23 @@
  391 03c2 C0F20003 		movt	r3, #:upper16:MODBUSReg
  392 03c6 1A80     		strh	r2, [r3, #0]	@ movhi
  393              	.L13:
- 164:../src/main.c ****         if(SCR1 & SCR_SET_PWM_PASSOFF)
- 394              		.loc 1 164 0
+ 166:../src/main.c ****         if(SCR1 & SCR_SET_PWM_PASSOFF)
+ 394              		.loc 1 166 0
  395 03c8 40F20003 		movw	r3, #:lower16:MODBUSReg
  396 03cc C0F20003 		movt	r3, #:upper16:MODBUSReg
  397 03d0 1B88     		ldrh	r3, [r3, #0]
  398 03d2 03F48063 		and	r3, r3, #1024
  399 03d6 002B     		cmp	r3, #0
  400 03d8 18D0     		beq	.L14
- 166:../src/main.c ****         	PWM_PASSTHROUGH = 0;
- 401              		.loc 1 166 0
+ 168:../src/main.c ****         	PWM_PASSTHROUGH = 0;
+ 401              		.loc 1 168 0
  402 03da 40F20003 		movw	r3, #:lower16:flag0
  403 03de C0F20003 		movt	r3, #:upper16:flag0
  404 03e2 1A78     		ldrb	r2, [r3, #0]
  405 03e4 6FF3C712 		bfc	r2, #7, #1
  406 03e8 1A70     		strb	r2, [r3, #0]
- 167:../src/main.c ****         	SCR1 = SCR1 & ~SCR_SET_PWM_PASSOFF;
- 407              		.loc 1 167 0
+ 169:../src/main.c ****         	SCR1 = SCR1 & ~SCR_SET_PWM_PASSOFF;
+ 407              		.loc 1 169 0
  408 03ea 40F20003 		movw	r3, #:lower16:MODBUSReg
  409 03ee C0F20003 		movt	r3, #:upper16:MODBUSReg
  410 03f2 1B88     		ldrh	r3, [r3, #0]
@@ -680,16 +682,16 @@
  420 0408 12000000 		.word	MODBUSData+18
  421              	.L24:
  422              	.L14:
- 169:../src/main.c ****         if(SCR1 & SCR_START_AD)
- 423              		.loc 1 169 0
+ 171:../src/main.c ****         if(SCR1 & SCR_START_AD)
+ 423              		.loc 1 171 0
  424 040c 40F20003 		movw	r3, #:lower16:MODBUSReg
  425 0410 C0F20003 		movt	r3, #:upper16:MODBUSReg
  426 0414 1B88     		ldrh	r3, [r3, #0]
  427 0416 03F48053 		and	r3, r3, #4096
  428 041a 002B     		cmp	r3, #0
  429 041c 22D0     		beq	.L15
- 171:../src/main.c ****         	ADC_ENABLED = ~ADC_ENABLED;
- 430              		.loc 1 171 0
+ 173:../src/main.c ****         	ADC_ENABLED = ~ADC_ENABLED;
+ 430              		.loc 1 173 0
  431 041e 40F20003 		movw	r3, #:lower16:flag0
  432 0422 C0F20003 		movt	r3, #:upper16:flag0
  433 0426 5B78     		ldrb	r3, [r3, #1]
@@ -704,8 +706,8 @@
  442 0442 5A78     		ldrb	r2, [r3, #1]
  443 0444 61F3C302 		bfi	r2, r1, #3, #1
  444 0448 5A70     		strb	r2, [r3, #1]
- 172:../src/main.c ****         	SCR1 = SCR1 & ~SCR_START_AD;
- 445              		.loc 1 172 0
+ 174:../src/main.c ****         	SCR1 = SCR1 & ~SCR_START_AD;
+ 445              		.loc 1 174 0
  446 044a 40F20003 		movw	r3, #:lower16:MODBUSReg
  447 044e C0F20003 		movt	r3, #:upper16:MODBUSReg
  448 0452 1B88     		ldrh	r3, [r3, #0]
@@ -715,19 +717,19 @@
  452 045e C0F20003 		movt	r3, #:upper16:MODBUSReg
  453 0462 1A80     		strh	r2, [r3, #0]	@ movhi
  454              	.L15:
- 174:../src/main.c ****         if(SCR1 & SCR_INIT_SENSORS)
- 455              		.loc 1 174 0
+ 176:../src/main.c ****         if(SCR1 & SCR_INIT_SENSORS)
+ 455              		.loc 1 176 0
  456 0464 40F20003 		movw	r3, #:lower16:MODBUSReg
  457 0468 C0F20003 		movt	r3, #:upper16:MODBUSReg
  458 046c 1B88     		ldrh	r3, [r3, #0]
  459 046e 03F40053 		and	r3, r3, #8192
  460 0472 002B     		cmp	r3, #0
  461 0474 0ED0     		beq	.L16
- 176:../src/main.c ****         	extPeripheralInit();
- 462              		.loc 1 176 0
+ 178:../src/main.c ****         	extPeripheralInit();
+ 462              		.loc 1 178 0
  463 0476 FFF7FEFF 		bl	extPeripheralInit
- 177:../src/main.c ****         	SCR1 = SCR1 & ~SCR_INIT_SENSORS;
- 464              		.loc 1 177 0
+ 179:../src/main.c ****         	SCR1 = SCR1 & ~SCR_INIT_SENSORS;
+ 464              		.loc 1 179 0
  465 047a 40F20003 		movw	r3, #:lower16:MODBUSReg
  466 047e C0F20003 		movt	r3, #:upper16:MODBUSReg
  467 0482 1B88     		ldrh	r3, [r3, #0]
@@ -737,16 +739,16 @@
  471 048e C0F20003 		movt	r3, #:upper16:MODBUSReg
  472 0492 1A80     		strh	r2, [r3, #0]	@ movhi
  473              	.L16:
- 179:../src/main.c ****         if(SCR1 & SCR_DEC_DAC_FREQ)
- 474              		.loc 1 179 0
+ 181:../src/main.c ****         if(SCR1 & SCR_DEC_DAC_FREQ)
+ 474              		.loc 1 181 0
  475 0494 40F20003 		movw	r3, #:lower16:MODBUSReg
  476 0498 C0F20003 		movt	r3, #:upper16:MODBUSReg
  477 049c 1B88     		ldrh	r3, [r3, #0]
  478 049e 03F48043 		and	r3, r3, #16384
  479 04a2 002B     		cmp	r3, #0
  480 04a4 34D0     		beq	.L17
- 181:../src/main.c ****         	DAC1_TIM6reloadValue += 0xF;
- 481              		.loc 1 181 0
+ 183:../src/main.c ****         	DAC1_TIM6reloadValue += 0xF;
+ 481              		.loc 1 183 0
  482 04a6 40F20003 		movw	r3, #:lower16:DAC1_TIM6reloadValue
  483 04aa C0F20003 		movt	r3, #:upper16:DAC1_TIM6reloadValue
  484 04ae 1B68     		ldr	r3, [r3, #0]
@@ -754,23 +756,23 @@
  486 04b4 40F20003 		movw	r3, #:lower16:DAC1_TIM6reloadValue
  487 04b8 C0F20003 		movt	r3, #:upper16:DAC1_TIM6reloadValue
  488 04bc 1A60     		str	r2, [r3, #0]
- 182:../src/main.c ****         	if(DAC1_TIM6reloadValue > 0x11F)
- 489              		.loc 1 182 0
+ 184:../src/main.c ****         	if(DAC1_TIM6reloadValue > 0x11F)
+ 489              		.loc 1 184 0
  490 04be 40F20003 		movw	r3, #:lower16:DAC1_TIM6reloadValue
  491 04c2 C0F20003 		movt	r3, #:upper16:DAC1_TIM6reloadValue
  492 04c6 1A68     		ldr	r2, [r3, #0]
  493 04c8 40F21F13 		movw	r3, #287
  494 04cc 9A42     		cmp	r2, r3
  495 04ce 06D9     		bls	.L18
- 184:../src/main.c ****         		DAC1_TIM6reloadValue = 0xFF;
- 496              		.loc 1 184 0
+ 186:../src/main.c ****         		DAC1_TIM6reloadValue = 0xFF;
+ 496              		.loc 1 186 0
  497 04d0 40F20003 		movw	r3, #:lower16:DAC1_TIM6reloadValue
  498 04d4 C0F20003 		movt	r3, #:upper16:DAC1_TIM6reloadValue
  499 04d8 4FF0FF02 		mov	r2, #255
  500 04dc 1A60     		str	r2, [r3, #0]
  501              	.L18:
- 186:../src/main.c ****         	TIM_SetAutoreload(TIM6, DAC1_TIM6reloadValue);
- 502              		.loc 1 186 0
+ 188:../src/main.c ****         	TIM_SetAutoreload(TIM6, DAC1_TIM6reloadValue);
+ 502              		.loc 1 188 0
  503 04de 40F20003 		movw	r3, #:lower16:DAC1_TIM6reloadValue
  504 04e2 C0F20003 		movt	r3, #:upper16:DAC1_TIM6reloadValue
  505 04e6 1B68     		ldr	r3, [r3, #0]
@@ -778,8 +780,8 @@
  507 04ec C4F20000 		movt	r0, 16384
  508 04f0 1946     		mov	r1, r3
  509 04f2 FFF7FEFF 		bl	TIM_SetAutoreload
- 187:../src/main.c ****         	SCR1 = SCR1 & ~SCR_DEC_DAC_FREQ;
- 510              		.loc 1 187 0
+ 189:../src/main.c ****         	SCR1 = SCR1 & ~SCR_DEC_DAC_FREQ;
+ 510              		.loc 1 189 0
  511 04f6 40F20003 		movw	r3, #:lower16:MODBUSReg
  512 04fa C0F20003 		movt	r3, #:upper16:MODBUSReg
  513 04fe 1B88     		ldrh	r3, [r3, #0]
@@ -789,31 +791,31 @@
  517 050a C0F20003 		movt	r3, #:upper16:MODBUSReg
  518 050e 1A80     		strh	r2, [r3, #0]	@ movhi
  519              	.L17:
- 193:../src/main.c ****         if(PS_HASDATA)
- 520              		.loc 1 193 0
+ 195:../src/main.c ****         if(PS_HASDATA)
+ 520              		.loc 1 195 0
  521 0510 40F20003 		movw	r3, #:lower16:PS_ReceiveStateVar
  522 0514 C0F20003 		movt	r3, #:upper16:PS_ReceiveStateVar
  523 0518 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
  524 051a 0E2B     		cmp	r3, #14
  525 051c 1DD1     		bne	.L19
- 196:../src/main.c ****         	processPSData();
- 526              		.loc 1 196 0
+ 198:../src/main.c ****         	processPSData();
+ 526              		.loc 1 198 0
  527 051e FFF7FEFF 		bl	processPSData
- 198:../src/main.c ****         	PS_SETIDLE;
- 528              		.loc 1 198 0
+ 200:../src/main.c ****         	PS_SETIDLE;
+ 528              		.loc 1 200 0
  529 0522 40F20003 		movw	r3, #:lower16:PS_ReceiveStateVar
  530 0526 C0F20003 		movt	r3, #:upper16:PS_ReceiveStateVar
  531 052a 4FF00002 		mov	r2, #0
  532 052e 1A70     		strb	r2, [r3, #0]
- 200:../src/main.c ****         	PSBUSY = 0;
- 533              		.loc 1 200 0
+ 202:../src/main.c ****         	PSBUSY = 0;
+ 533              		.loc 1 202 0
  534 0530 40F20003 		movw	r3, #:lower16:flag0
  535 0534 C0F20003 		movt	r3, #:upper16:flag0
  536 0538 1A78     		ldrb	r2, [r3, #0]
  537 053a 6FF34102 		bfc	r2, #1, #1
  538 053e 1A70     		strb	r2, [r3, #0]
- 202:../src/main.c ****         	SCR2 = SCR2 | SCR2_POWEROK;
- 539              		.loc 1 202 0
+ 204:../src/main.c ****         	SCR2 = SCR2 | SCR2_POWEROK;
+ 539              		.loc 1 204 0
  540 0540 40F20003 		movw	r3, #:lower16:MODBUSReg
  541 0544 C0F20003 		movt	r3, #:upper16:MODBUSReg
  542 0548 5B88     		ldrh	r3, [r3, #2]
@@ -823,8 +825,8 @@
  546 0554 C0F20003 		movt	r3, #:upper16:MODBUSReg
  547 0558 5A80     		strh	r2, [r3, #2]	@ movhi
  548              	.L19:
- 205:../src/main.c ****         if(COPYI2C)
- 549              		.loc 1 205 0
+ 207:../src/main.c ****         if(COPYI2C)
+ 549              		.loc 1 207 0
  550 055a 40F20003 		movw	r3, #:lower16:flag0
  551 055e C0F20003 		movt	r3, #:upper16:flag0
  552 0562 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
@@ -832,11 +834,11 @@
  554 0568 DBB2     		uxtb	r3, r3
  555 056a 002B     		cmp	r3, #0
  556 056c 3FF4BDAD 		beq	.L22
- 207:../src/main.c ****         	copySensorData();
- 557              		.loc 1 207 0
+ 209:../src/main.c ****         	copySensorData();
+ 557              		.loc 1 209 0
  558 0570 FFF7FEFF 		bl	copySensorData
- 209:../src/main.c ****         	SCR2 = SCR2 | SCR2_ACCOK;
- 559              		.loc 1 209 0
+ 211:../src/main.c ****         	SCR2 = SCR2 | SCR2_ACCOK;
+ 559              		.loc 1 211 0
  560 0574 40F20003 		movw	r3, #:lower16:MODBUSReg
  561 0578 C0F20003 		movt	r3, #:upper16:MODBUSReg
  562 057c 5B88     		ldrh	r3, [r3, #2]
@@ -845,8 +847,8 @@
  565 0584 40F20003 		movw	r3, #:lower16:MODBUSReg
  566 0588 C0F20003 		movt	r3, #:upper16:MODBUSReg
  567 058c 5A80     		strh	r2, [r3, #2]	@ movhi
- 210:../src/main.c ****         	SCR2 = SCR2 | SCR2_GYROOK;
- 568              		.loc 1 210 0
+ 212:../src/main.c ****         	SCR2 = SCR2 | SCR2_GYROOK;
+ 568              		.loc 1 212 0
  569 058e 40F20003 		movw	r3, #:lower16:MODBUSReg
  570 0592 C0F20003 		movt	r3, #:upper16:MODBUSReg
  571 0596 5B88     		ldrh	r3, [r3, #2]
@@ -855,8 +857,8 @@
  574 059e 40F20003 		movw	r3, #:lower16:MODBUSReg
  575 05a2 C0F20003 		movt	r3, #:upper16:MODBUSReg
  576 05a6 5A80     		strh	r2, [r3, #2]	@ movhi
- 211:../src/main.c ****         	SCR2 = SCR2 | SCR2_MAGOK;
- 577              		.loc 1 211 0
+ 213:../src/main.c ****         	SCR2 = SCR2 | SCR2_MAGOK;
+ 577              		.loc 1 213 0
  578 05a8 40F20003 		movw	r3, #:lower16:MODBUSReg
  579 05ac C0F20003 		movt	r3, #:upper16:MODBUSReg
  580 05b0 5B88     		ldrh	r3, [r3, #2]
@@ -865,8 +867,8 @@
  583 05b8 40F20003 		movw	r3, #:lower16:MODBUSReg
  584 05bc C0F20003 		movt	r3, #:upper16:MODBUSReg
  585 05c0 5A80     		strh	r2, [r3, #2]	@ movhi
- 212:../src/main.c ****         	SCR2 = SCR2 | SCR2_BAROK;
- 586              		.loc 1 212 0
+ 214:../src/main.c ****         	SCR2 = SCR2 | SCR2_BAROK;
+ 586              		.loc 1 214 0
  587 05c2 40F20003 		movw	r3, #:lower16:MODBUSReg
  588 05c6 C0F20003 		movt	r3, #:upper16:MODBUSReg
  589 05ca 5B88     		ldrh	r3, [r3, #2]
@@ -875,24 +877,24 @@
  592 05d2 40F20003 		movw	r3, #:lower16:MODBUSReg
  593 05d6 C0F20003 		movt	r3, #:upper16:MODBUSReg
  594 05da 5A80     		strh	r2, [r3, #2]	@ movhi
- 595              		.loc 1 214 0
+ 595              		.loc 1 216 0
  596 05dc 85E5     		b	.L22
  597              		.cfi_endproc
  598              	.LFE110:
  600              	.Letext0:
  601              		.file 2 "c:\\program files (x86)\\codesourcery\\eabi\\bin\\../lib/gcc/arm-none-eabi/4.6.3/../../..
- 602              		.file 3 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\Device\\STM32F4xx\\Include/s
+ 602              		.file 3 "D:\\Jure\\Projekti\\Git\\AutoPilot\\autopilot_sw\\Libraries\\Device\\STM32F4xx\\Include/s
  603              		.file 4 "../src/var.h"
  604              		.file 5 "../src/modbus.h"
- 605              		.file 6 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\CMSIS\\Include/core_cm4.h"
+ 605              		.file 6 "D:\\Jure\\Projekti\\Git\\AutoPilot\\autopilot_sw\\Libraries\\CMSIS\\Include/core_cm4.h"
  606              		.file 7 "../src/powerSensor.h"
  607              		.file 8 "../src/sensors.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 main.c
-C:\Users\Jure\AppData\Local\Temp\ccJXhI52.s:18     .text:00000000 $t
-C:\Users\Jure\AppData\Local\Temp\ccJXhI52.s:23     .text:00000000 main
-C:\Users\Jure\AppData\Local\Temp\ccJXhI52.s:420    .text:00000408 $d
-C:\Users\Jure\AppData\Local\Temp\ccJXhI52.s:424    .text:0000040c $t
+C:\Users\Jure\AppData\Local\Temp\ccbvseiY.s:18     .text:00000000 $t
+C:\Users\Jure\AppData\Local\Temp\ccbvseiY.s:23     .text:00000000 main
+C:\Users\Jure\AppData\Local\Temp\ccbvseiY.s:420    .text:00000408 $d
+C:\Users\Jure\AppData\Local\Temp\ccbvseiY.s:424    .text:0000040c $t
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

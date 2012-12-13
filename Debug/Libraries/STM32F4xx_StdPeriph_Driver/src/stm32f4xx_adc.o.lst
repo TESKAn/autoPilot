@@ -4015,50 +4015,50 @@
  2358              	.LFE147:
  2360              	.Letext0:
  2361              		.file 2 "c:\\program files (x86)\\codesourcery\\eabi\\bin\\../lib/gcc/arm-none-eabi/4.6.3/../../..
- 2362              		.file 3 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\Device\\STM32F4xx\\Include/s
- 2363              		.file 4 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\STM32F4xx_StdPeriph_Driver\\
- 2364              		.file 5 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\CMSIS\\Include/core_cm4.h"
+ 2362              		.file 3 "D:\\Jure\\Projekti\\Git\\AutoPilot\\autopilot_sw\\Libraries\\Device\\STM32F4xx\\Include/s
+ 2363              		.file 4 "D:\\Jure\\Projekti\\Git\\AutoPilot\\autopilot_sw\\Libraries\\STM32F4xx_StdPeriph_Driver\\
+ 2364              		.file 5 "D:\\Jure\\Projekti\\Git\\AutoPilot\\autopilot_sw\\Libraries\\CMSIS\\Include/core_cm4.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 stm32f4xx_adc.c
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:18     .text:00000000 $t
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:23     .text:00000000 ADC_DeInit
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:56     .text:00000020 ADC_Init
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:181    .text:000000d8 ADC_StructInit
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:240    .text:00000124 ADC_CommonInit
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:311    .text:00000180 ADC_CommonStructInit
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:358    .text:000001b4 ADC_Cmd
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:410    .text:000001ec ADC_AnalogWatchdogCmd
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:463    .text:00000228 ADC_AnalogWatchdogThresholdsConfig
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:506    .text:00000250 ADC_AnalogWatchdogSingleChannelConfig
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:559    .text:00000288 ADC_TempSensorVrefintCmd
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:614    .text:000002d4 ADC_VBATCmd
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:669    .text:00000320 ADC_RegularChannelConfig
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:911    .text:000004dc ADC_SoftwareStartConv
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:948    .text:000004fc ADC_GetSoftwareStartConvStatus
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:1000   .text:00000534 ADC_EOCOnEachRegularChannelCmd
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:1052   .text:0000056c ADC_ContinuousModeCmd
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:1104   .text:000005a4 ADC_DiscModeChannelCountConfig
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:1165   .text:000005f0 ADC_DiscModeCmd
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:1217   .text:00000628 ADC_GetConversionValue
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:1253   .text:00000644 ADC_GetMultiModeConversionValue
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:1284   .text:0000065c ADC_DMACmd
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:1336   .text:00000694 ADC_DMARequestAfterLastTransferCmd
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:1388   .text:000006cc ADC_MultiModeDMARequestAfterLastTransferCmd
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:1443   .text:00000718 ADC_InjectedChannelConfig
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:1621   .text:0000085c ADC_InjectedSequencerLengthConfig
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:1682   .text:000008a8 ADC_SetInjectedOffset
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:1732   .text:000008dc ADC_ExternalTrigInjectedConvConfig
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:1784   .text:00000914 ADC_ExternalTrigInjectedConvEdgeConfig
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:1836   .text:0000094c ADC_SoftwareStartInjectedConv
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:1873   .text:0000096c ADC_GetSoftwareStartInjectedConvCmdStatus
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:1925   .text:000009a4 ADC_AutoInjectedConvCmd
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:1977   .text:000009dc ADC_InjectedDiscModeCmd
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:2029   .text:00000a14 ADC_GetInjectedConversionValue
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:2079   .text:00000a48 ADC_ITConfig
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:2148   .text:00000aa0 ADC_GetFlagStatus
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:2203   .text:00000adc ADC_ClearFlag
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:2241   .text:00000afc ADC_GetITStatus
-C:\Users\Jure\AppData\Local\Temp\cc2QJ4lf.s:2319   .text:00000b68 ADC_ClearITPendingBit
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:18     .text:00000000 $t
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:23     .text:00000000 ADC_DeInit
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:56     .text:00000020 ADC_Init
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:181    .text:000000d8 ADC_StructInit
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:240    .text:00000124 ADC_CommonInit
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:311    .text:00000180 ADC_CommonStructInit
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:358    .text:000001b4 ADC_Cmd
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:410    .text:000001ec ADC_AnalogWatchdogCmd
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:463    .text:00000228 ADC_AnalogWatchdogThresholdsConfig
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:506    .text:00000250 ADC_AnalogWatchdogSingleChannelConfig
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:559    .text:00000288 ADC_TempSensorVrefintCmd
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:614    .text:000002d4 ADC_VBATCmd
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:669    .text:00000320 ADC_RegularChannelConfig
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:911    .text:000004dc ADC_SoftwareStartConv
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:948    .text:000004fc ADC_GetSoftwareStartConvStatus
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:1000   .text:00000534 ADC_EOCOnEachRegularChannelCmd
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:1052   .text:0000056c ADC_ContinuousModeCmd
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:1104   .text:000005a4 ADC_DiscModeChannelCountConfig
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:1165   .text:000005f0 ADC_DiscModeCmd
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:1217   .text:00000628 ADC_GetConversionValue
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:1253   .text:00000644 ADC_GetMultiModeConversionValue
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:1284   .text:0000065c ADC_DMACmd
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:1336   .text:00000694 ADC_DMARequestAfterLastTransferCmd
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:1388   .text:000006cc ADC_MultiModeDMARequestAfterLastTransferCmd
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:1443   .text:00000718 ADC_InjectedChannelConfig
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:1621   .text:0000085c ADC_InjectedSequencerLengthConfig
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:1682   .text:000008a8 ADC_SetInjectedOffset
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:1732   .text:000008dc ADC_ExternalTrigInjectedConvConfig
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:1784   .text:00000914 ADC_ExternalTrigInjectedConvEdgeConfig
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:1836   .text:0000094c ADC_SoftwareStartInjectedConv
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:1873   .text:0000096c ADC_GetSoftwareStartInjectedConvCmdStatus
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:1925   .text:000009a4 ADC_AutoInjectedConvCmd
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:1977   .text:000009dc ADC_InjectedDiscModeCmd
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:2029   .text:00000a14 ADC_GetInjectedConversionValue
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:2079   .text:00000a48 ADC_ITConfig
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:2148   .text:00000aa0 ADC_GetFlagStatus
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:2203   .text:00000adc ADC_ClearFlag
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:2241   .text:00000afc ADC_GetITStatus
+C:\Users\Jure\AppData\Local\Temp\ccBvBKHe.s:2319   .text:00000b68 ADC_ClearITPendingBit
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

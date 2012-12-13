@@ -2950,37 +2950,37 @@
  1717              	.LFE134:
  1719              	.Letext0:
  1720              		.file 2 "c:\\program files (x86)\\codesourcery\\eabi\\bin\\../lib/gcc/arm-none-eabi/4.6.3/../../..
- 1721              		.file 3 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\Device\\STM32F4xx\\Include/s
- 1722              		.file 4 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\STM32F4xx_StdPeriph_Driver\\
- 1723              		.file 5 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\CMSIS\\Include/core_cm4.h"
+ 1721              		.file 3 "D:\\Jure\\Projekti\\Git\\AutoPilot\\autopilot_sw\\Libraries\\Device\\STM32F4xx\\Include/s
+ 1722              		.file 4 "D:\\Jure\\Projekti\\Git\\AutoPilot\\autopilot_sw\\Libraries\\STM32F4xx_StdPeriph_Driver\\
+ 1723              		.file 5 "D:\\Jure\\Projekti\\Git\\AutoPilot\\autopilot_sw\\Libraries\\CMSIS\\Include/core_cm4.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 stm32f4xx_spi.c
-C:\Users\Jure\AppData\Local\Temp\ccli043h.s:18     .text:00000000 $t
-C:\Users\Jure\AppData\Local\Temp\ccli043h.s:23     .text:00000000 SPI_I2S_DeInit
-C:\Users\Jure\AppData\Local\Temp\ccli043h.s:101    .text:00000088 SPI_Init
-C:\Users\Jure\AppData\Local\Temp\ccli043h.s:207    .text:00000110 I2S_Init
-C:\Users\Jure\AppData\Local\Temp\ccli043h.s:472    .text:00000324 SPI_StructInit
-C:\Users\Jure\AppData\Local\Temp\ccli043h.s:539    .text:00000380 I2S_StructInit
-C:\Users\Jure\AppData\Local\Temp\ccli043h.s:594    .text:000003c4 SPI_Cmd
-C:\Users\Jure\AppData\Local\Temp\ccli043h.s:650    .text:00000404 I2S_Cmd
-C:\Users\Jure\AppData\Local\Temp\ccli043h.s:706    .text:00000444 SPI_DataSizeConfig
-C:\Users\Jure\AppData\Local\Temp\ccli043h.s:756    .text:0000047c SPI_BiDirectionalLineConfig
-C:\Users\Jure\AppData\Local\Temp\ccli043h.s:812    .text:000004bc SPI_NSSInternalSoftwareConfig
-C:\Users\Jure\AppData\Local\Temp\ccli043h.s:869    .text:00000500 SPI_SSOutputCmd
-C:\Users\Jure\AppData\Local\Temp\ccli043h.s:925    .text:00000540 SPI_TIModeCmd
-C:\Users\Jure\AppData\Local\Temp\ccli043h.s:981    .text:00000580 I2S_FullDuplexConfig
-C:\Users\Jure\AppData\Local\Temp\ccli043h.s:1092   .text:00000624 SPI_I2S_ReceiveData
-C:\Users\Jure\AppData\Local\Temp\ccli043h.s:1128   .text:00000640 SPI_I2S_SendData
-C:\Users\Jure\AppData\Local\Temp\ccli043h.s:1165   .text:0000065c SPI_CalculateCRC
-C:\Users\Jure\AppData\Local\Temp\ccli043h.s:1221   .text:0000069c SPI_TransmitCRC
-C:\Users\Jure\AppData\Local\Temp\ccli043h.s:1260   .text:000006c0 SPI_GetCRC
-C:\Users\Jure\AppData\Local\Temp\ccli043h.s:1314   .text:000006f4 SPI_GetCRCPolynomial
-C:\Users\Jure\AppData\Local\Temp\ccli043h.s:1350   .text:00000710 SPI_I2S_DMACmd
-C:\Users\Jure\AppData\Local\Temp\ccli043h.s:1412   .text:00000758 SPI_I2S_ITConfig
-C:\Users\Jure\AppData\Local\Temp\ccli043h.s:1489   .text:000007c4 SPI_I2S_GetFlagStatus
-C:\Users\Jure\AppData\Local\Temp\ccli043h.s:1546   .text:00000804 SPI_I2S_ClearFlag
-C:\Users\Jure\AppData\Local\Temp\ccli043h.s:1585   .text:00000828 SPI_I2S_GetITStatus
-C:\Users\Jure\AppData\Local\Temp\ccli043h.s:1676   .text:000008b0 SPI_I2S_ClearITPendingBit
+C:\Users\Jure\AppData\Local\Temp\ccxtN3Ib.s:18     .text:00000000 $t
+C:\Users\Jure\AppData\Local\Temp\ccxtN3Ib.s:23     .text:00000000 SPI_I2S_DeInit
+C:\Users\Jure\AppData\Local\Temp\ccxtN3Ib.s:101    .text:00000088 SPI_Init
+C:\Users\Jure\AppData\Local\Temp\ccxtN3Ib.s:207    .text:00000110 I2S_Init
+C:\Users\Jure\AppData\Local\Temp\ccxtN3Ib.s:472    .text:00000324 SPI_StructInit
+C:\Users\Jure\AppData\Local\Temp\ccxtN3Ib.s:539    .text:00000380 I2S_StructInit
+C:\Users\Jure\AppData\Local\Temp\ccxtN3Ib.s:594    .text:000003c4 SPI_Cmd
+C:\Users\Jure\AppData\Local\Temp\ccxtN3Ib.s:650    .text:00000404 I2S_Cmd
+C:\Users\Jure\AppData\Local\Temp\ccxtN3Ib.s:706    .text:00000444 SPI_DataSizeConfig
+C:\Users\Jure\AppData\Local\Temp\ccxtN3Ib.s:756    .text:0000047c SPI_BiDirectionalLineConfig
+C:\Users\Jure\AppData\Local\Temp\ccxtN3Ib.s:812    .text:000004bc SPI_NSSInternalSoftwareConfig
+C:\Users\Jure\AppData\Local\Temp\ccxtN3Ib.s:869    .text:00000500 SPI_SSOutputCmd
+C:\Users\Jure\AppData\Local\Temp\ccxtN3Ib.s:925    .text:00000540 SPI_TIModeCmd
+C:\Users\Jure\AppData\Local\Temp\ccxtN3Ib.s:981    .text:00000580 I2S_FullDuplexConfig
+C:\Users\Jure\AppData\Local\Temp\ccxtN3Ib.s:1092   .text:00000624 SPI_I2S_ReceiveData
+C:\Users\Jure\AppData\Local\Temp\ccxtN3Ib.s:1128   .text:00000640 SPI_I2S_SendData
+C:\Users\Jure\AppData\Local\Temp\ccxtN3Ib.s:1165   .text:0000065c SPI_CalculateCRC
+C:\Users\Jure\AppData\Local\Temp\ccxtN3Ib.s:1221   .text:0000069c SPI_TransmitCRC
+C:\Users\Jure\AppData\Local\Temp\ccxtN3Ib.s:1260   .text:000006c0 SPI_GetCRC
+C:\Users\Jure\AppData\Local\Temp\ccxtN3Ib.s:1314   .text:000006f4 SPI_GetCRCPolynomial
+C:\Users\Jure\AppData\Local\Temp\ccxtN3Ib.s:1350   .text:00000710 SPI_I2S_DMACmd
+C:\Users\Jure\AppData\Local\Temp\ccxtN3Ib.s:1412   .text:00000758 SPI_I2S_ITConfig
+C:\Users\Jure\AppData\Local\Temp\ccxtN3Ib.s:1489   .text:000007c4 SPI_I2S_GetFlagStatus
+C:\Users\Jure\AppData\Local\Temp\ccxtN3Ib.s:1546   .text:00000804 SPI_I2S_ClearFlag
+C:\Users\Jure\AppData\Local\Temp\ccxtN3Ib.s:1585   .text:00000828 SPI_I2S_GetITStatus
+C:\Users\Jure\AppData\Local\Temp\ccxtN3Ib.s:1676   .text:000008b0 SPI_I2S_ClearITPendingBit
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

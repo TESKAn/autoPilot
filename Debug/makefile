@@ -29,53 +29,53 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 SECONDARY_FLASH += \
-AutoPilot_SW.hex \
+autopilot_sw.hex \
 
 SECONDARY_LIST += \
-AutoPilot_SW.lst \
+autopilot_sw.lst \
 
 SECONDARY_SIZE += \
-AutoPilot_SW.siz \
+autopilot_sw.siz \
 
 
 # All Target
-all: AutoPilot_SW.elf secondary-outputs
+all: autopilot_sw.elf secondary-outputs
 
 # Tool invocations
-AutoPilot_SW.elf: $(OBJS) $(USER_OBJS)
+autopilot_sw.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: ARM Sourcery Windows GCC C Linker'
-	arm-none-eabi-gcc -T"C:\Users\Jure\workspace\TemplateProject\stm32_flash.ld" -Xlinker --gc-sections -Wl,-Map,AutoPilot_SW.map -mcpu=cortex-m4 -mthumb -g -gdwarf-2 -o "AutoPilot_SW.elf" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-none-eabi-gcc -T"D:\Jure\Projekti\Git\AutoPilot\autopilot_sw\stm32_flash.ld" -Xlinker --gc-sections -Wl,-Map,autopilot_sw.map -mcpu=cortex-m4 -mthumb -g -gdwarf-2 -o "autopilot_sw.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build
 
-AutoPilot_SW.hex: AutoPilot_SW.elf
+autopilot_sw.hex: autopilot_sw.elf
 	@echo 'Invoking: ARM Sourcery Windows GNU Create Flash Image'
-	arm-none-eabi-objcopy -O ihex AutoPilot_SW.elf  "AutoPilot_SW.hex"
+	arm-none-eabi-objcopy -O ihex autopilot_sw.elf  "autopilot_sw.hex"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-AutoPilot_SW.lst: AutoPilot_SW.elf
+autopilot_sw.lst: autopilot_sw.elf
 	@echo 'Invoking: ARM Sourcery Windows GNU Create Listing'
-	arm-none-eabi-objdump -h -S AutoPilot_SW.elf > "AutoPilot_SW.lst"
+	arm-none-eabi-objdump -h -S autopilot_sw.elf > "autopilot_sw.lst"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-AutoPilot_SW.siz: AutoPilot_SW.elf
+autopilot_sw.siz: autopilot_sw.elf
 	@echo 'Invoking: ARM Sourcery Windows GNU Print Size'
-	arm-none-eabi-size  --format=berkeley AutoPilot_SW.elf
+	arm-none-eabi-size  --format=berkeley autopilot_sw.elf
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(SECONDARY_SIZE)$(OBJS)$(C_DEPS)$(ASM_DEPS)$(SECONDARY_FLASH)$(EXECUTABLES)$(SECONDARY_LIST)$(S_UPPER_DEPS) AutoPilot_SW.elf
+	-$(RM) $(SECONDARY_SIZE)$(OBJS)$(C_DEPS)$(ASM_DEPS)$(SECONDARY_FLASH)$(EXECUTABLES)$(SECONDARY_LIST)$(S_UPPER_DEPS) autopilot_sw.elf
 	-@echo ' '
 
 post-build:
 	-@echo 'Binary'
-	-arm-none-eabi-objcopy -S  -O binary  "AutoPilot_SW.elf" "AutoPilot_SW.bin"
+	-arm-none-eabi-objcopy -S  -O binary  "autopilot_sw.elf" "autopilot_sw.bin"
 	-@echo ' '
 
 secondary-outputs: $(SECONDARY_FLASH) $(SECONDARY_LIST) $(SECONDARY_SIZE)

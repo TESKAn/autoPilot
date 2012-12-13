@@ -2875,31 +2875,31 @@
  1896              	.LFE128:
  1898              	.Letext0:
  1899              		.file 2 "c:\\program files (x86)\\codesourcery\\eabi\\bin\\../lib/gcc/arm-none-eabi/4.6.3/../../..
- 1900              		.file 3 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\Device\\STM32F4xx\\Include/s
- 1901              		.file 4 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\STM32F4xx_StdPeriph_Driver\\
- 1902              		.file 5 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\CMSIS\\Include/core_cm4.h"
+ 1900              		.file 3 "D:\\Jure\\Projekti\\Git\\AutoPilot\\autopilot_sw\\Libraries\\Device\\STM32F4xx\\Include/s
+ 1901              		.file 4 "D:\\Jure\\Projekti\\Git\\AutoPilot\\autopilot_sw\\Libraries\\STM32F4xx_StdPeriph_Driver\\
+ 1902              		.file 5 "D:\\Jure\\Projekti\\Git\\AutoPilot\\autopilot_sw\\Libraries\\CMSIS\\Include/core_cm4.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 stm32f4xx_fsmc.c
-C:\Users\Jure\AppData\Local\Temp\ccPEAfXe.s:18     .text:00000000 $t
-C:\Users\Jure\AppData\Local\Temp\ccPEAfXe.s:23     .text:00000000 FSMC_NORSRAMDeInit
-C:\Users\Jure\AppData\Local\Temp\ccPEAfXe.s:85     .text:0000005c FSMC_NORSRAMInit
-C:\Users\Jure\AppData\Local\Temp\ccPEAfXe.s:313    .text:000001b4 FSMC_NORSRAMStructInit
-C:\Users\Jure\AppData\Local\Temp\ccPEAfXe.s:466    .text:000002bc FSMC_NORSRAMCmd
-C:\Users\Jure\AppData\Local\Temp\ccPEAfXe.s:526    .text:00000314 FSMC_NANDDeInit
-C:\Users\Jure\AppData\Local\Temp\ccPEAfXe.s:604    .text:000003a0 FSMC_NANDInit
-C:\Users\Jure\AppData\Local\Temp\ccPEAfXe.s:765    .text:000004a0 FSMC_NANDStructInit
-C:\Users\Jure\AppData\Local\Temp\ccPEAfXe.s:864    .text:0000053c FSMC_NANDCmd
-C:\Users\Jure\AppData\Local\Temp\ccPEAfXe.s:952    .text:000005d8 FSMC_NANDECCCmd
-C:\Users\Jure\AppData\Local\Temp\ccPEAfXe.s:1040   .text:00000674 FSMC_GetECC
-C:\Users\Jure\AppData\Local\Temp\ccPEAfXe.s:1094   .text:000006b0 FSMC_PCCARDDeInit
-C:\Users\Jure\AppData\Local\Temp\ccPEAfXe.s:1145   .text:00000700 FSMC_PCCARDInit
-C:\Users\Jure\AppData\Local\Temp\ccPEAfXe.s:1283   .text:000007d4 FSMC_PCCARDStructInit
-C:\Users\Jure\AppData\Local\Temp\ccPEAfXe.s:1386   .text:00000878 FSMC_PCCARDCmd
-C:\Users\Jure\AppData\Local\Temp\ccPEAfXe.s:1443   .text:000008cc FSMC_ITConfig
-C:\Users\Jure\AppData\Local\Temp\ccPEAfXe.s:1565   .text:000009ac FSMC_GetFlagStatus
-C:\Users\Jure\AppData\Local\Temp\ccPEAfXe.s:1649   .text:00000a20 FSMC_ClearFlag
-C:\Users\Jure\AppData\Local\Temp\ccPEAfXe.s:1724   .text:00000a9c FSMC_GetITStatus
-C:\Users\Jure\AppData\Local\Temp\ccPEAfXe.s:1825   .text:00000b30 FSMC_ClearITPendingBit
+C:\Users\Jure\AppData\Local\Temp\ccDrwswd.s:18     .text:00000000 $t
+C:\Users\Jure\AppData\Local\Temp\ccDrwswd.s:23     .text:00000000 FSMC_NORSRAMDeInit
+C:\Users\Jure\AppData\Local\Temp\ccDrwswd.s:85     .text:0000005c FSMC_NORSRAMInit
+C:\Users\Jure\AppData\Local\Temp\ccDrwswd.s:313    .text:000001b4 FSMC_NORSRAMStructInit
+C:\Users\Jure\AppData\Local\Temp\ccDrwswd.s:466    .text:000002bc FSMC_NORSRAMCmd
+C:\Users\Jure\AppData\Local\Temp\ccDrwswd.s:526    .text:00000314 FSMC_NANDDeInit
+C:\Users\Jure\AppData\Local\Temp\ccDrwswd.s:604    .text:000003a0 FSMC_NANDInit
+C:\Users\Jure\AppData\Local\Temp\ccDrwswd.s:765    .text:000004a0 FSMC_NANDStructInit
+C:\Users\Jure\AppData\Local\Temp\ccDrwswd.s:864    .text:0000053c FSMC_NANDCmd
+C:\Users\Jure\AppData\Local\Temp\ccDrwswd.s:952    .text:000005d8 FSMC_NANDECCCmd
+C:\Users\Jure\AppData\Local\Temp\ccDrwswd.s:1040   .text:00000674 FSMC_GetECC
+C:\Users\Jure\AppData\Local\Temp\ccDrwswd.s:1094   .text:000006b0 FSMC_PCCARDDeInit
+C:\Users\Jure\AppData\Local\Temp\ccDrwswd.s:1145   .text:00000700 FSMC_PCCARDInit
+C:\Users\Jure\AppData\Local\Temp\ccDrwswd.s:1283   .text:000007d4 FSMC_PCCARDStructInit
+C:\Users\Jure\AppData\Local\Temp\ccDrwswd.s:1386   .text:00000878 FSMC_PCCARDCmd
+C:\Users\Jure\AppData\Local\Temp\ccDrwswd.s:1443   .text:000008cc FSMC_ITConfig
+C:\Users\Jure\AppData\Local\Temp\ccDrwswd.s:1565   .text:000009ac FSMC_GetFlagStatus
+C:\Users\Jure\AppData\Local\Temp\ccDrwswd.s:1649   .text:00000a20 FSMC_ClearFlag
+C:\Users\Jure\AppData\Local\Temp\ccDrwswd.s:1724   .text:00000a9c FSMC_GetITStatus
+C:\Users\Jure\AppData\Local\Temp\ccDrwswd.s:1825   .text:00000b30 FSMC_ClearITPendingBit
                      .debug_frame:00000010 $d
 
 NO UNDEFINED SYMBOLS

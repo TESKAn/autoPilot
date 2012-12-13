@@ -1469,26 +1469,26 @@
  951              	.LFE123:
  953              	.Letext0:
  954              		.file 2 "c:\\program files (x86)\\codesourcery\\eabi\\bin\\../lib/gcc/arm-none-eabi/4.6.3/../../..
- 955              		.file 3 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\Device\\STM32F4xx\\Include/s
- 956              		.file 4 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\STM32F4xx_StdPeriph_Driver\\
- 957              		.file 5 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\CMSIS\\Include/core_cm4.h"
+ 955              		.file 3 "D:\\Jure\\Projekti\\Git\\AutoPilot\\autopilot_sw\\Libraries\\Device\\STM32F4xx\\Include/s
+ 956              		.file 4 "D:\\Jure\\Projekti\\Git\\AutoPilot\\autopilot_sw\\Libraries\\STM32F4xx_StdPeriph_Driver\\
+ 957              		.file 5 "D:\\Jure\\Projekti\\Git\\AutoPilot\\autopilot_sw\\Libraries\\CMSIS\\Include/core_cm4.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 stm32f4xx_gpio.c
-C:\Users\Jure\AppData\Local\Temp\cct5nLdr.s:18     .text:00000000 $t
-C:\Users\Jure\AppData\Local\Temp\cct5nLdr.s:23     .text:00000000 GPIO_DeInit
-C:\Users\Jure\AppData\Local\Temp\cct5nLdr.s:197    .text:00000178 GPIO_Init
-C:\Users\Jure\AppData\Local\Temp\cct5nLdr.s:373    .text:000002bc GPIO_StructInit
-C:\Users\Jure\AppData\Local\Temp\cct5nLdr.s:424    .text:000002f8 GPIO_PinLockConfig
-C:\Users\Jure\AppData\Local\Temp\cct5nLdr.s:485    .text:0000033c GPIO_ReadInputDataBit
-C:\Users\Jure\AppData\Local\Temp\cct5nLdr.s:540    .text:00000378 GPIO_ReadInputData
-C:\Users\Jure\AppData\Local\Temp\cct5nLdr.s:576    .text:00000394 GPIO_ReadOutputDataBit
-C:\Users\Jure\AppData\Local\Temp\cct5nLdr.s:631    .text:000003d0 GPIO_ReadOutputData
-C:\Users\Jure\AppData\Local\Temp\cct5nLdr.s:667    .text:000003ec GPIO_SetBits
-C:\Users\Jure\AppData\Local\Temp\cct5nLdr.s:704    .text:00000408 GPIO_ResetBits
-C:\Users\Jure\AppData\Local\Temp\cct5nLdr.s:741    .text:00000424 GPIO_WriteBit
-C:\Users\Jure\AppData\Local\Temp\cct5nLdr.s:791    .text:00000454 GPIO_Write
-C:\Users\Jure\AppData\Local\Temp\cct5nLdr.s:828    .text:00000470 GPIO_ToggleBits
-C:\Users\Jure\AppData\Local\Temp\cct5nLdr.s:868    .text:00000494 GPIO_PinAFConfig
+C:\Users\Jure\AppData\Local\Temp\ccLTy4To.s:18     .text:00000000 $t
+C:\Users\Jure\AppData\Local\Temp\ccLTy4To.s:23     .text:00000000 GPIO_DeInit
+C:\Users\Jure\AppData\Local\Temp\ccLTy4To.s:197    .text:00000178 GPIO_Init
+C:\Users\Jure\AppData\Local\Temp\ccLTy4To.s:373    .text:000002bc GPIO_StructInit
+C:\Users\Jure\AppData\Local\Temp\ccLTy4To.s:424    .text:000002f8 GPIO_PinLockConfig
+C:\Users\Jure\AppData\Local\Temp\ccLTy4To.s:485    .text:0000033c GPIO_ReadInputDataBit
+C:\Users\Jure\AppData\Local\Temp\ccLTy4To.s:540    .text:00000378 GPIO_ReadInputData
+C:\Users\Jure\AppData\Local\Temp\ccLTy4To.s:576    .text:00000394 GPIO_ReadOutputDataBit
+C:\Users\Jure\AppData\Local\Temp\ccLTy4To.s:631    .text:000003d0 GPIO_ReadOutputData
+C:\Users\Jure\AppData\Local\Temp\ccLTy4To.s:667    .text:000003ec GPIO_SetBits
+C:\Users\Jure\AppData\Local\Temp\ccLTy4To.s:704    .text:00000408 GPIO_ResetBits
+C:\Users\Jure\AppData\Local\Temp\ccLTy4To.s:741    .text:00000424 GPIO_WriteBit
+C:\Users\Jure\AppData\Local\Temp\ccLTy4To.s:791    .text:00000454 GPIO_Write
+C:\Users\Jure\AppData\Local\Temp\ccLTy4To.s:828    .text:00000470 GPIO_ToggleBits
+C:\Users\Jure\AppData\Local\Temp\ccLTy4To.s:868    .text:00000494 GPIO_PinAFConfig
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

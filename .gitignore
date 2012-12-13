@@ -3,3 +3,4 @@
 Debug/src/
 Debug/Libraries
 .svn/
+*.o

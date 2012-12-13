@@ -611,19 +611,19 @@
  341              	.LFE117:
  343              	.Letext0:
  344              		.file 2 "c:\\program files (x86)\\codesourcery\\eabi\\bin\\../lib/gcc/arm-none-eabi/4.6.3/../../..
- 345              		.file 3 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\Device\\STM32F4xx\\Include/s
- 346              		.file 4 "D:\\Jure\\Projekti\\Git\\AutoPilot\\AutoPilot_SW\\Libraries\\CMSIS\\Include/core_cm4.h"
+ 345              		.file 3 "D:\\Jure\\Projekti\\Git\\AutoPilot\\autopilot_sw\\Libraries\\Device\\STM32F4xx\\Include/s
+ 346              		.file 4 "D:\\Jure\\Projekti\\Git\\AutoPilot\\autopilot_sw\\Libraries\\CMSIS\\Include/core_cm4.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 stm32f4xx_wwdg.c
-C:\Users\Jure\AppData\Local\Temp\ccNEubX2.s:18     .text:00000000 $t
-C:\Users\Jure\AppData\Local\Temp\ccNEubX2.s:23     .text:00000000 WWDG_DeInit
-C:\Users\Jure\AppData\Local\Temp\ccNEubX2.s:56     .text:00000020 WWDG_SetPrescaler
-C:\Users\Jure\AppData\Local\Temp\ccNEubX2.s:106    .text:0000005c WWDG_SetWindowValue
-C:\Users\Jure\AppData\Local\Temp\ccNEubX2.s:158    .text:000000a0 WWDG_EnableIT
-C:\Users\Jure\AppData\Local\Temp\ccNEubX2.s:189    .text:000000b8 WWDG_SetCounter
-C:\Users\Jure\AppData\Local\Temp\ccNEubX2.s:227    .text:000000dc WWDG_Enable
-C:\Users\Jure\AppData\Local\Temp\ccNEubX2.s:266    .text:00000104 WWDG_GetFlagStatus
-C:\Users\Jure\AppData\Local\Temp\ccNEubX2.s:317    .text:0000013c WWDG_ClearFlag
+C:\Users\Jure\AppData\Local\Temp\ccBhoRmT.s:18     .text:00000000 $t
+C:\Users\Jure\AppData\Local\Temp\ccBhoRmT.s:23     .text:00000000 WWDG_DeInit
+C:\Users\Jure\AppData\Local\Temp\ccBhoRmT.s:56     .text:00000020 WWDG_SetPrescaler
+C:\Users\Jure\AppData\Local\Temp\ccBhoRmT.s:106    .text:0000005c WWDG_SetWindowValue
+C:\Users\Jure\AppData\Local\Temp\ccBhoRmT.s:158    .text:000000a0 WWDG_EnableIT
+C:\Users\Jure\AppData\Local\Temp\ccBhoRmT.s:189    .text:000000b8 WWDG_SetCounter
+C:\Users\Jure\AppData\Local\Temp\ccBhoRmT.s:227    .text:000000dc WWDG_Enable
+C:\Users\Jure\AppData\Local\Temp\ccBhoRmT.s:266    .text:00000104 WWDG_GetFlagStatus
+C:\Users\Jure\AppData\Local\Temp\ccBhoRmT.s:317    .text:0000013c WWDG_ClearFlag
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS
