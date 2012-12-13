@@ -1,0 +1,5 @@
+*.[oa]
+*~
+Debug/src/
+Debug/Libraries
+.svn/
