@@ -15,6 +15,9 @@ C_SRCS += \
 ../src/stm32f4xx_it.c \
 ../src/system_stm32f4xx.c \
 ../src/tiny_printf.c \
+../src/usb_bsp.c \
+../src/usbd_desc.c \
+../src/usbd_usr.c \
 ../src/var.c 
 
 S_UPPER_SRCS += \
@@ -33,6 +36,9 @@ OBJS += \
 ./src/stm32f4xx_it.o \
 ./src/system_stm32f4xx.o \
 ./src/tiny_printf.o \
+./src/usb_bsp.o \
+./src/usbd_desc.o \
+./src/usbd_usr.o \
 ./src/var.o 
 
 C_DEPS += \
@@ -47,6 +53,9 @@ C_DEPS += \
 ./src/stm32f4xx_it.d \
 ./src/system_stm32f4xx.d \
 ./src/tiny_printf.d \
+./src/usb_bsp.d \
+./src/usbd_desc.d \
+./src/usbd_usr.d \
 ./src/var.d 
 
 S_UPPER_DEPS += \
@@ -57,7 +66,7 @@ S_UPPER_DEPS += \
 src/%.o: ../src/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: ARM Sourcery Windows GCC C Compiler'
-	arm-none-eabi-gcc -DUSE_STDPERIPH_DRIVER -DUSE_STM32F4_DISCOVERY -DSTM32F4XX -I"D:\Jure\Projekti\Git\autopilot_sw\src" -I"D:\Jure\Projekti\Git\autopilot_sw\Libraries\CMSIS\Include" -I"D:\Jure\Projekti\Git\autopilot_sw\Libraries\Device\STM32F4xx\Include" -I"D:\Jure\Projekti\Git\autopilot_sw\Libraries\STM32F4xx_StdPeriph_Driver\inc" -O0 -Wall -Wa,-adhlns="$@.lst" -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -mcpu=cortex-m4 -mthumb -g -gdwarf-2 -o "$@" "$<"
+	arm-none-eabi-gcc -DUSE_STDPERIPH_DRIVER -DUSE_USB_OTG_FS -DUSE_STM32F4_DISCOVERY -DSTM32F4XX -I"D:\Jure\Projekti\Git\autopilot_sw\src" -I"D:\Jure\Projekti\Git\autopilot_sw\Libraries\STM32_USB_Device_Library\Class\hid_custom\inc" -I"D:\Jure\Projekti\Git\autopilot_sw\Libraries\STM32_USB_Device_Library\Core\inc" -I"D:\Jure\Projekti\Git\autopilot_sw\Libraries\STM32_USB_OTG_Driver\inc" -I"D:\Jure\Projekti\Git\autopilot_sw\Libraries\CMSIS\Include" -I"D:\Jure\Projekti\Git\autopilot_sw\Libraries\Device\STM32F4xx\Include" -I"D:\Jure\Projekti\Git\autopilot_sw\Libraries\STM32F4xx_StdPeriph_Driver\inc" -O0 -Wall -Wa,-adhlns="$@.lst" -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -mcpu=cortex-m4 -mthumb -g -gdwarf-2 -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

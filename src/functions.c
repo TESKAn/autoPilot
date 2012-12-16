@@ -6,11 +6,13 @@
  */
 #include "allinclude.h"
 
+
 void NVIC_EnableInterrupts(FunctionalState newState)
 {
 	//interrupt controller
 	NVIC_InitTypeDef NVCInitStructure;
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
+
 	//init ADC interrupt
 	//set IRQ channel
 	NVCInitStructure.NVIC_IRQChannel = ADC_IRQn;
