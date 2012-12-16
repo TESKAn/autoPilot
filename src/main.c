@@ -45,10 +45,13 @@
 // USB related
 __ALIGN_BEGIN	USB_OTG_CORE_HANDLE  USB_OTG_dev __ALIGN_END;
 
+// Buffer for data from PC to uC
 uint8_t Buffer[64];
 
 int main(void)
 {
+	int i = 0;
+	int registerCount = 0;
 	// Startup delay - 0,5 sec
 	Delaynus(500000);
 	// Configure hardware
@@ -202,7 +205,65 @@ int main(void)
         	SCR1 = SCR1 & ~SCR_DEC_DAC_FREQ;
         }
 
+        // Send registers 0 - 30
+        if(USB_REQUEST_DATA_0)
+        {
+        	USB_REQUEST_DATA_0 = 0;
+        	// Set register pointer
+        	registerCount = 0;
+        	// Store data
+        	Buffer[0] = 2;
+        	Buffer[1] = 0;
+        	for(i=2;i<64;i+=2)
+        	{
+        		// Store high byte of register
+        		Buffer[i] = (MODBUSReg[registerCount] >> 8) & 0x00FF;
+        		// Store low byte of register
+        		Buffer[i + 1] = MODBUSReg[registerCount] & 0x00FF;
+        		registerCount++;
+        	}
+        	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
+        }
 
+        // Send registers 31 - 61
+        if(USB_REQUEST_DATA_1)
+        {
+        	USB_REQUEST_DATA_1 = 0;
+        	// Set register pointer
+        	registerCount = 31;
+        	// Store data
+        	Buffer[0] = 2;
+        	Buffer[1] = 1;
+        	for(i=2;i<64;i+=2)
+        	{
+        		// Store high byte of register
+        		Buffer[i] = (MODBUSReg[registerCount] >> 8) & 0x00FF;
+        		// Store low byte of register
+        		Buffer[i + 1] = MODBUSReg[registerCount] & 0x00FF;
+        		registerCount++;
+        	}
+        	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
+        }
+
+        // Send registers 62 - 79
+        if(USB_REQUEST_DATA_2)
+        {
+        	USB_REQUEST_DATA_2 = 0;
+        	// Set register pointer
+        	registerCount = 62;
+        	// Store data
+        	Buffer[0] = 2;
+        	Buffer[1] = 2;
+        	for(i=2;i<36;i+=2)
+        	{
+        		// Store high byte of register
+        		Buffer[i] = (MODBUSReg[registerCount] >> 8) & 0x00FF;
+        		// Store low byte of register
+        		Buffer[i + 1] = MODBUSReg[registerCount] & 0x00FF;
+        		registerCount++;
+        	}
+        	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
+        }
 
         // Check PS for messages
         if(PS_HASDATA)

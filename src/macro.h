@@ -41,6 +41,9 @@
 #define SYSTEM_INTERRUPTS_ON	flag0.bits.BIT9
 #define LED_BLINK				flag0.bits.BIT10
 #define ADC_ENABLED				flag0.bits.BIT11
+#define USB_REQUEST_DATA_0		flag0.bits.BIT12
+#define USB_REQUEST_DATA_1		flag0.bits.BIT13
+#define USB_REQUEST_DATA_2		flag0.bits.BIT14
 
 // DMA macros
 #define DMA_USART2		DMA1_Stream6

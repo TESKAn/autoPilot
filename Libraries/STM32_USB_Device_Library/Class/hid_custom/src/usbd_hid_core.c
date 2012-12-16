@@ -487,43 +487,23 @@ static uint8_t  USBD_HID_DataOut (void *pdev, uint8_t epnum)
 			/* read USB packet */
 			USB_OTG_ReadPacket((USB_OTG_CORE_HANDLE*)pdev, *Buffer, HID_OUT_PACKET);
 			/* process the report setting */
-			//store report
+
+
 			/*
 			for(i = 0; i < HID_OUT_PACKET; i++)
 			{
 				Buffer1[i] = Buffer[i];
 			}
+			*/
 			//Buffer[0] = report_ID
 			switch (Buffer[1])
 			{
 				case 1:	//Turn ON specific LEDs
 				{
-					sendData = 1;
-					if (Buffer[2] == 0)
-						STM32F4_Discovery_LEDOff(LED3);
-					else
-						STM32F4_Discovery_LEDOn(LED3);
-					if (Buffer[3] == 0)
-						STM32F4_Discovery_LEDOff(LED4);
-					else
-						STM32F4_Discovery_LEDOn(LED4);
-					if (Buffer[4] == 0)
-						STM32F4_Discovery_LEDOff(LED5);
-					else
-						STM32F4_Discovery_LEDOn(LED5);
-					if (Buffer[5] == 0)
-						STM32F4_Discovery_LEDOff(LED6);
-					else
-						STM32F4_Discovery_LEDOn(LED6);
 					break;
 				}
 				case 2:	//turn off all leds
 				{
-
-					STM32F4_Discovery_LEDOff(LED3);
-					STM32F4_Discovery_LEDOff(LED4);
-					STM32F4_Discovery_LEDOff(LED5);
-					STM32F4_Discovery_LEDOff(LED6);
 					break;
 				}
 				case 3:		//Data request
@@ -531,26 +511,23 @@ static uint8_t  USBD_HID_DataOut (void *pdev, uint8_t epnum)
 					i = Buffer[2];
 					if((i & 1)!= 0)
 					{
-						REQUEST_DATA0 = 1;
+						USB_REQUEST_DATA_0 = 1;
 					}
 					if((i & 2)!= 0)
 					{
-						REQUEST_DATA1 = 1;
+						USB_REQUEST_DATA_1 = 1;
 					}
 					if((i & 4)!= 0)
 					{
-						REQUEST_DATA2 = 1;
+						USB_REQUEST_DATA_2 = 1;
 					}
 					break;
 				}
 			  default:
-			    STM32F4_Discovery_LEDOff(LED3); // oranzova
-			    STM32F4_Discovery_LEDOff(LED4); // zelena
-			    STM32F4_Discovery_LEDOff(LED5); // cervena
-			    STM32F4_Discovery_LEDOff(LED6); // modra
+
 			    break;
 			}
-*/
+
 
 			/* Prepare Out endpoint to receive next packet */
 			DCD_EP_PrepareRx(pdev,
