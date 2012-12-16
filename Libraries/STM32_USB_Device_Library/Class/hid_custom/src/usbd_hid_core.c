@@ -523,6 +523,12 @@ static uint8_t  USBD_HID_DataOut (void *pdev, uint8_t epnum)
 					}
 					break;
 				}
+				case 4:
+				{
+					// Write SCR1
+					SCR1 = (Buffer[2] << 8) | Buffer[3];
+					break;
+				}
 			  default:
 
 			    break;

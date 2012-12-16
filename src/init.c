@@ -182,6 +182,7 @@ void System_Config(void)
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
+
 	// Set C4 as output
 	// Select C4
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
@@ -197,6 +198,7 @@ void System_Config(void)
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
 	// Set pin to 0
 	GPIO_WriteBit(GPIOC, GPIO_Pin_4, 0);
+
 	// Set C5 as input
 	// Select C5
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
@@ -210,6 +212,26 @@ void System_Config(void)
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
+
+	// Set C13 as output, pull to zero
+	// C13 = USB OTG power enable
+	// Set pin to 0
+	GPIO_WriteBit(GPIOC, GPIO_Pin_13, 1);
+	// Select C13
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
+	//set output type
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// push/pull
+	//set pull-up
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	//set pin mode to alternate function
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	//set pin speed
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	//write mode to selected pins and selected port
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
+	// Set pin to 0
+	GPIO_WriteBit(GPIOC, GPIO_Pin_13, 1);
+
 	// Set C15 as output, set to 1, pull - up
 	// Select C15
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
@@ -228,6 +250,22 @@ void System_Config(void)
 
 
 	//GPIO D
+
+	// D3 = input, USB OTG power fault
+	//configure structure
+	//select pins
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
+	//set output type
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	//set pin speed
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	//set pull-up
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	//set pin mode
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+	//write mode to selected pins and selected port
+	GPIO_Init(GPIOD, &GPIO_InitStructure);
+
 	//connect pins D5 and D6 to USART2
 	GPIO_PinAFConfig(GPIOD, GPIO_PinSource5, GPIO_AF_USART2);
 	GPIO_PinAFConfig(GPIOD, GPIO_PinSource6, GPIO_AF_USART2);
