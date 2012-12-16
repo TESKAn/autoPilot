@@ -107,7 +107,7 @@ C_DEPS += \
 Libraries/STM32F4xx_StdPeriph_Driver/src/%.o: ../Libraries/STM32F4xx_StdPeriph_Driver/src/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: ARM Sourcery Windows GCC C Compiler'
-	arm-none-eabi-gcc -DUSE_STDPERIPH_DRIVER -DUSE_STM32F4_DISCOVERY -DSTM32F4XX -I"D:\Jure\Projekti\Git\AutoPilot\autopilot_sw\src" -I"D:\Jure\Projekti\Git\AutoPilot\autopilot_sw\Libraries\CMSIS\Include" -I"D:\Jure\Projekti\Git\AutoPilot\autopilot_sw\Libraries\Device\STM32F4xx\Include" -I"D:\Jure\Projekti\Git\AutoPilot\autopilot_sw\Libraries\STM32F4xx_StdPeriph_Driver\inc" -O0 -Wall -Wa,-adhlns="$@.lst" -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -mcpu=cortex-m4 -mthumb -g -gdwarf-2 -o "$@" "$<"
+	arm-none-eabi-gcc -DUSE_STDPERIPH_DRIVER -DUSE_STM32F4_DISCOVERY -DSTM32F4XX -I"D:\Jure\Projekti\Git\autopilot_sw\src" -I"D:\Jure\Projekti\Git\autopilot_sw\Libraries\CMSIS\Include" -I"D:\Jure\Projekti\Git\autopilot_sw\Libraries\Device\STM32F4xx\Include" -I"D:\Jure\Projekti\Git\autopilot_sw\Libraries\STM32F4xx_StdPeriph_Driver\inc" -O0 -Wall -Wa,-adhlns="$@.lst" -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -mcpu=cortex-m4 -mthumb -g -gdwarf-2 -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

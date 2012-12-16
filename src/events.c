@@ -13,7 +13,7 @@
   * @retval None
   * @services ADC
   */
-void ADC_IRQHandler(void)
+void ADC_ISR_Handler(void)
 {
 	uint16_t result = 0;
 	// Check interrupt source - ADC1, ADC2 or ADC3
@@ -55,46 +55,7 @@ void ADC_IRQHandler(void)
 	}
 }
 
-/**
-  * @brief  This function handles I2C 2 event interrupt request.
-  * @param  None
-  * @retval None
-  * @services I2C 2
-  */
-void I2C2_EV_IRQHandler(void)
-{
-	// Clear all events
-}
-
-/**
-  * @brief  This function handles I2C 2 error interrupt request.
-  * @param  None
-  * @retval None
-  * @services I2C 2 error
-  */
-void I2C2_ER_IRQHandler(void)
-{
-	I2C_ClearFlag(I2C2, I2C_FLAG_TIMEOUT | I2C_FLAG_PECERR | I2C_FLAG_OVR | I2C_FLAG_AF | I2C_FLAG_ARLO | I2C_FLAG_BERR);
-}
-
-/**
-  * @brief  This function handles DMA1 stream6 event interrupt request.
-  * @param  None
-  * @retval None
-  * @services DMA1 stream 6
-  */
-void DMA1_Stream6_IRQHandler(void)
-{
-	DMA_ClearITPendingBit(DMA1_Stream6, DMA_IT_TC);
-}
-
-/**
-  * @brief  This function handles DMA1 stream4 event interrupt request.
-  * @param  None
-  * @retval None
-  * @services DMA1 stream 4
-  */
-void DMA1_Stream4_IRQHandler(void)
+void DMA1_Stream4_ISR_Handler(void)
 {
 	// Clear GPS is sending data
 	GPS_SENDING = 0;
@@ -108,7 +69,7 @@ void DMA1_Stream4_IRQHandler(void)
   * @retval None
   * @services DMA1 stream 3
   */
-void DMA1_Stream3_IRQHandler(void)
+void DMA1_Stream3_ISR_Handler(void)
 {
 	// Disable interrupts
 	DMA_ITConfig(DMA1_Stream3, DMA_IT_TC | DMA_IT_DME | DMA_IT_FE, DISABLE);
@@ -137,7 +98,7 @@ void DMA1_Stream3_IRQHandler(void)
   * @retval None
   * @services TIM4
   */
-void TIM4_IRQHandler(void)
+void TIM4_ISR_Handler(void)
 {
 	uint32_t dataTemp = 0;
 	uint32_t result = 0;
@@ -278,7 +239,7 @@ void TIM4_IRQHandler(void)
 	}
 }
 
-void TIM8_CC_IRQHandler(void)
+void TIM8_CC_ISR_Handler(void)
 {
 	uint32_t dataTemp = 0;
 	uint32_t result = 0;
@@ -425,7 +386,7 @@ void TIM8_CC_IRQHandler(void)
   * @retval None
   * @services TIM14
   */
-void TIM8_TRG_COM_TIM14_IRQHandler(void)
+void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 {
 	//Check trigger event
 	if((TIM14->SR & TIM_FLAG_Update) != (u16)RESET)
@@ -482,7 +443,7 @@ void TIM8_TRG_COM_TIM14_IRQHandler(void)
   * @param  None
   * @retval None
   */
-void TIM1_CC_IRQHandler(void)
+void TIM1_CC_ISR_Handler(void)
 {
 	//check what triggered event
 	if((TIM1->SR & TIM_FLAG_CC1) != (u16)RESET)
@@ -505,7 +466,6 @@ void TIM1_CC_IRQHandler(void)
 		//read IC4 value
 		TIM1CaptureValue4 = TIM_GetCapture4(TIM1);
 	}
-
 }
 
 /**
@@ -513,7 +473,7 @@ void TIM1_CC_IRQHandler(void)
   * @param  None
   * @retval None
   */
-void USART1_IRQHandler(void)
+void USART1_ISR_Handler(void)
 {
 //	int iData = 0;
 	if ((USART1->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
@@ -538,7 +498,7 @@ void USART1_IRQHandler(void)
   * @param  None
   * @retval None
   */
-void USART2_IRQHandler(void)
+void USART2_ISR_Handler(void)
 {
 	unsigned int i = 0;
 	if ((USART2->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
@@ -562,7 +522,7 @@ void USART2_IRQHandler(void)
   * @param  None
   * @retval None
   */
-void USART3_IRQHandler(void)
+void USART3_ISR_Handler(void)
 {
 	int iData = 0;
 	if ((USART3->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
@@ -574,19 +534,7 @@ void USART3_IRQHandler(void)
 
 	if((USART3->SR & USART_FLAG_TC) != (u16)RESET)	//if transfer complete
 	{
-		//if more data to transmit
-		/*
-		if(USART_TXIndex < USART_TXCount)
-		{
-			USART_SendData(USART3, USART_TXBuffer[USART_TXIndex]);
-			USART_TXIndex++;
-		}
-		*/
-		//else clear TC
-		//else
-		{
-			USART3->SR = USART3->SR & !USART_FLAG_TC;
-		}
+		USART3->SR = USART3->SR & !USART_FLAG_TC;
 	}
 }
 

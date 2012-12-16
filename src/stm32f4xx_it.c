@@ -27,6 +27,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_it.h"
+#include "allinclude.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -142,6 +143,147 @@ void SysTick_Handler(void)
 /*  available peripheral interrupt handler's name please refer to the startup */
 /*  file (startup_stm32f4xx.s).                                               */
 /******************************************************************************/
+
+/**
+  * @brief  This function handles ADC event interrupt request.
+  * @param  None
+  * @retval None
+  * @services ADC
+  */
+void ADC_IRQHandler(void)
+{
+	ADC_ISR_Handler();
+}
+
+/**
+  * @brief  This function handles I2C 2 event interrupt request.
+  * @param  None
+  * @retval None
+  * @services I2C 2
+  */
+void I2C2_EV_IRQHandler(void)
+{
+	// Clear all events
+	I2C_ClearFlag(I2C2, I2C_FLAG_TIMEOUT | I2C_FLAG_PECERR | I2C_FLAG_OVR | I2C_FLAG_AF | I2C_FLAG_ARLO | I2C_FLAG_BERR);
+}
+
+/**
+  * @brief  This function handles I2C 2 error interrupt request.
+  * @param  None
+  * @retval None
+  * @services I2C 2 error
+  */
+void I2C2_ER_IRQHandler(void)
+{
+	I2C_ClearFlag(I2C2, I2C_FLAG_TIMEOUT | I2C_FLAG_PECERR | I2C_FLAG_OVR | I2C_FLAG_AF | I2C_FLAG_ARLO | I2C_FLAG_BERR);
+}
+
+/**
+  * @brief  This function handles Timer 4 event interrupt request.
+  * @param  None
+  * @retval None
+  * @services TIM4
+  */
+void TIM4_IRQHandler(void)
+{
+	TIM4_ISR_Handler();
+}
+
+/**
+  * @brief  This function handles Timer 8 event interrupt request.
+  * @param  None
+  * @retval None
+  * @services TIM8
+  */
+void TIM8_CC_IRQHandler(void)
+{
+	TIM8_CC_ISR_Handler();
+}
+
+/**
+  * @brief  This function handles Timer 14 event interrupt request.
+  * @param  None
+  * @retval None
+  * @services TIM14
+  */
+void TIM8_TRG_COM_TIM14_IRQHandler(void)
+{
+	TIM8_TRG_COM_TIM14_ISR_Handler();
+}
+
+
+/**
+  * @brief  This function handles DMA1 stream6 event interrupt request.
+  * @param  None
+  * @retval None
+  * @services DMA1 stream 6
+  */
+void DMA1_Stream6_IRQHandler(void)
+{
+	DMA_ClearITPendingBit(DMA1_Stream6, DMA_IT_TC);
+}
+
+/**
+  * @brief  This function handles DMA1 stream4 event interrupt request.
+  * @param  None
+  * @retval None
+  * @services DMA1 stream 4
+  */
+void DMA1_Stream4_IRQHandler(void)
+{
+	DMA1_Stream4_ISR_Handler();
+}
+
+/**
+  * @brief  This function handles DMA1 stream3 event interrupt request.
+  * @param  None
+  * @retval None
+  * @services DMA1 stream 3
+  */
+void DMA1_Stream3_IRQHandler(void)
+{
+	DMA1_Stream3_ISR_Handler();
+}
+
+/**
+  * @brief  This function handles TIM1 capture compare interrupt request.
+  * @param  None
+  * @retval None
+  */
+void TIM1_CC_IRQHandler(void)
+{
+	TIM1_CC_ISR_Handler();
+}
+
+/**
+  * @brief  This function handles USART1 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void USART1_IRQHandler(void)
+{
+	USART1_ISR_Handler();
+}
+
+/**
+  * @brief  This function handles USART2 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void USART2_IRQHandler(void)
+{
+	USART2_ISR_Handler();
+}
+
+/**
+  * @brief  This function handles USART3 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void USART3_IRQHandler(void)
+{
+	USART3_ISR_Handler();
+}
 
 /**
   * @brief  This function handles PPP interrupt request.
