@@ -50,9 +50,9 @@ uint8_t Buffer[64];
 
 int main(void)
 {
+	SD_CardInfo cardinfo;
 	int i = 0;
 	int registerCount = 0;
-	uint16_t SPI_TestData1 = 0;
 	// Startup delay - 0,5 sec
 	Delaynus(500000);
 	// Configure hardware
@@ -208,8 +208,11 @@ int main(void)
         if(SCR1 & SCR_TESD_SD)
         {
         	// SD card testing
+        	// Init SD card
+        	SD_RESULT = SD_Init();
+        	SD_GetCardInfo(&cardinfo);
         	// Read data
-        	SPI_TestData1 = SD_GetStatus();
+        	//SD_RESULT = SD_GetStatus();
         	// End of SD card testing
         	SCR1 = SCR1 & ~SCR_TESD_SD;
         }

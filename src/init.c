@@ -123,6 +123,8 @@ void System_Config(void)
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
 	// B12 = GPIO output, set to 1, for SD card
+	// Set pin to 1
+	GPIO_WriteBit(GPIOB, GPIO_Pin_12, 1);
 	// Select pin 12
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
 	//set output type
@@ -132,7 +134,7 @@ void System_Config(void)
 	//set pin mode to out function
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
 	//set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 	// Set pin to 1
@@ -152,7 +154,7 @@ void System_Config(void)
 	// Set pin mode to alternate function
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
 	// Set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	// Write mode to selected pins and selected port
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 

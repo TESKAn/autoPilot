@@ -114,6 +114,8 @@ void crcOnMessage(unsigned int uiDataLen);
 #define AIN1				MODBUSReg[67]
 #define AIN2				MODBUSReg[68]
 #define AIN3				MODBUSReg[69]
+// SD result
+#define SD_RESULT			MODBUSReg[70]
 
 
 
