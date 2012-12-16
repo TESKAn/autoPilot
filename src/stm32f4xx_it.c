@@ -36,6 +36,17 @@
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
+extern USB_OTG_CORE_HANDLE           USB_OTG_dev;
+extern uint32_t USBD_OTG_ISR_Handler (USB_OTG_CORE_HANDLE *pdev);
+extern uint8_t  Buffer[];
+
+
+#ifdef USB_OTG_HS_DEDICATED_EP1_ENABLED
+extern uint32_t USBD_OTG_EP1IN_ISR_Handler (USB_OTG_CORE_HANDLE *pdev);
+extern uint32_t USBD_OTG_EP1OUT_ISR_Handler (USB_OTG_CORE_HANDLE *pdev);
+#endif
+
+
 /******************************************************************************/
 /*            Cortex-M4 Processor Exceptions Handlers                         */
 /******************************************************************************/
@@ -283,6 +294,110 @@ void USART2_IRQHandler(void)
 void USART3_IRQHandler(void)
 {
 	USART3_ISR_Handler();
+}
+
+/**
+  * @brief  This function handles OTG_FS_WKUP_IRQ Handler.
+  * @param  None
+  * @retval None
+  */
+#ifdef USE_USB_OTG_FS
+void OTG_FS_WKUP_IRQHandler(void)
+{
+  if(USB_OTG_dev.cfg.low_power)
+  {
+    *(uint32_t *)(0xE000ED10) &= 0xFFFFFFF9 ;
+    SystemInit();
+    USB_OTG_UngateClock(&USB_OTG_dev);
+  }
+  EXTI_ClearITPendingBit(EXTI_Line18);
+}
+#endif
+
+
+/**
+  * @brief  This function handles OTG_HS_WKUP_IRQ Handler.
+  * @param  None
+  * @retval None
+  */
+#ifdef USE_USB_OTG_HS
+void OTG_HS_WKUP_IRQHandler(void)
+{
+  if(USB_OTG_dev.cfg.low_power)
+  {
+    *(uint32_t *)(0xE000ED10) &= 0xFFFFFFF9 ;
+    SystemInit();
+    USB_OTG_UngateClock(&USB_OTG_dev);
+  }
+  EXTI_ClearITPendingBit(EXTI_Line20);
+}
+#endif
+
+/**
+  * @brief  This function handles OTG_xx_IRQ Handler.
+  * @param  None
+  * @retval None
+  */
+#ifdef USE_USB_OTG_HS
+void OTG_HS_IRQHandler(void)
+#else
+void OTG_FS_IRQHandler(void)
+#endif
+{
+  USBD_OTG_ISR_Handler (&USB_OTG_dev);
+}
+
+#ifdef USB_OTG_HS_DEDICATED_EP1_ENABLED
+/**
+  * @brief  This function handles EP1_IN Handler.
+  * @param  None
+  * @retval None
+  */
+void OTG_HS_EP1_IN_IRQHandler(void)
+{
+  USBD_OTG_EP1IN_ISR_Handler (&USB_OTG_dev);
+}
+
+/**
+  * @brief  This function handles EP1_OUT Handler.
+  * @param  None
+  * @retval None
+  */
+void OTG_HS_EP1_OUT_IRQHandler(void)
+{
+  USBD_OTG_EP1OUT_ISR_Handler (&USB_OTG_dev);
+}
+#endif
+
+/******************************************************************************/
+/*                 STM32F4xx Peripherals Interrupt Handlers                   */
+/*  Add here the Interrupt Handler for the used peripheral(s) (PPP), for the  */
+/*  available peripheral interrupt handler's name please refer to the startup */
+/*  file (startup_stm32f4xx.s).                                               */
+/******************************************************************************/
+
+
+
+/*******************************************************************************
+* Function Name  : DMA1_Channel1_IRQHandler
+* Description    : This function handles DMA1 Channel 1 interrupt request.
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+//void DMA1_Channel1_IRQHandler(void)
+void DMA1_Stream0_IRQHandler(void)
+{
+  Buffer[0] = 0x06;
+
+
+    /* Write the descriptor through the endpoint
+    //USB_SIL_Write(EP1_IN, (uint8_t*) Send_Buffer, 2);
+    USBD_HID_SendReport (&USB_OTG_dev, Buffer, 2);
+*/
+
+  DMA_ClearITPendingBit(DMA1_Stream0, DMA_IT_TCIF0);
+
 }
 
 /**

@@ -9,6 +9,9 @@ RM := cs-rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include src/subdir.mk
+-include Libraries/STM32_USB_OTG_Driver/src/subdir.mk
+-include Libraries/STM32_USB_Device_Library/Core/src/subdir.mk
+-include Libraries/STM32_USB_Device_Library/Class/hid_custom/src/subdir.mk
 -include Libraries/STM32F4xx_StdPeriph_Driver/src/subdir.mk
 -include subdir.mk
 -include objects.mk

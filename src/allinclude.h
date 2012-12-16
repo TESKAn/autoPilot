@@ -26,5 +26,9 @@
 #include "powerSensor.h"
 #include "gps.h"
 #include "sensors.h"
+// USB defines
+#include "usbd_hid_core.h"
+#include "usbd_usr.h"
+#include "usbd_desc.h"
 
 #endif /* ALLINCLUDE_H_ */

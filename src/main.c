@@ -42,14 +42,16 @@
  * ===========================================================================
  */
 
-// Using Git for versioning
+// USB related
+__ALIGN_BEGIN	USB_OTG_CORE_HANDLE  USB_OTG_dev __ALIGN_END;
 
+uint8_t Buffer[64];
 
 int main(void)
 {
 	// Startup delay - 0,5 sec
 	Delaynus(500000);
-	//configure hardware
+	// Configure hardware
 	System_Config();
 	// Set LED OK = 1
 	LED_OK_ON;
@@ -66,6 +68,17 @@ int main(void)
 	PWMOUT_10 = TIM1_PULSE;
 	PWMOUT_11 = TIM1_PULSE;
 	PWMOUT_12 = TIM1_PULSE;
+
+	// Initialize USB
+	  USBD_Init(&USB_OTG_dev,
+	#ifdef USE_USB_OTG_HS
+	  USB_OTG_HS_CORE_ID,
+	#else
+	  USB_OTG_FS_CORE_ID,
+	#endif
+	  &USR_desc,
+	  &USBD_HID_cb,
+	  &USR_cb);
 
     while (1)
     {
