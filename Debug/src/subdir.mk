@@ -12,6 +12,7 @@ C_SRCS += \
 ../src/modbus.c \
 ../src/powerSensor.c \
 ../src/sensors.c \
+../src/spi_sd.c \
 ../src/stm32f4xx_it.c \
 ../src/system_stm32f4xx.c \
 ../src/tiny_printf.c \
@@ -32,6 +33,7 @@ OBJS += \
 ./src/modbus.o \
 ./src/powerSensor.o \
 ./src/sensors.o \
+./src/spi_sd.o \
 ./src/startup_stm32f4xx.o \
 ./src/stm32f4xx_it.o \
 ./src/system_stm32f4xx.o \
@@ -50,6 +52,7 @@ C_DEPS += \
 ./src/modbus.d \
 ./src/powerSensor.d \
 ./src/sensors.d \
+./src/spi_sd.d \
 ./src/stm32f4xx_it.d \
 ./src/system_stm32f4xx.d \
 ./src/tiny_printf.d \

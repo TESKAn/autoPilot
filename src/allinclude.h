@@ -30,5 +30,7 @@
 #include "usbd_hid_core.h"
 #include "usbd_usr.h"
 #include "usbd_desc.h"
+// SD card
+#include "spi_sd.h"
 
 #endif /* ALLINCLUDE_H_ */

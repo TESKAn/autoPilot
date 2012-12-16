@@ -46,11 +46,14 @@
 #define USB_REQUEST_DATA_2		flag0.bits.BIT14
 
 // DMA macros
-#define DMA_USART2		DMA1_Stream6
-#define DMA_USART3		DMA1_Stream4
-#define DMA_I2C2_TX		DMA1_Stream7
+//DMA1_Stream0 used by USB
 #define DMA_I2C2_RX		DMA1_Stream3
+#define DMA_USART3		DMA1_Stream4
 #define DMA_DAC1		DMA1_Stream5
+#define DMA_USART2		DMA1_Stream6
+#define DMA_I2C2_TX		DMA1_Stream7
+
+
 
 // DAC macros
 #define DAC_DHR12R1_ADDRESS    0x40007408
@@ -82,6 +85,7 @@
 #define SCR_START_AD		0x1000
 #define SCR_INIT_SENSORS	0x2000
 #define SCR_DEC_DAC_FREQ	0x4000
+#define SCR_TESD_SD			0x8000
 
 // SCR2 macros
 #define SCR2_ACCOK			0x0001
@@ -123,5 +127,9 @@
 //USART2 macros
 //define data register address - base address + DR offset
 #define USART2_DR_ADDRESS	((uint32_t)0x40004404)
+
+// SPI macros
+#define SPI_SDCARD_SELECT	GPIO_WriteBit(GPIOB, GPIO_Pin_12, 0)
+#define SPI_SDCARD_RELEASE	GPIO_WriteBit(GPIOB, GPIO_Pin_12, 1)
 
 #endif /* MACRO_H_ */

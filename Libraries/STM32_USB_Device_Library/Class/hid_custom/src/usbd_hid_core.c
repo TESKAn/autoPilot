@@ -529,6 +529,16 @@ static uint8_t  USBD_HID_DataOut (void *pdev, uint8_t epnum)
 					SCR1 = (Buffer[2] << 8) | Buffer[3];
 					break;
 				}
+				case 5:
+				{
+					// Write to SD card
+					break;
+				}
+				case 6:
+				{
+					// Read from SD card
+					break;
+				}
 			  default:
 
 			    break;

@@ -24,6 +24,7 @@ void System_Config(void)
 	ADC_CommonInitTypeDef ADC_CommonInitStructure;
 	DAC_InitTypeDef DAC_InitStruct;
 	DMA_InitTypeDef DMAInitStructure;
+	SPI_InitTypeDef SPIInitStructure;
 
 
 	//make structure for configuring USART
@@ -120,6 +121,41 @@ void System_Config(void)
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+	// B12 = GPIO output, set to 1, for SD card
+	// Select pin 12
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
+	//set output type
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// open drain output
+	//set pull-up
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	//set pin mode to out function
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	//set pin speed
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	//write mode to selected pins and selected port
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
+	// Set pin to 1
+	GPIO_WriteBit(GPIOB, GPIO_Pin_12, 1);
+
+	// Connect B13, B14, B15 to SPI for SD card
+	// Select AF
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource13, GPIO_AF_SPI2);
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource14, GPIO_AF_SPI2);
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource15, GPIO_AF_SPI2);
+	// Select pins 13, 14, 15
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
+	// Set output type
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// Push pull output
+	// Set pull-up
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	// Set pin mode to alternate function
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+	// Set pin speed
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	// Write mode to selected pins and selected port
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
+
 
 	//GPIO C
 	//connect pins C0, C1, C2, C3 to ADC input
@@ -850,26 +886,47 @@ void System_Config(void)
 	DAC_InitStruct.DAC_WaveGeneration = DAC_WaveGeneration_None;
 	DAC_InitStruct.DAC_OutputBuffer = DAC_OutputBuffer_Enable;
 	DAC_Init(DAC_Channel_1, &DAC_InitStruct);
-
 	// Enable DAC Channel1
 	DAC_Cmd(DAC_Channel_1, ENABLE);
-
 	// Enable DMA for DAC Channel1
 	DAC_DMACmd(DAC_Channel_1, ENABLE);
-
-
 	// Setup channel 2
 	DAC_InitStruct.DAC_Trigger = DAC_Trigger_None;
 	DAC_InitStruct.DAC_WaveGeneration = DAC_WaveGeneration_Triangle;//DAC_WaveGeneration_None;
 	DAC_InitStruct.DAC_LFSRUnmask_TriangleAmplitude = DAC_TriangleAmplitude_1023;
 	DAC_InitStruct.DAC_OutputBuffer = DAC_OutputBuffer_Enable;
-
-
 	DAC_Init(DAC_Channel_2, &DAC_InitStruct);
 	DAC_Cmd(DAC_Channel_2, ENABLE);
-
-
 	// End of DAC
+
+	// SD card SPI init
+	// Enable clock = 42 MHz
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
+	SPIInitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
+	SPIInitStructure.SPI_Mode = SPI_Mode_Master;
+	SPIInitStructure.SPI_DataSize = SPI_DataSize_8b;
+	SPIInitStructure.SPI_CPOL = SPI_CPOL_Low;
+	SPIInitStructure.SPI_CPHA = SPI_CPHA_1Edge;
+	SPIInitStructure.SPI_NSS = SPI_NSS_Soft;
+	SPIInitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_256;
+	SPIInitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
+	SPIInitStructure.SPI_CRCPolynomial = 7;
+
+	SPI_Init(SPI2, &SPIInitStructure);
+
+	// Disable CRC calculation
+	SPI_CalculateCRC(SPI2, DISABLE);
+	// Enable interrupt
+	//SPI_ITConfig(SPI2, ...);
+	// Configure DMA
+	//DMA_Init()
+	// Activate DMA
+	//SPI_I2S_DMACmd()
+	//Enable SPI
+	SPI_Cmd(SPI2, ENABLE);
+	// Enable DMA
+	//DMA_Cmd()
+	// End of SD card SPI init
 
 	NVIC_EnableInterrupts(ENABLE);
 }

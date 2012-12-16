@@ -185,6 +185,8 @@ void extPeripheralInit(void)
 	NVIC_EnableInterrupts(DISABLE);
 	// Configure I2C sensors
 	sensorInit();
+	// Enable ADC
+	ADC_ENABLED = 1;
 	// Mark sensors initiated
 	EXTSENS_INIT_DONE = 1;
 	// Reenable interrupts
