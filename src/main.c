@@ -50,7 +50,11 @@ uint8_t Buffer[64];
 
 int main(void)
 {
-	SD_CardInfo cardinfo;
+	FATFS FileSystemObject;
+	DSTATUS driveStatus;
+	FIL logFile;
+	unsigned int bytesWritten;
+	//SD_CardInfo cardinfo;
 	int i = 0;
 	int registerCount = 0;
 	// Startup delay - 0,5 sec
@@ -207,10 +211,41 @@ int main(void)
         }
         if(SCR1 & SCR_TESD_SD)
         {
+        	if(f_mount(0, &FileSystemObject)!=FR_OK)
+        	{
+        		//flag error
+        	}
+        	if((driveStatus & STA_NOINIT) ||
+        		   (driveStatus & STA_NODISK) ||
+        		   (driveStatus & STA_PROTECT)
+        		   )
+        	{
+        		//flag error.
+        	}
+        	if(f_open(&logFile, "/GpsLog.txt", FA_READ | FA_WRITE | FA_OPEN_ALWAYS)!=FR_OK)
+        	{
+        		//flag error
+        	}
+        	// Seek to end of file to append data
+        	/*
+        	if(f_lseek(logFile, f_size(logFile)) != FR_OK)
+        	{
+
+        	}
+        	*/
+        	unsigned int bytesWritten;
+        	f_write(&logFile, "New log opened!\n", 16, &bytesWritten);
+        	//Flush the write buffer with f_sync(&logFile);
+        	f_sync(&logFile);
+        	//Close and unmount.
+        	f_close(&logFile);
+        	f_mount(0,0);
+
+
         	// SD card testing
         	// Init SD card
-        	SD_RESULT = SD_Init();
-        	SD_GetCardInfo(&cardinfo);
+        	//SD_RESULT = SD_Init();
+        	//SD_GetCardInfo(&cardinfo);
         	// Read data
         	//SD_RESULT = SD_GetStatus();
         	// End of SD card testing

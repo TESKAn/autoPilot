@@ -3,6 +3,8 @@
 Debug/src/
 Debug/Libraries
 Debug/USB
+Debug/FatFS/
+Old/
 .svn/
 *.o
 *.map

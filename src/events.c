@@ -429,8 +429,21 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 				}
 			}
 		}
-		// Toggle LED
-		LED_RUN_TOGGLE;
+		// LED counter
+		LED_ToggleCount++;
+		if(LED_ToggleCount > 1000)
+		{
+			LED_ToggleCount = 0;
+			// Toggle LED
+			LED_RUN_TOGGLE;
+		}
+		// Call fatfs timer
+		SD_TimerCount++;
+		if(SD_TimerCount > 10)
+		{
+			SD_TimerCount = 0;
+			disk_timerproc();
+		}
 		// Call MODBUS timer function
 		MODBUS_Timer();
 		// Call PS timer

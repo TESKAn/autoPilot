@@ -24,4 +24,6 @@ Libraries/STM32_USB_OTG_Driver/src \
 Libraries/STM32_USB_Device_Library/Core/src \
 Libraries/STM32_USB_Device_Library/Class/hid_custom/src \
 Libraries/STM32F4xx_StdPeriph_Driver/src \
+FatFS/option \
+FatFS \
 

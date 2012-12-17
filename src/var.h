@@ -119,6 +119,9 @@ extern volatile uint8_t UART2DMAbuffer[20];
 // DAC variables
 extern uint32_t DAC1_TIM6reloadValue;
 extern const uint16_t Sine12bit[32];
-
+// SD card variables
+extern uint8_t SD_TimerCount;
+// LED count variable
+extern uint16_t LED_ToggleCount;
 
 #endif /* VAR_H_ */

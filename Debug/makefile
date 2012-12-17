@@ -13,6 +13,8 @@ RM := cs-rm -rf
 -include Libraries/STM32_USB_Device_Library/Core/src/subdir.mk
 -include Libraries/STM32_USB_Device_Library/Class/hid_custom/src/subdir.mk
 -include Libraries/STM32F4xx_StdPeriph_Driver/src/subdir.mk
+-include FatFS/option/subdir.mk
+-include FatFS/subdir.mk
 -include subdir.mk
 -include objects.mk
 
@@ -48,7 +50,7 @@ all: autopilot_sw.elf secondary-outputs
 autopilot_sw.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: ARM Sourcery Windows GCC C Linker'
-	arm-none-eabi-gcc -T"D:\Jure\Projekti\Git\autopilot_sw\stm32_flash.ld" -Xlinker --gc-sections -Wl,-Map,autopilot_sw.map -mcpu=cortex-m4 -mthumb -g -gdwarf-2 -o "autopilot_sw.elf" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-none-eabi-gcc -T"D:\Jure\Projekti\Git\autopilot_sw\stm32f4_flash.ld" -Xlinker --gc-sections -Wl,-Map,autopilot_sw.map -mcpu=cortex-m4 -mthumb -g -gdwarf-2 -o "autopilot_sw.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build
