@@ -7,19 +7,19 @@
 
 #include "allinclude.h"
 uint8_t GPS_DataBuffer[64];
-uint16_t GPS_RECDATA[32];
-uint8_t GPS_Digits[16];
-uint8_t GPS_ProcesState = 0;
-uint8_t GPS_NextData = 0;
-uint8_t GPS_Checksum = 0;
-uint8_t GPS_Checksum_Save = 0;
-uint8_t GPS_ReceivedChecksum[2];
-uint8_t GPS_ChecksumCounter = 0;
-uint16_t GPS_DataTemp = 0;
-uint8_t GPS_DataTemp_Count = 0;
-uint8_t GPS_Digits_Count = 0;
+volatile uint16_t GPS_RECDATA[32];
+volatile uint8_t GPS_Digits[16];
+volatile uint8_t GPS_ProcesState = 0;
+volatile uint8_t GPS_NextData = 0;
+volatile uint8_t GPS_Checksum = 0;
+volatile uint8_t GPS_Checksum_Save = 0;
+volatile uint8_t GPS_ReceivedChecksum[2];
+volatile uint8_t GPS_ChecksumCounter = 0;
+volatile uint16_t GPS_DataTemp = 0;
+volatile uint8_t GPS_DataTemp_Count = 0;
+volatile uint8_t GPS_Digits_Count = 0;
 // Flag variable
-Flag GPSFlag;
+volatile Flag GPSFlag;
 
 void GPSStopOutput(void)
 {

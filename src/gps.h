@@ -16,19 +16,19 @@
 #define USE_TIMER
 
 extern uint8_t GPS_DataBuffer[64];
-extern uint16_t GPS_RECDATA[32];
-extern uint8_t GPS_Digits[16];
-extern uint8_t GPS_ProcesState;
-extern uint8_t GPS_NextData;
-extern uint8_t GPS_Checksum;
-extern uint8_t GPS_Checksum_Save;
-extern uint8_t GPS_ReceivedChecksum[2];
-extern uint8_t GPS_ChecksumCounter;
-extern uint16_t GPS_DataTemp;
-extern uint8_t GPS_DataTemp_Count;
-extern uint8_t GPS_Digits_Count;
+extern volatile uint16_t GPS_RECDATA[32];
+extern volatile uint8_t GPS_Digits[16];
+extern volatile uint8_t GPS_ProcesState;
+extern volatile uint8_t GPS_NextData;
+extern volatile uint8_t GPS_Checksum;
+extern volatile uint8_t GPS_Checksum_Save;
+extern volatile uint8_t GPS_ReceivedChecksum[2];
+extern volatile uint8_t GPS_ChecksumCounter;
+extern volatile uint16_t GPS_DataTemp;
+extern volatile uint8_t GPS_DataTemp_Count;
+extern volatile uint8_t GPS_Digits_Count;
 // Flag variable
-extern Flag GPSFlag;
+extern volatile Flag GPSFlag;
 #define GPSFLAG_DATAVALID		GPSFlag.bits.BIT0
 #define GPSFLAG_DOPARSE			GPSFlag.bits.BIT1
 #define GPSFLAG_HASLOCK			GPSFlag.bits.BIT2

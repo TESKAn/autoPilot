@@ -12,6 +12,9 @@
 
 #include "stm32f4xx.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <malloc.h>
+#include "syscalls.h"
 
 #include "stm32f4xx_usart.h"
 #include "stm32f4xx_rcc.h"

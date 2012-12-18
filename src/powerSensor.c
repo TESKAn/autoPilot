@@ -29,11 +29,11 @@ const int crc8_Table[ ] =
 } ;
 
 // Variables
-uint8_t PS_CRC;
-uint8_t PS_ReceiveStateVar = 0;
-int PS_TIMER = 0;
-PS_DataStruct PS_DATA;
-int PS_PollTimer = 0;
+volatile uint8_t PS_CRC;
+volatile uint8_t PS_ReceiveStateVar = 0;
+volatile int PS_TIMER = 0;
+volatile PS_DataStruct PS_DATA;
+volatile int PS_PollTimer = 0;
 
 void PS_Timer(void)
 {

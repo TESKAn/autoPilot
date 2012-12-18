@@ -7,17 +7,17 @@
 
 #include "allinclude.h"
 
-uint16_t I2C2_ProcesState = 0;
-Flag I2C2_Flags;
-uint16_t I2C2_StartReg = 0;
-uint16_t I2C2_ReadData = 0;
-uint16_t I2C2_WriteData = 0;
-uint8_t I2C2_DeviceAddress = 0;
+volatile uint16_t I2C2_ProcesState = 0;
+volatile Flag I2C2_Flags;
+volatile uint16_t I2C2_StartReg = 0;
+volatile uint16_t I2C2_ReadData = 0;
+volatile uint16_t I2C2_WriteData = 0;
+volatile uint8_t I2C2_DeviceAddress = 0;
 uint8_t I2C2_DMABufTX[DMA_BUF_COUNT];
 uint8_t I2C2_DMABufRX[DMA_BUF_COUNT];
-int I2C2_DMABufTXCount = 0;
-int I2C2_DMABufRXCount = 0;
-int I2C2_PollTimer = 0;
+volatile int I2C2_DMABufTXCount = 0;
+volatile int I2C2_DMABufRXCount = 0;
+volatile int I2C2_PollTimer = 0;
 
 // Initialize I2C sensors
 void sensorInit()

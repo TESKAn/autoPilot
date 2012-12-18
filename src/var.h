@@ -56,72 +56,76 @@ typedef union
 }Flag;
 
 // Flag variable
-extern Flag flag0;
+extern volatile Flag flag0;
 
 // Temp variable
-extern int globalTemp;
+extern volatile int globalTemp;
 
 // SCR reg
-extern uint16_t SCR;
+extern volatile uint16_t SCR;
 
 //TIM1 variables
-extern uint16_t TIM1_CCRValue4;
-extern uint16_t TIM1_changeDelay;
-extern int TIM1CaptureValue1;
-extern int TIM1CaptureValue2;
-extern int TIM1CaptureValue3;
-extern int TIM1CaptureValue4;
+extern volatile uint16_t TIM1_CCRValue4;
+extern volatile uint16_t TIM1_changeDelay;
+extern volatile int TIM1CaptureValue1;
+extern volatile int TIM1CaptureValue2;
+extern volatile int TIM1CaptureValue3;
+extern volatile int TIM1CaptureValue4;
 
 // TIM4 variables
-extern uint32_t TIM4_IC1_PreviousValue;
-extern uint32_t TIM4_IC1_LowWidth;
-extern uint32_t TIM4_IC1_HighWidth;
-extern uint32_t TIM4_IC2_PreviousValue;
-extern uint32_t TIM4_IC2_LowWidth;
-extern uint32_t TIM4_IC2_HighWidth;
-extern uint32_t TIM4_IC3_PreviousValue;
-extern uint32_t TIM4_IC3_LowWidth;
-extern uint32_t TIM4_IC3_HighWidth;
-extern uint32_t TIM4_IC4_PreviousValue;
-extern uint32_t TIM4_IC4_LowWidth;
-extern uint32_t TIM4_IC4_HighWidth;
+extern volatile uint32_t TIM4_IC1_PreviousValue;
+extern volatile uint32_t TIM4_IC1_LowWidth;
+extern volatile uint32_t TIM4_IC1_HighWidth;
+extern volatile uint32_t TIM4_IC2_PreviousValue;
+extern volatile uint32_t TIM4_IC2_LowWidth;
+extern volatile uint32_t TIM4_IC2_HighWidth;
+extern volatile uint32_t TIM4_IC3_PreviousValue;
+extern volatile uint32_t TIM4_IC3_LowWidth;
+extern volatile uint32_t TIM4_IC3_HighWidth;
+extern volatile uint32_t TIM4_IC4_PreviousValue;
+extern volatile uint32_t TIM4_IC4_LowWidth;
+extern volatile uint32_t TIM4_IC4_HighWidth;
 
 // TIM8 variables
-extern uint32_t TIM8_IC1_PreviousValue;
-extern uint32_t TIM8_IC1_LowWidth;
-extern uint32_t TIM8_IC1_HighWidth;
-extern uint32_t TIM8_IC2_PreviousValue;
-extern uint32_t TIM8_IC2_LowWidth;
-extern uint32_t TIM8_IC2_HighWidth;
-extern uint32_t TIM8_IC3_PreviousValue;
-extern uint32_t TIM8_IC3_LowWidth;
-extern uint32_t TIM8_IC3_HighWidth;
-extern uint32_t TIM8_IC4_PreviousValue;
-extern uint32_t TIM8_IC4_LowWidth;
-extern uint32_t TIM8_IC4_HighWidth;
+extern volatile uint32_t TIM8_IC1_PreviousValue;
+extern volatile uint32_t TIM8_IC1_LowWidth;
+extern volatile uint32_t TIM8_IC1_HighWidth;
+extern volatile uint32_t TIM8_IC2_PreviousValue;
+extern volatile uint32_t TIM8_IC2_LowWidth;
+extern volatile uint32_t TIM8_IC2_HighWidth;
+extern volatile uint32_t TIM8_IC3_PreviousValue;
+extern volatile uint32_t TIM8_IC3_LowWidth;
+extern volatile uint32_t TIM8_IC3_HighWidth;
+extern volatile uint32_t TIM8_IC4_PreviousValue;
+extern volatile uint32_t TIM8_IC4_LowWidth;
+extern volatile uint32_t TIM8_IC4_HighWidth;
 
 //GPS variables
-extern uint16_t GPS_Latitude;
-extern uint16_t GPS_Longitude;
-extern uint16_t GPS_Altitude;
-extern uint16_t GPS_Speed;
-extern uint16_t GPS_TrackAngle;
-extern uint16_t GPS_SattelitesStatus;
+extern volatile uint16_t GPS_Latitude;
+extern volatile uint16_t GPS_Longitude;
+extern volatile uint16_t GPS_Altitude;
+extern volatile uint16_t GPS_Speed;
+extern volatile uint16_t GPS_TrackAngle;
+extern volatile uint16_t GPS_SattelitesStatus;
 
 
 
 // ADC trigger timer
-extern uint32_t ADC_TriggerTimer;
+extern volatile uint32_t ADC_TriggerTimer;
 
 //DMA variables
 extern volatile uint8_t UART2DMAbuffer[20];
 
 // DAC variables
-extern uint32_t DAC1_TIM6reloadValue;
+extern volatile uint32_t DAC1_TIM6reloadValue;
 extern const uint16_t Sine12bit[32];
 // SD card variables
-extern uint8_t SD_TimerCount;
+extern volatile uint8_t SD_TimerCount;
 // LED count variable
-extern uint16_t LED_ToggleCount;
+extern volatile uint16_t LED_ToggleCount;
+
+// Buffer for data from PC to uC for USB
+extern uint8_t Buffer[64];
+extern char * FSBuffer;	// Pointer to buffer for file write
 
 #endif /* VAR_H_ */

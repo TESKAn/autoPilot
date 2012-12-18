@@ -5,7 +5,93 @@
  *      Author: Jure
  */
 #include "allinclude.h"
+#include <string.h>
 
+uint16_t strToNumber(char* file, char* str)
+{
+	char* strBeginning = 0;
+	char* strEnd = 0;
+	uint8_t convert = 0;
+	uint8_t strBeginLen = strlen(str);
+	uint16_t convertedValue = 0;
+	uint8_t i = 0;
+	uint32_t value = 0;
+	char currentChar = 0;
+	// file - file that contains data
+	// str - string that marks data, in form of val1=1234;
+	strBeginning = strpbrk(file, str);
+	// Check that it is not null
+	if(strBeginning != NULL)
+	{
+		// Get pointer to where in file string ends
+		strEnd = strpbrk(strBeginning, ";");
+		// Count how many chars to convert
+		convert = (uint8_t)((uint32_t)(strEnd - strBeginning) - strBeginLen);
+		// Convert
+		for(i = 0; i < convert; i++)
+		{
+			convertedValue = convertedValue * 10;
+			// Get value
+			currentChar = strBeginning[5 + i];
+			convertedValue = convertedValue + (uint16_t)numberFromChar(currentChar);
+		}
+	}
+	else
+	{
+		convertedValue = 0;
+	}
+	return convertedValue;
+}
+
+void loadSettings(void)
+{
+	FATFS FileSystemObject;
+	DSTATUS driveStatus;
+	FIL settingsFile;
+	unsigned int bytesToRead = 0;
+	unsigned int readBytes = 0;
+
+	if(f_mount(0, &FileSystemObject)!=FR_OK)
+	{
+		//flag error
+	}
+	driveStatus = disk_status (0);
+	if((driveStatus & STA_NOINIT) ||
+		   (driveStatus & STA_NODISK) ||
+		   (driveStatus & STA_PROTECT)
+		   )
+	{
+		//flag error.
+	}
+	// Open file
+	if(f_open(&settingsFile, "/settings.txt", FA_READ | FA_WRITE | FA_OPEN_ALWAYS)!=FR_OK)
+	{
+		//flag error
+	}
+	// Read file to buffer
+	bytesToRead = f_size(&settingsFile);
+	FSBuffer = malloc(bytesToRead);
+
+	if(f_read (&settingsFile, FSBuffer, bytesToRead, &readBytes) != FR_OK)
+	{
+
+	}
+	// Process data
+	SD_RESULT = strToNumber(FSBuffer, "val1=");
+
+	//Close and unmount.
+	f_close(&settingsFile);
+	f_mount(0,0);
+}
+
+char charFromNumber(uint8_t number)
+{
+	return number + 48;
+}
+uint8_t numberFromChar(char c)
+{
+	return c - 48;
+}
 
 void NVIC_EnableInterrupts(FunctionalState newState)
 {

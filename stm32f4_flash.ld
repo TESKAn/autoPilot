@@ -36,7 +36,7 @@ ENTRY(Reset_Handler)
 _estack = 0x20020000;    /* end of 128K RAM */
 
 /* Generate a link error if heap and stack don't fit into RAM */
-_Min_Heap_Size = 0;      /* required amount of heap  */
+_Min_Heap_Size = 0x400;      /* required amount of heap  */
 _Min_Stack_Size = 0x400; /* required amount of stack */
 
 /* Specify the memory areas */
@@ -47,6 +47,10 @@ MEMORY
   MEMORY_B1 (rx)  : ORIGIN = 0x60000000, LENGTH = 0K
   CCMRAM (rw)     : ORIGIN = 0x10000000, LENGTH = 64K
 }
+
+_startof_sram = ORIGIN(RAM);             /* Start of available SRAM address */
+_endof_sram = ORIGIN(RAM) + LENGTH(RAM);    /* End of available above address + 1 */
+
 
 /* Define output sections */
 SECTIONS

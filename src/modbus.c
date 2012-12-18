@@ -8,16 +8,16 @@
 #include "allinclude.h"
 
 // Variables
-int MODBUS_ReceiveState = 0;
-unsigned char ucMBCRCLOW = 0;
-unsigned char ucMBCRCHI = 0;
-int MODBUS_Timeout = 0;
+volatile int MODBUS_ReceiveState = 0;
+volatile unsigned char ucMBCRCLOW = 0;
+volatile unsigned char ucMBCRCHI = 0;
+volatile int MODBUS_Timeout = 0;
 // MODBUS registers
 uint16_t MODBUSReg[MB_TOTALREGISTERS];
 // Var holds data
-Typedef_mbd MODBUSData;
+volatile Typedef_mbd MODBUSData;
 // MODBUS temp reg variable
-uint16_t MODBUSTempReg = 0;
+volatile uint16_t MODBUSTempReg = 0;
 
 // CRC tables
 /* Table of CRC values for high–order byte */

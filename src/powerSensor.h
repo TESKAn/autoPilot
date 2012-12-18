@@ -46,11 +46,11 @@ typedef union
 extern const int crc8_Table[256];
 
 // Data
-extern uint8_t PS_CRC;
-extern uint8_t PS_ReceiveStateVar;
-extern int PS_TIMER;
-extern PS_DataStruct PS_DATA;
-extern int PS_PollTimer;
+extern volatile uint8_t PS_CRC;
+extern volatile uint8_t PS_ReceiveStateVar;
+extern volatile int PS_TIMER;
+extern volatile PS_DataStruct PS_DATA;
+extern volatile int PS_PollTimer;
 
 void PS_Timer(void);
 void PSRequestData(void);

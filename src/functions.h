@@ -8,6 +8,10 @@
 #ifndef FUNCTIONS_H_
 #define FUNCTIONS_H_
 
+uint16_t strToNumber(char* file, char* str);
+void loadSettings(void);
+char charFromNumber(uint8_t number);
+uint8_t numberFromChar(char c);
 void NVIC_EnableInterrupts(FunctionalState newState);
 void extPeripheralInit(void);
 void Delaynus(vu32 nus);

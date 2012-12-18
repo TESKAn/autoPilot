@@ -117,9 +117,6 @@ void crcOnMessage(unsigned int uiDataLen);
 // SD result
 #define SD_RESULT			MODBUSReg[70]
 
-
-
-
 // Typedefs
 // MODBUS data structure
 typedef union
@@ -169,15 +166,15 @@ typedef union
 } Typedef_mbd;
 
 //MODBUS variables
-extern int MODBUS_ReceiveState;
-extern unsigned char ucMBCRCLOW;
-extern unsigned char ucMBCRCHI;
+extern volatile int MODBUS_ReceiveState;
+extern volatile unsigned char ucMBCRCLOW;
+extern volatile unsigned char ucMBCRCHI;
 // Var holds data
-extern Typedef_mbd MODBUSData;
+extern volatile Typedef_mbd MODBUSData;
 // MODBUS temp reg variable
-extern uint16_t MODBUSTempReg;
+extern volatile uint16_t MODBUSTempReg;
 
-extern int MODBUS_Timeout;
+extern int volatile MODBUS_Timeout;
 // MODBUS registers
 extern uint16_t MODBUSReg[MB_TOTALREGISTERS];
 

@@ -26,17 +26,17 @@ ErrorStatus masterReceive_beginDMA(uint8_t device, uint8_t startReg, uint8_t *da
 ErrorStatus masterReceive(uint8_t device,uint8_t startReg, uint8_t *dataBuffer, uint8_t byteCount);
 ErrorStatus masterReceive_HMC5883L(uint8_t device, uint8_t startReg, uint8_t *dataBuffer, uint8_t byteCount);
 
-extern uint16_t I2C2_ProcesState;
-extern Flag I2C2_Flags;
-extern uint16_t I2C2_StartReg;
-extern uint16_t I2C2_ReadData;
-extern uint16_t I2C2_WriteData;
-extern uint8_t I2C2_DeviceAddress;
+extern volatile uint16_t I2C2_ProcesState;
+extern volatile Flag I2C2_Flags;
+extern volatile uint16_t I2C2_StartReg;
+extern volatile uint16_t I2C2_ReadData;
+extern volatile uint16_t I2C2_WriteData;
+extern volatile uint8_t I2C2_DeviceAddress;
 extern uint8_t I2C2_DMABufTX[DMA_BUF_COUNT];
 extern uint8_t I2C2_DMABufRX[DMA_BUF_COUNT];
-extern int I2C2_DMABufTXCount;
-extern int I2C2_DMABufRXCount;
-extern int I2C2_PollTimer;
+extern volatile int I2C2_DMABufTXCount;
+extern volatile int I2C2_DMABufRXCount;
+extern volatile int I2C2_PollTimer;
 
 #define I2C2_POLLTIME		100
 

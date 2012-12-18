@@ -45,8 +45,6 @@
 // USB related
 __ALIGN_BEGIN	USB_OTG_CORE_HANDLE  USB_OTG_dev __ALIGN_END;
 
-// Buffer for data from PC to uC
-uint8_t Buffer[64];
 
 int main(void)
 {
@@ -215,6 +213,7 @@ int main(void)
         	{
         		//flag error
         	}
+        	driveStatus = disk_status (0);
         	if((driveStatus & STA_NOINIT) ||
         		   (driveStatus & STA_NODISK) ||
         		   (driveStatus & STA_PROTECT)
@@ -222,33 +221,64 @@ int main(void)
         	{
         		//flag error.
         	}
-        	if(f_open(&logFile, "/GpsLog.txt", FA_READ | FA_WRITE | FA_OPEN_ALWAYS)!=FR_OK)
+        	// Generate file name
+        	// File name = "/LOG_ddmmyyyy_hhmmss.txt"
+        	FSBuffer = malloc(25);
+        	// Check if malloc returned OK
+        	if(FSBuffer != (char*)-1)
         	{
-        		//flag error
+				// Fill buffer
+				FSBuffer[0] = '/';
+				FSBuffer[1] = 'L';
+				FSBuffer[2] = 'O';
+				FSBuffer[3] = 'G';
+				FSBuffer[4] = '_';
+				FSBuffer[5] = charFromNumber(GPS_DAY / 10);
+				FSBuffer[6] = charFromNumber(GPS_DAY % 10);
+				FSBuffer[7] = charFromNumber(GPS_MONTH / 10);
+				FSBuffer[8] = charFromNumber(GPS_MONTH % 10);
+				FSBuffer[9] = '2';
+				FSBuffer[10] = '0';
+				FSBuffer[11] = '1';
+				FSBuffer[12] = '2';
+				FSBuffer[13] = '_';
+				FSBuffer[14] = charFromNumber(GPS_HOURS / 10);
+				FSBuffer[15] = charFromNumber(GPS_HOURS % 10);
+				FSBuffer[16] = charFromNumber(GPS_MINUTES / 10);
+				FSBuffer[17] = charFromNumber(GPS_MINUTES % 10);
+				FSBuffer[18] = charFromNumber(GPS_SECONDS / 10);
+				FSBuffer[19] = charFromNumber(GPS_SECONDS % 10);
+				FSBuffer[20] = '.';
+				FSBuffer[21] = 't';
+				FSBuffer[22] = 'x';
+				FSBuffer[23] = 't';
+				FSBuffer[24] = 0;
+	        	// Open file
+	        	if(f_open(&logFile, FSBuffer, FA_READ | FA_WRITE | FA_OPEN_ALWAYS)!=FR_OK)
+	        	{
+	        		//flag error
+	        	}
+				// Free memory
+				free(FSBuffer);
         	}
-        	// Seek to end of file to append data
-        	/*
-        	if(f_lseek(logFile, f_size(logFile)) != FR_OK)
+        	else
         	{
-
+				// Open file
+				if(f_open(&logFile, "/LOG_ddmmyyyy_hhmmss.txt", FA_READ | FA_WRITE | FA_OPEN_ALWAYS)!=FR_OK)
+				{
+					//flag error
+				}
         	}
-        	*/
-        	unsigned int bytesWritten;
-        	f_write(&logFile, "New log opened!\n", 16, &bytesWritten);
+        	f_write(&logFile, "val1=1234;\n", 10, &bytesWritten);
         	//Flush the write buffer with f_sync(&logFile);
-        	f_sync(&logFile);
+        	//f_sync(&logFile);
         	//Close and unmount.
         	f_close(&logFile);
         	f_mount(0,0);
 
+        	// Test read file
+        	loadSettings();
 
-        	// SD card testing
-        	// Init SD card
-        	//SD_RESULT = SD_Init();
-        	//SD_GetCardInfo(&cardinfo);
-        	// Read data
-        	//SD_RESULT = SD_GetStatus();
-        	// End of SD card testing
         	SCR1 = SCR1 & ~SCR_TESD_SD;
         }
 

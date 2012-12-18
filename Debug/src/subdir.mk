@@ -14,6 +14,7 @@ C_SRCS += \
 ../src/sensors.c \
 ../src/spi_sd.c \
 ../src/stm32f4xx_it.c \
+../src/syscalls.c \
 ../src/system_stm32f4xx.c \
 ../src/tiny_printf.c \
 ../src/usb_bsp.c \
@@ -36,6 +37,7 @@ OBJS += \
 ./src/spi_sd.o \
 ./src/startup_stm32f4xx.o \
 ./src/stm32f4xx_it.o \
+./src/syscalls.o \
 ./src/system_stm32f4xx.o \
 ./src/tiny_printf.o \
 ./src/usb_bsp.o \
@@ -54,6 +56,7 @@ C_DEPS += \
 ./src/sensors.d \
 ./src/spi_sd.d \
 ./src/stm32f4xx_it.d \
+./src/syscalls.d \
 ./src/system_stm32f4xx.d \
 ./src/tiny_printf.d \
 ./src/usb_bsp.d \

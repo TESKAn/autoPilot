@@ -3,3 +3,9 @@ fatfs
 sec
 cardinfo
 delaynus
+malloc
+str
+val
+var
+temp
+reg
