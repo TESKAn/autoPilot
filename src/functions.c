@@ -7,6 +7,138 @@
 #include "allinclude.h"
 #include <string.h>
 
+void write_toLog(void)
+{
+	unsigned int bytesWritten;
+	unsigned int uiByteCount = 0;
+	DEBUG_PIN_ON;
+	FSBuffer = malloc(25);
+	// Store time
+	FSBuffer[0] = charFromNumber(GPS_HOURS / 10);
+	FSBuffer[1] = charFromNumber(GPS_HOURS % 10);
+	FSBuffer[2] = ':';
+	FSBuffer[3] = charFromNumber(GPS_MINUTES / 10);
+	FSBuffer[4] = charFromNumber(GPS_MINUTES % 10);
+	FSBuffer[5] = ':';
+	FSBuffer[6] = charFromNumber(GPS_SECONDS / 10);
+	FSBuffer[7] = charFromNumber(GPS_SECONDS % 10);
+	FSBuffer[8] = ';';
+	uiByteCount = 9;
+	// Store accelerometer X, Y, Z
+	uiByteCount += storeNegativeNumber(ACC_X, FSBuffer, uiByteCount);
+	uiByteCount += storeNegativeNumber(ACC_Y, FSBuffer, uiByteCount);
+	uiByteCount += storeNegativeNumber(ACC_Z, FSBuffer, uiByteCount);
+	// Store gyro X, Y, Z
+	uiByteCount += storeNegativeNumber(GYRO_X, FSBuffer, uiByteCount);
+	uiByteCount += storeNegativeNumber(GYRO_Y, FSBuffer, uiByteCount);
+	uiByteCount += storeNegativeNumber(GYRO_Z, FSBuffer, uiByteCount);
+	// Store magnetometer X, Y, Z
+	uiByteCount += storeNegativeNumber(MAG_X, FSBuffer, uiByteCount);
+	uiByteCount += storeNegativeNumber(MAG_Y, FSBuffer, uiByteCount);
+	uiByteCount += storeNegativeNumber(MAG_Z, FSBuffer, uiByteCount);
+	// Store baro altitude
+	uiByteCount += storeNegativeNumber(BARO, FSBuffer, uiByteCount);
+	// Store power Uin, Iin, mAh used, T1, T2, T3 - always positive 16 bit
+	uiByteCount += storeNumber(VOLTAGE, FSBuffer, uiByteCount);
+	uiByteCount += storeNumber(CURRENT, FSBuffer, uiByteCount);
+	uiByteCount += storeNumber(MAH, FSBuffer, uiByteCount);
+	uiByteCount += storeNumber(T1, FSBuffer, uiByteCount);
+	uiByteCount += storeNumber(T2, FSBuffer, uiByteCount);
+	uiByteCount += storeNumber(T3, FSBuffer, uiByteCount);
+
+	// Write \r\n
+	FSBuffer[uiByteCount] = 0x0d;
+	uiByteCount++;
+	FSBuffer[uiByteCount] = 0x0a;
+	uiByteCount++;
+
+	f_write(&logFile, FSBuffer, uiByteCount, &bytesWritten);
+
+	DEBUG_PIN_OFF;
+}
+
+int storeNumber(uint16_t number, char* buffer, int offset)
+{
+	// Stores 16 bit number to buffer, starting at offset, ending with ;
+	char temp = 0;
+	int charWritten = offset;
+	if(number > 10000)
+	{
+		temp = charFromNumber(number / 10000);
+		buffer[offset] = temp;
+		offset++;
+	}
+	if(number > 1000)
+	{
+		temp = charFromNumber(number / 1000);
+		buffer[offset] = temp;
+		offset++;
+	}
+	if(number > 100)
+	{
+		temp = charFromNumber((number / 100) % 10);
+		buffer[offset] = temp;
+		offset++;
+	}
+	if(number > 10)
+	{
+		temp = charFromNumber((number / 10) % 10);
+		buffer[offset] = temp;
+		offset++;
+	}
+	temp = charFromNumber(number % 10);
+	buffer[offset] = temp;
+	offset++;
+	buffer[offset] = ';';
+	offset++;
+	return offset - charWritten;
+}
+int storeNegativeNumber(uint16_t number, char* buffer, int offset)
+{
+	// Stores 16 bit number to buffer, starting at offset, ending with ;
+	char temp = 0;
+	int charWritten = offset;
+	int16_t negNumber = (int16_t)number;
+	if(negNumber < 0)
+	{
+		// Write -
+		buffer[offset] = '-';
+		offset++;
+		// Make positive
+		negNumber = negNumber * -1;
+	}
+	if(negNumber > 10000)
+	{
+		temp = charFromNumber(negNumber / 10000);
+		buffer[offset] = temp;
+		offset++;
+	}
+	if(negNumber > 1000)
+	{
+		temp = charFromNumber(negNumber / 1000);
+		buffer[offset] = temp;
+		offset++;
+	}
+	if(negNumber > 100)
+	{
+		temp = charFromNumber((negNumber / 100) % 10);
+		buffer[offset] = temp;
+		offset++;
+	}
+	if(negNumber > 10)
+	{
+		temp = charFromNumber((negNumber / 10) % 10);
+		buffer[offset] = temp;
+		offset++;
+	}
+	temp = charFromNumber(negNumber % 10);
+	buffer[offset] = temp;
+	offset++;
+	buffer[offset] = ';';
+	offset++;
+	return offset - charWritten;
+}
+
 uint16_t strToNumber(char* file, char* str)
 {
 	char* strBeginning = 0;
@@ -15,7 +147,7 @@ uint16_t strToNumber(char* file, char* str)
 	uint8_t strBeginLen = strlen(str);
 	uint16_t convertedValue = 0;
 	uint8_t i = 0;
-	uint32_t value = 0;
+	//uint32_t value = 0;
 	char currentChar = 0;
 	// file - file that contains data
 	// str - string that marks data, in form of val1=1234;
@@ -41,6 +173,17 @@ uint16_t strToNumber(char* file, char* str)
 		convertedValue = 0;
 	}
 	return convertedValue;
+}
+
+
+
+char charFromNumber(uint8_t number)
+{
+	return number + 48;
+}
+uint8_t numberFromChar(char c)
+{
+	return c - 48;
 }
 
 void loadSettings(void)
@@ -82,15 +225,6 @@ void loadSettings(void)
 	//Close and unmount.
 	f_close(&settingsFile);
 	f_mount(0,0);
-}
-
-char charFromNumber(uint8_t number)
-{
-	return number + 48;
-}
-uint8_t numberFromChar(char c)
-{
-	return c - 48;
 }
 
 void NVIC_EnableInterrupts(FunctionalState newState)

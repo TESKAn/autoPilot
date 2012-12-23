@@ -121,6 +121,12 @@ extern volatile uint32_t DAC1_TIM6reloadValue;
 extern const uint16_t Sine12bit[32];
 // SD card variables
 extern volatile uint8_t SD_TimerCount;
+
+// FatFS variables
+extern FATFS FileSystemObject;
+extern DSTATUS driveStatus;
+extern FIL logFile;
+
 // LED count variable
 extern volatile uint16_t LED_ToggleCount;
 

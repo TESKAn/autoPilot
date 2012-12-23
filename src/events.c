@@ -433,6 +433,12 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		LED_ToggleCount++;
 		if(LED_ToggleCount > 1000)
 		{
+			// Event every second
+			// Write log
+			if(SD_WRITE_LOG && SCR2_LOGOPEN)
+			{
+				write_toLog();
+			}
 			LED_ToggleCount = 0;
 			// Toggle LED
 			LED_RUN_TOGGLE;
@@ -448,6 +454,8 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		MODBUS_Timer();
 		// Call PS timer
 		PS_Timer();
+		// Call sensor timer
+		sensorTimer();
 	}
 }
 

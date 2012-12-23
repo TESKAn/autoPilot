@@ -74,6 +74,12 @@ const uint16_t Sine12bit[32] = {
                       599, 344, 155, 38, 0, 38, 155, 344, 599, 909, 1263, 1647};
 // SD card variables
 volatile uint8_t SD_TimerCount = 0;
+
+// FatFS variables
+FATFS FileSystemObject;
+DSTATUS driveStatus;
+FIL logFile;
+
 // LED count variable
 volatile uint16_t LED_ToggleCount = 0;
 

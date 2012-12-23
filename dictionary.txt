@@ -9,3 +9,13 @@ val
 var
 temp
 reg
+gyro
+magnetometer
+baro
+uin
+iin
+accel
+mag
+gauss
+altimeter
+deinit

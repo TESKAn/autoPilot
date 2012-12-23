@@ -170,7 +170,7 @@ extern volatile int MODBUS_ReceiveState;
 extern volatile unsigned char ucMBCRCLOW;
 extern volatile unsigned char ucMBCRCHI;
 // Var holds data
-extern volatile Typedef_mbd MODBUSData;
+extern Typedef_mbd MODBUSData;
 // MODBUS temp reg variable
 extern volatile uint16_t MODBUSTempReg;
 

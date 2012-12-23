@@ -81,7 +81,7 @@
  #define RCC_APBPeriphClockCmd_SPI_SD  	RCC_APB1PeriphClockCmd
  #define RCC_APBPeriph_SPI_SD     		RCC_APB1Periph_SPI2
  /* - for SPI1 and full-speed APB2: 72MHz/4 */
- #define SPI_BaudRatePrescaler_SPI_SD  SPI_BaudRatePrescaler_32
+ #define SPI_BaudRatePrescaler_SPI_SD  SPI_BaudRatePrescaler_16
 
 #elif defined(USE_STM32_P103)
  // Olimex STM32-P103 not tested!
@@ -565,7 +565,7 @@ void power_on (void)
 	SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;
 	SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;
 	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
-	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_256;
+	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_SPI_SD;
 	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
 	SPI_InitStructure.SPI_CRCPolynomial = 7;
 	SPI_Init(SPI_SD, &SPI_InitStructure);

@@ -16,6 +16,11 @@
 #include <malloc.h>
 #include "syscalls.h"
 
+// SD card
+//#include "spi_sd.h"
+#include "diskio.h"
+#include "ff.h"
+
 #include "stm32f4xx_usart.h"
 #include "stm32f4xx_rcc.h"
 #include "stm32f4xx_gpio.h"
@@ -33,9 +38,6 @@
 #include "usbd_hid_core.h"
 #include "usbd_usr.h"
 #include "usbd_desc.h"
-// SD card
-//#include "spi_sd.h"
-#include "diskio.h"
-#include "ff.h"
+
 
 #endif /* ALLINCLUDE_H_ */

@@ -8,6 +8,10 @@
 #ifndef MACRO_H_
 #define MACRO_H_
 
+// Configuration macros
+// Define GPIO pin 5 as debug output
+#define GPIOE5_IS_DEBUG
+
 #define NUM 10
 
 // Define bit macros
@@ -44,6 +48,8 @@
 #define USB_REQUEST_DATA_0		flag0.bits.BIT12
 #define USB_REQUEST_DATA_1		flag0.bits.BIT13
 #define USB_REQUEST_DATA_2		flag0.bits.BIT14
+#define SD_WRITE_LOG			flag0.bits.BIT15
+#define SD_LOG_ISOPEN			flag0.bits.BIT16
 
 // DMA macros
 //DMA1_Stream0 used by USB
@@ -94,6 +100,7 @@
 #define SCR2_BAROK			0x0008
 #define SCR2_POWEROK		0x0010
 #define SCR2_GPSOK			0x0020
+#define SCR2_LOGOPEN		0x0040
 
 //Timer 1 macros
 #define TIM1_PERIOD		32200
@@ -131,5 +138,10 @@
 // SPI macros
 #define SPI_SDCARD_SELECT	GPIO_WriteBit(GPIOB, GPIO_Pin_12, 0)
 #define SPI_SDCARD_RELEASE	GPIO_WriteBit(GPIOB, GPIO_Pin_12, 1)
+
+// Debug macros
+#define DEBUG_PIN_ON		GPIO_WriteBit(GPIOE, GPIO_Pin_5, 1)
+#define DEBUG_PIN_OFF		GPIO_WriteBit(GPIOE, GPIO_Pin_5, 0)
+#define DEBUG_PIN_TOGGLE	GPIO_ToggleBits(GPIOE, GPIO_Pin_5)
 
 #endif /* MACRO_H_ */

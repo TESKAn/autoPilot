@@ -370,6 +370,7 @@ void System_Config(void)
 	GPIO_Init(GPIOD, &GPIO_InitStructure);
 
 	//GPIO E
+#ifndef GPIOE5_IS_DEBUG
 	//connect pin E5 to timer input
 	GPIO_PinAFConfig(GPIOE, GPIO_PinSource5, GPIO_AF_TIM9);
 	//select pins 12 - 15
@@ -384,6 +385,21 @@ void System_Config(void)
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOE, &GPIO_InitStructure);
+#else
+	//connect pin E5 to debug
+	//select pin 5
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
+	//set output type
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// push/pull
+	//set pull-up
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
+	//set pin mode to alternate function
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	//set pin speed
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	//write mode to selected pins and selected port
+	GPIO_Init(GPIOE, &GPIO_InitStructure);
+#endif
 
 	//config GPIOE pins 9,11,13,14 for output compare
 	//set AF pin source to TIM1
@@ -900,7 +916,7 @@ void System_Config(void)
 	DAC_Init(DAC_Channel_2, &DAC_InitStruct);
 	DAC_Cmd(DAC_Channel_2, ENABLE);
 	// End of DAC
-
+/*
 	// SD card SPI init
 	// Enable clock = 42 MHz
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
@@ -910,7 +926,7 @@ void System_Config(void)
 	SPIInitStructure.SPI_CPOL = SPI_CPOL_Low;
 	SPIInitStructure.SPI_CPHA = SPI_CPHA_1Edge;
 	SPIInitStructure.SPI_NSS = SPI_NSS_Soft;
-	SPIInitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_256;
+	SPIInitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_32;
 	SPIInitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
 	SPIInitStructure.SPI_CRCPolynomial = 7;
 
@@ -929,6 +945,7 @@ void System_Config(void)
 	// Enable DMA
 	//DMA_Cmd()
 	// End of SD card SPI init
+*/
 
 	NVIC_EnableInterrupts(ENABLE);
 }

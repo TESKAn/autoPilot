@@ -15,7 +15,7 @@ volatile int MODBUS_Timeout = 0;
 // MODBUS registers
 uint16_t MODBUSReg[MB_TOTALREGISTERS];
 // Var holds data
-volatile Typedef_mbd MODBUSData;
+Typedef_mbd MODBUSData;
 // MODBUS temp reg variable
 volatile uint16_t MODBUSTempReg = 0;
 

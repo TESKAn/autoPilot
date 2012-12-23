@@ -18,6 +18,18 @@ uint8_t I2C2_DMABufRX[DMA_BUF_COUNT];
 volatile int I2C2_DMABufTXCount = 0;
 volatile int I2C2_DMABufRXCount = 0;
 volatile int I2C2_PollTimer = 0;
+volatile uint16_t sensorTimeCounter = 0;
+
+// Timeout function
+void sensorTimer(void)
+{
+	// Function is called once every millisecond
+	sensorTimeCounter++;
+	if(sensorTimeCounter > 65534)
+	{
+		sensorTimeCounter = 65534;
+	}
+}
 
 // Initialize I2C sensors
 void sensorInit()
@@ -265,8 +277,13 @@ ErrorStatus masterSend(uint8_t device, uint8_t *dataBuffer, uint8_t byteCount)
 	// Disable DMA TX Channel
 	DMA_Cmd(DMA_I2C2_TX, DISABLE);
 	// Wait until stream is disabled
+	sensorTimeCounter = 0;
 	while (DMA_GetCmdStatus(DMA_I2C2_TX) != DISABLE)
 	{
+		if(sensorTimeCounter > I2C2_DMA_WAITDEINIT)
+		{
+			break;
+		}
 	}
 	// Deinit DMA
 	DMA_DeInit(DMA_I2C2_TX);
@@ -512,7 +529,10 @@ ErrorStatus masterReceive(uint8_t device, uint8_t startReg, uint8_t *dataBuffer,
 	I2C_GenerateSTART(I2C2, ENABLE);
 
 	// wait for I2C1 EV5 --> Slave has acknowledged start condition
-	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_MODE_SELECT));
+	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_MODE_SELECT))
+	{
+
+	}
 
 	// Send slave Address for write
 	I2C_Send7bitAddress(I2C2, device, I2C_Direction_Transmitter);

@@ -48,9 +48,6 @@ __ALIGN_BEGIN	USB_OTG_CORE_HANDLE  USB_OTG_dev __ALIGN_END;
 
 int main(void)
 {
-	FATFS FileSystemObject;
-	DSTATUS driveStatus;
-	FIL logFile;
 	unsigned int bytesWritten;
 	//SD_CardInfo cardinfo;
 	int i = 0;
@@ -209,6 +206,8 @@ int main(void)
         }
         if(SCR1 & SCR_TESD_SD)
         {
+        	/*
+        	DEBUG_PIN_TOGGLE;
         	if(f_mount(0, &FileSystemObject)!=FR_OK)
         	{
         		//flag error
@@ -275,10 +274,92 @@ int main(void)
         	//Close and unmount.
         	f_close(&logFile);
         	f_mount(0,0);
+        	DEBUG_PIN_TOGGLE;
 
         	// Test read file
         	loadSettings();
 
+        	DEBUG_PIN_TOGGLE;
+        	*/
+        	if(!SD_WRITE_LOG)
+        	{
+				SD_WRITE_LOG = 1;
+				SCR2 = SCR2 | SCR2_LOGOPEN;
+				// Check if log file is open
+				if(!SD_LOG_ISOPEN)
+				{
+					// Open file for writing
+					if(f_mount(0, &FileSystemObject)!=FR_OK)
+					{
+						//flag error
+					}
+					driveStatus = disk_status (0);
+					if((driveStatus & STA_NOINIT) ||
+						   (driveStatus & STA_NODISK) ||
+						   (driveStatus & STA_PROTECT)
+						   )
+					{
+						//flag error.
+					}
+					// Generate file name
+					// File name = "/LOG_ddmmyyyy_hhmmss.txt"
+					FSBuffer = malloc(25);
+					// Check if malloc returned OK
+					if(FSBuffer != (char*)-1)
+					{
+						// Fill buffer
+						FSBuffer[0] = '/';
+						FSBuffer[1] = 'L';
+						FSBuffer[2] = 'O';
+						FSBuffer[3] = 'G';
+						FSBuffer[4] = '_';
+						FSBuffer[5] = charFromNumber(GPS_DAY / 10);
+						FSBuffer[6] = charFromNumber(GPS_DAY % 10);
+						FSBuffer[7] = charFromNumber(GPS_MONTH / 10);
+						FSBuffer[8] = charFromNumber(GPS_MONTH % 10);
+						FSBuffer[9] = '2';
+						FSBuffer[10] = '0';
+						FSBuffer[11] = '1';
+						FSBuffer[12] = '2';
+						FSBuffer[13] = '_';
+						FSBuffer[14] = charFromNumber(GPS_HOURS / 10);
+						FSBuffer[15] = charFromNumber(GPS_HOURS % 10);
+						FSBuffer[16] = charFromNumber(GPS_MINUTES / 10);
+						FSBuffer[17] = charFromNumber(GPS_MINUTES % 10);
+						FSBuffer[18] = charFromNumber(GPS_SECONDS / 10);
+						FSBuffer[19] = charFromNumber(GPS_SECONDS % 10);
+						FSBuffer[20] = '.';
+						FSBuffer[21] = 'c';
+						FSBuffer[22] = 's';
+						FSBuffer[23] = 'v';
+						FSBuffer[24] = 0;
+						// Open file
+						if(f_open(&logFile, FSBuffer, FA_READ | FA_WRITE | FA_OPEN_ALWAYS)!=FR_OK)
+						{
+							//flag error
+						}
+						// Free memory
+						free(FSBuffer);
+					}
+					else
+					{
+						// Open file
+						if(f_open(&logFile, "/LOG_ddmmyyyy_hhmmss.txt", FA_READ | FA_WRITE | FA_OPEN_ALWAYS)!=FR_OK)
+						{
+							//flag error
+						}
+					}
+				}
+        	}
+        	else
+        	{
+        		// Else close file
+            	//Close and unmount.
+        		SCR2 = SCR2 & ~SCR2_LOGOPEN;
+        		SD_WRITE_LOG = 0;
+            	f_close(&logFile);
+            	f_mount(0,0);
+        	}
         	SCR1 = SCR1 & ~SCR_TESD_SD;
         }
 

@@ -12,7 +12,9 @@
 #define HMC5883_ADDRESS		0x3C
 #define MPL3115A2_ADDRESS	0xC0
 #define DMA_BUF_COUNT		128
+#define I2C2_DMA_WAITDEINIT	100	// Wait 100 msec
 
+void sensorTimer(void);
 void sensorInit();
 void copySensorData(void);
 ErrorStatus MPU6000_Enable(FunctionalState newState);
@@ -37,6 +39,7 @@ extern uint8_t I2C2_DMABufRX[DMA_BUF_COUNT];
 extern volatile int I2C2_DMABufTXCount;
 extern volatile int I2C2_DMABufRXCount;
 extern volatile int I2C2_PollTimer;
+extern volatile uint16_t sensorTimeCounter;
 
 #define I2C2_POLLTIME		100
 
