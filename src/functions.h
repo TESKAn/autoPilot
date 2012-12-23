@@ -8,6 +8,8 @@
 #ifndef FUNCTIONS_H_
 #define FUNCTIONS_H_
 
+void openLog(void);
+void closeLog(void);
 void write_toLog(void);
 int storeNumber(uint16_t number, char* buffer, int offset);
 int storeNegativeNumber(uint16_t number, char* buffer, int offset);
