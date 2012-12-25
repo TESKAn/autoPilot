@@ -79,10 +79,11 @@ volatile uint8_t SD_TimerCount = 0;
 FATFS FileSystemObject;
 DSTATUS driveStatus;
 FIL logFile;
+uint8_t FatFS_FlushBuffer = 0;
 
 // LED count variable
 volatile uint16_t LED_ToggleCount = 0;
 
 // Buffer for data from PC to uC for USB
 uint8_t Buffer[64];
-char * FSBuffer;	// Pointer to buffer for file write
+char FSBuffer[FATFS_BUFF_SIZE];	// Pointer to buffer for file write

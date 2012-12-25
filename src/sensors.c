@@ -34,10 +34,11 @@ void sensorTimer(void)
 // Initialize I2C sensors
 void sensorInit()
 {
+	ErrorStatus error = SUCCESS;
 	I2C2_INITDONE = 0;
 	// Check if MPU is in sleep mode
 	// Read reg 107
-	masterReceive(MPU6000_ADDRESS, 107, I2C2_DMABufRX, 5);
+	error = masterReceive(MPU6000_ADDRESS, 107, I2C2_DMABufRX, 5);
 	Delaynus(20000);
 	// Check bit 6 - device sleep
 	if((I2C2_DMABufRX[0] & _BIT7) == 0)
@@ -50,9 +51,9 @@ void sensorInit()
 		I2C2_REENABLE = 1;
 	}
 	// Enable MPU
-	MPU6000_Enable(ENABLE);
+	error = MPU6000_Enable(ENABLE);
 	// Enable I2C bypass to write to HMC5883
-	MPU6000_EnableI2CBypass(ENABLE);
+	error = MPU6000_EnableI2CBypass(ENABLE);
 	if(I2C2_REENABLE)
 	{
 		// Reset slave devices
@@ -63,15 +64,15 @@ void sensorInit()
 		Delaynus(20000);
 	}
 	// Configure HMC5883
-	HMC5883_Enable(ENABLE);
+	error = HMC5883_Enable(ENABLE);
 	// Configure MPL3115A2
-	MPL3115A2_Enable(ENABLE);
+	error = MPL3115A2_Enable(ENABLE);
 	// Disable I2C bypass
-	MPU6000_EnableI2CBypass(DISABLE);
+	error = MPU6000_EnableI2CBypass(DISABLE);
 	// Configure MPU I2C master mode
-	MPU6000_ConfigureI2CMaster();
+	error = MPU6000_ConfigureI2CMaster();
 	// Enable MPU I2C master
-	MPU6000_EnableI2CMaster(ENABLE);
+	error = MPU6000_EnableI2CMaster(ENABLE);
 	I2C2_INITDONE = 1;
 }
 
@@ -280,8 +281,10 @@ ErrorStatus masterSend(uint8_t device, uint8_t *dataBuffer, uint8_t byteCount)
 	sensorTimeCounter = 0;
 	while (DMA_GetCmdStatus(DMA_I2C2_TX) != DISABLE)
 	{
-		if(sensorTimeCounter > I2C2_DMA_WAITDEINIT)
+		// Check for DMA error
+		if(I2C_DMACheckForError(DMA_I2C2_TX) == ERROR)
 		{
+			return ERROR;
 			break;
 		}
 	}
@@ -316,19 +319,45 @@ ErrorStatus masterSend(uint8_t device, uint8_t *dataBuffer, uint8_t byteCount)
 	// Check BUSY flag
 	if(I2C_GetFlagStatus(I2C2, I2C_FLAG_BUSY))
 	{
+		sensorTimeCounter = 0;
 		while(!I2C_GetFlagStatus(I2C2, I2C_FLAG_BUSY))
-		{}
+		{
+			// Check for I2C error
+			if(I2C_CheckForError(I2C2) == ERROR)
+			{
+				return ERROR;
+				break;
+			}
+		}
 	}
 	// Send I2C1 START condition
 	I2C_GenerateSTART(I2C2, ENABLE);
 
 	// wait for I2C1 EV5 --> Slave has acknowledged start condition
-	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_MODE_SELECT));
+	sensorTimeCounter = 0;
+	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_MODE_SELECT))
+	{
+		// Check for I2C error
+		if(I2C_CheckForError(I2C2) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
+	}
+
 
 	// Send slave Address for write
 	I2C_Send7bitAddress(I2C2, device, I2C_Direction_Transmitter);
-
-	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED));
+	sensorTimeCounter = 0;
+	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
+	{
+		// Check for I2C error
+		if(I2C_CheckForError(I2C2) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
+	}
 
 	// Transfer DMA data
 
@@ -341,27 +370,47 @@ ErrorStatus masterSend(uint8_t device, uint8_t *dataBuffer, uint8_t byteCount)
 	DMA_Cmd(DMA_I2C2_TX, ENABLE);
 
 	/* Wait until I2Cx_DMA_STREAM_RX enabled or time out */
+	sensorTimeCounter = 0;
 	while (DMA_GetCmdStatus(DMA_I2C2_TX)!= ENABLE)
 	{
+		// Check for DMA error
+		if(I2C_DMACheckForError(DMA_I2C2_TX) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
 		// Check if we have complete interrupt
 		if(DMA_GetFlagStatus(DMA_I2C2_TX,DMA_FLAG_TCIF7)!=RESET)
 		{
 			// If yes, break
-			//Delaynus(2000);
 			break;
 		}
 	}
 
+
 	/* Transfer complete or time out */
+	sensorTimeCounter = 0;
 	while (DMA_GetFlagStatus(DMA_I2C2_TX,DMA_FLAG_TCIF7)==RESET)
 	{
+		// Check for DMA error
+		if(I2C_DMACheckForError(DMA_I2C2_TX) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
 	}
 
 	// Check TxE bit
+	sensorTimeCounter = 0;
 	while(I2C_GetFlagStatus(I2C2, I2C_FLAG_TXE) == RESET)
 	{
+		// Check for I2C error
+		if(I2C_CheckForError(I2C2) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
 	}
-
 	/* Send I2Cx STOP Condition */
 	I2C_GenerateSTOP(I2C2, ENABLE);
 
@@ -369,8 +418,16 @@ ErrorStatus masterSend(uint8_t device, uint8_t *dataBuffer, uint8_t byteCount)
 	DMA_Cmd(DMA_I2C2_TX, DISABLE);
 
 	/* Wait until I2Cx_DMA_STREAM_RX disabled or time out */
+	sensorTimeCounter = 0;
 	while (DMA_GetCmdStatus(DMA_I2C2_TX)!= DISABLE)
-	{}
+	{
+		// Check for DMA error
+		if(I2C_DMACheckForError(DMA_I2C2_TX) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
+	}
 	/* Disable I2C DMA request */
 	I2C_DMACmd(I2C2,DISABLE);
 	return SUCCESS;
@@ -389,8 +446,15 @@ ErrorStatus masterReceive_beginDMA(uint8_t device, uint8_t startReg, uint8_t *da
 	// Disable DMA RX Channel
 	DMA_Cmd(DMA_I2C2_RX, DISABLE);
 	// Wait until stream is disabled
+	sensorTimeCounter = 0;
 	while (DMA_GetCmdStatus(DMA_I2C2_RX) != DISABLE)
 	{
+		// Check for DMA error
+		if(I2C_DMACheckForError(DMA_I2C2_RX) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
 	}
 	// Deinit DMA
 	DMA_DeInit(DMA_I2C2_RX);
@@ -428,40 +492,86 @@ ErrorStatus masterReceive_beginDMA(uint8_t device, uint8_t startReg, uint8_t *da
 	// Check BUSY flag
 	if(I2C_GetFlagStatus(I2C2, I2C_FLAG_BUSY))
 	{
+		sensorTimeCounter = 0;
 		while(!I2C_GetFlagStatus(I2C2, I2C_FLAG_BUSY))
-		{}
+		{
+			// Check for I2C error
+			if(I2C_CheckForError(I2C2) == ERROR)
+			{
+				return ERROR;
+				break;
+			}
+		}
 	}
 	// Send I2C1 START condition
 	I2C_GenerateSTART(I2C2, ENABLE);
 
 	// wait for I2C1 EV5 --> Slave has acknowledged start condition
-	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_MODE_SELECT));
-
+	sensorTimeCounter = 0;
+	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_MODE_SELECT))
+	{
+		// Check for I2C error
+		if(I2C_CheckForError(I2C2) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
+	}
 	// Send slave Address for write
 	I2C_Send7bitAddress(I2C2, device, I2C_Direction_Transmitter);
-
-	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED));
+	sensorTimeCounter = 0;
+	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
+	{
+		// Check for I2C error
+		if(I2C_CheckForError(I2C2) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
+	}
 
 	I2C_SendData(I2C2, startReg);
 	// wait for I2C1 EV8_2 --> byte has been transmitted
-	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
+	sensorTimeCounter = 0;
+	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
+	{
+		// Check for I2C error
+		if(I2C_CheckForError(I2C2) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
+	}
+
 
 	/* Send I2Cx START condition */
 	I2C_GenerateSTART(I2C2, ENABLE);
 
 	/* Test on I2Cx EV5 and clear it or time out*/
-
+	sensorTimeCounter = 0;
 	while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_MODE_SELECT))
-	{}
-
+	{
+		// Check for I2C error
+		if(I2C_CheckForError(I2C2) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
+	}
 	/* Send I2Cx slave Address for read */
 	I2C_Send7bitAddress(I2C2, device, I2C_Direction_Receiver);
 
 	/* Test on I2Cx EV6 and clear it or time out */
-
+	sensorTimeCounter = 0;
 	while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED))
-	{}
-
+	{
+		// Check for I2C error
+		if(I2C_CheckForError(I2C2) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
+	}
 	/* I2Cx DMA Enable */
 	I2C_DMACmd(I2C2, ENABLE);
 
@@ -482,8 +592,15 @@ ErrorStatus masterReceive(uint8_t device, uint8_t startReg, uint8_t *dataBuffer,
 	// Disable DMA RX Channel
 	DMA_Cmd(DMA_I2C2_RX, DISABLE);
 	// Wait until stream is disabled
+	sensorTimeCounter = 0;
 	while (DMA_GetCmdStatus(DMA_I2C2_RX) != DISABLE)
 	{
+		// Check for DMA error
+		if(I2C_DMACheckForError(DMA_I2C2_RX) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
 	}
 	// Deinit DMA
 	DMA_DeInit(DMA_I2C2_RX);
@@ -521,43 +638,88 @@ ErrorStatus masterReceive(uint8_t device, uint8_t startReg, uint8_t *dataBuffer,
 	// Check BUSY flag
 	if(I2C_GetFlagStatus(I2C2, I2C_FLAG_BUSY))
 	{
+		sensorTimeCounter = 0;
 		while(!I2C_GetFlagStatus(I2C2, I2C_FLAG_BUSY))
-		{}
+		{
+			// Check for I2C error
+			if(I2C_CheckForError(I2C2) == ERROR)
+			{
+				return ERROR;
+				break;
+			}
+		}
 	}
 
 	// Send I2C1 START condition
 	I2C_GenerateSTART(I2C2, ENABLE);
 
 	// wait for I2C1 EV5 --> Slave has acknowledged start condition
+	sensorTimeCounter = 0;
 	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_MODE_SELECT))
 	{
-
+		// Check for I2C error
+		if(I2C_CheckForError(I2C2) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
 	}
 
 	// Send slave Address for write
 	I2C_Send7bitAddress(I2C2, device, I2C_Direction_Transmitter);
-
-	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED));
+	sensorTimeCounter = 0;
+	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
+	{
+		// Check for I2C error
+		if(I2C_CheckForError(I2C2) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
+	}
 
 	I2C_SendData(I2C2, startReg);
 	// wait for I2C1 EV8_2 --> byte has been transmitted
-	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
+	sensorTimeCounter = 0;
+	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
+	{
+		// Check for I2C error
+		if(I2C_CheckForError(I2C2) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
+	}
 
 	/* Send I2Cx START condition */
 	I2C_GenerateSTART(I2C2, ENABLE);
 
 	/* Test on I2Cx EV5 and clear it or time out*/
-
+	sensorTimeCounter = 0;
 	while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_MODE_SELECT))
-	{}
+	{
+		// Check for I2C error
+		if(I2C_CheckForError(I2C2) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
+	}
 
 	/* Send I2Cx slave Address for read */
 	I2C_Send7bitAddress(I2C2, device, I2C_Direction_Receiver);
 
 	/* Test on I2Cx EV6 and clear it or time out */
-
+	sensorTimeCounter = 0;
 	while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED))
-	{}
+	{
+		// Check for I2C error
+		if(I2C_CheckForError(I2C2) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
+	}
 
 	/* I2Cx DMA Enable */
 	I2C_DMACmd(I2C2, ENABLE);
@@ -566,15 +728,28 @@ ErrorStatus masterReceive(uint8_t device, uint8_t startReg, uint8_t *dataBuffer,
 	DMA_Cmd(DMA_I2C2_RX, ENABLE);
 
 	/* Wait until I2Cx_DMA_STREAM_RX enabled or time out */
+	sensorTimeCounter = 0;
 	while (DMA_GetCmdStatus(DMA_I2C2_RX)!= ENABLE)
-	{}
-
-	/* Transfer complete or time out */
-
-	while (DMA_GetFlagStatus(DMA_I2C2_RX,DMA_FLAG_TCIF3)==RESET)
 	{
+		// Check for DMA error
+		if(I2C_DMACheckForError(DMA_I2C2_RX) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
 	}
 
+	/* Transfer complete or time out */
+	sensorTimeCounter = 0;
+	while (DMA_GetFlagStatus(DMA_I2C2_RX,DMA_FLAG_TCIF3)==RESET)
+	{
+		// Check for DMA error
+		if(I2C_DMACheckForError(DMA_I2C2_RX) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
+	}
 	/* Send I2Cx STOP Condition */
 	I2C_GenerateSTOP(I2C2, ENABLE);
 
@@ -582,8 +757,16 @@ ErrorStatus masterReceive(uint8_t device, uint8_t startReg, uint8_t *dataBuffer,
 	DMA_Cmd(DMA_I2C2_RX, DISABLE);
 
 	/* Wait until I2Cx_DMA_STREAM_RX disabled or time out */
+	sensorTimeCounter = 0;
 	while (DMA_GetCmdStatus(DMA_I2C2_RX)!= DISABLE)
-	{}
+	{
+		// Check for DMA error
+		if(I2C_DMACheckForError(DMA_I2C2_RX) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
+	}
 	/* Disable I2C DMA request */
 	I2C_DMACmd(I2C2,DISABLE);
 	return SUCCESS;
@@ -599,8 +782,15 @@ ErrorStatus masterReceive_HMC5883L(uint8_t device, uint8_t startReg, uint8_t *da
 	// Disable DMA RX Channel
 	DMA_Cmd(DMA_I2C2_RX, DISABLE);
 	// Wait until stream is disabled
+	sensorTimeCounter = 0;
 	while (DMA_GetCmdStatus(DMA_I2C2_RX) != DISABLE)
 	{
+		// Check for DMA error
+		if(I2C_DMACheckForError(DMA_I2C2_RX) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
 	}
 	// Deinit DMA
 	DMA_DeInit(DMA_I2C2_RX);
@@ -638,25 +828,47 @@ ErrorStatus masterReceive_HMC5883L(uint8_t device, uint8_t startReg, uint8_t *da
 	// Check BUSY flag
 	if(I2C_GetFlagStatus(I2C2, I2C_FLAG_BUSY))
 	{
+		sensorTimeCounter = 0;
 		while(!I2C_GetFlagStatus(I2C2, I2C_FLAG_BUSY))
-		{}
+		{
+			// Check for I2C error
+			if(I2C_CheckForError(I2C2) == ERROR)
+			{
+				return ERROR;
+				break;
+			}
+		}
 	}
 
 	/* Send I2Cx START condition */
 	I2C_GenerateSTART(I2C2, ENABLE);
 
 	/* Test on I2Cx EV5 and clear it or time out*/
-
+	sensorTimeCounter = 0;
 	while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_MODE_SELECT))
-	{}
+	{
+		// Check for I2C error
+		if(I2C_CheckForError(I2C2) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
+	}
 
 	/* Send I2Cx slave Address for read */
 	I2C_Send7bitAddress(I2C2, device, I2C_Direction_Receiver);
 
 	/* Test on I2Cx EV6 and clear it or time out */
-
+	sensorTimeCounter = 0;
 	while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED))
-	{}
+	{
+		// Check for I2C error
+		if(I2C_CheckForError(I2C2) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
+	}
 
 	/* I2Cx DMA Enable */
 	I2C_DMACmd(I2C2, ENABLE);
@@ -665,13 +877,27 @@ ErrorStatus masterReceive_HMC5883L(uint8_t device, uint8_t startReg, uint8_t *da
 	DMA_Cmd(DMA_I2C2_RX, ENABLE);
 
 	/* Wait until I2Cx_DMA_STREAM_RX enabled or time out */
+	sensorTimeCounter = 0;
 	while (DMA_GetCmdStatus(DMA_I2C2_RX)!= ENABLE)
-	{}
+	{
+		// Check for DMA error
+		if(I2C_DMACheckForError(DMA_I2C2_RX) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
+	}
 
 	/* Transfer complete or time out */
-
+	sensorTimeCounter = 0;
 	while (DMA_GetFlagStatus(DMA_I2C2_RX,DMA_FLAG_TCIF3)==RESET)
 	{
+		// Check for DMA error
+		if(I2C_DMACheckForError(DMA_I2C2_RX) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
 	}
 
 	/* Send I2Cx STOP Condition */
@@ -681,9 +907,141 @@ ErrorStatus masterReceive_HMC5883L(uint8_t device, uint8_t startReg, uint8_t *da
 	DMA_Cmd(DMA_I2C2_RX, DISABLE);
 
 	/* Wait until I2Cx_DMA_STREAM_RX disabled or time out */
+	sensorTimeCounter = 0;
 	while (DMA_GetCmdStatus(DMA_I2C2_RX)!= DISABLE)
-	{}
+	{
+		// Check for DMA error
+		if(I2C_DMACheckForError(DMA_I2C2_RX) == ERROR)
+		{
+			return ERROR;
+			break;
+		}
+	}
+
 	/* Disable I2C DMA request */
 	I2C_DMACmd(I2C2,DISABLE);
 	return SUCCESS;
 }
+
+// Function checks for errors in I2C DMA peripheral
+ErrorStatus I2C_DMACheckForError(DMA_Stream_TypeDef* DMAy_Streamx)
+{
+	ErrorStatus error = SUCCESS;
+	if(DMAy_Streamx == DMA_I2C2_TX)	// Stream 7
+	{
+		if(DMA_GetFlagStatus(DMAy_Streamx, DMA_FLAG_TEIF7))
+		{
+			I2C2_DMA_TX_TXERR = 1;
+			error = ERROR;
+		}
+		if(DMA_GetFlagStatus(DMAy_Streamx, DMA_FLAG_DMEIF7))
+		{
+			I2C2_DMA_TX_DMEIF = 1;
+			error = ERROR;
+		}
+		if(DMA_GetFlagStatus(DMAy_Streamx, DMA_FLAG_FEIF7))
+		{
+			I2C2_DMA_TX_FEIF = 1;
+			error = ERROR;
+		}
+		if(sensorTimeCounter > I2C2_ERRORTIMEOUT)
+		{
+			I2C2_DMA_TIMEOUT = 1;
+			error = ERROR;
+		}
+	}
+	else if(DMAy_Streamx == DMA_I2C2_RX)	// Stream 3
+	{
+		if(DMA_GetFlagStatus(DMAy_Streamx, DMA_FLAG_TEIF3))
+		{
+			I2C2_DMA_RX_TXERR = 1;
+			error = ERROR;
+		}
+		if(DMA_GetFlagStatus(DMAy_Streamx, DMA_FLAG_DMEIF3))
+		{
+			I2C2_DMA_RX_DMEIF = 1;
+			error = ERROR;
+		}
+		if(DMA_GetFlagStatus(DMAy_Streamx, DMA_FLAG_FEIF3))
+		{
+			I2C2_DMA_RX_FEIF = 1;
+			error = ERROR;
+		}
+		if(sensorTimeCounter > I2C2_ERRORTIMEOUT)
+		{
+			I2C2_DMA_TIMEOUT = 1;
+			error = ERROR;
+		}
+	}
+	return SUCCESS;//error;
+}
+
+// Function checks for errors in I2C peripheral
+ErrorStatus I2C_CheckForError(I2C_TypeDef* I2Cx)
+{
+
+	ErrorStatus error = SUCCESS;
+	// Check timeout flag
+	if(I2C_GetFlagStatus(I2Cx, I2C_FLAG_TIMEOUT))
+	{
+		if(I2Cx == I2C2)
+		{
+			I2C2_ERROR_TIMEOUT = 1;
+		}
+		error = ERROR;
+	}
+	if(I2C_GetFlagStatus(I2Cx, I2C_FLAG_PECERR))
+	{
+		if(I2Cx == I2C2)
+		{
+			I2C2_ERROR_PEC = 1;
+		}
+		error = ERROR;
+	}
+	if(I2C_GetFlagStatus(I2Cx, I2C_FLAG_OVR))
+	{
+		if(I2Cx == I2C2)
+		{
+			I2C2_ERROR_OVR = 1;
+		}
+		error = ERROR;
+	}
+	if(I2C_GetFlagStatus(I2Cx, I2C_FLAG_AF))
+	{
+		if(I2Cx == I2C2)
+		{
+			I2C2_ERROR_AF = 1;
+		}
+		error = ERROR;
+	}
+	if(I2C_GetFlagStatus(I2Cx, I2C_FLAG_ARLO))
+	{
+		if(I2Cx == I2C2)
+		{
+			I2C2_ERROR_ARLO = 1;
+		}
+		error = ERROR;
+	}
+	if(I2C_GetFlagStatus(I2Cx, I2C_FLAG_BERR))
+	{
+		if(I2Cx == I2C2)
+		{
+			I2C2_ERROR_BERR = 1;
+		}
+		error = ERROR;
+	}
+	if(sensorTimeCounter > I2C2_ERRORTIMEOUT)
+	{
+		if(I2Cx == I2C2)
+		{
+			I2C2_DMA_TIMEOUT = 1;
+		}
+		error = ERROR;
+	}
+	return SUCCESS;// error;
+}
+
+
+
+
+

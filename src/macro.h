@@ -12,6 +12,11 @@
 // Define GPIO pin 5 as debug output
 #define GPIOE5_IS_DEBUG
 
+// File write buffer size
+#define FATFS_BUFF_SIZE		256
+// After how many writes flush buffer?
+#define FATFS_FLUSH_COUNT	2
+
 #define NUM 10
 
 // Define bit macros
@@ -76,22 +81,22 @@
 #define LED_RUN_TOGGLE	GPIO_ToggleBits(GPIOD, GPIO_Pin_10)
 
 // SCR1 macros
-#define SCR_GETPSDATA		0x0001
-#define SCR_SETPSI0			0x0002
-#define SCR_PSRESET			0x0004
-#define SCR_INCPWM			0x0008
-#define SCR_READI2C2		0x0010
-#define SCR_WRITEI2C2		0x0020
-#define SCR_TESTI2C2AUTO	0x0040
-#define SCR_GETGPSDATA		0x0080
-#define SCR_SET_PWM_0		0x0100
-#define SCR_SET_PWM_PASSON	0x0200
-#define SCR_SET_PWM_PASSOFF	0x0400
-#define SCR_STOP_GPS		0x0800
-#define SCR_START_AD		0x1000
-#define SCR_INIT_SENSORS	0x2000
-#define SCR_DEC_DAC_FREQ	0x4000
-#define SCR_TESD_SD			0x8000
+#define SCR_01				0x0001
+#define SCR_02				0x0002
+#define SCR_03				0x0004
+#define SCR_04				0x0008
+#define SCR_05				0x0010
+#define SCR_06				0x0020
+#define SCR_07				0x0040
+#define SCR_08				0x0080
+#define SCR_09				0x0100
+#define SCR_10				0x0200
+#define SCR_11				0x0400
+#define SCR_12				0x0800
+#define SCR_13				0x1000
+#define SCR_14				0x2000
+#define SCR_15				0x4000
+#define SCR_16				0x8000
 
 // SCR2 macros
 #define SCR2_ACCOK			0x0001

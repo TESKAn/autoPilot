@@ -13,6 +13,7 @@
 #define MPL3115A2_ADDRESS	0xC0
 #define DMA_BUF_COUNT		128
 #define I2C2_DMA_WAITDEINIT	100	// Wait 100 msec
+#define I2C2_ERRORTIMEOUT	100
 
 void sensorTimer(void);
 void sensorInit();
@@ -27,6 +28,8 @@ ErrorStatus masterSend(uint8_t device, uint8_t *dataBuffer, uint8_t byteCount);
 ErrorStatus masterReceive_beginDMA(uint8_t device, uint8_t startReg, uint8_t *dataBuffer, uint8_t byteCount);
 ErrorStatus masterReceive(uint8_t device,uint8_t startReg, uint8_t *dataBuffer, uint8_t byteCount);
 ErrorStatus masterReceive_HMC5883L(uint8_t device, uint8_t startReg, uint8_t *dataBuffer, uint8_t byteCount);
+ErrorStatus I2C_DMACheckForError(DMA_Stream_TypeDef* DMAy_Streamx);
+ErrorStatus I2C_CheckForError(I2C_TypeDef* I2Cx);
 
 extern volatile uint16_t I2C2_ProcesState;
 extern volatile Flag I2C2_Flags;
@@ -58,5 +61,19 @@ extern volatile uint16_t sensorTimeCounter;
 
 // I2C2 flags
 #define I2C2_READING		I2C2_Flags.bits.BIT0
+#define I2C2_ERROR_TIMEOUT	I2C2_Flags.bits.BIT1
+#define I2C2_ERROR_PEC		I2C2_Flags.bits.BIT2
+#define I2C2_ERROR_OVR		I2C2_Flags.bits.BIT3
+#define I2C2_ERROR_AF		I2C2_Flags.bits.BIT4
+#define I2C2_ERROR_ARLO		I2C2_Flags.bits.BIT5
+#define I2C2_ERROR_BERR		I2C2_Flags.bits.BIT6
+#define I2C2_DMA_TX_TXERR	I2C2_Flags.bits.BIT7
+#define I2C2_DMA_TX_DMEIF	I2C2_Flags.bits.BIT8
+#define I2C2_DMA_TX_FEIF	I2C2_Flags.bits.BIT9
+#define I2C2_DMA_RX_TXERR	I2C2_Flags.bits.BIT10
+#define I2C2_DMA_RX_DMEIF	I2C2_Flags.bits.BIT11
+#define I2C2_DMA_RX_FEIF	I2C2_Flags.bits.BIT12
+#define I2C2_TIMEOUT		I2C2_Flags.bits.BIT13
+#define I2C2_DMA_TIMEOUT	I2C2_Flags.bits.BIT14
 
 #endif /* SENSORS_H_ */

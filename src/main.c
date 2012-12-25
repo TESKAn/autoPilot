@@ -100,187 +100,33 @@ int main(void)
         }
 
         //check SCR
-        if(SCR1 & SCR_GETPSDATA)
-        {
-        	PSRequestData();
-        	SCR1 = SCR1 & ~SCR_GETPSDATA;
-        }
-        if(SCR1 & SCR_SETPSI0)
-        {
-        	PSSetI0();
-        	SCR1 = SCR1 & ~SCR_SETPSI0;
-        }
-        if(SCR1 & SCR_PSRESET)
-        {
-        	PSReset();
-           	SCR1 = SCR1 & ~SCR_PSRESET;
-        }
-        if(SCR1 & SCR_GETGPSDATA)
+        if(SCR1 & SCR_01)
         {
         	GPSSetDataOutput();
-        	SCR1 = SCR1 & ~SCR_GETGPSDATA;
+        	SCR1 = SCR1 & ~SCR_01;
         }
-        if(SCR1 & SCR_STOP_GPS)
+        if(SCR1 & SCR_02)
         {
-        	GPSStopOutput();
-        	SCR1 = SCR1 & ~SCR_STOP_GPS;
+         	GPSStopOutput();
+        	SCR1 = SCR1 & ~SCR_02;
         }
-        if(SCR1 & SCR_INCPWM)
-        {
-        	TIM_SetCompare4(TIM1, PWMOUT_1);
-        	SCR1 = SCR1 & ~SCR_INCPWM;
-        }
-        if(SCR1 & SCR_READI2C2)
-        {
-        	// Begin read of 21 registers from MPU6000
-        	masterReceive_beginDMA(MPU6000_ADDRESS, 59, I2C2_DMABufRX, 22);
-        	SCR1 = SCR1 & ~SCR_READI2C2;
-        }
-        if(SCR1 & SCR_WRITEI2C2)
-        {
-
-        	SCR1 = SCR1 & ~SCR_WRITEI2C2;
-        }
-        if(SCR1 & SCR_TESTI2C2AUTO)
-        {
-        	// Enable MPU
-        	MPU6000_Enable(ENABLE);
-        	// Enable I2C bypass to write to HMC5883
-        	MPU6000_EnableI2CBypass(ENABLE);
-        	// Configure HMC5883
-        	HMC5883_Enable(ENABLE);
-        	// Configure MPL3115A2
-        	MPL3115A2_Enable(ENABLE);
-        	// Test read HMC
-        	//masterReceive_HMC5883L(HMC5883_ADDRESS, 3, I2C2_DMABufRX, 6);
-        	// Test read MPL
-        	//masterReceive(MPL3115A2_ADDRESS, 0, I2C2_DMABufRX, 45);
-        	// Test read MPU
-        	//masterReceive(MPU6000_ADDRESS, 59, I2C2_DMABufRX, 21);
-        	// Disable I2C bypass
-        	MPU6000_EnableI2CBypass(DISABLE);
-        	// Configure MPU I2C master mode
-        	MPU6000_ConfigureI2CMaster();
-        	// Enable MPU I2C master
-        	MPU6000_EnableI2CMaster(ENABLE);
-
-        	I2C2_INITDONE = 1;
-
-        	SCR1 = SCR1 & ~SCR_TESTI2C2AUTO;
-        }
-        if(SCR1 & SCR_SET_PWM_0)
-        {
-        	PWMOUT_1 = 2100;
-       		TIM_SetCompare4(TIM1, PWMOUT_1);
-        	SCR1 = SCR1 & ~SCR_SET_PWM_0;
-        }
-        if(SCR1 & SCR_SET_PWM_PASSON)
+        if(SCR1 & SCR_03)
         {
         	PWM_PASSTHROUGH = 1;
-        	SCR1 = SCR1 & ~SCR_SET_PWM_PASSON;
+           	SCR1 = SCR1 & ~SCR_03;
         }
-        if(SCR1 & SCR_SET_PWM_PASSOFF)
+        if(SCR1 & SCR_04)
         {
         	PWM_PASSTHROUGH = 0;
-        	SCR1 = SCR1 & ~SCR_SET_PWM_PASSOFF;
+        	SCR1 = SCR1 & ~SCR_04;
         }
-        if(SCR1 & SCR_START_AD)
-        {
-        	ADC_ENABLED = ~ADC_ENABLED;
-        	SCR1 = SCR1 & ~SCR_START_AD;
-        }
-        if(SCR1 & SCR_INIT_SENSORS)
+        if(SCR1 & SCR_05)
         {
         	extPeripheralInit();
-        	SCR1 = SCR1 & ~SCR_INIT_SENSORS;
+        	SCR1 = SCR1 & ~SCR_05;
         }
-        if(SCR1 & SCR_DEC_DAC_FREQ)
+        if(SCR1 & SCR_06)
         {
-        	DAC1_TIM6reloadValue += 0xF;
-        	if(DAC1_TIM6reloadValue > 0x11F)
-        	{
-        		DAC1_TIM6reloadValue = 0xFF;
-        	}
-        	TIM_SetAutoreload(TIM6, DAC1_TIM6reloadValue);
-        	SCR1 = SCR1 & ~SCR_DEC_DAC_FREQ;
-        }
-        if(SCR1 & SCR_TESD_SD)
-        {
-        	/*
-        	DEBUG_PIN_TOGGLE;
-        	if(f_mount(0, &FileSystemObject)!=FR_OK)
-        	{
-        		//flag error
-        	}
-        	driveStatus = disk_status (0);
-        	if((driveStatus & STA_NOINIT) ||
-        		   (driveStatus & STA_NODISK) ||
-        		   (driveStatus & STA_PROTECT)
-        		   )
-        	{
-        		//flag error.
-        	}
-        	// Generate file name
-        	// File name = "/LOG_ddmmyyyy_hhmmss.txt"
-        	FSBuffer = malloc(25);
-        	// Check if malloc returned OK
-        	if(FSBuffer != (char*)-1)
-        	{
-				// Fill buffer
-				FSBuffer[0] = '/';
-				FSBuffer[1] = 'L';
-				FSBuffer[2] = 'O';
-				FSBuffer[3] = 'G';
-				FSBuffer[4] = '_';
-				FSBuffer[5] = charFromNumber(GPS_DAY / 10);
-				FSBuffer[6] = charFromNumber(GPS_DAY % 10);
-				FSBuffer[7] = charFromNumber(GPS_MONTH / 10);
-				FSBuffer[8] = charFromNumber(GPS_MONTH % 10);
-				FSBuffer[9] = '2';
-				FSBuffer[10] = '0';
-				FSBuffer[11] = '1';
-				FSBuffer[12] = '2';
-				FSBuffer[13] = '_';
-				FSBuffer[14] = charFromNumber(GPS_HOURS / 10);
-				FSBuffer[15] = charFromNumber(GPS_HOURS % 10);
-				FSBuffer[16] = charFromNumber(GPS_MINUTES / 10);
-				FSBuffer[17] = charFromNumber(GPS_MINUTES % 10);
-				FSBuffer[18] = charFromNumber(GPS_SECONDS / 10);
-				FSBuffer[19] = charFromNumber(GPS_SECONDS % 10);
-				FSBuffer[20] = '.';
-				FSBuffer[21] = 't';
-				FSBuffer[22] = 'x';
-				FSBuffer[23] = 't';
-				FSBuffer[24] = 0;
-	        	// Open file
-	        	if(f_open(&logFile, FSBuffer, FA_READ | FA_WRITE | FA_OPEN_ALWAYS)!=FR_OK)
-	        	{
-	        		//flag error
-	        	}
-				// Free memory
-				free(FSBuffer);
-        	}
-        	else
-        	{
-				// Open file
-				if(f_open(&logFile, "/LOG_ddmmyyyy_hhmmss.txt", FA_READ | FA_WRITE | FA_OPEN_ALWAYS)!=FR_OK)
-				{
-					//flag error
-				}
-        	}
-        	f_write(&logFile, "val1=1234;\n", 10, &bytesWritten);
-        	//Flush the write buffer with f_sync(&logFile);
-        	//f_sync(&logFile);
-        	//Close and unmount.
-        	f_close(&logFile);
-        	f_mount(0,0);
-        	DEBUG_PIN_TOGGLE;
-
-        	// Test read file
-        	loadSettings();
-
-        	DEBUG_PIN_TOGGLE;
-        	*/
         	if(!SD_WRITE_LOG)
         	{
 				SD_WRITE_LOG = 1;
@@ -296,7 +142,47 @@ int main(void)
         		// Else close file
         		closeLog();
         	}
-        	SCR1 = SCR1 & ~SCR_TESD_SD;
+        	SCR1 = SCR1 & ~SCR_06;
+        }
+        if(SCR1 & SCR_07)
+        {
+        	SCR1 = SCR1 & ~SCR_07;
+        }
+        if(SCR1 & SCR_08)
+        {
+        	SCR1 = SCR1 & ~SCR_08;
+        }
+        if(SCR1 & SCR_09)
+        {
+        	SCR1 = SCR1 & ~SCR_09;
+        }
+        if(SCR1 & SCR_10)
+        {
+        	SCR1 = SCR1 & ~SCR_10;
+        }
+        if(SCR1 & SCR_11)
+        {
+        	SCR1 = SCR1 & ~SCR_11;
+        }
+        if(SCR1 & SCR_12)
+        {
+        	SCR1 = SCR1 & ~SCR_12;
+        }
+        if(SCR1 & SCR_13)
+        {
+        	SCR1 = SCR1 & ~SCR_13;
+        }
+        if(SCR1 & SCR_14)
+        {
+        	SCR1 = SCR1 & ~SCR_14;
+        }
+        if(SCR1 & SCR_15)
+        {
+        	SCR1 = SCR1 & ~SCR_15;
+        }
+        if(SCR1 & SCR_16)
+        {
+        	SCR1 = SCR1 & ~SCR_16;
         }
 
         // Send registers 0 - 30

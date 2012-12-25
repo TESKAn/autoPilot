@@ -13,44 +13,44 @@ typedef union
 {
 	struct
 	{
-		uint32_t flag;
+		volatile uint32_t flag;
 	}flag;
 
 	 struct
 	 {
-		 uint8_t BIT0:1;
-		 uint8_t BIT1:1;
-		 uint8_t BIT2:1;
-		 uint8_t BIT3:1;
-		 uint8_t BIT4:1;
-		 uint8_t BIT5:1;
-		 uint8_t BIT6:1;
-		 uint8_t BIT7:1;
-		 uint8_t BIT8:1;
-		 uint8_t BIT9:1;
-		 uint8_t BIT10:1;
-		 uint8_t BIT11:1;
-		 uint8_t BIT12:1;
-		 uint8_t BIT13:1;
-		 uint8_t BIT14:1;
-		 uint8_t BIT15:1;
-		 uint8_t BIT16:1;
-		 uint8_t BIT17:1;
-		 uint8_t BIT18:1;
-		 uint8_t BIT19:1;
-		 uint8_t BIT20:1;
-		 uint8_t BIT21:1;
-		 uint8_t BIT22:1;
-		 uint8_t BIT23:1;
-		 uint8_t BIT24:1;
-		 uint8_t BIT25:1;
-		 uint8_t BIT26:1;
-		 uint8_t BIT27:1;
-		 uint8_t BIT28:1;
-		 uint8_t BIT29:1;
-		 uint8_t BIT30:1;
-		 uint8_t BIT31:1;
-		 uint8_t BIT32:1;
+		volatile uint8_t BIT0:1;
+		volatile uint8_t BIT1:1;
+		volatile uint8_t BIT2:1;
+		volatile uint8_t BIT3:1;
+		volatile uint8_t BIT4:1;
+		volatile uint8_t BIT5:1;
+		volatile uint8_t BIT6:1;
+		volatile uint8_t BIT7:1;
+		volatile uint8_t BIT8:1;
+		volatile uint8_t BIT9:1;
+		volatile uint8_t BIT10:1;
+		volatile uint8_t BIT11:1;
+		volatile uint8_t BIT12:1;
+		volatile uint8_t BIT13:1;
+		volatile uint8_t BIT14:1;
+		volatile uint8_t BIT15:1;
+		volatile uint8_t BIT16:1;
+		volatile uint8_t BIT17:1;
+		volatile uint8_t BIT18:1;
+		volatile uint8_t BIT19:1;
+		volatile uint8_t BIT20:1;
+		volatile uint8_t BIT21:1;
+		volatile uint8_t BIT22:1;
+		volatile uint8_t BIT23:1;
+		volatile uint8_t BIT24:1;
+		volatile uint8_t BIT25:1;
+		volatile uint8_t BIT26:1;
+		volatile uint8_t BIT27:1;
+		volatile uint8_t BIT28:1;
+		volatile uint8_t BIT29:1;
+		volatile uint8_t BIT30:1;
+		volatile uint8_t BIT31:1;
+		volatile uint8_t BIT32:1;
 
 	 }bits;
 }Flag;
@@ -126,12 +126,13 @@ extern volatile uint8_t SD_TimerCount;
 extern FATFS FileSystemObject;
 extern DSTATUS driveStatus;
 extern FIL logFile;
+extern uint8_t FatFS_FlushBuffer;
 
 // LED count variable
 extern volatile uint16_t LED_ToggleCount;
 
 // Buffer for data from PC to uC for USB
 extern uint8_t Buffer[64];
-extern char * FSBuffer;	// Pointer to buffer for file write
+extern char FSBuffer[FATFS_BUFF_SIZE];	// Pointer to buffer for file write
 
 #endif /* VAR_H_ */

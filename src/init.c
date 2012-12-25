@@ -806,7 +806,7 @@ void System_Config(void)
 	// Enable peripheral clock
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C2, ENABLE);
 	// Set clock to 100 kHz
-	I2CInitStruct.I2C_ClockSpeed = 400000;
+	I2CInitStruct.I2C_ClockSpeed = 100000;
 	I2CInitStruct.I2C_Mode = I2C_Mode_I2C;
 	I2CInitStruct.I2C_DutyCycle = I2C_DutyCycle_2;
 	I2CInitStruct.I2C_OwnAddress1 = 0x00;

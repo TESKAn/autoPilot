@@ -25,55 +25,41 @@ void openLog(void)
 	}
 	// Generate file name
 	// File name = "/LOG_ddmmyyyy_hhmmss.txt"
-	FSBuffer = malloc(25);
-	// Check if malloc returned OK
-	if(FSBuffer != (char*)-1)
-	{
-		// Fill buffer
-		FSBuffer[0] = '/';
-		FSBuffer[1] = 'L';
-		FSBuffer[2] = 'O';
-		FSBuffer[3] = 'G';
-		FSBuffer[4] = '_';
-		FSBuffer[5] = charFromNumber(GPS_DAY / 10);
-		FSBuffer[6] = charFromNumber(GPS_DAY % 10);
-		FSBuffer[7] = charFromNumber(GPS_MONTH / 10);
-		FSBuffer[8] = charFromNumber(GPS_MONTH % 10);
-		FSBuffer[9] = '2';
-		FSBuffer[10] = '0';
-		FSBuffer[11] = '1';
-		FSBuffer[12] = '2';
-		FSBuffer[13] = '_';
-		FSBuffer[14] = charFromNumber(GPS_HOURS / 10);
-		FSBuffer[15] = charFromNumber(GPS_HOURS % 10);
-		FSBuffer[16] = charFromNumber(GPS_MINUTES / 10);
-		FSBuffer[17] = charFromNumber(GPS_MINUTES % 10);
-		FSBuffer[18] = charFromNumber(GPS_SECONDS / 10);
-		FSBuffer[19] = charFromNumber(GPS_SECONDS % 10);
-		FSBuffer[20] = '.';
-		FSBuffer[21] = 'c';
-		FSBuffer[22] = 's';
-		FSBuffer[23] = 'v';
-		FSBuffer[24] = 0;
-		// Open file
-		if(f_open(&logFile, FSBuffer, FA_READ | FA_WRITE | FA_OPEN_ALWAYS)!=FR_OK)
-		{
-			//flag error
-		}
 
-		// Free memory
-		free(FSBuffer);
-	}
-	else
+	// Fill buffer
+	FSBuffer[0] = '/';
+	FSBuffer[1] = 'L';
+	FSBuffer[2] = 'O';
+	FSBuffer[3] = 'G';
+	FSBuffer[4] = '_';
+	FSBuffer[5] = charFromNumber(GPS_DAY / 10);
+	FSBuffer[6] = charFromNumber(GPS_DAY % 10);
+	FSBuffer[7] = charFromNumber(GPS_MONTH / 10);
+	FSBuffer[8] = charFromNumber(GPS_MONTH % 10);
+	FSBuffer[9] = '2';
+	FSBuffer[10] = '0';
+	FSBuffer[11] = '1';
+	FSBuffer[12] = '2';
+	FSBuffer[13] = '_';
+	FSBuffer[14] = charFromNumber(GPS_HOURS / 10);
+	FSBuffer[15] = charFromNumber(GPS_HOURS % 10);
+	FSBuffer[16] = charFromNumber(GPS_MINUTES / 10);
+	FSBuffer[17] = charFromNumber(GPS_MINUTES % 10);
+	FSBuffer[18] = charFromNumber(GPS_SECONDS / 10);
+	FSBuffer[19] = charFromNumber(GPS_SECONDS % 10);
+	FSBuffer[20] = '.';
+	FSBuffer[21] = 'c';
+	FSBuffer[22] = 's';
+	FSBuffer[23] = 'v';
+	FSBuffer[24] = 0;
+	// Open file
+	if(f_open(&logFile, FSBuffer, FA_READ | FA_WRITE | FA_OPEN_ALWAYS)!=FR_OK)
 	{
-		// Open file
-		if(f_open(&logFile, "/LOG_ddmmyyyy_hhmmss.txt", FA_READ | FA_WRITE | FA_OPEN_ALWAYS)!=FR_OK)
-		{
-			//flag error
-		}
+		//flag error
 	}
+
 	// Write first line
-	f_write(&logFile, ";AccX;AccY;AccZ;GyroX;GyroY;GyroZ;MagX;MagY;MagZ;Baro;Voltage;Current;mAh;T1;T2;T3\r\n", 83, &bytesWritten);
+	f_write(&logFile, "Time;GPS Lock;Lat;;Lon;;Alt;Speed;Track angle;HDOP;GG;AccX;AccY;AccZ;GyroX;GyroY;GyroZ;MagX;MagY;MagZ;Baro;Voltage;Current;mAh;T1;T2;T3\r\n", 136, &bytesWritten);
 }
 
 void closeLog(void)
@@ -90,7 +76,7 @@ void write_toLog(void)
 	unsigned int bytesWritten;
 	unsigned int uiByteCount = 0;
 	DEBUG_PIN_ON;
-	FSBuffer = malloc(128);
+	//FSBuffer = malloc(128);
 	// Store time
 	FSBuffer[0] = charFromNumber(GPS_HOURS / 10);
 	FSBuffer[1] = charFromNumber(GPS_HOURS % 10);
@@ -102,6 +88,86 @@ void write_toLog(void)
 	FSBuffer[7] = charFromNumber(GPS_SECONDS % 10);
 	FSBuffer[8] = ';';
 	uiByteCount = 9;
+	// Store GPS data
+	// GPS lock
+	if ((GPS_VALID & 32768) != 0)
+	{
+		FSBuffer[uiByteCount] = '1';
+	}
+	else
+	{
+		FSBuffer[uiByteCount] = '0';
+	}
+	uiByteCount++;
+	FSBuffer[uiByteCount] = ';';
+	uiByteCount++;
+	// Latitude
+	uiByteCount += storeNegativeNumber(GPS_LATITUDE, FSBuffer, uiByteCount);
+	// Change ; to ,
+	FSBuffer[uiByteCount - 1] = ',';
+	// Latitude frac
+	uiByteCount += storeNegativeNumber(GPS_LATITUDE_FRAC, FSBuffer, uiByteCount);
+	// N/S
+	if((GPS_NS_EW & 1) != 0)
+	{
+		FSBuffer[uiByteCount] = 'S';
+	}
+	else
+	{
+		FSBuffer[uiByteCount] = 'N';
+	}
+	uiByteCount++;
+	FSBuffer[uiByteCount] = ';';
+	uiByteCount++;
+	// Longitude
+	uiByteCount += storeNegativeNumber(GPS_LONGITUDE, FSBuffer, uiByteCount);
+	// Change ; to ,
+	FSBuffer[uiByteCount - 1] = ',';
+	// Longitude frac
+	uiByteCount += storeNegativeNumber(GPS_LONGITUDE_FRAC, FSBuffer, uiByteCount);
+	// E/W
+	if((GPS_NS_EW & 2) != 0)
+	{
+		FSBuffer[uiByteCount] = 'W';
+	}
+	else
+	{
+		FSBuffer[uiByteCount] = 'E';
+	}
+	uiByteCount++;
+	FSBuffer[uiByteCount] = ';';
+	uiByteCount++;
+	// Altitude
+	uiByteCount += storeNegativeNumber(GPS_ALTITUDE, FSBuffer, uiByteCount);
+	// Change ; to ,
+	FSBuffer[uiByteCount - 1] = ',';
+	// Altitude frac
+	uiByteCount += storeNegativeNumber(GPS_ALTITUDE_FRAC, FSBuffer, uiByteCount);
+	// Speed
+	uiByteCount += storeNegativeNumber(GPS_SPEED, FSBuffer, uiByteCount);
+	// Change ; to ,
+	FSBuffer[uiByteCount - 1] = ',';
+	// Speed frac
+	uiByteCount += storeNegativeNumber(GPS_SPEED_FRAC, FSBuffer, uiByteCount);
+	// Track angle
+	uiByteCount += storeNegativeNumber(GPS_TRACKANGLE, FSBuffer, uiByteCount);
+	// Change ; to ,
+	FSBuffer[uiByteCount - 1] = ',';
+	// Track angle frac
+	uiByteCount += storeNegativeNumber(GPS_TRACKANGLE_FRAC, FSBuffer, uiByteCount);
+	// HDOP
+	uiByteCount += storeNegativeNumber(GPS_HDOP, FSBuffer, uiByteCount);
+	// Change ; to ,
+	FSBuffer[uiByteCount - 1] = ',';
+	// HDOP frac
+	uiByteCount += storeNegativeNumber(GPS_HDOP_FRAC, FSBuffer, uiByteCount);
+	// GG
+	uiByteCount += storeNegativeNumber(GPS_GG, FSBuffer, uiByteCount);
+	// Change ; to ,
+	FSBuffer[uiByteCount - 1] = ',';
+	// GG frac
+	uiByteCount += storeNegativeNumber(GPS_GG_FRAC, FSBuffer, uiByteCount);
+
 	// Store accelerometer X, Y, Z
 	uiByteCount += storeNegativeNumber(ACC_X, FSBuffer, uiByteCount);
 	uiByteCount += storeNegativeNumber(ACC_Y, FSBuffer, uiByteCount);
@@ -124,16 +190,25 @@ void write_toLog(void)
 	uiByteCount += storeNumber(T2, FSBuffer, uiByteCount);
 	uiByteCount += storeNumber(T3, FSBuffer, uiByteCount);
 
+
 	// Write \r\n
 	FSBuffer[uiByteCount] = 0x0d;
 	uiByteCount++;
 	FSBuffer[uiByteCount] = 0x0a;
 	uiByteCount++;
-
 	f_write(&logFile, FSBuffer, uiByteCount, &bytesWritten);
 
+	DEBUG_PIN_OFF;
+	// Increase flush counter
+	FatFS_FlushBuffer++;
+	if(FatFS_FlushBuffer > FATFS_FLUSH_COUNT)
+	{
+		DEBUG_PIN_ON;
+		FatFS_FlushBuffer = 0;
+		f_sync(&logFile);
+	}
 	// Free memory
-	free(FSBuffer);
+	//free(FSBuffer);
 
 	DEBUG_PIN_OFF;
 }
@@ -293,8 +368,7 @@ void loadSettings(void)
 		//flag error
 	}
 	// Read file to buffer
-	bytesToRead = f_size(&settingsFile);
-	FSBuffer = malloc(bytesToRead);
+	//bytesToRead = f_size(&settingsFile);
 
 	if(f_read (&settingsFile, FSBuffer, bytesToRead, &readBytes) != FR_OK)
 	{
