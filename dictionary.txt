@@ -21,3 +21,5 @@ altimeter
 deinit
 frac
 init
+reenable
+config

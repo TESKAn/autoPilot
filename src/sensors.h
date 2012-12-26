@@ -8,14 +8,17 @@
 #ifndef SENSORS_H_
 #define SENSORS_H_
 
-#define MPU6000_ADDRESS		0xD0
-#define HMC5883_ADDRESS		0x3C
-#define MPL3115A2_ADDRESS	0xC0
-#define DMA_BUF_COUNT		128
-#define I2C2_DMA_WAITDEINIT	100	// Wait 100 msec
-#define I2C2_ERRORTIMEOUT	100
+#define MPU6000_ADDRESS			0xD0
+#define HMC5883_ADDRESS			0x3C
+#define MPL3115A2_ADDRESS		0xC0
+#define DMA_BUF_COUNT			128
+#define I2C2_DMA_WAITDEINIT		500
+#define I2C2_DMA_TIMEOUT_TIME	2000
+#define I2C2_ERRORTIMEOUT		2000
+#define I2C2_ERROR_RETRIESCOUNT	5		// How many times to retry communication
 
 void sensorTimer(void);
+void sensorInterruptTimer(void);
 void sensorInit();
 void copySensorData(void);
 ErrorStatus MPU6000_Enable(FunctionalState newState);
@@ -27,9 +30,11 @@ ErrorStatus MPL3115A2_Enable(FunctionalState newState);
 ErrorStatus masterSend(uint8_t device, uint8_t *dataBuffer, uint8_t byteCount);
 ErrorStatus masterReceive_beginDMA(uint8_t device, uint8_t startReg, uint8_t *dataBuffer, uint8_t byteCount);
 ErrorStatus masterReceive(uint8_t device,uint8_t startReg, uint8_t *dataBuffer, uint8_t byteCount);
-ErrorStatus masterReceive_HMC5883L(uint8_t device, uint8_t startReg, uint8_t *dataBuffer, uint8_t byteCount);
 ErrorStatus I2C_DMACheckForError(DMA_Stream_TypeDef* DMAy_Streamx);
 ErrorStatus I2C_CheckForError(I2C_TypeDef* I2Cx);
+void I2C2_Configure(FunctionalState NewState);
+void I2C2_ResetInterface(void);
+void I2C2_DMA_ClearErrors(void);
 
 extern volatile uint16_t I2C2_ProcesState;
 extern volatile Flag I2C2_Flags;
@@ -43,8 +48,9 @@ extern volatile int I2C2_DMABufTXCount;
 extern volatile int I2C2_DMABufRXCount;
 extern volatile int I2C2_PollTimer;
 extern volatile uint16_t sensorTimeCounter;
+extern volatile uint16_t sensoruTimeCounter;
 
-#define I2C2_POLLTIME		100
+#define I2C2_POLLTIME		10
 
 // I2C2 process states
 #define I2C2_IDLE			0

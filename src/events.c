@@ -389,6 +389,8 @@ void TIM8_CC_ISR_Handler(void)
 void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 {
 	//Check trigger event
+	uint8_t retriesCount = 0;
+	ErrorStatus error = SUCCESS;
 	if((TIM14->SR & TIM_FLAG_Update) != (u16)RESET)
 	{
 		TIM_ClearFlag(TIM14, TIM_FLAG_Update);
@@ -425,7 +427,19 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 				if(!I2C2_WAITINGDATA && I2C2_INITDONE)
 				{
 					I2C2_PollTimer = 0;
-					masterReceive_beginDMA(MPU6000_ADDRESS, 59, I2C2_DMABufRX, 22);
+					for(retriesCount = I2C2_ERROR_RETRIESCOUNT; retriesCount > 0; retriesCount --)
+					{
+						error = masterReceive_beginDMA(MPU6000_ADDRESS, 59, I2C2_DMABufRX, 22);
+						if(error == SUCCESS)
+						{
+							break;
+						}
+						else
+						{
+							// Handle error
+							I2C2_ResetInterface();
+						}
+					}
 				}
 			}
 		}
@@ -455,7 +469,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		// Call PS timer
 		PS_Timer();
 		// Call sensor timer
-		sensorTimer();
+		sensorInterruptTimer();
 	}
 }
 

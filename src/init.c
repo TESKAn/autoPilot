@@ -805,28 +805,7 @@ void System_Config(void)
 	// Configure I2C 2 for sensor communication
 	// Enable peripheral clock
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C2, ENABLE);
-	// Set clock to 100 kHz
-	I2CInitStruct.I2C_ClockSpeed = 100000;
-	I2CInitStruct.I2C_Mode = I2C_Mode_I2C;
-	I2CInitStruct.I2C_DutyCycle = I2C_DutyCycle_2;
-	I2CInitStruct.I2C_OwnAddress1 = 0x00;
-	I2CInitStruct.I2C_Ack = I2C_Ack_Enable;
-	I2CInitStruct.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit;
-	I2C_Init(I2C2, &I2CInitStruct);
-	// Configure interrupts
-	// Enable event interrupt and buf empty interrupt event and error interrupt event
-	// Do not enable BUF interrupt if using DMA
-	// I2C_IT_BUF, I2C_IT_EVT, I2C_IT_ERR
-	//I2C_ITConfig(I2C2, I2C_IT_BUF | I2C_IT_EVT | I2C_IT_ERR, ENABLE);
-	// Configure DMA
-	DMA_DeInit(DMA_I2C2_TX);
-	DMA_DeInit(DMA_I2C2_RX);
-	// Configure DMA1 stream 3 transfer complete interrupt
-	//DMA_ITConfig(DMA1_Stream3, DMA_IT_TC | DMA_IT_DME | DMA_IT_FE, ENABLE);
-	// Configure DMA1 stream 7 transfer complete interrupt
-	//DMA_ITConfig(DMA1_Stream7, DMA_IT_TC | DMA_IT_DME | DMA_IT_FE, ENABLE);
-	// Enable I2C 2
-	I2C_Cmd(I2C2, ENABLE);
+	I2C2_Configure(ENABLE);
 
 	// ADC converter init
 	// Enable clock(s) (84 MHz)

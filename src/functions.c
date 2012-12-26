@@ -75,7 +75,6 @@ void write_toLog(void)
 {
 	unsigned int bytesWritten;
 	unsigned int uiByteCount = 0;
-	DEBUG_PIN_ON;
 	//FSBuffer = malloc(128);
 	// Store time
 	FSBuffer[0] = charFromNumber(GPS_HOURS / 10);
@@ -198,19 +197,15 @@ void write_toLog(void)
 	uiByteCount++;
 	f_write(&logFile, FSBuffer, uiByteCount, &bytesWritten);
 
-	DEBUG_PIN_OFF;
 	// Increase flush counter
 	FatFS_FlushBuffer++;
 	if(FatFS_FlushBuffer > FATFS_FLUSH_COUNT)
 	{
-		DEBUG_PIN_ON;
 		FatFS_FlushBuffer = 0;
 		f_sync(&logFile);
 	}
 	// Free memory
 	//free(FSBuffer);
-
-	DEBUG_PIN_OFF;
 }
 
 int storeNumber(uint16_t number, char* buffer, int offset)
@@ -533,8 +528,6 @@ void extPeripheralInit(void)
 	Delaynus(1000000);
 	// set PS busy
 	PSBUSY = 1;
-	// Set I0 current for sensor
-	PSSetI0();
 	LED_OK_OFF;
 	// Short delay
 	Delaynus(50000);
