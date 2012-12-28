@@ -485,7 +485,7 @@ static uint8_t  USBD_HID_DataOut (void *pdev, uint8_t epnum)
 		if (((USB_OTG_CORE_HANDLE*)pdev)->dev.device_status == USB_OTG_CONFIGURED )
 		{
 			/* read USB packet */
-			USB_OTG_ReadPacket((USB_OTG_CORE_HANDLE*)pdev, *Buffer, HID_OUT_PACKET);
+			USB_OTG_ReadPacket((USB_OTG_CORE_HANDLE*)pdev, (uint8_t *)*Buffer, HID_OUT_PACKET);
 			/* process the report setting */
 
 

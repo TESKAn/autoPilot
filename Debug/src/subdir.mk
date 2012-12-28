@@ -4,6 +4,7 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../src/ahrs.c \
 ../src/events.c \
 ../src/functions.c \
 ../src/gps.c \
@@ -26,6 +27,7 @@ S_UPPER_SRCS += \
 ../src/startup_stm32f4xx.S 
 
 OBJS += \
+./src/ahrs.o \
 ./src/events.o \
 ./src/functions.o \
 ./src/gps.o \
@@ -46,6 +48,7 @@ OBJS += \
 ./src/var.o 
 
 C_DEPS += \
+./src/ahrs.d \
 ./src/events.d \
 ./src/functions.d \
 ./src/gps.d \

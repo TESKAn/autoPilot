@@ -22,5 +22,6 @@ void extPeripheralInit(void);
 void Delaynus(vu32 nus);
 void transferDMA_USART2(uint8_t *data, int length);
 void transferDMA_USART3(uint8_t *data, int length);
+float intToFloat(int whole, int frac);
 
 #endif /* FUNCTIONS_H_ */

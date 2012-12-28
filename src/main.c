@@ -27,7 +27,10 @@
 
 //part of main branch
 
+
 #include "allinclude.h"
+
+
 
 /* Private macro */
 /* Private variables */
@@ -45,10 +48,24 @@
 // USB related
 __ALIGN_BEGIN	USB_OTG_CORE_HANDLE  USB_OTG_dev __ALIGN_END;
 
+// AHRS
+
+
+
 
 int main(void)
 {
-	unsigned int bytesWritten;
+	vector3f testVector;
+	//ahrs_vector_init((vector3f *)testVector, (float32_t *) {0.1, 0.2, 0.3});
+
+	testVector.pData[1] = 0;
+
+	// Init gyro vector
+	ahrs_vectorDataInit(&GyroVector);
+	// Update gyro vector
+	ahrs_vector_update(&GyroVector, 0.1, 0.2, 0.3);
+
+
 	//SD_CardInfo cardinfo;
 	int i = 0;
 	int registerCount = 0;
@@ -146,10 +163,12 @@ int main(void)
         }
         if(SCR1 & SCR_07)
         {
+        	updateGyroVector(&GyroVector, GYRO_X, GYRO_Y, GYRO_Z);
         	SCR1 = SCR1 & ~SCR_07;
         }
         if(SCR1 & SCR_08)
         {
+        	nullGyro();
         	SCR1 = SCR1 & ~SCR_08;
         }
         if(SCR1 & SCR_09)
@@ -260,7 +279,6 @@ int main(void)
         // Check I2C data
         if(COPYI2C)
         {
-        	copySensorData();
         	// Mark sensors OK
         	SCR2 = SCR2 | SCR2_ACCOK;
         	SCR2 = SCR2 | SCR2_GYROOK;

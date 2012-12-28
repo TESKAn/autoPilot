@@ -13,6 +13,9 @@ volatile Flag flag0;
 // Temp variable
 volatile int globalTemp = 0;
 
+// System time variable
+volatile uint32_t systemTime = 0;
+
 // SCR reg
 // Defined in modbus.h
 

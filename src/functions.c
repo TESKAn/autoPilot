@@ -647,3 +647,36 @@ void transferDMA_USART3(uint8_t *data, int length)
 	// Configure end of transfer interrupt
 	DMA_ITConfig(DMA_USART3, DMA_IT_TC, ENABLE);
 }
+
+float intToFloat(int whole, int frac)
+{
+	float result = 0;
+	float temp = 0;
+	temp = (float)frac;
+	/*
+	if(temp > 999)
+	{
+		temp = temp / 10000;
+	}
+	else if(temp > 99)
+	{
+		temp = temp / 1000;
+	}
+	else if(temp > 9)
+	{
+		temp = temp / 100;
+	}
+	else
+	{
+		temp = temp / 10;
+	}
+*/
+	while(frac > 0)
+	{
+		frac = frac / 10;
+	}
+
+
+	result = (float)whole + temp;
+	return result;
+}

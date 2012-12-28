@@ -13,6 +13,8 @@ RM := cs-rm -rf
 -include Libraries/STM32_USB_Device_Library/Core/src/subdir.mk
 -include Libraries/STM32_USB_Device_Library/Class/hid_custom/src/subdir.mk
 -include Libraries/STM32F4xx_StdPeriph_Driver/src/subdir.mk
+-include Libraries/CMSIS/src/MatrixFunctions/subdir.mk
+-include Libraries/CMSIS/src/FastMathFunctions/subdir.mk
 -include FatFS/option/subdir.mk
 -include FatFS/subdir.mk
 -include subdir.mk

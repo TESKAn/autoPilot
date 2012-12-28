@@ -35,6 +35,7 @@ ErrorStatus I2C_CheckForError(I2C_TypeDef* I2Cx);
 void I2C2_Configure(FunctionalState NewState);
 void I2C2_ResetInterface(void);
 void I2C2_DMA_ClearErrors(void);
+void nullGyro(void);
 
 extern volatile uint16_t I2C2_ProcesState;
 extern volatile Flag I2C2_Flags;
@@ -49,6 +50,9 @@ extern volatile int I2C2_DMABufRXCount;
 extern volatile int I2C2_PollTimer;
 extern volatile uint16_t sensorTimeCounter;
 extern volatile uint16_t sensoruTimeCounter;
+
+// Offset registers
+extern volatile uint16_t gyroOffsets[3];
 
 #define I2C2_POLLTIME		10
 

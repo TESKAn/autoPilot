@@ -85,6 +85,8 @@ void DMA1_Stream3_ISR_Handler(void)
 	/* Disable I2C DMA request */
 	I2C_DMACmd(I2C2,DISABLE);
 	DMA_ClearITPendingBit(DMA1_Stream3, DMA_IT_TC);
+	// Copy data
+	copySensorData();
 	// Set flag to mark has data
 	COPYI2C = 1;
 	// Clear receive in progress
@@ -394,6 +396,9 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 	if((TIM14->SR & TIM_FLAG_Update) != (u16)RESET)
 	{
 		TIM_ClearFlag(TIM14, TIM_FLAG_Update);
+
+		// Update system time
+		systemTime++;
 
 		if(ADC_ENABLED)
 		{

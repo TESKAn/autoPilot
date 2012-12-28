@@ -15,7 +15,10 @@
 #include <stdlib.h>
 #include <malloc.h>
 #include "syscalls.h"
+#include "arm_math.h"
 
+#include "unitConversions.h"
+#include "ahrs.h"
 // SD card
 //#include "spi_sd.h"
 #include "diskio.h"

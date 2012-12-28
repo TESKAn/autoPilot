@@ -21,6 +21,9 @@ volatile int I2C2_PollTimer = 0;
 volatile uint16_t sensorTimeCounter = 0;
 volatile uint16_t sensoruTimeCounter = 0;
 
+// Offset registers
+volatile uint16_t gyroOffsets[3] = {0,0,0};
+
 // Timeout function
 void sensorTimer(void)
 {
@@ -30,7 +33,6 @@ void sensorTimer(void)
 		sensoruTimeCounter = 0;
 		// Function is called once every millisecond
 		sensorTimeCounter++;
-		DEBUG_PIN_TOGGLE;
 		if(sensorTimeCounter > 65534)
 		{
 			sensorTimeCounter = 65534;
@@ -231,10 +233,16 @@ void copySensorData(void)
 	// Reg 67, 72 (8,13)is gyro
 	GYRO_X = (I2C2_DMABufRX[8] << 8) & 0xff00;
 	GYRO_X = GYRO_X | (I2C2_DMABufRX[9] & 0x00ff);
+	// Remove offset
+	GYRO_X = GYRO_X - gyroOffsets[0];
 	GYRO_Y = (I2C2_DMABufRX[10] << 8) & 0xff00;
 	GYRO_Y = GYRO_Y | (I2C2_DMABufRX[11] & 0x00ff);
+	// Remove offset
+	GYRO_Y = GYRO_Y - gyroOffsets[1];
 	GYRO_Z = (I2C2_DMABufRX[12] << 8) & 0xff00;
 	GYRO_Z = GYRO_Z | (I2C2_DMABufRX[13] & 0x00ff);
+	// Remove offset
+	GYRO_Z = GYRO_Z - gyroOffsets[2];
 	// Reg 73,78 (14,19) is mag data
 	MAG_X = (I2C2_DMABufRX[14] << 8) & 0xff00;
 	MAG_X = MAG_X | (I2C2_DMABufRX[15] & 0x00ff);
@@ -1336,4 +1344,12 @@ void I2C2_DMA_ClearErrors(void)
 	DMA_ClearITPendingBit(DMA_I2C2_TX, DMA_I2C2_TX_IT_TEIF);
 	DMA_ClearITPendingBit(DMA_I2C2_TX, DMA_I2C2_TX_IT_DMEIF);
 	DMA_ClearITPendingBit(DMA_I2C2_TX, DMA_I2C2_TX_IT_FEIF);
+}
+
+void nullGyro(void)
+{
+	// Store current values as offsets
+	gyroOffsets[0] = GYRO_X;
+	gyroOffsets[1] = GYRO_Y;
+	gyroOffsets[2] = GYRO_Z;
 }

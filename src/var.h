@@ -61,6 +61,9 @@ extern volatile Flag flag0;
 // Temp variable
 extern volatile int globalTemp;
 
+// System time variable
+extern volatile uint32_t systemTime;
+
 // SCR reg
 extern volatile uint16_t SCR;
 

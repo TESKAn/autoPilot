@@ -169,6 +169,8 @@ void GPS_ReceiveProcess(uint8_t data)
 					GPS_Digits_Count = 0;
 					GPSFLAG_CR_RECEIVED = 0;
 					GPSFLAG_CHECKSUM_RESET = 1;
+					// Mark new data time
+					GPS_DataReceivedTime = systemTime;
 				}
 				break;
 			}
@@ -443,6 +445,27 @@ void GPS_ReceiveProcess(uint8_t data)
 							{
 								MODBUSReg[temp + 2] = GPS_RECDATA[temp];
 							}
+							// Signal new data
+							DEBUG_PIN_ON;
+							// Check if data is valid
+							if((GPS_VALID & _BIT15) != 0)
+							{
+								// Store to GPS_Data as floats
+								GPS_Data.dataValid = INVALID;
+								GPS_Data.altitude = intToFloat(GPS_ALTITUDE, GPS_ALTITUDE_FRAC);
+								// Latitude, longitude in rad = res * (pi/180*180)
+								GPS_Data.latitude = intToFloat(GPS_LATITUDE, GPS_LATITUDE_FRAC);
+								GPS_Data.latitude = (GPS_Data.latitude * PI)/32400;
+
+								GPS_Data.longitude = intToFloat(GPS_LONGITUDE, GPS_LONGITUDE_FRAC);
+								GPS_Data.longitude = (GPS_Data.longitude * PI)/10800;
+
+								GPS_Data.speed = intToFloat(GPS_SPEED, GPS_SPEED_FRAC);
+								GPS_Data.trackAngle = intToFloat(GPS_TRACKANGLE, GPS_TRACKANGLE_FRAC);
+								GPS_Data.dataTime = GPS_DataReceivedTime;
+								GPS_Data.dataValid = VALID;
+							}
+							DEBUG_PIN_OFF;
 							// Mark GPS OK
 							SCR2 = SCR2 | SCR2_GPSOK;
 							/*
