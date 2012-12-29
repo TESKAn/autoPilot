@@ -11,6 +11,8 @@
 // Configuration macros
 // Define GPIO pin 5 as debug output
 #define GPIOE5_IS_DEBUG
+// Define send debug messages over USB
+#define DEBUG_USB
 
 // File write buffer size
 #define FATFS_BUFF_SIZE		256
@@ -55,6 +57,8 @@
 #define USB_REQUEST_DATA_2		flag0.bits.BIT14
 #define SD_WRITE_LOG			flag0.bits.BIT15
 #define SD_LOG_ISOPEN			flag0.bits.BIT16
+#define EXTSENS_NULLING_GYRO	flag0.bits.BIT17
+#define EXTSENS_NULLING_ACC		flag0.bits.BIT18
 
 // DMA macros
 //DMA1_Stream0 used by USB

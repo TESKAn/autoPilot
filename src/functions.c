@@ -516,6 +516,9 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 
 void extPeripheralInit(void)
 {
+#ifdef DEBUG_USB
+	sendUSBMessage("Initializing sensors...");
+#endif
 	// Wait some time
 	Delaynus(50000);
 	// Set LED OK = 1
@@ -536,6 +539,9 @@ void extPeripheralInit(void)
 	// Reset PS
 	PSReset();
 	LED_OK_OFF;
+#ifdef DEBUG_USB
+	sendUSBMessage("PS initialized...");
+#endif
 	// Long delay
 	Delaynus(2000000);
 	// Set LED OK = 0
@@ -544,6 +550,9 @@ void extPeripheralInit(void)
 	PSBUSY = 0;
 	// Configure GPS
 	GPSSetDataOutput();
+#ifdef DEBUG_USB
+	sendUSBMessage("GPS initialized...");
+#endif
 	LED_OK_OFF;
 	// Short delay
 	Delaynus(50000);
@@ -553,12 +562,23 @@ void extPeripheralInit(void)
 	NVIC_EnableInterrupts(DISABLE);
 	// Configure I2C sensors
 	sensorInit();
+#ifdef DEBUG_USB
+	sendUSBMessage("Sensors initialized...");
+#endif
 	// Enable ADC
 	ADC_ENABLED = 1;
+#ifdef DEBUG_USB
+	sendUSBMessage("ADC enabled...");
+#endif
 	// Mark sensors initiated
 	EXTSENS_INIT_DONE = 1;
+	// Mark null sensor
+	EXTSENS_NULLING_GYRO = 1;
 	// Reenable interrupts
 	NVIC_EnableInterrupts(ENABLE);
+#ifdef DEBUG_USB
+	sendUSBMessage("initialization done");
+#endif
 }
 
 /*
@@ -679,4 +699,22 @@ float intToFloat(int whole, int frac)
 
 	result = (float)whole + temp;
 	return result;
+}
+
+void sendUSBMessage(char* message)
+{
+	int len = strlen(message);
+	int i = 0;
+	// Check length
+	if(len < 61)
+	{
+		Buffer[0] = 2;
+		Buffer[1] = 3;
+		for(i = 0; i < len; i++)
+		{
+			Buffer[i + 2] =  (uint8_t)message[i];
+		}
+		Buffer[i + 2] = 0;
+		USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
+	}
 }

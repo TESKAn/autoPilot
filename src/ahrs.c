@@ -14,15 +14,20 @@ GPSTypeDef GPS_Data;
 uint32_t GPS_DataReceivedTime = 0;
 // Gyro
 vectorData GyroVector;
+// Acceleration
+vectorData AccelVector;
+// Magnetometer
+vectorData MagnetVector;
 
-void updateGyroVector(vectorData * vector, uint16_t x, uint16_t y, uint16_t z)
+
+void updateScaledVector(vectorData * vector, uint16_t x, uint16_t y, uint16_t z, float rate)
 {
-	//GYRO_RATE
-	vector->vector.pData[VECT_X] = (float) x * GYRO_RATE;
-	vector->vector.pData[VECT_Y] = (float) y * GYRO_RATE;
-	vector->vector.pData[VECT_Z] = (float) z * GYRO_RATE;
+	// Store time
+	vector->dataTime = sensorAcquisitionTime;
+	vector->vector.pData[VECT_X] = (float) x * rate;
+	vector->vector.pData[VECT_Y] = (float) y * rate;
+	vector->vector.pData[VECT_Z] = (float) z * rate;
 }
-
 
 
 void ahrs_vectorDataInit(vectorData * vector)
@@ -36,7 +41,7 @@ void ahrs_vectorDataInit(vectorData * vector)
 	vector->vector.pData[2] = 0;
 }
 
-void ahrs_vector_update(vectorData * vector, float32_t i, float32_t j, float32_t k)
+void ahrs_vectorUpdate(vectorData * vector, float32_t i, float32_t j, float32_t k)
 {
 	vector->vector.pData[0] = i;
 	vector->vector.pData[1] = j;

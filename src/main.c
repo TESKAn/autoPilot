@@ -55,16 +55,10 @@ __ALIGN_BEGIN	USB_OTG_CORE_HANDLE  USB_OTG_dev __ALIGN_END;
 
 int main(void)
 {
-	vector3f testVector;
-	//ahrs_vector_init((vector3f *)testVector, (float32_t *) {0.1, 0.2, 0.3});
-
-	testVector.pData[1] = 0;
-
-	// Init gyro vector
+	// Init vectors
 	ahrs_vectorDataInit(&GyroVector);
-	// Update gyro vector
-	ahrs_vector_update(&GyroVector, 0.1, 0.2, 0.3);
-
+	ahrs_vectorDataInit(&AccelVector);
+	ahrs_vectorDataInit(&MagnetVector);
 
 	//SD_CardInfo cardinfo;
 	int i = 0;
@@ -99,6 +93,10 @@ int main(void)
 	  &USR_desc,
 	  &USBD_HID_cb,
 	  &USR_cb);
+
+#ifdef DEBUG_USB
+	sendUSBMessage("AutoPilot OnLine");
+#endif
 
     while (1)
     {
@@ -163,12 +161,11 @@ int main(void)
         }
         if(SCR1 & SCR_07)
         {
-        	updateGyroVector(&GyroVector, GYRO_X, GYRO_Y, GYRO_Z);
+        	EXTSENS_NULLING_ACC = 1;
         	SCR1 = SCR1 & ~SCR_07;
         }
         if(SCR1 & SCR_08)
         {
-        	nullGyro();
         	SCR1 = SCR1 & ~SCR_08;
         }
         if(SCR1 & SCR_09)

@@ -445,8 +445,6 @@ void GPS_ReceiveProcess(uint8_t data)
 							{
 								MODBUSReg[temp + 2] = GPS_RECDATA[temp];
 							}
-							// Signal new data
-							DEBUG_PIN_ON;
 							// Check if data is valid
 							if((GPS_VALID & _BIT15) != 0)
 							{
@@ -465,7 +463,6 @@ void GPS_ReceiveProcess(uint8_t data)
 								GPS_Data.dataTime = GPS_DataReceivedTime;
 								GPS_Data.dataValid = VALID;
 							}
-							DEBUG_PIN_OFF;
 							// Mark GPS OK
 							SCR2 = SCR2 | SCR2_GPSOK;
 							/*

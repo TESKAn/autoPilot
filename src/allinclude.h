@@ -17,12 +17,18 @@
 #include "syscalls.h"
 #include "arm_math.h"
 
-#include "unitConversions.h"
-#include "ahrs.h"
+// USB defines
+#include "usbd_hid_core.h"
+#include "usbd_usr.h"
+#include "usbd_desc.h"
+
 // SD card
 //#include "spi_sd.h"
 #include "diskio.h"
 #include "ff.h"
+
+#include "unitConversions.h"
+#include "ahrs.h"
 
 #include "stm32f4xx_usart.h"
 #include "stm32f4xx_rcc.h"
@@ -37,10 +43,7 @@
 #include "powerSensor.h"
 #include "gps.h"
 #include "sensors.h"
-// USB defines
-#include "usbd_hid_core.h"
-#include "usbd_usr.h"
-#include "usbd_desc.h"
+
 
 
 #endif /* ALLINCLUDE_H_ */

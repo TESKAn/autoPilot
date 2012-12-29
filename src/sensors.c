@@ -20,9 +20,15 @@ volatile int I2C2_DMABufRXCount = 0;
 volatile int I2C2_PollTimer = 0;
 volatile uint16_t sensorTimeCounter = 0;
 volatile uint16_t sensoruTimeCounter = 0;
+// Data taken at time
+uint32_t sensorAcquisitionTime = 0;
 
 // Offset registers
-volatile uint16_t gyroOffsets[3] = {0,0,0};
+volatile int16_t gyroOffsets[3] = {0,0,0};
+uint8_t gyroOffsetSampleCount = 0;
+
+volatile int16_t accOffsets[3] = {0,0,0};
+uint8_t accOffsetSampleCount = 0;
 
 // Timeout function
 void sensorTimer(void)
@@ -225,10 +231,16 @@ void copySensorData(void)
 	// Starts with reg 59, accel X high
 	ACC_X = (I2C2_DMABufRX[0] << 8) & 0xff00;
 	ACC_X = ACC_X | (I2C2_DMABufRX[1] & 0x00ff);
+	// Remove offset
+	ACC_X = ACC_X - accOffsets[0];
 	ACC_Y = (I2C2_DMABufRX[2] << 8) & 0xff00;
 	ACC_Y = ACC_Y | (I2C2_DMABufRX[3] & 0x00ff);
+	// Remove offset
+	ACC_Y = ACC_Y - accOffsets[1];
 	ACC_Z = (I2C2_DMABufRX[4] << 8) & 0xff00;
 	ACC_Z = ACC_Z | (I2C2_DMABufRX[5] & 0x00ff);
+	// Remove offset
+	ACC_Z = ACC_Z - accOffsets[2];
 	// Reg 65,66(6,7) is IC temperature
 	// Reg 67, 72 (8,13)is gyro
 	GYRO_X = (I2C2_DMABufRX[8] << 8) & 0xff00;
@@ -258,6 +270,19 @@ void copySensorData(void)
 	uiTemp = uiTemp >> 4;
 	uiTemp = uiTemp & 0x000F;
 	BARO = BARO + uiTemp;
+	// Update vectors
+	updateScaledVector(&GyroVector, GYRO_X, GYRO_Y, GYRO_Z, GYRO_RATE);
+	updateScaledVector(&AccelVector, ACC_X, ACC_Y, ACC_Z, ACC_RATE);
+	updateScaledVector(&MagnetVector, MAG_X, MAG_Y, MAG_Z, MAG_RATE);
+	// Check if we are nulling
+	if(EXTSENS_NULLING_GYRO)
+	{
+		nullGyro();
+	}
+	if(EXTSENS_NULLING_ACC)
+	{
+		nullAcc();
+	}
 }
 
 ErrorStatus MPU6000_Enable(FunctionalState newState)
@@ -1348,8 +1373,112 @@ void I2C2_DMA_ClearErrors(void)
 
 void nullGyro(void)
 {
-	// Store current values as offsets
-	gyroOffsets[0] = GYRO_X;
-	gyroOffsets[1] = GYRO_Y;
-	gyroOffsets[2] = GYRO_Z;
+	if(EXTSENS_NULLING_GYRO)
+	{
+		// Check if samples are OK
+		if(((int16_t)GYRO_X < OFFSET_SAMPLE_MAX_VALUE)&&
+				((int16_t)GYRO_Y < OFFSET_SAMPLE_MAX_VALUE)&&
+				((int16_t)GYRO_Z < OFFSET_SAMPLE_MAX_VALUE)&&
+				((int16_t)GYRO_X > OFFSET_SAMPLE_MIN_VALUE)&&
+				((int16_t)GYRO_Y > OFFSET_SAMPLE_MIN_VALUE)&&
+				((int16_t)GYRO_Z > OFFSET_SAMPLE_MIN_VALUE))
+		{
+			// Store current values as offsets
+			gyroOffsets[0] += ((int16_t)GYRO_X >> 1);
+			gyroOffsets[1] += ((int16_t)GYRO_Y >> 1);
+			gyroOffsets[2] += ((int16_t)GYRO_Z >> 1);
+			gyroOffsetSampleCount++;
+		}
+		else
+		{
+#ifdef DEBUG_USB
+				sendUSBMessage("Bad value, nulling restart");
+#endif
+			// Else restart process
+			gyroOffsetSampleCount = 0;
+			gyroOffsets[0] = 0;
+			gyroOffsets[1] = 0;
+			gyroOffsets[2] = 0;
+		}
+
+		if(gyroOffsetSampleCount >= OFFSET_SAMPLE_COUNT)
+		{
+			// Check that values are below OFFSET_MAX_VALUE
+			if((gyroOffsets[0] < OFFSET_MAX_VALUE)&&
+					(gyroOffsets[1] < OFFSET_MAX_VALUE)&&
+					(gyroOffsets[2] < OFFSET_MAX_VALUE)&&
+					(gyroOffsets[0] > OFFSET_MIN_VALUE)&&
+					(gyroOffsets[1] > OFFSET_MIN_VALUE)&&
+					(gyroOffsets[2] > OFFSET_MIN_VALUE))
+			{
+				EXTSENS_NULLING_GYRO = 0;
+#ifdef DEBUG_USB
+				sendUSBMessage("Nulling done");
+#endif
+			}
+			// Else redo nulling
+			else
+			{
+				gyroOffsetSampleCount = 0;
+				gyroOffsets[0] = 0;
+				gyroOffsets[1] = 0;
+				gyroOffsets[2] = 0;
+			}
+		}
+	}
 }
+
+void nullAcc(void)
+{
+	// Do not null Z value -> gravity
+	if(EXTSENS_NULLING_ACC)
+	{
+		// Check if samples are OK
+		if(((int16_t)ACC_X < OFFSET_SAMPLE_MAX_VALUE)&&
+				((int16_t)ACC_Y < OFFSET_SAMPLE_MAX_VALUE)&&
+				((int16_t)ACC_X > OFFSET_SAMPLE_MIN_VALUE)&&
+				((int16_t)ACC_Y > OFFSET_SAMPLE_MIN_VALUE))
+		{
+			// Store current values as offsets
+			accOffsets[0] += ((int16_t)ACC_X >> 1);
+			accOffsets[1] += ((int16_t)ACC_Y >> 1);
+			accOffsetSampleCount++;
+		}
+		else
+		{
+#ifdef DEBUG_USB
+				sendUSBMessage("Bad value, nulling restart");
+#endif
+			// Else restart process
+			accOffsetSampleCount = 0;
+			accOffsets[0] = 0;
+			accOffsets[1] = 0;
+			accOffsets[2] = 0;
+		}
+
+		if(accOffsetSampleCount >= OFFSET_SAMPLE_COUNT)
+		{
+			// Check that values are below OFFSET_MAX_VALUE
+			if((gyroOffsets[0] < OFFSET_MAX_VALUE)&&
+					(accOffsets[1] < OFFSET_MAX_VALUE)&&
+					(accOffsets[0] > OFFSET_MIN_VALUE)&&
+					(accOffsets[1] > OFFSET_MIN_VALUE))
+			{
+				EXTSENS_NULLING_ACC = 0;
+#ifdef DEBUG_USB
+				sendUSBMessage("Nulling done");
+#endif
+			}
+			// Else redo nulling
+			else
+			{
+				accOffsetSampleCount = 0;
+				accOffsets[0] = 0;
+				accOffsets[1] = 0;
+				accOffsets[2] = 0;
+			}
+		}
+	}
+}
+
+
