@@ -50,16 +50,55 @@ __ALIGN_BEGIN	USB_OTG_CORE_HANDLE  USB_OTG_dev __ALIGN_END;
 
 // AHRS
 
-
+matrix3by3 matA, matB, matC;
+vectorData vectorA, vectorB;
+int foo = 0;
 
 
 int main(void)
 {
 	// Init vectors
-	ahrs_vectorDataInit(&GyroVector);
-	ahrs_vectorDataInit(&AccelVector);
-	ahrs_vectorDataInit(&MagnetVector);
+	ahrs_vectorDataInit(&GyroVector, ROW);
+	ahrs_vectorDataInit(&AccelVector, ROW);
+	ahrs_vectorDataInit(&MagnetVector, ROW);
 
+	// Initialize matrices
+	ahrs_matrix3by3_init(&tempMatrix);
+	ahrs_matrix3by3_init(&holdMatrix);
+	ahrs_matrix3by3_init(&rotationMatrix);
+	ahrs_vectorDataInit(&tempVector, ROW);
+	// Set some values
+	rotationMatrix.vectorData[0] = 1;
+	rotationMatrix.vectorData[1] = 1;
+	rotationMatrix.vectorData[2] = 1;
+	rotationMatrix.vectorData[3] = 1;
+	rotationMatrix.vectorData[4] = 1;
+	rotationMatrix.vectorData[5] = 1;
+	rotationMatrix.vectorData[6] = 1;
+	rotationMatrix.vectorData[7] = 1;
+
+	// Matrix test
+	ahrs_matrix3by3_init(&matA);
+	ahrs_matrix3by3_init(&matB);
+	ahrs_matrix3by3_init(&matC);
+	ahrs_generate_rotationMatrix(&matA, 0,0,0);
+	ahrs_generate_rotationMatrix(&matB, 1,0,1);
+	ahrs_mult_matrixes(&matA, &matB, &matC);
+
+	ahrs_vectorDataInit(&vectorA, ROW);
+	ahrs_vectorDataInit(&vectorB, ROW);
+	// Populate vector A
+	updateScaledVector(&vectorA, 1, 0, 0, 1);
+	// Multiply
+	ahrs_mult_vector_matrix(&vectorA, &matC, &vectorB);
+
+	GyroVector.vectorData[0] = 1;
+	GyroVector.vectorData[1] = 0;
+	GyroVector.vectorData[2] = 0;
+	while(1)
+	{
+		updateRotationMatrix(&rotationMatrix, &GyroVector);
+	}
 	//SD_CardInfo cardinfo;
 	int i = 0;
 	int registerCount = 0;
@@ -166,10 +205,12 @@ int main(void)
         }
         if(SCR1 & SCR_08)
         {
+        	EXTSENS_FS_REPORT = 1;
         	SCR1 = SCR1 & ~SCR_08;
         }
         if(SCR1 & SCR_09)
         {
+        	EXTSENS_FS_REPORT = 0;
         	SCR1 = SCR1 & ~SCR_09;
         }
         if(SCR1 & SCR_10)

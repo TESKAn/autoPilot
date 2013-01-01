@@ -403,7 +403,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		if(ADC_ENABLED)
 		{
 			ADC_TriggerTimer++;
-			if(ADC_TriggerTimer > 100)
+			if(ADC_TriggerTimer >= 100)
 			{
 				ADC_TriggerTimer = 0;
 	        	ADC_SoftwareStartConv(ADC1);
@@ -416,7 +416,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		{
 			// Check power sensor
 			PS_PollTimer++;
-			if(PS_PollTimer > PS_POLLTIME)
+			if(PS_PollTimer >= PS_POLLTIME)
 			{
 				PS_PollTimer = 0;
 				if(!PSBUSY)
@@ -426,7 +426,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			}
 			// Check I2C sensors
 			I2C2_PollTimer++;
-			if(I2C2_PollTimer > I2C2_POLLTIME)
+			if(I2C2_PollTimer >= I2C2_POLLTIME)
 			{
 				I2C2_PollTimer = I2C2_POLLTIME;
 				if(!I2C2_WAITINGDATA && I2C2_INITDONE)
@@ -452,7 +452,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		}
 		// LED counter
 		LED_ToggleCount++;
-		if(LED_ToggleCount > 1000)
+		if(LED_ToggleCount >= 1000)
 		{
 			// Event every second
 			// Write log
@@ -466,7 +466,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		}
 		// Call fatfs timer
 		SD_TimerCount++;
-		if(SD_TimerCount > 10)
+		if(SD_TimerCount >= 10)
 		{
 			SD_TimerCount = 0;
 			disk_timerproc();

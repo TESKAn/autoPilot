@@ -5,6 +5,7 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../src/ahrs.c \
+../src/ahrs_math.c \
 ../src/events.c \
 ../src/functions.c \
 ../src/gps.c \
@@ -28,6 +29,7 @@ S_UPPER_SRCS += \
 
 OBJS += \
 ./src/ahrs.o \
+./src/ahrs_math.o \
 ./src/events.o \
 ./src/functions.o \
 ./src/gps.o \
@@ -49,6 +51,7 @@ OBJS += \
 
 C_DEPS += \
 ./src/ahrs.d \
+./src/ahrs_math.d \
 ./src/events.d \
 ./src/functions.d \
 ./src/gps.d \

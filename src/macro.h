@@ -59,6 +59,9 @@
 #define SD_LOG_ISOPEN			flag0.bits.BIT16
 #define EXTSENS_NULLING_GYRO	flag0.bits.BIT17
 #define EXTSENS_NULLING_ACC		flag0.bits.BIT18
+#define EXTSENS_NULLING_MAG		flag0.bits.BIT19
+#define EXTSENS_FS_REPORT		flag0.bits.BIT20
+
 
 // DMA macros
 //DMA1_Stream0 used by USB

@@ -66,6 +66,9 @@ extern uint8_t gyroOffsetSampleCount;
 extern volatile int16_t accOffsets[3];
 extern uint8_t accOffsetSampleCount;
 
+extern volatile int16_t magOffsets[3];
+extern uint8_t magOffsetSampleCount;
+
 #define I2C2_POLLTIME		10
 
 // I2C2 process states

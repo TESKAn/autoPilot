@@ -705,16 +705,20 @@ void sendUSBMessage(char* message)
 {
 	int len = strlen(message);
 	int i = 0;
-	// Check length
-	if(len < 61)
-	{
-		Buffer[0] = 2;
-		Buffer[1] = 3;
-		for(i = 0; i < len; i++)
+	// Check USB is connected
+ 	if(USB_OTG_dev.dev.device_status == USB_OTG_CONFIGURED)
+ 	{
+		// Check length
+		if(len < 61)
 		{
-			Buffer[i + 2] =  (uint8_t)message[i];
+			Buffer[0] = 2;
+			Buffer[1] = 3;
+			for(i = 0; i < len; i++)
+			{
+				Buffer[i + 2] =  (uint8_t)message[i];
+			}
+			Buffer[i + 2] = 0;
+			USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
 		}
-		Buffer[i + 2] = 0;
-		USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
-	}
+ 	}
 }

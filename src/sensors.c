@@ -30,6 +30,9 @@ uint8_t gyroOffsetSampleCount = 0;
 volatile int16_t accOffsets[3] = {0,0,0};
 uint8_t accOffsetSampleCount = 0;
 
+volatile int16_t magOffsets[3] = {0,0,0};
+uint8_t magOffsetSampleCount = 0;
+
 // Timeout function
 void sensorTimer(void)
 {
@@ -258,10 +261,16 @@ void copySensorData(void)
 	// Reg 73,78 (14,19) is mag data
 	MAG_X = (I2C2_DMABufRX[14] << 8) & 0xff00;
 	MAG_X = MAG_X | (I2C2_DMABufRX[15] & 0x00ff);
+	// Remove offset
+	MAG_X = MAG_X - magOffsets[0];
 	MAG_Y = (I2C2_DMABufRX[16] << 8) & 0xff00;
 	MAG_Y = MAG_Y | (I2C2_DMABufRX[17] & 0x00ff);
+	// Remove offset
+	MAG_Y = MAG_Y - magOffsets[1];
 	MAG_Z = (I2C2_DMABufRX[18] << 8) & 0xff00;
 	MAG_Z = MAG_Z | (I2C2_DMABufRX[19] & 0x00ff);
+	// Remove offset
+	MAG_Z = MAG_Z - magOffsets[2];
 	// Reg 79,80 (20,21) is barometer data
 	BARO = (I2C2_DMABufRX[20] << 8) & 0xff00;
 	BARO = BARO | (I2C2_DMABufRX[21] & 0x00ff);
@@ -283,6 +292,43 @@ void copySensorData(void)
 	{
 		nullAcc();
 	}
+	// Check if we are sending sensor data back at full speed
+	if(EXTSENS_FS_REPORT)
+	{
+     	if(USB_OTG_dev.dev.device_status == USB_OTG_CONFIGURED)
+     	{
+    		Buffer[0] = 2;
+    		Buffer[1] = 4;
+    		for(uiTemp = 0; uiTemp < 22; uiTemp++)
+    		{
+    			Buffer[uiTemp + 2] =  I2C2_DMABufRX[uiTemp];
+    		}
+    		// Store offsets
+    		Buffer[24] = accOffsets[0] >> 8;
+    		Buffer[25] = accOffsets[0];
+    		Buffer[26] = accOffsets[1] >> 8;
+    		Buffer[27] = accOffsets[1];
+    		Buffer[28] = accOffsets[2] >> 8;
+    		Buffer[29] = accOffsets[2];
+
+    		Buffer[30] = gyroOffsets[0] >> 8;
+    		Buffer[31] = gyroOffsets[0];
+    		Buffer[32] = gyroOffsets[1] >> 8;
+    		Buffer[33] = gyroOffsets[1];
+    		Buffer[34] = gyroOffsets[2] >> 8;
+    		Buffer[35] = gyroOffsets[2];
+
+    		Buffer[36] = magOffsets[0] >> 8;
+    		Buffer[37] = magOffsets[0];
+    		Buffer[38] = magOffsets[1] >> 8;
+    		Buffer[39] = magOffsets[1];
+    		Buffer[40] = magOffsets[2] >> 8;
+    		Buffer[41] = magOffsets[2];
+
+    		USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
+     	}
+	}
+
 }
 
 ErrorStatus MPU6000_Enable(FunctionalState newState)
