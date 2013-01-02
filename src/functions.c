@@ -7,6 +7,25 @@
 #include "allinclude.h"
 #include <string.h>
 
+void storeAHRSAngles(void)
+{
+	float32_t temp = 0;
+	int16_t temp1 = 0;
+	ahrs_getAngles(&(ahrs_data.rotationMatrix), &(ahrs_data.RollPitchYaw.vector));
+	// Store angles
+	temp = ahrs_data.RollPitchYaw.vector.pData[0] * 1000;
+	temp1 = (int16_t)temp;
+	AHRS_PITCH = (uint16_t) temp1;
+
+	temp = ahrs_data.RollPitchYaw.vector.pData[1] * 1000;
+	temp1 = (int16_t)temp;
+	AHRS_ROLL = (uint16_t) temp1;
+
+	temp = ahrs_data.RollPitchYaw.vector.pData[2] * 1000;
+	temp1 = (int16_t)temp;
+	AHRS_YAW = (uint16_t) temp1;
+}
+
 void openLog(void)
 {
 	unsigned int bytesWritten;
@@ -14,6 +33,9 @@ void openLog(void)
 	if(f_mount(0, &FileSystemObject)!=FR_OK)
 	{
 		//flag error
+#ifdef DEBUG_USB
+	sendUSBMessage("FS mount error");
+#endif
 	}
 	driveStatus = disk_status (0);
 	if((driveStatus & STA_NOINIT) ||
@@ -22,6 +44,9 @@ void openLog(void)
 		   )
 	{
 		//flag error.
+#ifdef DEBUG_USB
+	sendUSBMessage("Drive status error");
+#endif
 	}
 	// Generate file name
 	// File name = "/LOG_ddmmyyyy_hhmmss.txt"
@@ -56,10 +81,16 @@ void openLog(void)
 	if(f_open(&logFile, FSBuffer, FA_READ | FA_WRITE | FA_OPEN_ALWAYS)!=FR_OK)
 	{
 		//flag error
+#ifdef DEBUG_USB
+	sendUSBMessage("Open file error");
+#endif
 	}
 
 	// Write first line
 	f_write(&logFile, "Time;GPS Lock;Lat;;Lon;;Alt;Speed;Track angle;HDOP;GG;AccX;AccY;AccZ;GyroX;GyroY;GyroZ;MagX;MagY;MagZ;Baro;Voltage;Current;mAh;T1;T2;T3\r\n", 136, &bytesWritten);
+#ifdef DEBUG_USB
+	sendUSBMessage("Log opened");
+#endif
 }
 
 void closeLog(void)
@@ -69,6 +100,9 @@ void closeLog(void)
 	SD_WRITE_LOG = 0;
 	f_close(&logFile);
 	f_mount(0,0);
+#ifdef DEBUG_USB
+	sendUSBMessage("Log closed");
+#endif
 }
 
 void write_toLog(void)
@@ -290,7 +324,66 @@ int storeNegativeNumber(uint16_t number, char* buffer, int offset)
 	return offset - charWritten;
 }
 
-uint16_t strToNumber(char* file, char* str)
+float32_t strToFloat32(char* file, char* str)
+{
+	char* strBeginning = 0;
+	char* strEnd = 0;
+	uint8_t convert = 0;
+	uint8_t strBeginLen = strlen(str);
+	float32_t convertedValue = 0;
+	float32_t multiplier = 0;
+	float32_t fraction = 0;
+	uint8_t i = 0;
+	uint8_t part = 0;
+	char currentChar = 0;
+	// file - file that contains data
+	// str - string that marks data, in form of val1=1234;
+	strBeginning = strstr(file, str);
+	// Check that it is not null
+	if(strBeginning != NULL)
+	{
+		// Get pointer to where in file string ends
+		strEnd = strstr(strBeginning, ";");
+		// Count how many chars to convert
+		convert = (uint8_t)((uint32_t)(strEnd - strBeginning) - strBeginLen);
+		// Convert
+		for(i = 0; i < convert; i++)
+		{
+			currentChar = strBeginning[strBeginLen + i];
+			if(part == 0)
+			{
+				if(currentChar == '.')
+				{
+					part = 1;
+					multiplier = 1;
+				}
+				else
+				{
+					convertedValue = convertedValue * 10;
+					// Get value
+					convertedValue = convertedValue + (float32_t)numberFromChar(currentChar);
+				}
+			}
+			else
+			{
+				fraction = fraction * 10;
+				multiplier = multiplier * 10;
+				// Get value
+				fraction = fraction + (float32_t)numberFromChar(currentChar);
+			}
+		}
+		// Merge
+		fraction = fraction / multiplier;
+		convertedValue = convertedValue + fraction;
+	}
+	else
+	{
+		convertedValue = 0;
+	}
+	return convertedValue;
+}
+
+uint16_t strTouint16(char* file, char* str)
 {
 	char* strBeginning = 0;
 	char* strEnd = 0;
@@ -302,12 +395,12 @@ uint16_t strToNumber(char* file, char* str)
 	char currentChar = 0;
 	// file - file that contains data
 	// str - string that marks data, in form of val1=1234;
-	strBeginning = strpbrk(file, str);
+	strBeginning = strstr(file, str);
 	// Check that it is not null
 	if(strBeginning != NULL)
 	{
 		// Get pointer to where in file string ends
-		strEnd = strpbrk(strBeginning, ";");
+		strEnd = strstr(strBeginning, ";");
 		// Count how many chars to convert
 		convert = (uint8_t)((uint32_t)(strEnd - strBeginning) - strBeginLen);
 		// Convert
@@ -337,7 +430,7 @@ uint8_t numberFromChar(char c)
 	return c - 48;
 }
 
-void loadSettings(void)
+ErrorStatus loadSettings(void)
 {
 	FATFS FileSystemObject;
 	DSTATUS driveStatus;
@@ -347,7 +440,12 @@ void loadSettings(void)
 
 	if(f_mount(0, &FileSystemObject)!=FR_OK)
 	{
+#ifdef DEBUG_USB
+	sendUSBMessage("FS mount error");
+#endif
 		//flag error
+		f_mount(0,0);
+		return ERROR;
 	}
 	driveStatus = disk_status (0);
 	if((driveStatus & STA_NOINIT) ||
@@ -355,26 +453,53 @@ void loadSettings(void)
 		   (driveStatus & STA_PROTECT)
 		   )
 	{
+#ifdef DEBUG_USB
+	sendUSBMessage("Drive Status error");
+#endif
 		//flag error.
+		f_mount(0,0);
+		return ERROR;
 	}
 	// Open file
 	if(f_open(&settingsFile, "/settings.txt", FA_READ | FA_WRITE | FA_OPEN_ALWAYS)!=FR_OK)
 	{
+#ifdef DEBUG_USB
+	sendUSBMessage("File open error");
+#endif
 		//flag error
+		f_mount(0,0);
+		return ERROR;
 	}
 	// Read file to buffer
-	//bytesToRead = f_size(&settingsFile);
+	bytesToRead = f_size(&settingsFile);
 
-	if(f_read (&settingsFile, FSBuffer, bytesToRead, &readBytes) != FR_OK)
+	//fileBuffer = malloc(250);
+
+	if(f_read (&settingsFile, &FSBuffer[0], bytesToRead, &readBytes) != FR_OK)
 	{
-
+#ifdef DEBUG_USB
+	sendUSBMessage("File read error");
+#endif
+		//Close and unmount.
+		f_close(&settingsFile);
+		f_mount(0,0);
+		return ERROR;
 	}
 	// Process data
-	SD_RESULT = strToNumber(FSBuffer, "val1=");
+	ahrs_data.accRate = strToFloat32(&FSBuffer[0], "accRate=");
+
+	ahrs_data.gyroRate = strToFloat32(&FSBuffer[0], "gyroRate=");
+
+	ahrs_data.magRate = strToFloat32(&FSBuffer[0], "magRate=");
 
 	//Close and unmount.
 	f_close(&settingsFile);
 	f_mount(0,0);
+
+#ifdef DEBUG_USB
+	sendUSBMessage("Settings loaded");
+#endif
+	return SUCCESS;
 }
 
 void NVIC_EnableInterrupts(FunctionalState newState)
@@ -673,30 +798,10 @@ float intToFloat(int whole, int frac)
 	float result = 0;
 	float temp = 0;
 	temp = (float)frac;
-	/*
-	if(temp > 999)
-	{
-		temp = temp / 10000;
-	}
-	else if(temp > 99)
-	{
-		temp = temp / 1000;
-	}
-	else if(temp > 9)
-	{
-		temp = temp / 100;
-	}
-	else
-	{
-		temp = temp / 10;
-	}
-*/
 	while(frac > 0)
 	{
 		frac = frac / 10;
 	}
-
-
 	result = (float)whole + temp;
 	return result;
 }
@@ -709,16 +814,17 @@ void sendUSBMessage(char* message)
  	if(USB_OTG_dev.dev.device_status == USB_OTG_CONFIGURED)
  	{
 		// Check length
-		if(len < 61)
+ 		if(len > 60)
+ 		{
+ 			len = 60;
+ 		}
+		Buffer[0] = 2;
+		Buffer[1] = 3;
+		for(i = 0; i < len; i++)
 		{
-			Buffer[0] = 2;
-			Buffer[1] = 3;
-			for(i = 0; i < len; i++)
-			{
-				Buffer[i + 2] =  (uint8_t)message[i];
-			}
-			Buffer[i + 2] = 0;
-			USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
+			Buffer[i + 2] =  (uint8_t)message[i];
 		}
+		Buffer[i + 2] = 0;
+		USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
  	}
 }

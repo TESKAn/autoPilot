@@ -8,13 +8,15 @@
 #ifndef FUNCTIONS_H_
 #define FUNCTIONS_H_
 
+void storeAHRSAngles(void);
 void openLog(void);
 void closeLog(void);
 void write_toLog(void);
 int storeNumber(uint16_t number, char* buffer, int offset);
 int storeNegativeNumber(uint16_t number, char* buffer, int offset);
-uint16_t strToNumber(char* file, char* str);
-void loadSettings(void);
+float32_t strToFloat32(char* file, char* str);
+uint16_t strTouint16(char* file, char* str);
+ErrorStatus loadSettings(void);
 char charFromNumber(uint8_t number);
 uint8_t numberFromChar(char c);
 void NVIC_EnableInterrupts(FunctionalState newState);

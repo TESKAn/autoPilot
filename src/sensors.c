@@ -280,9 +280,13 @@ void copySensorData(void)
 	uiTemp = uiTemp & 0x000F;
 	BARO = BARO + uiTemp;
 	// Update vectors
-	updateScaledVector(&GyroVector, GYRO_X, GYRO_Y, GYRO_Z, GYRO_RATE);
-	updateScaledVector(&AccelVector, ACC_X, ACC_Y, ACC_Z, ACC_RATE);
-	updateScaledVector(&MagnetVector, MAG_X, MAG_Y, MAG_Z, MAG_RATE);
+	updateScaledVector(&(ahrs_data.GyroVector), GYRO_X, GYRO_Y, GYRO_Z, ahrs_data.gyroRate);
+	updateScaledVector(&(ahrs_data.AccVector), ACC_X, ACC_Y, ACC_Z, ahrs_data.accRate);
+	updateScaledVector(&(ahrs_data.MagVector), MAG_X, MAG_Y, MAG_Z, ahrs_data.magRate);
+	// Update AHRS
+	updateRotationMatrix(&(ahrs_data.rotationMatrix), &(ahrs_data.GyroVector));
+	// Store angles
+	storeAHRSAngles();
 	// Check if we are nulling
 	if(EXTSENS_NULLING_GYRO)
 	{

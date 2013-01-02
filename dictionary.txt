@@ -29,3 +29,6 @@ rad
 nulling
 redo
 transpond
+yaw
+deg
+ahrs

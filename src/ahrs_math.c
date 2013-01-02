@@ -10,17 +10,20 @@
 
 void updateScaledVector(vectorData * vector, uint16_t x, uint16_t y, uint16_t z, float rate)
 {
+	// Store delta time
+	vector->deltaTime = sensorAcquisitionTime - vector->dataTime;
 	// Store time
 	vector->dataTime = sensorAcquisitionTime;
-	vector->vector.pData[VECT_X] = (float) x * rate;
-	vector->vector.pData[VECT_Y] = (float) y * rate;
-	vector->vector.pData[VECT_Z] = (float) z * rate;
+	vector->vector.pData[VECT_X] = (float) ((int16_t)x) * rate;
+	vector->vector.pData[VECT_Y] = (float) ((int16_t)y) * rate;
+	vector->vector.pData[VECT_Z] = (float) ((int16_t)z) * rate;
 }
 
 
 void ahrs_vectorDataInit(vectorData * vector, VectType type)
 {
-	vector->dataTime = 0;
+	vector->dataTime = systemTime;
+	vector->deltaTime = 0;
 	vector->type = ROW;
 
 	if(type == ROW)
@@ -48,6 +51,8 @@ void ahrs_vectorDataInit(vectorData * vector, VectType type)
 
 void ahrs_vectorUpdate(vectorData * vector, float32_t i, float32_t j, float32_t k)
 {
+	vector->deltaTime = systemTime - vector->dataTime;
+	vector->dataTime = systemTime;
 	vector->vector.pData[0] = i;
 	vector->vector.pData[1] = j;
 	vector->vector.pData[2] = k;
@@ -55,6 +60,7 @@ void ahrs_vectorUpdate(vectorData * vector, float32_t i, float32_t j, float32_t 
 
 void ahrs_matrix3by3_init(matrix3by3 * matrix)
 {
+	matrix->dataTime = systemTime;
 	matrix->vector.numCols = 3;
 	matrix->vector.numRows = 3;
 	matrix->vector.pData = matrix->vectorData;
@@ -62,6 +68,8 @@ void ahrs_matrix3by3_init(matrix3by3 * matrix)
 
 void ahrs_generate_rotationMatrix(matrix3by3 * matrix, float roll, float pitch, float yaw)
 {
+	matrix->dataTime = systemTime;
+
 	float cp = arm_cos_f32(pitch);
 	float sp = arm_sin_f32(pitch);
 	float cr = arm_cos_f32(roll);
@@ -82,6 +90,7 @@ void ahrs_generate_rotationMatrix(matrix3by3 * matrix, float roll, float pitch, 
 
 void ahrs_generate_rotationUpdateMatrix(vectorData * vectorA, matrix3by3 * matrix)
 {
+	matrix->dataTime = systemTime;
 	matrix->vectorData[0] = 1;
 	matrix->vectorData[1] = vectorA->vectorData[VECT_Z];
 	matrix->vectorData[2] = -vectorA->vectorData[VECT_Y];
@@ -110,22 +119,7 @@ arm_status ahrs_mult_matrixes(matrix3by3 * matrixA, matrix3by3 * matrixB, matrix
 arm_status ahrs_mult_vector_matrix(vectorData * vectorA, matrix3by3 * matrix, vectorData * vectorB)
 {
 	arm_status status;
-	// Check that vectors are both single column
-	/*
-	if(vectorA->type == ROW)
-	{
-		// if single row, transpond
-		vectorA->vector.numCols = 1;
-		vectorA->vector.numRows = 3;
-		vectorA->type = COLUMN;
-	}
-	if(vectorB->type == ROW)
-	{
-		// if single row, transpond
-		vectorB->vector.numCols = 1;
-		vectorB->vector.numRows = 3;
-		vectorB->type = COLUMN;
-	}*/
+
 	// Multiply
 	status = arm_mat_mult_f32(&(vectorA->vector), &(matrix->vector), &(vectorB->vector));
 	if(status == ARM_MATH_SUCCESS)

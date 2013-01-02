@@ -170,7 +170,7 @@ void GPS_ReceiveProcess(uint8_t data)
 					GPSFLAG_CR_RECEIVED = 0;
 					GPSFLAG_CHECKSUM_RESET = 1;
 					// Mark new data time
-					GPS_DataReceivedTime = systemTime;
+					ahrs_data.GPSData.dataStartTime = systemTime;
 				}
 				break;
 			}
@@ -449,41 +449,22 @@ void GPS_ReceiveProcess(uint8_t data)
 							if((GPS_VALID & _BIT15) != 0)
 							{
 								// Store to GPS_Data as floats
-								GPS_Data.dataValid = INVALID;
-								GPS_Data.altitude = intToFloat(GPS_ALTITUDE, GPS_ALTITUDE_FRAC);
+								ahrs_data.GPSData.dataValid = INVALID;
+								ahrs_data.GPSData.altitude = intToFloat(GPS_ALTITUDE, GPS_ALTITUDE_FRAC);
 								// Latitude, longitude in rad = res * (pi/180*180)
-								GPS_Data.latitude = intToFloat(GPS_LATITUDE, GPS_LATITUDE_FRAC);
-								GPS_Data.latitude = (GPS_Data.latitude * PI)/32400;
+								ahrs_data.GPSData.latitude = intToFloat(GPS_LATITUDE, GPS_LATITUDE_FRAC);
+								ahrs_data.GPSData.latitude = (ahrs_data.GPSData.latitude * PI)/32400;
 
-								GPS_Data.longitude = intToFloat(GPS_LONGITUDE, GPS_LONGITUDE_FRAC);
-								GPS_Data.longitude = (GPS_Data.longitude * PI)/10800;
+								ahrs_data.GPSData.longitude = intToFloat(GPS_LONGITUDE, GPS_LONGITUDE_FRAC);
+								ahrs_data.GPSData.longitude = (ahrs_data.GPSData.longitude * PI)/10800;
 
-								GPS_Data.speed = intToFloat(GPS_SPEED, GPS_SPEED_FRAC);
-								GPS_Data.trackAngle = intToFloat(GPS_TRACKANGLE, GPS_TRACKANGLE_FRAC);
-								GPS_Data.dataTime = GPS_DataReceivedTime;
-								GPS_Data.dataValid = VALID;
+								ahrs_data.GPSData.speed = intToFloat(GPS_SPEED, GPS_SPEED_FRAC);
+								ahrs_data.GPSData.trackAngle = intToFloat(GPS_TRACKANGLE, GPS_TRACKANGLE_FRAC);
+								ahrs_data.GPSData.dataTime = ahrs_data.GPSData.dataStartTime;
+								ahrs_data.GPSData.dataValid = VALID;
 							}
 							// Mark GPS OK
 							SCR2 = SCR2 | SCR2_GPSOK;
-							/*
-							GPS_LATITUDE = GPS_LATITUDE_T;
-							GPS_LONGITUDE = GPS_LONGITUDE_T;
-							GPS_ALTITUDE = GPS_ALTITUDE_T;
-							GPS_SPEED = GPS_SPEED_T;
-							GPS_TRACKANGLE = GPS_TRACKANGLE_T;
-							GPS_SATSTATUS = GPS_SATSTATUS_T;
-							GPS_HOURS = GPS_HOURS_T;
-							GPS_MINUTES	= GPS_MINUTES_T;
-							GPS_SECONDS = GPS_SECONDS_T;
-							GPS_DAY	= GPS_DAY_T;
-							GPS_MONTH = GPS_MONTH_T;
-							GPS_YEAR = GPS_YEAR_T;
-							GPS_LATITUDE_FRAC = GPS_LATITUDE_FRAC_T;
-							GPS_LONGITUDE_FRAC = GPS_LONGITUDE_FRAC_T;
-							GPS_NS_EW = GPS_NS_EW_T;
-							GPS_VALID = GPS_VALID_T;
-							GPS_DOP = GPS_DOP_T;
-							*/
 						}
 						else
 						{

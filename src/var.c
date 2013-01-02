@@ -10,6 +10,9 @@
 // Flag variable
 volatile Flag flag0;
 
+volatile char* fileBuffer;
+volatile float32_t globalFloatTemp = 0;
+
 // Temp variable
 volatile int globalTemp = 0;
 

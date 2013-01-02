@@ -26,19 +26,20 @@ typedef arm_matrix_instance_f32 vector3f;
 // Structure for vector with 3 elements
 typedef struct
 {
-	uint32_t dataTime;
-	VectType type;
-	vector3f vector;
 	float32_t vectorData[3];
+	vector3f vector;
+	uint32_t dataTime;
+	uint32_t deltaTime;		// Time that has passed between two samples
+	VectType type;
 }vectorData;
 
 
 // Structure for 3x3 matrix
 typedef struct
 {
-	uint32_t dataTime;
-	vector3f vector;
 	float32_t vectorData[9];
+	vector3f vector;
+	uint32_t dataTime;
 }matrix3by3;
 
 
@@ -51,34 +52,48 @@ typedef enum {INVALID = 0, VALID = !INVALID} GPSDataValid;
 typedef struct
 {
 	uint32_t dataTime;
-	GPSDataValid dataValid;
+	uint32_t dataStartTime;
 	float latitude;
 	float longitude;
 	float speed;
 	float altitude;
 	float trackAngle;
+	GPSDataValid dataValid;
 }GPSTypeDef;
 
+typedef struct
+{
+	// Rotation matrix
+	matrix3by3 rotationMatrix;
+	// Acceleration vector
+	vectorData AccVector;
+	// Gyroscope vector
+	vectorData GyroVector;
+	// Magnetometer vector
+	vectorData MagVector;
+	// Pitch, roll, yaw angles in rad
+	vectorData RollPitchYaw;
+	// GPS data
+	GPSTypeDef GPSData;
+	// Scale values
+	float32_t gyroRate;
+	float32_t accRate;
+	float32_t magRate;
+}AHRSData;
+
+extern AHRSData ahrs_data;
 
 
-extern GPSTypeDef GPS_Data;
-extern uint32_t GPS_DataReceivedTime;
-
-// Gyro
-extern vectorData GyroVector;
-// Acceleration
-extern vectorData AccelVector;
-// Magnetometer
-extern vectorData MagnetVector;
-// Rotation matrix
-extern matrix3by3 rotationMatrix;
 // Temporary matrices and vectors
 extern matrix3by3 tempMatrix;
 extern matrix3by3 holdMatrix;
 extern vectorData tempVector;
 
 // Function exports - ahrs.h
+void initAHRSStructure(AHRSData * ahrsStructure);
 arm_status updateRotationMatrix(matrix3by3 * rotMatrix, vectorData * rotVector);
+void ahrs_resetRotationMatrix(void);
+void ahrs_getAngles(matrix3by3 * rotMatrix, vector3f *vector);
 
 // Function exports - ahrs_math.h
 void updateScaledVector(vectorData * vector, uint16_t x, uint16_t y, uint16_t z, float rate);

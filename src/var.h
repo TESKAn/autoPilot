@@ -58,6 +58,8 @@ typedef union
 // Flag variable
 extern volatile Flag flag0;
 
+extern volatile char* fileBuffer;
+extern volatile float32_t globalFloatTemp;
 // Temp variable
 extern volatile int globalTemp;
 

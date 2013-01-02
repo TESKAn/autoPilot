@@ -116,6 +116,10 @@ void crcOnMessage(unsigned int uiDataLen);
 #define AIN3				MODBUSReg[69]
 // SD result
 #define SD_RESULT			MODBUSReg[70]
+// direction angles
+#define AHRS_PITCH			MODBUSReg[71]
+#define AHRS_ROLL			MODBUSReg[72]
+#define AHRS_YAW			MODBUSReg[73]
 
 // Typedefs
 // MODBUS data structure
