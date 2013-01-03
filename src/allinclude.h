@@ -16,6 +16,7 @@
 #include <malloc.h>
 #include "syscalls.h"
 #include "arm_math.h"
+#include "math.h"
 
 // USB defines
 #include "usbd_hid_core.h"

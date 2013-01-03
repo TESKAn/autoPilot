@@ -93,3 +93,4 @@ volatile uint16_t LED_ToggleCount = 0;
 // Buffer for data from PC to uC for USB
 uint8_t Buffer[64];
 char FSBuffer[FATFS_BUFF_SIZE];	// Pointer to buffer for file write
+

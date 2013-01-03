@@ -23,6 +23,17 @@ typedef arm_matrix_instance_f32 vector3f;
 #define VECT_B		1
 #define VECT_C		2
 
+// Define R matrix elements
+#define Rxx			0
+#define Ryx			1
+#define Rzx			2
+#define Rxy			3
+#define Ryy			4
+#define Rzy			5
+#define Rxz			6
+#define Ryz			7
+#define Rzz			8
+
 // Structure for vector with 3 elements
 typedef struct
 {
@@ -31,7 +42,7 @@ typedef struct
 	uint32_t dataTime;
 	uint32_t deltaTime;		// Time that has passed between two samples
 	VectType type;
-}vectorData;
+}__attribute__((aligned(4),packed)) vectorData;
 
 
 // Structure for 3x3 matrix
@@ -40,7 +51,7 @@ typedef struct
 	float32_t vectorData[9];
 	vector3f vector;
 	uint32_t dataTime;
-}matrix3by3;
+}__attribute__((aligned(4),packed)) matrix3by3;
 
 
 
@@ -59,7 +70,7 @@ typedef struct
 	float altitude;
 	float trackAngle;
 	GPSDataValid dataValid;
-}GPSTypeDef;
+}__attribute__((aligned(4),packed)) GPSTypeDef;
 
 typedef struct
 {
@@ -67,10 +78,22 @@ typedef struct
 	matrix3by3 rotationMatrix;
 	// Acceleration vector
 	vectorData AccVector;
+	// Acceleration offset vector
+	vectorData AccOffsetVector;
+	// Acceleration scale vector
+	vectorData AccScaleVector;
 	// Gyroscope vector
 	vectorData GyroVector;
+	// Gyroscope offsets
+	vectorData GyroOffsetVector;
+	// Gyroscope scale vector
+	vectorData GyroScaleVector;
 	// Magnetometer vector
 	vectorData MagVector;
+	// Magnetometer offset vector
+	vectorData MagOffsetVector;
+	// Magnetometer scale vector
+	vectorData MagScaleVector;
 	// Pitch, roll, yaw angles in rad
 	vectorData RollPitchYaw;
 	// GPS data
@@ -79,7 +102,7 @@ typedef struct
 	float32_t gyroRate;
 	float32_t accRate;
 	float32_t magRate;
-}AHRSData;
+}__attribute__((aligned(4),packed)) AHRSData;
 
 extern AHRSData ahrs_data;
 

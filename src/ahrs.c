@@ -19,8 +19,14 @@ vectorData tempVector;
 void initAHRSStructure(AHRSData * ahrsStructure)
 {
 	ahrs_vectorDataInit(&(ahrsStructure->AccVector), ROW);
+	ahrs_vectorDataInit(&(ahrsStructure->AccOffsetVector), ROW);
+	ahrs_vectorDataInit(&(ahrsStructure->AccScaleVector), ROW);
 	ahrs_vectorDataInit(&(ahrsStructure->GyroVector), ROW);
+	ahrs_vectorDataInit(&(ahrsStructure->GyroOffsetVector), ROW);
+	ahrs_vectorDataInit(&(ahrsStructure->GyroScaleVector), ROW);
 	ahrs_vectorDataInit(&(ahrsStructure->MagVector), ROW);
+	ahrs_vectorDataInit(&(ahrsStructure->MagOffsetVector), ROW);
+	ahrs_vectorDataInit(&(ahrsStructure->MagScaleVector), ROW);
 	ahrs_vectorDataInit(&(ahrsStructure->RollPitchYaw), ROW);
 	ahrs_matrix3by3_init(&(ahrsStructure->rotationMatrix));
 	ahrsStructure->GPSData.altitude = 0;

@@ -141,4 +141,5 @@ extern volatile uint16_t LED_ToggleCount;
 extern uint8_t Buffer[64];
 extern char FSBuffer[FATFS_BUFF_SIZE];	// Pointer to buffer for file write
 
+
 #endif /* VAR_H_ */

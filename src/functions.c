@@ -11,17 +11,17 @@ void storeAHRSAngles(void)
 {
 	float32_t temp = 0;
 	int16_t temp1 = 0;
-	ahrs_getAngles(&(ahrs_data.rotationMatrix), &(ahrs_data.RollPitchYaw.vector));
+
 	// Store angles
-	temp = ahrs_data.RollPitchYaw.vector.pData[0] * 1000;
+	temp = -asin(ahrs_data.rotationMatrix.vector.pData[Rzx]) * 1000;
 	temp1 = (int16_t)temp;
 	AHRS_PITCH = (uint16_t) temp1;
 
-	temp = ahrs_data.RollPitchYaw.vector.pData[1] * 1000;
+	temp = atan2( ahrs_data.rotationMatrix.vector.pData[Rzy],  ahrs_data.rotationMatrix.vector.pData[Rzz]) * 1000;
 	temp1 = (int16_t)temp;
 	AHRS_ROLL = (uint16_t) temp1;
 
-	temp = ahrs_data.RollPitchYaw.vector.pData[2] * 1000;
+	temp = atan2( ahrs_data.rotationMatrix.vector.pData[Ryx],  ahrs_data.rotationMatrix.vector.pData[Rxx]) * 1000;
 	temp1 = (int16_t)temp;
 	AHRS_YAW = (uint16_t) temp1;
 }
