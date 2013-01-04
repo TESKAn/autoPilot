@@ -65,6 +65,7 @@ void GPSSetDataOutput(void)
 {
 	int numbytes = 0;
 	int i = 0;
+	uint32_t GPSTime = 0;
 	uint8_t checksum = 0;
 	// Mark GPS is sending data
 	GPS_SENDING = 1;
@@ -103,6 +104,17 @@ void GPSSetDataOutput(void)
 
 	// Send to DMA
 	transferDMA_USART3(GPS_DataBuffer, numbytes);
+
+	// Wait end of transfer
+	GPSTime = systemTime;
+	while(GPS_SENDING != 0)
+	{
+		// If waiting time is larger than GPS_TIMEOUT, break.
+		if((systemTime - GPSTime)> GPS_IMEOUT)
+		{
+			break;
+		}
+	}
 }
 
 uint8_t GPS_GetChar(uint8_t data, FlagStatus part)
@@ -171,6 +183,8 @@ void GPS_ReceiveProcess(uint8_t data)
 					GPSFLAG_CHECKSUM_RESET = 1;
 					// Mark new data time
 					ahrs_data.GPSData.dataStartTime = systemTime;
+					// Store rotation matrix
+					ahrs_data.GPSReference = ahrs_data.rotationMatrix;
 				}
 				break;
 			}
@@ -462,6 +476,8 @@ void GPS_ReceiveProcess(uint8_t data)
 								ahrs_data.GPSData.trackAngle = intToFloat(GPS_TRACKANGLE, GPS_TRACKANGLE_FRAC);
 								ahrs_data.GPSData.dataTime = ahrs_data.GPSData.dataStartTime;
 								ahrs_data.GPSData.dataValid = VALID;
+								// Update rotation matrix
+								ahrs_updateGPSToGyro();
 							}
 							// Mark GPS OK
 							SCR2 = SCR2 | SCR2_GPSOK;
@@ -485,6 +501,10 @@ void GPS_ReceiveProcess(uint8_t data)
 					GPS_Digits[1] = 0;
 					GPS_Digits_Count = 0;
 					GPSFLAG_CR_RECEIVED = 0;
+					// Mark new data time
+					ahrs_data.GPSData.dataStartTime = systemTime;
+					// Store rotation matrix
+					ahrs_data.GPSReference = ahrs_data.rotationMatrix;
 				}
 				else
 				{
@@ -674,6 +694,10 @@ void GPS_ReceiveProcess(uint8_t data)
 					GPS_Digits[1] = 0;
 					GPS_Digits_Count = 0;
 					GPSFLAG_CR_RECEIVED = 0;
+					// Mark new data time
+					ahrs_data.GPSData.dataStartTime = systemTime;
+					// Store rotation matrix
+					ahrs_data.GPSReference = ahrs_data.rotationMatrix;
 				}
 				else if(data == '*')
 				{

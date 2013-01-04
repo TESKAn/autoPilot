@@ -32,3 +32,8 @@ transpond
 yaw
 deg
 ahrs
+orthogonalize
+radians
+endpoint
+pdev
+xfer

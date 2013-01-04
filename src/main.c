@@ -52,7 +52,7 @@ __ALIGN_BEGIN	USB_OTG_CORE_HANDLE  USB_OTG_dev __ALIGN_END;
 
 int main(void)
 {
-	float32_t temp = 0;
+	//float32_t temp = 0;
 	// Init vectors
 
 	// Initialize matrices
@@ -93,21 +93,61 @@ int main(void)
 	  &USR_desc,
 	  &USBD_HID_cb,
 	  &USR_cb);
-
-		// Delay after USB is initialized - 0,5 sec
-		Delaynus(50000000);
-
+	// Peripherals initialized, wait 1 sec
+	Delayms(1000);
+	// Initialize SD card
+	FS_Initialize();
+#ifdef DEBUG_USB
+	sendUSBMessage("Power ON");
+#endif
 	// Init ahrs structure
 	initAHRSStructure(&ahrs_data);
-
+#ifdef DEBUG_USB
+	sendUSBMessage("AHRS initialized");
+#endif
+#ifdef DEBUG_USB
+	sendUSBMessage("Configuring GPS");
+#endif
+	// Setup GPS
+	GPSSetDataOutput();
+#ifdef DEBUG_USB
+	sendUSBMessage("GPS configured");
+#endif
+	Delayms(1000);
+	// Setup sensors
+#ifdef DEBUG_USB
+	sendUSBMessage("Configuring sensors");
+#endif
+#ifdef DEBUG_USB
+	sendUSBMessage("Reset Power sensor");
+#endif
+	PSReset();
+	Delayms(1000);
+#ifdef DEBUG_USB
+	sendUSBMessage("Configure I2C sensors");
+#endif
+	sensorInit();
+#ifdef DEBUG_USB
+	sendUSBMessage("Enable ADC");
+#endif
+	ADC_ENABLED = 1;
+	// Mark sensors initiated
+	EXTSENS_INIT_DONE = 1;
+	// Mark null sensor
+	EXTSENS_NULLING_GYRO = 1;
+#ifdef DEBUG_USB
+	sendUSBMessage("Sensors configured");
+#endif
+	Delayms(1000);
+#ifdef DEBUG_USB
+	sendUSBMessage("Reset matrix");
+#endif
+	ahrs_resetRotationMatrix();
 #ifdef DEBUG_USB
 	sendUSBMessage("AutoPilot OnLine");
 #endif
-
     while (1)
     {
-        //Delaynus(1000000 / 2000);    /* A short delay */
-        //Delaynus(1000000 / 2000);
         // Check MODBUS for messages
         if(MB_HASDATA)
         {
@@ -119,7 +159,6 @@ int main(void)
         	// Set MODBUS to IDLE
         	MB_SETTOIDLE;
         }
-
         //check SCR
         if(SCR1 & SCR_01)
         {
@@ -182,7 +221,7 @@ int main(void)
         }
         if(SCR1 & SCR_10)
         {
-        	storeAHRSAngles();
+        	Delayms(1000);
         	SCR1 = SCR1 & ~SCR_10;
         }
         if(SCR1 & SCR_11)

@@ -12,6 +12,7 @@
 
 #define GPS_RECEIVE
 
+#define GPS_IMEOUT		1000
 
 #define USE_TIMER
 

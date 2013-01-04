@@ -399,6 +399,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 
 		// Update system time
 		systemTime++;
+		DEBUG_PIN_TOGGLE;
 
 		if(ADC_ENABLED)
 		{

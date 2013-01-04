@@ -24,13 +24,8 @@ volatile uint16_t sensoruTimeCounter = 0;
 uint32_t sensorAcquisitionTime = 0;
 
 // Offset registers
-volatile int16_t gyroOffsets[3] = {0,0,0};
 uint8_t gyroOffsetSampleCount = 0;
-
-volatile int16_t accOffsets[3] = {0,0,0};
 uint8_t accOffsetSampleCount = 0;
-
-volatile int16_t magOffsets[3] = {0,0,0};
 uint8_t magOffsetSampleCount = 0;
 
 // Timeout function
@@ -235,42 +230,42 @@ void copySensorData(void)
 	ACC_X = (I2C2_DMABufRX[0] << 8) & 0xff00;
 	ACC_X = ACC_X | (I2C2_DMABufRX[1] & 0x00ff);
 	// Remove offset
-	ACC_X = ACC_X - accOffsets[0];
+	ACC_X = ACC_X - ahrs_data.AccOffsetVector.vector.pData[VECT_X];
 	ACC_Y = (I2C2_DMABufRX[2] << 8) & 0xff00;
 	ACC_Y = ACC_Y | (I2C2_DMABufRX[3] & 0x00ff);
 	// Remove offset
-	ACC_Y = ACC_Y - accOffsets[1];
+	ACC_Y = ACC_Y - ahrs_data.AccOffsetVector.vector.pData[VECT_Y];
 	ACC_Z = (I2C2_DMABufRX[4] << 8) & 0xff00;
 	ACC_Z = ACC_Z | (I2C2_DMABufRX[5] & 0x00ff);
 	// Remove offset
-	ACC_Z = ACC_Z - accOffsets[2];
+	ACC_Z = ACC_Z - ahrs_data.AccOffsetVector.vector.pData[VECT_Z];
 	// Reg 65,66(6,7) is IC temperature
 	// Reg 67, 72 (8,13)is gyro
 	GYRO_X = (I2C2_DMABufRX[8] << 8) & 0xff00;
 	GYRO_X = GYRO_X | (I2C2_DMABufRX[9] & 0x00ff);
 	// Remove offset
-	GYRO_X = GYRO_X - gyroOffsets[0];
+	GYRO_X = GYRO_X - ahrs_data.GyroOffsetVector.vector.pData[VECT_X];
 	GYRO_Y = (I2C2_DMABufRX[10] << 8) & 0xff00;
 	GYRO_Y = GYRO_Y | (I2C2_DMABufRX[11] & 0x00ff);
 	// Remove offset
-	GYRO_Y = GYRO_Y - gyroOffsets[1];
+	GYRO_Y = GYRO_Y - ahrs_data.GyroOffsetVector.vector.pData[VECT_Y];
 	GYRO_Z = (I2C2_DMABufRX[12] << 8) & 0xff00;
 	GYRO_Z = GYRO_Z | (I2C2_DMABufRX[13] & 0x00ff);
 	// Remove offset
-	GYRO_Z = GYRO_Z - gyroOffsets[2];
+	GYRO_Z = GYRO_Z - ahrs_data.GyroOffsetVector.vector.pData[VECT_Z];
 	// Reg 73,78 (14,19) is mag data
 	MAG_X = (I2C2_DMABufRX[14] << 8) & 0xff00;
 	MAG_X = MAG_X | (I2C2_DMABufRX[15] & 0x00ff);
 	// Remove offset
-	MAG_X = MAG_X - magOffsets[0];
+	MAG_X = MAG_X - ahrs_data.MagOffsetVector.vector.pData[VECT_X];
 	MAG_Y = (I2C2_DMABufRX[16] << 8) & 0xff00;
 	MAG_Y = MAG_Y | (I2C2_DMABufRX[17] & 0x00ff);
 	// Remove offset
-	MAG_Y = MAG_Y - magOffsets[1];
+	MAG_Y = MAG_Y - ahrs_data.MagOffsetVector.vector.pData[VECT_Y];
 	MAG_Z = (I2C2_DMABufRX[18] << 8) & 0xff00;
 	MAG_Z = MAG_Z | (I2C2_DMABufRX[19] & 0x00ff);
 	// Remove offset
-	MAG_Z = MAG_Z - magOffsets[2];
+	MAG_Z = MAG_Z - ahrs_data.MagOffsetVector.vector.pData[VECT_Z];
 	// Reg 79,80 (20,21) is barometer data
 	BARO = (I2C2_DMABufRX[20] << 8) & 0xff00;
 	BARO = BARO | (I2C2_DMABufRX[21] & 0x00ff);
@@ -279,22 +274,18 @@ void copySensorData(void)
 	uiTemp = uiTemp >> 4;
 	uiTemp = uiTemp & 0x000F;
 	BARO = BARO + uiTemp;
-	// Update vectors
-	updateScaledVector(&(ahrs_data.GyroVector), GYRO_X, GYRO_Y, GYRO_Z, ahrs_data.gyroRate);
-	updateScaledVector(&(ahrs_data.AccVector), ACC_X, ACC_Y, ACC_Z, ahrs_data.accRate);
-	updateScaledVector(&(ahrs_data.MagVector), MAG_X, MAG_Y, MAG_Z, ahrs_data.magRate);
 	// Update AHRS
-	updateRotationMatrix(&(ahrs_data.rotationMatrix), &(ahrs_data.GyroVector));
+	ahrs_updateRotationMatrix(&ahrs_data);
 	// Store angles
 	storeAHRSAngles();
 	// Check if we are nulling
 	if(EXTSENS_NULLING_GYRO)
 	{
-		nullGyro();
+		nullGyro(&ahrs_data);
 	}
 	if(EXTSENS_NULLING_ACC)
 	{
-		nullAcc();
+		nullAcc(&ahrs_data);
 	}
 	// Check if we are sending sensor data back at full speed
 	if(EXTSENS_FS_REPORT)
@@ -307,28 +298,6 @@ void copySensorData(void)
     		{
     			Buffer[uiTemp + 2] =  I2C2_DMABufRX[uiTemp];
     		}
-    		// Store offsets
-    		Buffer[24] = accOffsets[0] >> 8;
-    		Buffer[25] = accOffsets[0];
-    		Buffer[26] = accOffsets[1] >> 8;
-    		Buffer[27] = accOffsets[1];
-    		Buffer[28] = accOffsets[2] >> 8;
-    		Buffer[29] = accOffsets[2];
-
-    		Buffer[30] = gyroOffsets[0] >> 8;
-    		Buffer[31] = gyroOffsets[0];
-    		Buffer[32] = gyroOffsets[1] >> 8;
-    		Buffer[33] = gyroOffsets[1];
-    		Buffer[34] = gyroOffsets[2] >> 8;
-    		Buffer[35] = gyroOffsets[2];
-
-    		Buffer[36] = magOffsets[0] >> 8;
-    		Buffer[37] = magOffsets[0];
-    		Buffer[38] = magOffsets[1] >> 8;
-    		Buffer[39] = magOffsets[1];
-    		Buffer[40] = magOffsets[2] >> 8;
-    		Buffer[41] = magOffsets[2];
-
     		USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
      	}
 	}
@@ -1421,7 +1390,7 @@ void I2C2_DMA_ClearErrors(void)
 	DMA_ClearITPendingBit(DMA_I2C2_TX, DMA_I2C2_TX_IT_FEIF);
 }
 
-void nullGyro(void)
+void nullGyro(AHRSData * data)
 {
 	if(EXTSENS_NULLING_GYRO)
 	{
@@ -1434,9 +1403,9 @@ void nullGyro(void)
 				((int16_t)GYRO_Z > OFFSET_SAMPLE_MIN_VALUE))
 		{
 			// Store current values as offsets
-			gyroOffsets[0] += ((int16_t)GYRO_X >> 1);
-			gyroOffsets[1] += ((int16_t)GYRO_Y >> 1);
-			gyroOffsets[2] += ((int16_t)GYRO_Z >> 1);
+			data->GyroOffsetVector.vector.pData[VECT_X] += ((int16_t)GYRO_X >> 1);
+			data->GyroOffsetVector.vector.pData[VECT_Y] += ((int16_t)GYRO_Y >> 1);
+			data->GyroOffsetVector.vector.pData[VECT_Z] += ((int16_t)GYRO_Z >> 1);
 			gyroOffsetSampleCount++;
 		}
 		else
@@ -1446,20 +1415,20 @@ void nullGyro(void)
 #endif
 			// Else restart process
 			gyroOffsetSampleCount = 0;
-			gyroOffsets[0] = 0;
-			gyroOffsets[1] = 0;
-			gyroOffsets[2] = 0;
+			data->GyroOffsetVector.vector.pData[VECT_X] = 0;
+			data->GyroOffsetVector.vector.pData[VECT_Y] = 0;
+			data->GyroOffsetVector.vector.pData[VECT_Z] = 0;
 		}
 
 		if(gyroOffsetSampleCount >= OFFSET_SAMPLE_COUNT)
 		{
 			// Check that values are below OFFSET_MAX_VALUE
-			if((gyroOffsets[0] < OFFSET_MAX_VALUE)&&
-					(gyroOffsets[1] < OFFSET_MAX_VALUE)&&
-					(gyroOffsets[2] < OFFSET_MAX_VALUE)&&
-					(gyroOffsets[0] > OFFSET_MIN_VALUE)&&
-					(gyroOffsets[1] > OFFSET_MIN_VALUE)&&
-					(gyroOffsets[2] > OFFSET_MIN_VALUE))
+			if((data->GyroOffsetVector.vector.pData[VECT_X] < OFFSET_MAX_VALUE)&&
+					(data->GyroOffsetVector.vector.pData[VECT_Y] < OFFSET_MAX_VALUE)&&
+					(data->GyroOffsetVector.vector.pData[VECT_Z] < OFFSET_MAX_VALUE)&&
+					(data->GyroOffsetVector.vector.pData[VECT_X] > OFFSET_MIN_VALUE)&&
+					(data->GyroOffsetVector.vector.pData[VECT_Y] > OFFSET_MIN_VALUE)&&
+					(data->GyroOffsetVector.vector.pData[VECT_Z] > OFFSET_MIN_VALUE))
 			{
 				EXTSENS_NULLING_GYRO = 0;
 #ifdef DEBUG_USB
@@ -1470,15 +1439,15 @@ void nullGyro(void)
 			else
 			{
 				gyroOffsetSampleCount = 0;
-				gyroOffsets[0] = 0;
-				gyroOffsets[1] = 0;
-				gyroOffsets[2] = 0;
+				data->GyroOffsetVector.vector.pData[VECT_X] = 0;
+				data->GyroOffsetVector.vector.pData[VECT_Y] = 0;
+				data->GyroOffsetVector.vector.pData[VECT_Z] = 0;
 			}
 		}
 	}
 }
 
-void nullAcc(void)
+void nullAcc(AHRSData * data)
 {
 	// Do not null Z value -> gravity
 	if(EXTSENS_NULLING_ACC)
@@ -1490,8 +1459,8 @@ void nullAcc(void)
 				((int16_t)ACC_Y > OFFSET_SAMPLE_MIN_VALUE))
 		{
 			// Store current values as offsets
-			accOffsets[0] += ((int16_t)ACC_X >> 1);
-			accOffsets[1] += ((int16_t)ACC_Y >> 1);
+			data->AccOffsetVector.vector.pData[VECT_X] += ((int16_t)ACC_X >> 1);
+			data->AccOffsetVector.vector.pData[VECT_Y] += ((int16_t)ACC_Y >> 1);
 			accOffsetSampleCount++;
 		}
 		else
@@ -1501,18 +1470,18 @@ void nullAcc(void)
 #endif
 			// Else restart process
 			accOffsetSampleCount = 0;
-			accOffsets[0] = 0;
-			accOffsets[1] = 0;
-			accOffsets[2] = 0;
+			data->AccOffsetVector.vector.pData[VECT_X] = 0;
+			data->AccOffsetVector.vector.pData[VECT_Y] = 0;
+			data->AccOffsetVector.vector.pData[VECT_Z] = 0;
 		}
 
 		if(accOffsetSampleCount >= OFFSET_SAMPLE_COUNT)
 		{
 			// Check that values are below OFFSET_MAX_VALUE
-			if((gyroOffsets[0] < OFFSET_MAX_VALUE)&&
-					(accOffsets[1] < OFFSET_MAX_VALUE)&&
-					(accOffsets[0] > OFFSET_MIN_VALUE)&&
-					(accOffsets[1] > OFFSET_MIN_VALUE))
+			if((data->AccOffsetVector.vector.pData[VECT_X] < OFFSET_MAX_VALUE)&&
+					(data->AccOffsetVector.vector.pData[VECT_Y] < OFFSET_MAX_VALUE)&&
+					(data->AccOffsetVector.vector.pData[VECT_X] > OFFSET_MIN_VALUE)&&
+					(data->AccOffsetVector.vector.pData[VECT_Y] > OFFSET_MIN_VALUE))
 			{
 				EXTSENS_NULLING_ACC = 0;
 #ifdef DEBUG_USB
@@ -1523,9 +1492,9 @@ void nullAcc(void)
 			else
 			{
 				accOffsetSampleCount = 0;
-				accOffsets[0] = 0;
-				accOffsets[1] = 0;
-				accOffsets[2] = 0;
+				data->AccOffsetVector.vector.pData[VECT_X] = 0;
+				data->AccOffsetVector.vector.pData[VECT_Y] = 0;
+				data->AccOffsetVector.vector.pData[VECT_Z] = 0;
 			}
 		}
 	}

@@ -486,8 +486,10 @@ static uint8_t  USBD_HID_DataOut (void *pdev, uint8_t epnum)
 		{
 			/* read USB packet */
 			USB_OTG_ReadPacket((USB_OTG_CORE_HANDLE*)pdev, (uint8_t *)*Buffer, HID_OUT_PACKET);
+			//USB_OTG_ReadPacket((USB_OTG_CORE_HANDLE*)pdev, &Buffer[0], HID_OUT_PACKET);
 			/* process the report setting */
 
+			USB_RecData_Cnt++;
 
 			/*
 			for(i = 0; i < HID_OUT_PACKET; i++)
@@ -502,7 +504,7 @@ static uint8_t  USBD_HID_DataOut (void *pdev, uint8_t epnum)
 				{
 					break;
 				}
-				case 2:	//turn off all leds
+				case 2:	//turn off all LEDs
 				{
 					break;
 				}

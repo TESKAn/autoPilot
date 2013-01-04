@@ -49,6 +49,35 @@ void ahrs_vectorDataInit(vectorData * vector, VectType type)
 	vector->vector.pData[2] = 0;
 }
 
+void ahrs_vector3qDataInit(vector3qData * vector, VectType type)
+{
+	vector->dataTime = systemTime;
+	vector->deltaTime = 0;
+	vector->type = ROW;
+
+	if(type == ROW)
+	{
+		/* Assign Number of Rows */
+		vector->vector.numRows = 1;
+		/* Assign Number of Columns */
+		vector->vector.numCols = 3;
+	}
+	else
+	{
+		/* Assign Number of Rows */
+		vector->vector.numRows = 3;
+		/* Assign Number of Columns */
+		vector->vector.numCols = 1;
+	}
+	/* Assign Data pointer */
+	vector->vector.pData = vector->vectorData;
+
+	// Set vector to 0
+	vector->vector.pData[0] = 0;
+	vector->vector.pData[1] = 0;
+	vector->vector.pData[2] = 0;
+}
+
 void ahrs_vectorUpdate(vectorData * vector, float32_t i, float32_t j, float32_t k)
 {
 	vector->deltaTime = systemTime - vector->dataTime;

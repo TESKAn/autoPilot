@@ -8,6 +8,7 @@
 #ifndef FUNCTIONS_H_
 #define FUNCTIONS_H_
 
+ErrorStatus FS_Initialize(void);
 void storeAHRSAngles(void);
 void openLog(void);
 void closeLog(void);
@@ -21,6 +22,7 @@ char charFromNumber(uint8_t number);
 uint8_t numberFromChar(char c);
 void NVIC_EnableInterrupts(FunctionalState newState);
 void extPeripheralInit(void);
+void Delayms(uint32_t ms);
 void Delaynus(vu32 nus);
 void transferDMA_USART2(uint8_t *data, int length);
 void transferDMA_USART3(uint8_t *data, int length);

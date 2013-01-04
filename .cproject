@@ -65,7 +65,7 @@
 								<option id="org.eclipse.cdt.cross.arm.gnu.c.link.option.nostdlibs.2078035535" name="No startup or default libs (-nostdlib)" superClass="org.eclipse.cdt.cross.arm.gnu.c.link.option.nostdlibs" value="false" valueType="boolean"/>
 								<option id="org.eclipse.cdt.cross.arm.gnu.c.link.option.gcsections.1647610856" name="Remove unused sections (-Xlinker --gc-sections)" superClass="org.eclipse.cdt.cross.arm.gnu.c.link.option.gcsections" value="true" valueType="boolean"/>
 								<option id="org.eclipse.cdt.cross.arm.gnu.c.linker.option.other.verbose.453131615" name="Verbose (-v)" superClass="org.eclipse.cdt.cross.arm.gnu.c.linker.option.other.verbose" value="false" valueType="boolean"/>
-								<option id="org.eclipse.cdt.cross.arm.gnu.c.link.option.libs.1861300567" superClass="org.eclipse.cdt.cross.arm.gnu.c.link.option.libs" valueType="libs">
+								<option id="org.eclipse.cdt.cross.arm.gnu.c.link.option.libs.1861300567" name="Libraries (-l)" superClass="org.eclipse.cdt.cross.arm.gnu.c.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="m"/>
 								</option>
 								<inputType id="org.eclipse.cdt.cross.arm.gnu.c.linker.input.588129883" superClass="org.eclipse.cdt.cross.arm.gnu.c.linker.input">
@@ -83,7 +83,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="FatFS/option/cc936.c|FatFS/option/cc949.c|FatFS/option/cc932.c|FatFS/option/cc950.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="src/tiny_printf.c|FatFS/option/cc936.c|FatFS/option/cc949.c|FatFS/option/cc932.c|FatFS/option/cc950.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -136,7 +136,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="FatFS/option/cc936.c|FatFS/option/cc949.c|FatFS/option/cc932.c|FatFS/option/cc950.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="src/tiny_printf.c|FatFS/option/cc936.c|FatFS/option/cc949.c|FatFS/option/cc932.c|FatFS/option/cc950.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

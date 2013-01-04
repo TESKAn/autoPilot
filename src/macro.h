@@ -61,6 +61,7 @@
 #define EXTSENS_NULLING_ACC		flag0.bits.BIT18
 #define EXTSENS_NULLING_MAG		flag0.bits.BIT19
 #define EXTSENS_FS_REPORT		flag0.bits.BIT20
+#define SD_INITIALIZED			flag0.bits.BIT21
 
 
 // DMA macros

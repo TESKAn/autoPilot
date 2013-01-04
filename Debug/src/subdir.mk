@@ -18,7 +18,6 @@ C_SRCS += \
 ../src/stm32f4xx_it.c \
 ../src/syscalls.c \
 ../src/system_stm32f4xx.c \
-../src/tiny_printf.c \
 ../src/usb_bsp.c \
 ../src/usbd_desc.c \
 ../src/usbd_usr.c \
@@ -43,7 +42,6 @@ OBJS += \
 ./src/stm32f4xx_it.o \
 ./src/syscalls.o \
 ./src/system_stm32f4xx.o \
-./src/tiny_printf.o \
 ./src/usb_bsp.o \
 ./src/usbd_desc.o \
 ./src/usbd_usr.o \
@@ -64,7 +62,6 @@ C_DEPS += \
 ./src/stm32f4xx_it.d \
 ./src/syscalls.d \
 ./src/system_stm32f4xx.d \
-./src/tiny_printf.d \
 ./src/usb_bsp.d \
 ./src/usbd_desc.d \
 ./src/usbd_usr.d \

@@ -5,6 +5,7 @@
 #ifndef _DISKIO
 
 #include "integer.h"
+#include <stdio.h>
 
 /* Status of Disk Functions */
 typedef BYTE DSTATUS;

@@ -19,12 +19,12 @@ void System_Config(void)
 	TIM_ICInitTypeDef TIM_ICInitStruct;
 	TIM_OCInitTypeDef TIM_OCInitStruct;
 	TIM_BDTRInitTypeDef TIM_BDTRInitStruct;
-	I2C_InitTypeDef I2CInitStruct;
+	//I2C_InitTypeDef I2CInitStruct;
 	ADC_InitTypeDef ADC_InitStruct;
 	ADC_CommonInitTypeDef ADC_CommonInitStructure;
 	DAC_InitTypeDef DAC_InitStruct;
 	DMA_InitTypeDef DMAInitStructure;
-	SPI_InitTypeDef SPIInitStructure;
+	//SPI_InitTypeDef SPIInitStructure;
 
 
 	//make structure for configuring USART

@@ -7,6 +7,24 @@
 #include "allinclude.h"
 #include <string.h>
 
+ErrorStatus FS_Initialize(void)
+{
+	if(!SD_INITIALIZED)
+	{
+		// Try to initialize SD card
+		if(disk_initialize(0) == RES_OK)
+		{
+			SD_INITIALIZED = 1;
+			return SUCCESS;
+		}
+	}
+	else
+	{
+		return SUCCESS;
+	}
+	return ERROR;
+}
+
 void storeAHRSAngles(void)
 {
 	float32_t temp = 0;
@@ -497,7 +515,7 @@ ErrorStatus loadSettings(void)
 	f_mount(0,0);
 
 #ifdef DEBUG_USB
-	sendUSBMessage("Settings loaded");
+	sendUSBMessage("Settings loaded successfully");
 #endif
 	return SUCCESS;
 }
@@ -704,6 +722,25 @@ void extPeripheralInit(void)
 #ifdef DEBUG_USB
 	sendUSBMessage("initialization done");
 #endif
+}
+
+void Delayms(uint32_t ms)
+{
+	uint32_t time = systemTime - 1;
+	uint32_t deltaTime = 0;
+	LED_OK_OFF;
+	while(deltaTime < ms)
+	{
+		Delaynus(1500);
+		if(systemTime == time)
+		{
+			// Error - time is not counting, break the loop
+			Delaynus(ms * 1000);
+			break;
+		}
+		deltaTime = systemTime - time;
+	}
+	LED_OK_ON;
 }
 
 /*
