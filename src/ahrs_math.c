@@ -7,6 +7,15 @@
 
 #include "allinclude.h"
 
+void ahrs_update_altitude(void)
+{
+	ahrs_data.Altitude.currentAltitude = (float)((int16_t)BARO) + (float)BARO_FRAC/10;
+	ahrs_data.Altitude.deltaTime = systemTime - ahrs_data.Altitude.dataTime;
+	ahrs_data.Altitude.dataTime = systemTime;
+	ahrs_data.Altitude.verticalSpeed = (ahrs_data.Altitude.lastAltitude - ahrs_data.Altitude.currentAltitude) / (ahrs_data.Altitude.deltaTime * SYSTIME_TOSECONDS);
+	ahrs_data.Altitude.verticalAcceleration = ahrs_data.Altitude.verticalSpeed / (ahrs_data.Altitude.deltaTime * SYSTIME_TOSECONDS);
+	ahrs_data.Altitude.lastAltitude = ahrs_data.Altitude.currentAltitude;
+}
 
 void updateScaledVector(vectorData * vector, uint16_t x, uint16_t y, uint16_t z, float rate)
 {
@@ -14,9 +23,9 @@ void updateScaledVector(vectorData * vector, uint16_t x, uint16_t y, uint16_t z,
 	vector->deltaTime = sensorAcquisitionTime - vector->dataTime;
 	// Store time
 	vector->dataTime = sensorAcquisitionTime;
-	vector->vector.pData[VECT_X] = (float) ((int16_t)x) * rate;
-	vector->vector.pData[VECT_Y] = (float) ((int16_t)y) * rate;
-	vector->vector.pData[VECT_Z] = (float) ((int16_t)z) * rate;
+	vector->vector.pData[VECT_X] = (float) ((int16_t)x) * rate * DEG_TO_RAD;
+	vector->vector.pData[VECT_Y] = (float) ((int16_t)y) * rate * DEG_TO_RAD;
+	vector->vector.pData[VECT_Z] = (float) ((int16_t)z) * rate * DEG_TO_RAD;
 }
 
 
@@ -117,17 +126,17 @@ void ahrs_generate_rotationMatrix(matrix3by3 * matrix, float roll, float pitch, 
 	matrix->vectorData[8] = cr * cp;
 }
 
-void ahrs_generate_rotationUpdateMatrix(vectorData * vectorA, matrix3by3 * matrix)
+void ahrs_generate_rotationUpdateMatrix(float32_t x, float32_t y, float32_t z, matrix3by3 * matrix)
 {
 	matrix->dataTime = systemTime;
 	matrix->vectorData[0] = 1;
-	matrix->vectorData[1] = vectorA->vectorData[VECT_Z];
-	matrix->vectorData[2] = -vectorA->vectorData[VECT_Y];
-	matrix->vectorData[3] = -vectorA->vectorData[VECT_Z];
+	matrix->vectorData[1] = z;
+	matrix->vectorData[2] = -y;
+	matrix->vectorData[3] = -z;
 	matrix->vectorData[4] = 1;
-	matrix->vectorData[5] = vectorA->vectorData[VECT_X];
-	matrix->vectorData[6] = vectorA->vectorData[VECT_Y];
-	matrix->vectorData[7] = -vectorA->vectorData[VECT_X];
+	matrix->vectorData[5] = x;
+	matrix->vectorData[6] = y;
+	matrix->vectorData[7] = -x;
 	matrix->vectorData[8] = 1;
 }
 

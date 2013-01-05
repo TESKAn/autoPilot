@@ -39,6 +39,12 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 	ahrsStructure->GPSData.speed = 0;
 	ahrsStructure->GPSData.trackAngle = 0;
 	ahrs_matrix3by3_init(&(ahrsStructure->GPSReference));
+	ahrsStructure->Altitude.currentAltitude = 0;
+	ahrsStructure->Altitude.dataTime = systemTime;
+	ahrsStructure->Altitude.deltaTime = 0;
+	ahrsStructure->Altitude.lastAltitude = 0;
+	ahrsStructure->Altitude.verticalAcceleration = 0;
+	ahrsStructure->Altitude.verticalSpeed = 0;
 	ahrs_resetRotationMatrix();
 	ahrsStructure->PlaneSpeed = 0;
 	ahrsStructure->PIData.Ix = 0;
@@ -97,6 +103,8 @@ arm_status ahrs_updateRotationMatrix(AHRSData * data)
 	updateScaledVector(&(ahrs_data.GyroVector), GYRO_X, GYRO_Y, GYRO_Z, ahrs_data.gyroRate);
 	updateScaledVector(&(ahrs_data.AccVector), ACC_X, ACC_Y, ACC_Z, ahrs_data.accRate);
 	updateScaledVector(&(ahrs_data.MagVector), MAG_X, MAG_Y, MAG_Z, ahrs_data.magRate);
+	// Update altitude reading
+	ahrs_update_altitude();
 	// Calculate gravity vector
 
 	// Remove angular acceleration from acceleration result
@@ -121,21 +129,21 @@ arm_status ahrs_updateRotationMatrix(AHRSData * data)
 	dT = (float)(data->GyroVector.deltaTime) * SYSTIME_TOSECONDS;
 	// Calculate change in angles
 	// Calculate change in radians
-	dWx = data->GyroVector.vector.pData[VECT_X] * DEG_TO_RAD;// * dT;
-	dWy = data->GyroVector.vector.pData[VECT_Y] * DEG_TO_RAD;// * dT;
-	dWz = data->GyroVector.vector.pData[VECT_Z] * DEG_TO_RAD;// * dT;
+	dWx = data->GyroVector.vector.pData[VECT_X];// * dT;
+	dWy = data->GyroVector.vector.pData[VECT_Y];// * dT;
+	dWz = data->GyroVector.vector.pData[VECT_Z];// * dT;
 	// Remove drift error
+	/*
 	dWx = dWx + data->PIData.Rx;
 	dWy = dWy + data->PIData.Ry;
 	dWz = dWz + data->PIData.Rz;
+	*/
 	// Calculate change in delta time
 	dWx = dWx * dT;
 	dWy = dWy * dT;
 	dWz = dWz * dT;
-	// Update vector
-	ahrs_vectorUpdate(&tempVector, dWx, dWy, dWz);
 	// Generate update matrix
-	ahrs_generate_rotationUpdateMatrix(&tempVector, &tempMatrix);
+	ahrs_generate_rotationUpdateMatrix(dWx, dWy, dWz, &tempMatrix);
 	// Update main rot matrix
 	status = ahrs_mult_matrixes(&(data->rotationMatrix), &tempMatrix, &holdMatrix);
 	// Copy new matrix

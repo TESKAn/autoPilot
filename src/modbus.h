@@ -120,6 +120,8 @@ void crcOnMessage(unsigned int uiDataLen);
 #define AHRS_PITCH			MODBUSReg[71]
 #define AHRS_ROLL			MODBUSReg[72]
 #define AHRS_YAW			MODBUSReg[73]
+// baro altitude - fraction
+#define BARO_FRAC			MODBUSReg[74]
 
 // Typedefs
 // MODBUS data structure

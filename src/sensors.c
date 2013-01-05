@@ -269,11 +269,7 @@ void copySensorData(void)
 	// Reg 79,80 (20,21) is barometer data
 	BARO = (I2C2_DMABufRX[20] << 8) & 0xff00;
 	BARO = BARO | (I2C2_DMABufRX[21] & 0x00ff);
-	BARO = BARO * 10;
-	uiTemp = I2C2_DMABufRX[22];
-	uiTemp = uiTemp >> 4;
-	uiTemp = uiTemp & 0x000F;
-	BARO = BARO + uiTemp;
+	BARO_FRAC = I2C2_DMABufRX[22] >> 4;
 	// Update AHRS
 	ahrs_updateRotationMatrix(&ahrs_data);
 	// Store angles
