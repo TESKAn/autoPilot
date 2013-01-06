@@ -83,7 +83,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="src/tiny_printf.c|FatFS/option/cc936.c|FatFS/option/cc949.c|FatFS/option/cc932.c|FatFS/option/cc950.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="FatFS/option/cc936.c|FatFS/option/cc949.c|FatFS/option/cc932.c|FatFS/option/cc950.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -136,7 +136,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="src/tiny_printf.c|FatFS/option/cc936.c|FatFS/option/cc949.c|FatFS/option/cc932.c|FatFS/option/cc950.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="FatFS/option/cc936.c|FatFS/option/cc949.c|FatFS/option/cc932.c|FatFS/option/cc950.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

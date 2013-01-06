@@ -139,6 +139,7 @@ extern volatile uint16_t LED_ToggleCount;
 
 // Buffer for data from PC to uC for USB
 extern uint8_t Buffer[64];
+extern char StringBuffer[161];			// Buffer for string manipulation
 extern char FSBuffer[FATFS_BUFF_SIZE];	// Pointer to buffer for file write
 
 

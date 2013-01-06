@@ -221,7 +221,7 @@ int main(void)
         }
         if(SCR1 & SCR_10)
         {
-        	Delayms(1000);
+        	ahrs_resetPID(&(ahrs_data.PIData));
         	SCR1 = SCR1 & ~SCR_10;
         }
         if(SCR1 & SCR_11)
@@ -237,18 +237,38 @@ int main(void)
         }
         if(SCR1 & SCR_13)
         {
+        	ahrs_data.PIData.Kix = ahrs_data.PIData.Kix + 0.0005f;
+        	ahrs_data.PIData.Kiy = ahrs_data.PIData.Kiy + 0.0005f;
+        	ahrs_data.PIData.Kiz = ahrs_data.PIData.Kiz + 0.0005f;
+    		float32ToStr(ahrs_data.PIData.Kix, "Ki=", StringBuffer);
+    		sendUSBMessage(StringBuffer);
         	SCR1 = SCR1 & ~SCR_13;
         }
         if(SCR1 & SCR_14)
         {
+        	ahrs_data.PIData.Kix = ahrs_data.PIData.Kix - 0.0005f;
+        	ahrs_data.PIData.Kiy = ahrs_data.PIData.Kiy - 0.0005f;
+        	ahrs_data.PIData.Kiz = ahrs_data.PIData.Kiz - 0.0005f;
+    		float32ToStr(ahrs_data.PIData.Kix, "Ki=", StringBuffer);
+    		sendUSBMessage(StringBuffer);
         	SCR1 = SCR1 & ~SCR_14;
         }
         if(SCR1 & SCR_15)
         {
+        	ahrs_data.PIData.Kpx = ahrs_data.PIData.Kpx + 0.1f;
+        	ahrs_data.PIData.Kpy = ahrs_data.PIData.Kpy + 0.1f;
+        	ahrs_data.PIData.Kpz = ahrs_data.PIData.Kpz + 0.1f;
+    		float32ToStr(ahrs_data.PIData.Kpx, "Kp=", StringBuffer);
+    		sendUSBMessage(StringBuffer);
         	SCR1 = SCR1 & ~SCR_15;
         }
         if(SCR1 & SCR_16)
         {
+        	ahrs_data.PIData.Kpx = ahrs_data.PIData.Kpx - 0.1f;
+        	ahrs_data.PIData.Kpy = ahrs_data.PIData.Kpy - 0.1f;
+        	ahrs_data.PIData.Kpz = ahrs_data.PIData.Kpz - 0.1f;
+    		float32ToStr(ahrs_data.PIData.Kpx, "Kp=", StringBuffer);
+    		sendUSBMessage(StringBuffer);
         	SCR1 = SCR1 & ~SCR_16;
         }
 

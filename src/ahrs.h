@@ -55,6 +55,14 @@ typedef struct
 	float32_t Rx;
 	float32_t Ry;
 	float32_t Rz;
+	// Integral max value
+	float32_t maxIx;
+	float32_t maxIy;
+	float32_t maxIz;
+	// Integral min value
+	float32_t minIx;
+	float32_t minIy;
+	float32_t minIz;
 
 }__attribute__((aligned(4),packed)) PI3Data;
 // Structure for float vector with 3 elements
@@ -146,12 +154,19 @@ typedef struct
 	AltitudeData Altitude;
 	// Speed data in m/sec
 	float32_t PlaneSpeed;
+	// Roll Pitch correction vector
+	vectorData RollPitchCorrection;
+	// Yaw correction vector
+	vectorData YawCorrection;
 	// PI data
 	PI3Data PIData;
 	// Scale values
 	float32_t gyroRate;
 	float32_t accRate;
 	float32_t magRate;
+	float32_t RollPitchCorrectionScale;
+	float32_t YawCorrectionScale;
+
 }__attribute__((aligned(4),packed)) AHRSData;
 
 extern AHRSData ahrs_data;
@@ -167,11 +182,14 @@ void initAHRSStructure(AHRSData * ahrsStructure);
 arm_status ahrs_updateAccelerationToGyro(void);
 arm_status ahrs_updateGPSToGyro(void);
 arm_status ahrs_updateRotationMatrix(AHRSData * data);
+void ahrs_resetPID(PI3Data* PID);
 void ahrs_resetRotationMatrix(void);
 void ahrs_normalizeOrthogonalizeMatrix(matrix3by3 * rotMatrix);
 void ahrs_getAngles(matrix3by3 * rotMatrix, vector3f *vector);
 
 // Function exports - ahrs_math.h
+arm_status ahrs_updateVectorPID(PI3Data* PID, vectorData * errorVector);
+float32_t ahrs_limitFloat(float32_t number, float32_t max, float32_t min);
 void ahrs_update_altitude(void);
 void updateScaledVector(vectorData * vector, uint16_t x, uint16_t y, uint16_t z, float rate);
 void ahrs_vectorDataInit(vectorData * vector, VectType type);
@@ -180,6 +198,8 @@ void ahrs_vectorUpdate(vectorData * vector, float32_t i, float32_t j, float32_t 
 void ahrs_matrix3by3_init(matrix3by3 * matrix);
 void ahrs_generate_rotationMatrix(matrix3by3 * matrix, float roll, float pitch, float yaw);
 void ahrs_generate_rotationUpdateMatrix(float32_t x, float32_t y, float32_t z, matrix3by3 * matrix);
+arm_status ahrs_mult_vector_scalar(vectorData * vectorA, float32_t scalar);
+arm_status ahrs_vect_cross_product(vectorData * vectorA, vectorData * vectorB, vectorData * vectorC);
 arm_status ahrs_mult_matrixes(matrix3by3 * matrixA, matrix3by3 * matrixB, matrix3by3 * matrixC);
 arm_status ahrs_mult_vector_matrix(vectorData * vectorA, matrix3by3 * matrix, vectorData * vectorB);
 

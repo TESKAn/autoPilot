@@ -50,16 +50,26 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 	ahrsStructure->PIData.Ix = 0;
 	ahrsStructure->PIData.Iy = 0;
 	ahrsStructure->PIData.Iz = 0;
-	ahrsStructure->PIData.Kix = 0;
-	ahrsStructure->PIData.Kiy = 0;
-	ahrsStructure->PIData.Kiz = 0;
-	ahrsStructure->PIData.Kpx = 0;
-	ahrsStructure->PIData.Kpy = 0;
-	ahrsStructure->PIData.Kpz = 0;
+	ahrsStructure->PIData.Kix = DEFAULT_KI;
+	ahrsStructure->PIData.Kiy = DEFAULT_KI;
+	ahrsStructure->PIData.Kiz = DEFAULT_KI;
+	ahrsStructure->PIData.Kpx = DEFAULT_KP;
+	ahrsStructure->PIData.Kpy = DEFAULT_KP;
+	ahrsStructure->PIData.Kpz = DEFAULT_KP;
 	ahrsStructure->PIData.Rx = 0;
 	ahrsStructure->PIData.Ry = 0;
 	ahrsStructure->PIData.Rz = 0;
+	ahrsStructure->PIData.maxIx = DEFAULT_MAXI;
+	ahrsStructure->PIData.maxIy = DEFAULT_MAXI;
+	ahrsStructure->PIData.maxIz = DEFAULT_MAXI;
+	ahrsStructure->PIData.minIx = DEFAULT_MINI;
+	ahrsStructure->PIData.minIy = DEFAULT_MINI;
+	ahrsStructure->PIData.minIz = DEFAULT_MINI;
 	ahrsStructure->PIData.dataTime = systemTime;
+	ahrs_vectorDataInit(&(ahrsStructure->RollPitchCorrection), ROW);
+	ahrs_vectorDataInit(&(ahrsStructure->YawCorrection), ROW);
+	ahrsStructure->RollPitchCorrectionScale = DEFAULT_ROLLPITCHCORRECTIONSCALE;
+	ahrsStructure->YawCorrectionScale = DEFAULT_YAWCORRECTIONSCALE;
 
 	// Try to load values from SD card
 	if(loadSettings() == ERROR)
@@ -68,10 +78,6 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 		sendUSBMessage("Error reading settings");
 		sendUSBMessage("Using default values");
 #endif
-		// There was an error, load default values
-		ahrsStructure->accRate = DEFAULT_ACC_RATE;
-		ahrsStructure->gyroRate = DEFAULT_GYRO_RATE;
-		ahrsStructure->magRate = DEFAULT_MAG_RATE;
 	}
 }
 
@@ -98,32 +104,37 @@ arm_status ahrs_updateRotationMatrix(AHRSData * data)
 	float dWx = 0;
 	float dWy = 0;
 	float dWz = 0;
-	float error = 0;
 	// Update vectors
-	updateScaledVector(&(ahrs_data.GyroVector), GYRO_X, GYRO_Y, GYRO_Z, ahrs_data.gyroRate);
+	updateScaledVector(&(ahrs_data.GyroVector), GYRO_X, GYRO_Y, GYRO_Z, ahrs_data.gyroRate * DEG_TO_RAD);
 	updateScaledVector(&(ahrs_data.AccVector), ACC_X, ACC_Y, ACC_Z, ahrs_data.accRate);
 	updateScaledVector(&(ahrs_data.MagVector), MAG_X, MAG_Y, MAG_Z, ahrs_data.magRate);
 	// Update altitude reading
 	ahrs_update_altitude();
-	// Calculate gravity vector
 
+
+	// Calculate gravity vector
+	ahrs_data.GravityVector.vector.pData[VECT_X] = ahrs_data.AccVector.vector.pData[VECT_X];
+	ahrs_data.GravityVector.vector.pData[VECT_Y] = ahrs_data.AccVector.vector.pData[VECT_Y];
+	ahrs_data.GravityVector.vector.pData[VECT_Z] = ahrs_data.AccVector.vector.pData[VECT_Z];
 	// Remove angular acceleration from acceleration result
 	// Angular acceleration = cross product of velocity and rotation rate
 
-	// Calculate error x
-	// Update PID x
-	data->PIData.Ix = data->PIData.Ix + error;
-	data->PIData.Rx = (error * data->PIData.Kpx) + (data->PIData.Ix * data->PIData.Kix);
+	// Get plane reference gravity vector
+	tempVector.vector.pData[VECT_X] = ahrs_data.rotationMatrix.vector.pData[Rzx];
+	tempVector.vector.pData[VECT_Y] = ahrs_data.rotationMatrix.vector.pData[Rzy];
+	tempVector.vector.pData[VECT_Z] = ahrs_data.rotationMatrix.vector.pData[Rzz];
 
-	// Calculate error y
-	// Update PID y
-	data->PIData.Iy = data->PIData.Iy + error;
-	data->PIData.Ry = (error * data->PIData.Kpy) + (data->PIData.Iy * data->PIData.Kiy);
 
-	// Calculate error z
-	// Update PID z
-	data->PIData.Iz = data->PIData.Iz + error;
-	data->PIData.Rz = (error * data->PIData.Kpz) + (data->PIData.Iz * data->PIData.Kiz);
+	// Calculate roll pitch error
+	ahrs_vect_cross_product(&tempVector, &(ahrs_data.GravityVector), &(ahrs_data.RollPitchCorrection));
+	// Scale error
+	ahrs_mult_vector_scalar(&(ahrs_data.RollPitchCorrection), ahrs_data.RollPitchCorrectionScale);
+
+	// Add yaw error
+
+
+	// Update PI error regulator
+	ahrs_updateVectorPID(&(ahrs_data.PIData), &(ahrs_data.RollPitchCorrection));
 
 	// Calculate change in time
 	dT = (float)(data->GyroVector.deltaTime) * SYSTIME_TOSECONDS;
@@ -133,11 +144,10 @@ arm_status ahrs_updateRotationMatrix(AHRSData * data)
 	dWy = data->GyroVector.vector.pData[VECT_Y];// * dT;
 	dWz = data->GyroVector.vector.pData[VECT_Z];// * dT;
 	// Remove drift error
-	/*
-	dWx = dWx + data->PIData.Rx;
-	dWy = dWy + data->PIData.Ry;
-	dWz = dWz + data->PIData.Rz;
-	*/
+	dWx = dWx - data->PIData.Rx;
+	dWy = dWy - data->PIData.Ry;
+	dWz = dWz - data->PIData.Rz;
+
 	// Calculate change in delta time
 	dWx = dWx * dT;
 	dWy = dWy * dT;
@@ -162,6 +172,13 @@ arm_status ahrs_updateRotationMatrix(AHRSData * data)
 	{
 		return ERROR;
 	}
+}
+
+void ahrs_resetPID(PI3Data* PID)
+{
+	PID->Ix = 0;
+	PID->Iy = 0;
+	PID->Iz = 0;
 }
 
 void ahrs_resetRotationMatrix(void)

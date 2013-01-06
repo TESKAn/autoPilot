@@ -7,6 +7,36 @@
 
 #include "allinclude.h"
 
+arm_status ahrs_updateVectorPID(PI3Data* PID, vectorData * errorVector)
+{
+	// Update PID x
+	PID->Ix = PID->Ix + errorVector->vector.pData[VECT_X];
+	// Limit I part
+	PID->Ix = ahrs_limitFloat(PID->Ix, PID->maxIx, PID->minIx);
+	PID->Rx = (errorVector->vector.pData[VECT_X] * PID->Kpx) + (PID->Ix * PID->Kix);
+
+	// Update PID y
+	PID->Iy = PID->Iy + errorVector->vector.pData[VECT_Y];
+	// Limit I part
+	PID->Iy = ahrs_limitFloat(PID->Iy, PID->maxIy, PID->minIy);
+	PID->Ry = (errorVector->vector.pData[VECT_Y] * PID->Kpy) + (PID->Iy * PID->Kiy);
+
+	// Update PID z
+	PID->Iz = PID->Iz + errorVector->vector.pData[VECT_Z];
+	// Limit I part
+	PID->Iz = ahrs_limitFloat(PID->Iz, PID->maxIz, PID->minIz);
+	PID->Rz = (errorVector->vector.pData[VECT_Z] * PID->Kpz) + (PID->Iz * PID->Kiz);
+
+	return SUCCESS;
+}
+
+float32_t ahrs_limitFloat(float32_t number, float32_t max, float32_t min)
+{
+	if(number > max) return max;
+	else if(number < min) return min;
+	else return number;
+}
+
 void ahrs_update_altitude(void)
 {
 	ahrs_data.Altitude.currentAltitude = (float)((int16_t)BARO) + (float)BARO_FRAC/10;
@@ -19,13 +49,13 @@ void ahrs_update_altitude(void)
 
 void updateScaledVector(vectorData * vector, uint16_t x, uint16_t y, uint16_t z, float rate)
 {
+	vector->vector.pData[VECT_X] = (float) ((int16_t)x) * rate;
+	vector->vector.pData[VECT_Y] = (float) ((int16_t)y) * rate;
+	vector->vector.pData[VECT_Z] = (float) ((int16_t)z) * rate;
 	// Store delta time
 	vector->deltaTime = sensorAcquisitionTime - vector->dataTime;
 	// Store time
 	vector->dataTime = sensorAcquisitionTime;
-	vector->vector.pData[VECT_X] = (float) ((int16_t)x) * rate * DEG_TO_RAD;
-	vector->vector.pData[VECT_Y] = (float) ((int16_t)y) * rate * DEG_TO_RAD;
-	vector->vector.pData[VECT_Z] = (float) ((int16_t)z) * rate * DEG_TO_RAD;
 }
 
 
@@ -138,6 +168,27 @@ void ahrs_generate_rotationUpdateMatrix(float32_t x, float32_t y, float32_t z, m
 	matrix->vectorData[6] = y;
 	matrix->vectorData[7] = -x;
 	matrix->vectorData[8] = 1;
+}
+
+// Multiply vector by scalar
+arm_status ahrs_mult_vector_scalar(vectorData * vector, float32_t scalar)
+{
+	vector->vector.pData[VECT_X] = vector->vector.pData[VECT_X] * scalar;
+	vector->vector.pData[VECT_Y] = vector->vector.pData[VECT_Y] * scalar;
+	vector->vector.pData[VECT_Z] = vector->vector.pData[VECT_Z] * scalar;
+	return SUCCESS;
+}
+
+// Calculate cross product of vectors A and B, store to vector C
+arm_status ahrs_vect_cross_product(vectorData * vectorA, vectorData * vectorB, vectorData * vectorC)
+{
+	// Result X = Ay*Bz - Az*By
+	vectorC->vector.pData[VECT_X] = vectorA->vector.pData[VECT_Y]*vectorB->vector.pData[VECT_Z] - vectorA->vector.pData[VECT_Z]*vectorB->vector.pData[VECT_Y];
+	// Result Y = Az*Bx - Ax*Bz
+	vectorC->vector.pData[VECT_Y] = vectorA->vector.pData[VECT_Z]*vectorB->vector.pData[VECT_X] - vectorA->vector.pData[VECT_X]*vectorB->vector.pData[VECT_Z];
+	// Result Z = Ax*By - Ay*Bx
+	vectorC->vector.pData[VECT_Z] = vectorA->vector.pData[VECT_X]*vectorB->vector.pData[VECT_Y] - vectorA->vector.pData[VECT_Y]*vectorB->vector.pData[VECT_X];
+	return SUCCESS;
 }
 
 // Multiply matrices A and B into matrix C

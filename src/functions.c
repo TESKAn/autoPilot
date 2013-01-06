@@ -342,7 +342,41 @@ int storeNegativeNumber(uint16_t number, char* buffer, int offset)
 	return offset - charWritten;
 }
 
-float32_t strToFloat32(char* file, char* str)
+ErrorStatus float32ToStr(float32_t value, char* text, char* str)
+{
+	int n = strlen(text);
+	int i = 0;
+	float multi = 0;
+	int num = 0;
+	strcpy (str, text);
+	num = (int)value;
+	n += sprintf (str+n, "%d", num);
+	strcat(str, ".");
+	n++;
+	value = value - (float)num;
+	multi = 10000000000;
+	for(i=0; i < 10; i++)
+	{
+		value = value * 10;
+		multi = multi / 10;
+		num = (int)value;
+		if(num == 0)
+		{
+			strcat(str, "0");
+			n++;
+		}
+		else
+		{
+			value = value * multi;
+			num = (int)value;
+			sprintf (str+n, "%d", num);
+			break;
+		}
+	}
+	return SUCCESS;
+}
+
+ErrorStatus strToFloat32(float32_t* result, char* file, char* str)
 {
 	char* strBeginning = 0;
 	char* strEnd = 0;
@@ -396,9 +430,10 @@ float32_t strToFloat32(char* file, char* str)
 	}
 	else
 	{
-		convertedValue = 0;
+		return ERROR;
 	}
-	return convertedValue;
+	*result = convertedValue;
+	return SUCCESS;
 }
 
 uint16_t strTouint16(char* file, char* str)
@@ -490,13 +525,10 @@ ErrorStatus loadSettings(void)
 	}
 	// Read file to buffer
 	bytesToRead = f_size(&settingsFile);
-
-	//fileBuffer = malloc(250);
-
 	if(f_read (&settingsFile, &FSBuffer[0], bytesToRead, &readBytes) != FR_OK)
 	{
 #ifdef DEBUG_USB
-	sendUSBMessage("File read error");
+		sendUSBMessage("File read error");
 #endif
 		//Close and unmount.
 		f_close(&settingsFile);
@@ -504,12 +536,99 @@ ErrorStatus loadSettings(void)
 		return ERROR;
 	}
 	// Process data
-	ahrs_data.accRate = strToFloat32(&FSBuffer[0], "accRate=");
+	if(strToFloat32(&(ahrs_data.accRate), &FSBuffer[0], "accRate=") == SUCCESS)
+	{
+#ifdef DEBUG_USB
 
-	ahrs_data.gyroRate = strToFloat32(&FSBuffer[0], "gyroRate=");
+		float32ToStr(ahrs_data.accRate, "accRate=", StringBuffer);
+		sendUSBMessage(StringBuffer);
+#endif
+	}
+	else
+	{
+		ahrs_data.accRate = DEFAULT_ACC_RATE;
 
-	ahrs_data.magRate = strToFloat32(&FSBuffer[0], "magRate=");
+	#ifdef DEBUG_USB
+		sendUSBMessage("Error reading accRate");
+		sendUSBMessage("Using default values");
+	#endif
+	}
 
+	if(strToFloat32(&(ahrs_data.gyroRate), &FSBuffer[0], "gyroRate=") == SUCCESS)
+	{
+#ifdef DEBUG_USB
+		float32ToStr(ahrs_data.gyroRate, "gyroRate=", StringBuffer);
+		sendUSBMessage(StringBuffer);
+#endif
+	}
+	else
+	{
+		ahrs_data.gyroRate = DEFAULT_ACC_RATE;
+
+	#ifdef DEBUG_USB
+		sendUSBMessage("Error reading gyroRate");
+		sendUSBMessage("Using default values");
+	#endif
+	}
+
+	if(strToFloat32(&(ahrs_data.magRate), &FSBuffer[0], "magRate=") == SUCCESS)
+	{
+#ifdef DEBUG_USB
+		float32ToStr(ahrs_data.magRate, "magRate=", StringBuffer);
+		sendUSBMessage(StringBuffer);
+#endif
+	}
+	else
+	{
+		ahrs_data.magRate = DEFAULT_ACC_RATE;
+
+	#ifdef DEBUG_USB
+		sendUSBMessage("Error reading magRate");
+		sendUSBMessage("Using default values");
+	#endif
+	}
+
+	if(strToFloat32(&(ahrs_data.PIData.Kix), &FSBuffer[0], "Kix=") == SUCCESS)
+	{
+		ahrs_data.PIData.Kiy = ahrs_data.PIData.Kix;
+		ahrs_data.PIData.Kiz = ahrs_data.PIData.Kix;
+#ifdef DEBUG_USB
+		float32ToStr(ahrs_data.PIData.Kix, "Ki=", StringBuffer);
+		sendUSBMessage(StringBuffer);
+#endif
+	}
+	else
+	{
+		ahrs_data.PIData.Kix = DEFAULT_KI;
+		ahrs_data.PIData.Kiy = DEFAULT_KI;
+		ahrs_data.PIData.Kiz = DEFAULT_KI;
+
+	#ifdef DEBUG_USB
+		sendUSBMessage("Error reading Ki");
+		sendUSBMessage("Using default values");
+	#endif
+	}
+
+	if(strToFloat32(&(ahrs_data.PIData.Kpx), &FSBuffer[0], "Kpx=") == SUCCESS)
+	{
+		ahrs_data.PIData.Kpy = ahrs_data.PIData.Kpx;
+		ahrs_data.PIData.Kpz = ahrs_data.PIData.Kpx;
+#ifdef DEBUG_USB
+		float32ToStr(ahrs_data.PIData.Kpx, "Kp=", StringBuffer);
+		sendUSBMessage(StringBuffer);
+#endif
+	}
+	else
+	{
+		ahrs_data.PIData.Kpx = DEFAULT_KP;
+		ahrs_data.PIData.Kpy = DEFAULT_KP;
+		ahrs_data.PIData.Kpz = DEFAULT_KP;
+
+	#ifdef DEBUG_USB
+		sendUSBMessage("Error reading Kp");
+		sendUSBMessage("Using default values");
+	#endif
+	}
 	//Close and unmount.
 	f_close(&settingsFile);
 	f_mount(0,0);
