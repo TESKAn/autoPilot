@@ -6,11 +6,13 @@
 C_SRCS += \
 ../src/ahrs.c \
 ../src/ahrs_math.c \
+../src/compass.c \
 ../src/events.c \
 ../src/functions.c \
 ../src/gps.c \
 ../src/init.c \
 ../src/main.c \
+../src/math_custom.c \
 ../src/modbus.c \
 ../src/powerSensor.c \
 ../src/sensors.c \
@@ -29,11 +31,13 @@ S_UPPER_SRCS += \
 OBJS += \
 ./src/ahrs.o \
 ./src/ahrs_math.o \
+./src/compass.o \
 ./src/events.o \
 ./src/functions.o \
 ./src/gps.o \
 ./src/init.o \
 ./src/main.o \
+./src/math_custom.o \
 ./src/modbus.o \
 ./src/powerSensor.o \
 ./src/sensors.o \
@@ -50,11 +54,13 @@ OBJS += \
 C_DEPS += \
 ./src/ahrs.d \
 ./src/ahrs_math.d \
+./src/compass.d \
 ./src/events.d \
 ./src/functions.d \
 ./src/gps.d \
 ./src/init.d \
 ./src/main.d \
+./src/math_custom.d \
 ./src/modbus.d \
 ./src/powerSensor.d \
 ./src/sensors.d \

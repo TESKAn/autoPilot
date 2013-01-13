@@ -14,22 +14,22 @@ AHRSData ahrs_data;
 // Temporary matrices and vectors
 matrix3by3 tempMatrix;
 matrix3by3 holdMatrix;
-vectorData tempVector;
+vector3fData tempVector;
 
 void initAHRSStructure(AHRSData * ahrsStructure)
 {
-	ahrs_vectorDataInit(&(ahrsStructure->AccVector), ROW);
-	ahrs_vector3qDataInit(&(ahrsStructure->AccOffsetVector), ROW);
-	ahrs_vectorDataInit(&(ahrsStructure->AccScaleVector), ROW);
-	ahrs_vectorDataInit(&(ahrsStructure->GravityVector), ROW);
-	ahrs_vectorDataInit(&(ahrsStructure->GyroVector), ROW);
-	ahrs_vector3qDataInit(&(ahrsStructure->GyroOffsetVector), ROW);
-	ahrs_vectorDataInit(&(ahrsStructure->GyroScaleVector), ROW);
-	ahrs_vectorDataInit(&(ahrsStructure->MagVector), ROW);
-	ahrs_vector3qDataInit(&(ahrsStructure->MagOffsetVector), ROW);
-	ahrs_vectorDataInit(&(ahrsStructure->MagScaleVector), ROW);
-	ahrs_vectorDataInit(&(ahrsStructure->RollPitchYaw), ROW);
-	ahrs_matrix3by3_init(&(ahrsStructure->rotationMatrix));
+	math_vector3fDataInit(&(ahrsStructure->AccVector), ROW);
+	math_vector3qDataInit(&(ahrsStructure->AccOffsetVector), ROW);
+	math_vector3fDataInit(&(ahrsStructure->AccScaleVector), ROW);
+	math_vector3fDataInit(&(ahrsStructure->GravityVector), ROW);
+	math_vector3fDataInit(&(ahrsStructure->GyroVector), ROW);
+	math_vector3qDataInit(&(ahrsStructure->GyroOffsetVector), ROW);
+	math_vector3fDataInit(&(ahrsStructure->GyroScaleVector), ROW);
+	math_vector3fDataInit(&(ahrsStructure->MagVector), ROW);
+	math_vector3qDataInit(&(ahrsStructure->MagOffsetVector), ROW);
+	math_vector3fDataInit(&(ahrsStructure->MagScaleVector), ROW);
+	math_vector3fDataInit(&(ahrsStructure->RollPitchYaw), ROW);
+	math_matrix3by3Init(&(ahrsStructure->rotationMatrix), MATH_YES);
 	ahrsStructure->GPSData.altitude = 0;
 	ahrsStructure->GPSData.dataTime = systemTime;
 	ahrsStructure->GPSData.dataStartTime = systemTime;
@@ -38,7 +38,7 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 	ahrsStructure->GPSData.longitude = 0;
 	ahrsStructure->GPSData.speed = 0;
 	ahrsStructure->GPSData.trackAngle = 0;
-	ahrs_matrix3by3_init(&(ahrsStructure->GPSReference));
+	math_matrix3by3Init(&(ahrsStructure->GPSReference), MATH_NO);
 	ahrsStructure->Altitude.currentAltitude = 0;
 	ahrsStructure->Altitude.dataTime = systemTime;
 	ahrsStructure->Altitude.deltaTime = 0;
@@ -66,8 +66,8 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 	ahrsStructure->PIData.minIy = DEFAULT_MINI;
 	ahrsStructure->PIData.minIz = DEFAULT_MINI;
 	ahrsStructure->PIData.dataTime = systemTime;
-	ahrs_vectorDataInit(&(ahrsStructure->RollPitchCorrection), ROW);
-	ahrs_vectorDataInit(&(ahrsStructure->YawCorrection), ROW);
+	math_vector3fDataInit(&(ahrsStructure->RollPitchCorrection), ROW);
+	math_vector3fDataInit(&(ahrsStructure->YawCorrection), ROW);
 	ahrsStructure->RollPitchCorrectionScale = DEFAULT_ROLLPITCHCORRECTIONSCALE;
 	ahrsStructure->YawCorrectionScale = DEFAULT_YAWCORRECTIONSCALE;
 
@@ -154,7 +154,7 @@ arm_status ahrs_updateRotationMatrix(AHRSData * data)
 	// Calculate change in time
 	dT = (float)(data->GyroVector.deltaTime) * SYSTIME_TOSECONDS;
 	// Calculate change in angles
-	// Calculate change in radians
+	// Calculate change in radians/sec
 	dWx = data->GyroVector.vector.pData[VECT_X];// * dT;
 	dWy = data->GyroVector.vector.pData[VECT_Y];// * dT;
 	dWz = data->GyroVector.vector.pData[VECT_Z];// * dT;

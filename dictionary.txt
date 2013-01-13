@@ -38,3 +38,4 @@ endpoint
 pdev
 xfer
 kix
+min

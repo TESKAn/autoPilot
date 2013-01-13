@@ -17,6 +17,7 @@
 #include "syscalls.h"
 #include "arm_math.h"
 #include "math.h"
+#include "math_custom.h"
 
 // USB defines
 #include "usbd_hid_core.h"
@@ -44,7 +45,7 @@
 #include "powerSensor.h"
 #include "gps.h"
 #include "sensors.h"
-
+#include "compass.h"
 
 
 #endif /* ALLINCLUDE_H_ */
