@@ -53,7 +53,7 @@ void crcOnMessage(unsigned int uiDataLen);
 #define GPS_DAY				MODBUSReg[17]
 #define GPS_MONTH			MODBUSReg[18]
 #define GPS_YEAR			MODBUSReg[19]
-#define GPS_NS_EW			MODBUSReg[20]
+#define GPS_NS_EW			MODBUSReg[20]	// NS, EW, MAGWAR_E/W
 #define GPS_VALID			MODBUSReg[21]	// bits0-4 = fix valid bit15=GPS_VALID bit14=CHECKSUM_OK
 #define GPS_HDOP			MODBUSReg[22]
 #define GPS_HDOP_FRAC		MODBUSReg[23]

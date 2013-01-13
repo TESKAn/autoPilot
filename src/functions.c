@@ -778,67 +778,62 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 
 void extPeripheralInit(void)
 {
+	// Initialize SD card
+	FS_Initialize();
 #ifdef DEBUG_USB
-	sendUSBMessage("Initializing sensors...");
+	sendUSBMessage("Power ON");
 #endif
-	// Wait some time
-	Delaynus(50000);
-	// Set LED OK = 1
-	LED_OK_OFF;
-	// Short delay
-	Delaynus(50000);
-	// Set LED OK = 0
-	LED_OK_ON;
-	// Do a long delay, ca. 1 sec
-	Delaynus(1000000);
-	// set PS busy
-	PSBUSY = 1;
-	LED_OK_OFF;
-	// Short delay
-	Delaynus(50000);
-	// Set LED OK = 0
-	LED_OK_ON;
-	// Reset PS
-	PSReset();
-	LED_OK_OFF;
+	// Init ahrs structure
+	initAHRSStructure(&ahrs_data);
 #ifdef DEBUG_USB
-	sendUSBMessage("PS initialized...");
+	sendUSBMessage("AHRS initialized");
 #endif
-	// Long delay
-	Delaynus(2000000);
-	// Set LED OK = 0
-	LED_OK_ON;
-	// Reset PS busy
-	PSBUSY = 0;
-	// Configure GPS
+#ifdef DEBUG_USB
+	sendUSBMessage("Configuring GPS");
+#endif
+	// Setup GPS
 	GPSSetDataOutput();
 #ifdef DEBUG_USB
-	sendUSBMessage("GPS initialized...");
+	sendUSBMessage("GPS configured");
 #endif
-	LED_OK_OFF;
+	Delayms(1000);
+	// Setup sensors
+#ifdef DEBUG_USB
+	sendUSBMessage("Configuring sensors");
+#endif
+#ifdef DEBUG_USB
+	sendUSBMessage("Set Power sensor");
+#endif
+	// set PS busy
+	PSBUSY = 1;
 	// Short delay
 	Delaynus(50000);
-	// Set LED OK = 0
-	LED_OK_ON;
-	// Disable interrupts before configuring I2C
-	NVIC_EnableInterrupts(DISABLE);
-	// Configure I2C sensors
+	// Reset PS
+	PSReset();
+	Delayms(1000);
+	PSBUSY = 0;
+#ifdef DEBUG_USB
+	sendUSBMessage("Configure I2C sensors");
+#endif
 	sensorInit();
 #ifdef DEBUG_USB
-	sendUSBMessage("Sensors initialized...");
+	sendUSBMessage("Enable ADC");
 #endif
-	// Enable ADC
 	ADC_ENABLED = 1;
-#ifdef DEBUG_USB
-	sendUSBMessage("ADC enabled...");
-#endif
 	// Mark sensors initiated
 	EXTSENS_INIT_DONE = 1;
 	// Mark null sensor
 	EXTSENS_NULLING_GYRO = 1;
-	// Reenable interrupts
-	NVIC_EnableInterrupts(ENABLE);
 #ifdef DEBUG_USB
+	sendUSBMessage("Sensors configured");
+#endif
+	Delayms(1000);
+#ifdef DEBUG_USB
+	sendUSBMessage("Reset matrix");
+#endif
+	ahrs_resetRotationMatrix();
+#ifdef DEBUG_USB
+	sendUSBMessage("AutoPilot OnLine");
 	sendUSBMessage("initialization done");
 #endif
 }

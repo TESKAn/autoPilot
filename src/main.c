@@ -95,57 +95,9 @@ int main(void)
 	  &USR_cb);
 	// Peripherals initialized, wait 1 sec
 	Delayms(1000);
-	// Initialize SD card
-	FS_Initialize();
-#ifdef DEBUG_USB
-	sendUSBMessage("Power ON");
-#endif
-	// Init ahrs structure
-	initAHRSStructure(&ahrs_data);
-#ifdef DEBUG_USB
-	sendUSBMessage("AHRS initialized");
-#endif
-#ifdef DEBUG_USB
-	sendUSBMessage("Configuring GPS");
-#endif
-	// Setup GPS
-	GPSSetDataOutput();
-#ifdef DEBUG_USB
-	sendUSBMessage("GPS configured");
-#endif
-	Delayms(1000);
-	// Setup sensors
-#ifdef DEBUG_USB
-	sendUSBMessage("Configuring sensors");
-#endif
-#ifdef DEBUG_USB
-	sendUSBMessage("Reset Power sensor");
-#endif
-	PSReset();
-	Delayms(1000);
-#ifdef DEBUG_USB
-	sendUSBMessage("Configure I2C sensors");
-#endif
-	sensorInit();
-#ifdef DEBUG_USB
-	sendUSBMessage("Enable ADC");
-#endif
-	ADC_ENABLED = 1;
-	// Mark sensors initiated
-	EXTSENS_INIT_DONE = 1;
-	// Mark null sensor
-	EXTSENS_NULLING_GYRO = 1;
-#ifdef DEBUG_USB
-	sendUSBMessage("Sensors configured");
-#endif
-	Delayms(1000);
-#ifdef DEBUG_USB
-	sendUSBMessage("Reset matrix");
-#endif
-	ahrs_resetRotationMatrix();
-#ifdef DEBUG_USB
-	sendUSBMessage("AutoPilot OnLine");
-#endif
+	// Initialize external peripheral
+	extPeripheralInit();
+
     while (1)
     {
         // Check MODBUS for messages

@@ -71,6 +71,11 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 	ahrsStructure->RollPitchCorrectionScale = DEFAULT_ROLLPITCHCORRECTIONSCALE;
 	ahrsStructure->YawCorrectionScale = DEFAULT_YAWCORRECTIONSCALE;
 
+	// Store offsets for mag
+	ahrsStructure->MagOffsetVector.vector.pData[VECT_X] = (uint16_t)-594;
+	ahrsStructure->MagOffsetVector.vector.pData[VECT_Y] = (uint16_t)-94;
+	ahrsStructure->MagOffsetVector.vector.pData[VECT_Z] = (uint16_t)555;
+
 	// Try to load values from SD card
 	if(loadSettings() == ERROR)
 	{
@@ -79,6 +84,16 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 		sendUSBMessage("Using default values");
 #endif
 	}
+}
+
+void ahrs_update_altitude(void)
+{
+	ahrs_data.Altitude.currentAltitude = (float)((int16_t)BARO) + (float)BARO_FRAC/10;
+	ahrs_data.Altitude.deltaTime = systemTime - ahrs_data.Altitude.dataTime;
+	ahrs_data.Altitude.dataTime = systemTime;
+	ahrs_data.Altitude.verticalSpeed = (ahrs_data.Altitude.lastAltitude - ahrs_data.Altitude.currentAltitude) / (ahrs_data.Altitude.deltaTime * SYSTIME_TOSECONDS);
+	ahrs_data.Altitude.verticalAcceleration = ahrs_data.Altitude.verticalSpeed / (ahrs_data.Altitude.deltaTime * SYSTIME_TOSECONDS);
+	ahrs_data.Altitude.lastAltitude = ahrs_data.Altitude.currentAltitude;
 }
 
 arm_status ahrs_updateAccelerationToGyro(void)

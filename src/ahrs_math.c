@@ -37,16 +37,6 @@ float32_t ahrs_limitFloat(float32_t number, float32_t max, float32_t min)
 	else return number;
 }
 
-void ahrs_update_altitude(void)
-{
-	ahrs_data.Altitude.currentAltitude = (float)((int16_t)BARO) + (float)BARO_FRAC/10;
-	ahrs_data.Altitude.deltaTime = systemTime - ahrs_data.Altitude.dataTime;
-	ahrs_data.Altitude.dataTime = systemTime;
-	ahrs_data.Altitude.verticalSpeed = (ahrs_data.Altitude.lastAltitude - ahrs_data.Altitude.currentAltitude) / (ahrs_data.Altitude.deltaTime * SYSTIME_TOSECONDS);
-	ahrs_data.Altitude.verticalAcceleration = ahrs_data.Altitude.verticalSpeed / (ahrs_data.Altitude.deltaTime * SYSTIME_TOSECONDS);
-	ahrs_data.Altitude.lastAltitude = ahrs_data.Altitude.currentAltitude;
-}
-
 void updateScaledVector(vectorData * vector, uint16_t x, uint16_t y, uint16_t z, float rate)
 {
 	vector->vector.pData[VECT_X] = (float) ((int16_t)x) * rate;

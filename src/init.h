@@ -9,5 +9,6 @@
 #define INIT_H_
 
 void System_Config(void);
+void init_USART3(void);
 
 #endif /* INIT_H_ */

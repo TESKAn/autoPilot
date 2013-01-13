@@ -100,5 +100,8 @@ void GPS_ReceiveProcess(uint8_t data);
 #define GPS_HDOP_FRAC_T			GPS_RECDATA[21]
 #define GPS_GG_T				GPS_RECDATA[22]
 #define GPS_GG_FRAC_T			GPS_RECDATA[23]
+#define GPS_MAGVAR_T			GPS_RECDATA[24]
+#define GPS_MAGVAR_FRAC_T		GPS_RECDATA[25]
+#define GPS_MAGWAR_EW_T			GPS_RECDATA[26]
 
 #endif /* GPS_H_ */

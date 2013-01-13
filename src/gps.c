@@ -325,9 +325,28 @@ void GPS_ReceiveProcess(uint8_t data)
 							// Store year
 							GPS_YEAR_T = ((GPS_Digits[4] - 48) * 10) + (GPS_Digits[5] - 48);
 							// Go to next data
+							//GPS_ProcesState = GPS_RECEIVE_NUMBER;
+							//GPS_NextData = GPS_NEXTDATA_MAGVAR;
+
 							GPS_ProcesState = GPS_WAITFOREND;
 							GPS_NextData = GPS_NEXTDATA_VOID;
+
 							GPS_Digits_Count = 0;
+							break;
+						}
+						case GPS_NEXTDATA_MAGVAR_EW:
+						{
+							// GPS_NS_EW, bit0:E=0,W=1
+							if(GPS_Digits[0] == 'E')
+							{
+								GPS_MAGWAR_EW_T = GPS_MAGWAR_EW_T & ~0x0001;
+							}
+							else
+							{
+								GPS_MAGWAR_EW_T = GPS_MAGWAR_EW_T | 0x0001;
+							}
+							GPS_ProcesState = GPS_WAITFOREND;
+							GPS_NextData = GPS_NEXTDATA_VOID;
 							break;
 						}
 						case GPS_NEXTDATA_TIME:
@@ -609,6 +628,25 @@ void GPS_ReceiveProcess(uint8_t data)
 							GPS_Digits_Count = 0;
 							break;
 						}
+						case GPS_NEXTDATA_MAGVAR:
+						{
+							temp = 1;
+							GPS_MAGVAR_T = 0;
+							do
+							{
+								GPS_Digits_Count--;
+								GPS_MAGVAR_T = GPS_MAGVAR_T + (GPS_Digits[GPS_Digits_Count] - 48) * temp;
+								temp = temp * 10;
+							}
+							while(GPS_Digits_Count > 0);
+							GPS_MAGVAR_FRAC_T = GPS_DataTemp;
+							// Go to next data
+							GPS_NextData = GPS_NEXTDATA_MAGVAR_EW;
+							GPS_ProcesState = GPS_RECEIVE_NUMBER;
+							GPS_Digits_Count = 0;
+							break;
+						}
+
 						case GPS_NEXTDATA_HDOP:
 						{
 							temp = 1;

@@ -767,38 +767,7 @@ void System_Config(void)
 	USART_Cmd(USART1, ENABLE);
 
 
-	//configure module 3 - GPS
-	//set baud rate
-	USART_InitStructure.USART_BaudRate = 9600;
-	//flow control
-	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-	//enable receiver and transmitter
-	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
-	//parity
-	USART_InitStructure.USART_Parity = USART_Parity_No;
-	//stop bits
-	USART_InitStructure.USART_StopBits = USART_StopBits_1;
-	//word length
-	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-	//start port
-	USART_Init(USART3, &USART_InitStructure);
-
-	//enable interrupt - RX not empty, transfer complete
-	USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);
-
-	//enable module 3
-	USART_Cmd(USART3, ENABLE);
-
-	// Configure USART3 DMA
-	//enable peripheral clock
-	// Already enabled for USART2
-	//RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);
-	//configure USART3 DMA channel
-	//deinit DMA channel
-	DMA_DeInit(DMA_USART3);
-	//enable interrupts if needed
-	//DMA_IT_TC - transfer complete interrupt
-	//DMA_ITConfig(DMA1_Stream6, DMA_IT_TC, ENABLE);
+	init_USART3();
 
 
 	// I2C2 config
@@ -927,4 +896,66 @@ void System_Config(void)
 */
 
 	NVIC_EnableInterrupts(ENABLE);
+}
+
+void init_USART3(void)
+{
+	//make structure for configuring USART
+	USART_InitTypeDef USART_InitStructure;
+	//make structure for configuring pins
+	GPIO_InitTypeDef  GPIO_InitStructure;
+
+	// GPIO Peripheral clock enable
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
+	// USART 3 clock enable
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);
+
+	//connect pins C10 and C11 to USART
+	GPIO_PinAFConfig(GPIOC, GPIO_PinSource10, GPIO_AF_USART3);
+	GPIO_PinAFConfig(GPIOC, GPIO_PinSource11, GPIO_AF_USART3);
+	//select pins 10 and 11
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_11;
+	//set output type
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// push/pull
+	//set pull-up
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	//set pin mode to alternate function
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+	//set pin speed
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	//write mode to selected pins and selected port
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
+
+	//configure module 3 - GPS
+	//set baud rate
+	USART_InitStructure.USART_BaudRate = 9600;
+	//flow control
+	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+	//enable receiver and transmitter
+	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+	//parity
+	USART_InitStructure.USART_Parity = USART_Parity_No;
+	//stop bits
+	USART_InitStructure.USART_StopBits = USART_StopBits_1;
+	//word length
+	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+	//start port
+	USART_Init(USART3, &USART_InitStructure);
+
+	//enable interrupt - RX not empty, transfer complete
+	USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);
+
+	//enable module 3
+	USART_Cmd(USART3, ENABLE);
+
+	// Configure USART3 DMA
+	//enable peripheral clock
+	// Already enabled for USART2
+	//RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);
+	//configure USART3 DMA channel
+	//deinit DMA channel
+	DMA_DeInit(DMA_USART3);
+	//enable interrupts if needed
+	//DMA_IT_TC - transfer complete interrupt
+	//DMA_ITConfig(DMA1_Stream6, DMA_IT_TC, ENABLE);
 }

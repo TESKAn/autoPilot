@@ -179,6 +179,7 @@ extern vectorData tempVector;
 
 // Function exports - ahrs.h
 void initAHRSStructure(AHRSData * ahrsStructure);
+void ahrs_update_altitude(void);
 arm_status ahrs_updateAccelerationToGyro(void);
 arm_status ahrs_updateGPSToGyro(void);
 arm_status ahrs_updateRotationMatrix(AHRSData * data);
@@ -190,7 +191,6 @@ void ahrs_getAngles(matrix3by3 * rotMatrix, vector3f *vector);
 // Function exports - ahrs_math.h
 arm_status ahrs_updateVectorPID(PI3Data* PID, vectorData * errorVector);
 float32_t ahrs_limitFloat(float32_t number, float32_t max, float32_t min);
-void ahrs_update_altitude(void);
 void updateScaledVector(vectorData * vector, uint16_t x, uint16_t y, uint16_t z, float rate);
 void ahrs_vectorDataInit(vectorData * vector, VectType type);
 void ahrs_vector3qDataInit(vector3qData * vector, VectType type);
