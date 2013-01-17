@@ -181,6 +181,8 @@
 
 ---------------------------------------------------------------------------*/
 
+
+
 static const DWORD socket_state_mask_cp = (1 << 0);
 static const DWORD socket_state_mask_wp = (1 << 1);
 

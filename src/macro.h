@@ -18,6 +18,8 @@
 #define FATFS_BUFF_SIZE		256
 // After how many writes flush buffer?
 #define FATFS_FLUSH_COUNT	2
+// Messages that fit in buffer - 19 * 102 bytes
+#define SD_BUF_MESSAGE_LIMIT	1938
 
 #define NUM 10
 
@@ -62,6 +64,9 @@
 #define EXTSENS_NULLING_MAG		flag0.bits.BIT19
 #define EXTSENS_FS_REPORT		flag0.bits.BIT20
 #define SD_INITIALIZED			flag0.bits.BIT21
+#define SD_WRITING_BUF1			flag0.bits.BIT22
+#define SD_WRITING_BUF2			flag0.bits.BIT23
+#define SD_BUF_IN_USE			flag0.bits.BIT24	// 0 - writing buf1, 1 - writing buf2
 
 
 // DMA macros

@@ -80,6 +80,11 @@ const uint16_t Sine12bit[32] = {
                       599, 344, 155, 38, 0, 38, 155, 344, 599, 909, 1263, 1647};
 // SD card variables
 volatile uint8_t SD_TimerCount = 0;
+// SD card buffers - 2 x 2 kb
+char SD_Buffer1[2048];
+char SD_Buffer2[2048];
+uint32_t SD_Buf1Count = 0;
+uint32_t SD_Buf2Count = 0;
 
 // FatFS variables
 FATFS FileSystemObject;

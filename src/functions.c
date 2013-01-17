@@ -55,7 +55,7 @@ void openLog(void)
 	sendUSBMessage("FS mount error");
 #endif
 	}
-	driveStatus = disk_status (0);
+	driveStatus = disk_initialize (0);
 	if((driveStatus & STA_NOINIT) ||
 		   (driveStatus & STA_NODISK) ||
 		   (driveStatus & STA_PROTECT)
@@ -125,139 +125,169 @@ void closeLog(void)
 
 void write_toLog(void)
 {
-	unsigned int bytesWritten;
-	unsigned int uiByteCount = 0;
-	//FSBuffer = malloc(128);
+	// Make pointer to buffer place
+	uint32_t* BufferPointer = &SD_Buf1Count;
+	// Make pointer to buffer
+	char* Buffer = &SD_Buffer1[0];
+	// If we are using buffer 2, change pointers
+	if(SD_BUF_IN_USE)
+	{
+		Buffer = &SD_Buffer2[0];
+		BufferPointer = &SD_Buf2Count;
+		// Check that we are not writing buffer 2
+		if(SD_WRITING_BUF2) return;
+	}
+	else
+	{
+		// Check that we are not writing buffer 1
+		if(SD_WRITING_BUF1) return;
+	}
 	// Store time
-	FSBuffer[0] = charFromNumber(GPS_HOURS / 10);
-	FSBuffer[1] = charFromNumber(GPS_HOURS % 10);
-	FSBuffer[2] = ':';
-	FSBuffer[3] = charFromNumber(GPS_MINUTES / 10);
-	FSBuffer[4] = charFromNumber(GPS_MINUTES % 10);
-	FSBuffer[5] = ':';
-	FSBuffer[6] = charFromNumber(GPS_SECONDS / 10);
-	FSBuffer[7] = charFromNumber(GPS_SECONDS % 10);
-	FSBuffer[8] = ';';
-	uiByteCount = 9;
+	Buffer[*BufferPointer] = charFromNumber(GPS_HOURS / 10);
+	*BufferPointer = *BufferPointer + 1;
+	Buffer[*BufferPointer] = charFromNumber(GPS_HOURS % 10);
+	*BufferPointer = *BufferPointer + 1;
+	Buffer[*BufferPointer] = ':';
+	*BufferPointer = *BufferPointer + 1;
+	Buffer[*BufferPointer] = charFromNumber(GPS_MINUTES / 10);
+	*BufferPointer = *BufferPointer + 1;
+	Buffer[*BufferPointer] = charFromNumber(GPS_MINUTES % 10);
+	*BufferPointer = *BufferPointer + 1;
+	Buffer[*BufferPointer] = ':';
+	*BufferPointer = *BufferPointer + 1;
+	Buffer[*BufferPointer] = charFromNumber(GPS_SECONDS / 10);
+	*BufferPointer = *BufferPointer + 1;
+	Buffer[*BufferPointer] = charFromNumber(GPS_SECONDS % 10);
+	*BufferPointer = *BufferPointer + 1;
+	Buffer[*BufferPointer] = ';';
+	*BufferPointer = *BufferPointer + 1;
 	// Store GPS data
 	// GPS lock
 	if ((GPS_VALID & 32768) != 0)
 	{
-		FSBuffer[uiByteCount] = '1';
+		Buffer[*BufferPointer] = '1';
 	}
 	else
 	{
-		FSBuffer[uiByteCount] = '0';
+		Buffer[*BufferPointer] = '0';
 	}
-	uiByteCount++;
-	FSBuffer[uiByteCount] = ';';
-	uiByteCount++;
+	*BufferPointer = *BufferPointer + 1;
+	Buffer[*BufferPointer] = ';';
+	*BufferPointer = *BufferPointer + 1;
 	// Latitude
-	uiByteCount += storeNegativeNumber(GPS_LATITUDE, FSBuffer, uiByteCount);
+	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_LATITUDE, Buffer, *BufferPointer);
 	// Change ; to ,
-	FSBuffer[uiByteCount - 1] = ',';
+	Buffer[*BufferPointer - 1] = ',';
 	// Latitude frac
-	uiByteCount += storeNegativeNumber(GPS_LATITUDE_FRAC, FSBuffer, uiByteCount);
+	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_LATITUDE_FRAC, Buffer, *BufferPointer);
 	// N/S
 	if((GPS_NS_EW & 1) != 0)
 	{
-		FSBuffer[uiByteCount] = 'S';
+		Buffer[*BufferPointer] = 'S';
 	}
 	else
 	{
-		FSBuffer[uiByteCount] = 'N';
+		Buffer[*BufferPointer] = 'N';
 	}
-	uiByteCount++;
-	FSBuffer[uiByteCount] = ';';
-	uiByteCount++;
+	*BufferPointer = *BufferPointer + 1;
+	Buffer[*BufferPointer] = ';';
+	*BufferPointer = *BufferPointer + 1;
 	// Longitude
-	uiByteCount += storeNegativeNumber(GPS_LONGITUDE, FSBuffer, uiByteCount);
+	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_LONGITUDE, Buffer, *BufferPointer);
 	// Change ; to ,
-	FSBuffer[uiByteCount - 1] = ',';
+	Buffer[*BufferPointer - 1] = ',';
 	// Longitude frac
-	uiByteCount += storeNegativeNumber(GPS_LONGITUDE_FRAC, FSBuffer, uiByteCount);
+	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_LONGITUDE_FRAC, Buffer, *BufferPointer);
 	// E/W
 	if((GPS_NS_EW & 2) != 0)
 	{
-		FSBuffer[uiByteCount] = 'W';
+		Buffer[*BufferPointer] = 'W';
 	}
 	else
 	{
-		FSBuffer[uiByteCount] = 'E';
+		Buffer[*BufferPointer] = 'E';
 	}
-	uiByteCount++;
-	FSBuffer[uiByteCount] = ';';
-	uiByteCount++;
+	*BufferPointer = *BufferPointer + 1;
+	Buffer[*BufferPointer] = ';';
+	*BufferPointer = *BufferPointer + 1;
 	// Altitude
-	uiByteCount += storeNegativeNumber(GPS_ALTITUDE, FSBuffer, uiByteCount);
+	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_ALTITUDE, Buffer, *BufferPointer);
 	// Change ; to ,
-	FSBuffer[uiByteCount - 1] = ',';
+	Buffer[*BufferPointer - 1] = ',';
 	// Altitude frac
-	uiByteCount += storeNegativeNumber(GPS_ALTITUDE_FRAC, FSBuffer, uiByteCount);
+	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_ALTITUDE_FRAC, Buffer, *BufferPointer);
 	// Speed
-	uiByteCount += storeNegativeNumber(GPS_SPEED, FSBuffer, uiByteCount);
+	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_SPEED, Buffer, *BufferPointer);
 	// Change ; to ,
-	FSBuffer[uiByteCount - 1] = ',';
+	Buffer[*BufferPointer - 1] = ',';
 	// Speed frac
-	uiByteCount += storeNegativeNumber(GPS_SPEED_FRAC, FSBuffer, uiByteCount);
+	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_SPEED_FRAC, Buffer, *BufferPointer);
 	// Track angle
-	uiByteCount += storeNegativeNumber(GPS_TRACKANGLE, FSBuffer, uiByteCount);
+	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_TRACKANGLE, Buffer, *BufferPointer);
 	// Change ; to ,
-	FSBuffer[uiByteCount - 1] = ',';
+	Buffer[*BufferPointer - 1] = ',';
 	// Track angle frac
-	uiByteCount += storeNegativeNumber(GPS_TRACKANGLE_FRAC, FSBuffer, uiByteCount);
+	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_TRACKANGLE_FRAC, Buffer, *BufferPointer);
 	// HDOP
-	uiByteCount += storeNegativeNumber(GPS_HDOP, FSBuffer, uiByteCount);
+	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_HDOP, Buffer, *BufferPointer);
 	// Change ; to ,
-	FSBuffer[uiByteCount - 1] = ',';
+	Buffer[*BufferPointer - 1] = ',';
 	// HDOP frac
-	uiByteCount += storeNegativeNumber(GPS_HDOP_FRAC, FSBuffer, uiByteCount);
+	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_HDOP_FRAC, Buffer, *BufferPointer);
 	// GG
-	uiByteCount += storeNegativeNumber(GPS_GG, FSBuffer, uiByteCount);
+	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_GG, Buffer, *BufferPointer);
 	// Change ; to ,
-	FSBuffer[uiByteCount - 1] = ',';
+	Buffer[*BufferPointer - 1] = ',';
 	// GG frac
-	uiByteCount += storeNegativeNumber(GPS_GG_FRAC, FSBuffer, uiByteCount);
+	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_GG_FRAC, Buffer, *BufferPointer);
 
 	// Store accelerometer X, Y, Z
-	uiByteCount += storeNegativeNumber(ACC_X, FSBuffer, uiByteCount);
-	uiByteCount += storeNegativeNumber(ACC_Y, FSBuffer, uiByteCount);
-	uiByteCount += storeNegativeNumber(ACC_Z, FSBuffer, uiByteCount);
+	*BufferPointer = *BufferPointer + storeNegativeNumber(ACC_X, Buffer, *BufferPointer);
+	*BufferPointer = *BufferPointer + storeNegativeNumber(ACC_Y, Buffer, *BufferPointer);
+	*BufferPointer = *BufferPointer + storeNegativeNumber(ACC_Z, Buffer, *BufferPointer);
 	// Store gyro X, Y, Z
-	uiByteCount += storeNegativeNumber(GYRO_X, FSBuffer, uiByteCount);
-	uiByteCount += storeNegativeNumber(GYRO_Y, FSBuffer, uiByteCount);
-	uiByteCount += storeNegativeNumber(GYRO_Z, FSBuffer, uiByteCount);
+	*BufferPointer = *BufferPointer + storeNegativeNumber(GYRO_X, Buffer, *BufferPointer);
+	*BufferPointer = *BufferPointer + storeNegativeNumber(GYRO_Y, Buffer, *BufferPointer);
+	*BufferPointer = *BufferPointer + storeNegativeNumber(GYRO_Z, Buffer, *BufferPointer);
 	// Store magnetometer X, Y, Z
-	uiByteCount += storeNegativeNumber(MAG_X, FSBuffer, uiByteCount);
-	uiByteCount += storeNegativeNumber(MAG_Y, FSBuffer, uiByteCount);
-	uiByteCount += storeNegativeNumber(MAG_Z, FSBuffer, uiByteCount);
+	*BufferPointer = *BufferPointer + storeNegativeNumber(MAG_X, Buffer, *BufferPointer);
+	*BufferPointer = *BufferPointer + storeNegativeNumber(MAG_Y, Buffer, *BufferPointer);
+	*BufferPointer = *BufferPointer + storeNegativeNumber(MAG_Z, Buffer, *BufferPointer);
 	// Store baro altitude
-	uiByteCount += storeNegativeNumber(BARO, FSBuffer, uiByteCount);
+	*BufferPointer = *BufferPointer + storeNegativeNumber(BARO, Buffer, *BufferPointer);
 	// Store power Uin, Iin, mAh used, T1, T2, T3 - always positive 16 bit
-	uiByteCount += storeNumber(VOLTAGE, FSBuffer, uiByteCount);
-	uiByteCount += storeNumber(CURRENT, FSBuffer, uiByteCount);
-	uiByteCount += storeNumber(MAH, FSBuffer, uiByteCount);
-	uiByteCount += storeNumber(T1, FSBuffer, uiByteCount);
-	uiByteCount += storeNumber(T2, FSBuffer, uiByteCount);
-	uiByteCount += storeNumber(T3, FSBuffer, uiByteCount);
+	*BufferPointer = *BufferPointer + storeNumber(VOLTAGE, Buffer, *BufferPointer);
+	*BufferPointer = *BufferPointer + storeNumber(CURRENT, Buffer, *BufferPointer);
+	*BufferPointer = *BufferPointer + storeNumber(MAH, Buffer, *BufferPointer);
+	*BufferPointer = *BufferPointer + storeNumber(T1, Buffer, *BufferPointer);
+	*BufferPointer = *BufferPointer + storeNumber(T2, Buffer, *BufferPointer);
+	*BufferPointer = *BufferPointer + storeNumber(T3, Buffer, *BufferPointer);
 
 
 	// Write \r\n
-	FSBuffer[uiByteCount] = 0x0d;
-	uiByteCount++;
-	FSBuffer[uiByteCount] = 0x0a;
-	uiByteCount++;
-	f_write(&logFile, FSBuffer, uiByteCount, &bytesWritten);
-
-	// Increase flush counter
-	FatFS_FlushBuffer++;
-	if(FatFS_FlushBuffer > FATFS_FLUSH_COUNT)
+	Buffer[*BufferPointer] = 0x0d;
+	*BufferPointer = *BufferPointer + 1;
+	Buffer[*BufferPointer] = 0x0a;
+	*BufferPointer = *BufferPointer + 1;
+	// Check value
+	if(*BufferPointer > SD_BUF_MESSAGE_LIMIT)
 	{
-		FatFS_FlushBuffer = 0;
-		f_sync(&logFile);
+		if(!SD_BUF_IN_USE)
+		{
+			// Was filling buffer 1, write it and move to buffer 2
+			SD_WRITING_BUF1 = 1;
+			SD_BUF_IN_USE = 1;
+			Buffer[*BufferPointer] = 0;
+		}
+		else
+		{
+			// Was filling buffer 2, write it and move to buffer 1
+			SD_WRITING_BUF2 = 1;
+			SD_BUF_IN_USE = 0;
+			Buffer[*BufferPointer] = 0;
+		}
+
 	}
-	// Free memory
-	//free(FSBuffer);
 }
 
 int storeNumber(uint16_t number, char* buffer, int offset)
@@ -500,7 +530,7 @@ ErrorStatus loadSettings(void)
 		f_mount(0,0);
 		return ERROR;
 	}
-	driveStatus = disk_status (0);
+	driveStatus = disk_initialize(0);
 	if((driveStatus & STA_NOINIT) ||
 		   (driveStatus & STA_NODISK) ||
 		   (driveStatus & STA_PROTECT)

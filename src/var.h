@@ -127,6 +127,11 @@ extern volatile uint32_t DAC1_TIM6reloadValue;
 extern const uint16_t Sine12bit[32];
 // SD card variables
 extern volatile uint8_t SD_TimerCount;
+// SD card buffers - 2 x 2 kb
+extern char SD_Buffer1[2048];
+extern char SD_Buffer2[2048];
+extern uint32_t SD_Buf1Count;
+extern uint32_t SD_Buf2Count;
 
 // FatFS variables
 extern FATFS FileSystemObject;

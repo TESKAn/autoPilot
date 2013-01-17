@@ -52,13 +52,13 @@ __ALIGN_BEGIN	USB_OTG_CORE_HANDLE  USB_OTG_dev __ALIGN_END;
 
 int main(void)
 {
-	//float32_t temp = 0;
+	unsigned int bytesWritten;
 	// Init vectors
 
 	// Initialize matrices
 	ahrs_matrix3by3_init(&tempMatrix);
 	ahrs_matrix3by3_init(&holdMatrix);
-	ahrs_vectorDataInit(&tempVector, ROW);
+	math_vector3fDataInit(&tempVector, ROW);
 
 	//SD_CardInfo cardinfo;
 	int i = 0;
@@ -304,6 +304,19 @@ int main(void)
         	SCR2 = SCR2 | SCR2_GYROOK;
         	SCR2 = SCR2 | SCR2_MAGOK;
         	SCR2 = SCR2 | SCR2_BAROK;
+        }
+        // Check log write buffers
+        if(SD_WRITING_BUF1)
+        {
+        	f_write(&logFile, SD_Buffer1, SD_Buf1Count, &bytesWritten);
+        	SD_Buf1Count = 0;
+        	SD_WRITING_BUF1 = 0;
+        }
+        if(SD_WRITING_BUF2)
+        {
+        	f_write(&logFile, SD_Buffer2, SD_Buf2Count, &bytesWritten);
+        	SD_Buf2Count = 0;
+        	SD_WRITING_BUF2 = 0;
         }
     }
     /* Infinite loop */
