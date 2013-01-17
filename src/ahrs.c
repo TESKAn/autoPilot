@@ -72,9 +72,9 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 	ahrsStructure->YawCorrectionScale = DEFAULT_YAWCORRECTIONSCALE;
 
 	// Store offsets for mag
-	ahrsStructure->MagOffsetVector.vector.pData[VECT_X] = (uint16_t)-594;
-	ahrsStructure->MagOffsetVector.vector.pData[VECT_Y] = (uint16_t)-94;
-	ahrsStructure->MagOffsetVector.vector.pData[VECT_Z] = (uint16_t)555;
+	ahrsStructure->MagOffsetVector.vector.pData[VECT_X] = (uint16_t)-519;
+	ahrsStructure->MagOffsetVector.vector.pData[VECT_Y] = (uint16_t)60;
+	ahrsStructure->MagOffsetVector.vector.pData[VECT_Z] = (uint16_t)639;
 
 	// Try to load values from SD card
 	if(loadSettings() == ERROR)
