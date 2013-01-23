@@ -18,8 +18,8 @@
 #define DEFAULT_ROLLPITCHCORRECTIONSCALE	0.5f// Weight of roll pitch correction error
 #define DEFAULT_YAWCORRECTIONSCALE	0.5f		// Weight of yaw correction error
 // PID defaults
-#define DEFAULT_KP			0.1f				// Default Kp value
-#define DEFAULT_KI			0.001f				// Default Ki value
+#define DEFAULT_KP			2.0f				// Default Kp value
+#define DEFAULT_KI			0.0005f				// Default Ki value
 #define DEFAULT_MAXI		2000.0f				// Maximum integral value - +2 rad/sec = 2 / 0.001 = 2000
 #define DEFAULT_MINI		-2000.0f				// Minimum integral value
 
