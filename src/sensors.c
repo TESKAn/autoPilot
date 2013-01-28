@@ -22,6 +22,7 @@ volatile uint16_t sensorTimeCounter = 0;
 volatile uint16_t sensoruTimeCounter = 0;
 // Data taken at time
 uint32_t sensorAcquisitionTime = 0;
+float32_t fSensorAcquisitionTime = 0;
 
 // Offset registers
 uint8_t gyroOffsetSampleCount = 0;

@@ -18,6 +18,14 @@ vector3fData tempVector;
 
 void initAHRSStructure(AHRSData * ahrsStructure)
 {
+	// Init quaternion to 0 rotation
+	ahrsStructure->Q.w = 1;
+	ahrsStructure->Q.x = 0;
+	ahrsStructure->Q.y = 0;
+	ahrsStructure->Q.z = 0;
+	ahrsStructure->Q.dataTime = systemTime;
+	getFTime(&(ahrsStructure->Q.fDataTime));
+	ahrsStructure->Q.fDeltaTime = 0;
 	math_vector3fDataInit(&(ahrsStructure->AccVector), ROW);
 	math_vector3qDataInit(&(ahrsStructure->AccOffsetVector), ROW);
 	math_vector3fDataInit(&(ahrsStructure->AccScaleVector), ROW);

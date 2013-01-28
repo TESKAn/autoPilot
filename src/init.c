@@ -683,7 +683,7 @@ void System_Config(void)
 
 	// End of timer 6
 
-	// Timer 14 - timing for MODBUS
+	// Timer 14 - timing
 	//enable clock(s) - 42 MHz
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM14, ENABLE);
 	//populate structure

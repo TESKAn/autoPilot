@@ -44,8 +44,10 @@ void updateScaledVector(vector3fData * vector, uint16_t x, uint16_t y, uint16_t 
 	vector->vector.pData[VECT_Z] = (float) ((int16_t)z) * rate;
 	// Store delta time
 	vector->deltaTime = sensorAcquisitionTime - vector->dataTime;
+	vector->fDeltaTime = fSensorAcquisitionTime - vector->fDataTime;
 	// Store time
 	vector->dataTime = sensorAcquisitionTime;
+	vector->fDataTime = fSensorAcquisitionTime;
 }
 
 
@@ -158,6 +160,79 @@ void ahrs_generate_rotationUpdateMatrix(float32_t x, float32_t y, float32_t z, m
 	matrix->vector3fData[6] = y;
 	matrix->vector3fData[7] = -x;
 	matrix->vector3fData[8] = 1;
+}
+
+ErrorStatus ahrs_updateQuaternion(void)
+{
+	float32_t delta = 0;
+	float32_t qw = 0;
+	float32_t qx = 0;
+	float32_t qy = 0;
+	float32_t qz = 0;
+	float32_t dWx = 0;
+	float32_t dWy = 0;
+	float32_t dWz = 0;
+
+	// Update vectors
+	updateScaledVector(&(ahrs_data.GyroVector), GYRO_X, GYRO_Y, GYRO_Z, ahrs_data.gyroRate * DEG_TO_RAD);
+	updateScaledVector(&(ahrs_data.AccVector), ACC_X, ACC_Y, ACC_Z, ahrs_data.accRate);
+	updateScaledVector(&(ahrs_data.MagVector), MAG_X, MAG_Y, MAG_Z, ahrs_data.magRate);
+	// Update altitude reading
+	ahrs_update_altitude();
+
+	// Calculate gravity vector
+	ahrs_data.GravityVector.vector.pData[VECT_X] = ahrs_data.AccVector.vector.pData[VECT_X];
+	ahrs_data.GravityVector.vector.pData[VECT_Y] = ahrs_data.AccVector.vector.pData[VECT_Y];
+	ahrs_data.GravityVector.vector.pData[VECT_Z] = ahrs_data.AccVector.vector.pData[VECT_Z];
+	// Remove angular acceleration from acceleration result
+	// Angular acceleration = cross product of velocity and rotation rate
+
+	// Get plane reference gravity vector
+	tempVector.vector.pData[VECT_X] = ahrs_data.rotationMatrix.vector.pData[Rzx];
+	tempVector.vector.pData[VECT_Y] = ahrs_data.rotationMatrix.vector.pData[Rzy];
+	tempVector.vector.pData[VECT_Z] = ahrs_data.rotationMatrix.vector.pData[Rzz];
+
+	// Calculate roll pitch error
+	ahrs_vect_cross_product(&tempVector, &(ahrs_data.GravityVector), &(ahrs_data.RollPitchCorrection));
+	// Scale error
+	ahrs_mult_vector_scalar(&(ahrs_data.RollPitchCorrection), ahrs_data.RollPitchCorrectionScale);
+	// Add yaw error
+	// Update PI error regulator
+	ahrs_updateVectorPID(&(ahrs_data.PIData), &(ahrs_data.RollPitchCorrection));
+
+	// Calculate change in radians/sec
+	dWx = ahrs_data.GyroVector.vector.pData[VECT_X];// * dT;
+	dWy = ahrs_data.GyroVector.vector.pData[VECT_Y];// * dT;
+	dWz = ahrs_data.GyroVector.vector.pData[VECT_Z];// * dT;
+	// Remove drift error
+	dWx = dWx - ahrs_data.PIData.Rx;
+	dWy = dWy - ahrs_data.PIData.Ry;
+	dWz = dWz - ahrs_data.PIData.Rz;
+	// Calculate delta time var * 0.5
+	delta = 0.5f * ahrs_data.GyroVector.fDeltaTime;
+	// Store current quaternion
+	qw = ahrs_data.Q.w;
+	qx = ahrs_data.Q.x;
+	qy = ahrs_data.Q.y;
+	qz = ahrs_data.Q.z;
+	// Do updating
+	ahrs_data.Q.w = qw + (-qx * dWx - qy * dWy - qz * dWz) * delta;
+	ahrs_data.Q.x = qx + (qw * dWx + qz * dWy - qy * dWz) * delta;
+	ahrs_data.Q.y = qy + (qw * dWy + qx * dWz - qz * dWx) * delta;
+	ahrs_data.Q.z = qz + (qw * dWz + qy * dWx - qx * dWy) * delta;
+	// Generate new rotation matrix
+	ahrs_data.rotationMatrix.vector.pData[Rxx] = ahrs_data.Q.w * ahrs_data.Q.w + ahrs_data.Q.x * ahrs_data.Q.x - ahrs_data.Q.y * ahrs_data.Q.y - ahrs_data.Q.z * ahrs_data.Q.z;
+	ahrs_data.rotationMatrix.vector.pData[Ryx] = 2 * ahrs_data.Q.x * ahrs_data.Q.y + 2 * ahrs_data.Q.w * ahrs_data.Q.z;
+	ahrs_data.rotationMatrix.vector.pData[Rzx] = 2 * ahrs_data.Q.x * ahrs_data.Q.z - 2 * ahrs_data.Q.w * ahrs_data.Q.y;
+	ahrs_data.rotationMatrix.vector.pData[Rxy] = 2 * ahrs_data.Q.x * ahrs_data.Q.y - 2 * ahrs_data.Q.w * ahrs_data.Q.z;
+	ahrs_data.rotationMatrix.vector.pData[Ryy] = ahrs_data.Q.w * ahrs_data.Q.w - ahrs_data.Q.x * ahrs_data.Q.x + ahrs_data.Q.y * ahrs_data.Q.y - ahrs_data.Q.z * ahrs_data.Q.z;
+	ahrs_data.rotationMatrix.vector.pData[Rzy] = 2 * ahrs_data.Q.y * ahrs_data.Q.z + 2 * ahrs_data.Q.w * ahrs_data.Q.x;
+	ahrs_data.rotationMatrix.vector.pData[Rzx] = 2 * ahrs_data.Q.x * ahrs_data.Q.z + 2 * ahrs_data.Q.w * ahrs_data.Q.y;
+	ahrs_data.rotationMatrix.vector.pData[Rzy] = 2 * ahrs_data.Q.y * ahrs_data.Q.z - 2 * ahrs_data.Q.w * ahrs_data.Q.x;
+	ahrs_data.rotationMatrix.vector.pData[Rzz] = ahrs_data.Q.w * ahrs_data.Q.w - ahrs_data.Q.x * ahrs_data.Q.x - ahrs_data.Q.y * ahrs_data.Q.y + ahrs_data.Q.z * ahrs_data.Q.z;
+
+
+	return SUCCESS;
 }
 
 // Multiply vector by scalar

@@ -49,12 +49,13 @@
 __ALIGN_BEGIN	USB_OTG_CORE_HANDLE  USB_OTG_dev __ALIGN_END;
 
 // AHRS
+float32_t t1 = 0;
+float32_t t2 = 0;
 
 int main(void)
 {
 	unsigned int bytesWritten;
 	// Init vectors
-
 	// Initialize matrices
 	ahrs_matrix3by3_init(&tempMatrix);
 	ahrs_matrix3by3_init(&holdMatrix);
@@ -151,6 +152,8 @@ int main(void)
         	}
         	else
         	{
+        		SD_WRITE_LOG = 0;
+        		SCR2 = SCR2 & ~SCR2_LOGOPEN;
         		// Else close file
         		closeLog();
         	}
@@ -264,7 +267,7 @@ int main(void)
         	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
         }
 
-        // Send registers 62 - 79
+        // Send registers 62 - 90
         if(USB_REQUEST_DATA_2)
         {
         	USB_REQUEST_DATA_2 = 0;
@@ -273,7 +276,7 @@ int main(void)
         	// Store data
         	Buffer[0] = 2;
         	Buffer[1] = 2;
-        	for(i=2;i<36;i+=2)
+        	for(i=2;i<56;i+=2)
         	{
         		// Store high byte of register
         		Buffer[i] = (MODBUSReg[registerCount] >> 8) & 0x00FF;
@@ -308,7 +311,9 @@ int main(void)
         // Check log write buffers
         if(SD_WRITING_BUF1)
         {
+        	//getFTime(&t1);
         	f_write(&logFile, SD_Buffer1, SD_Buf1Count, &bytesWritten);
+        	//getFTime(&t2);
         	SD_Buf1Count = 0;
         	SD_WRITING_BUF1 = 0;
         }

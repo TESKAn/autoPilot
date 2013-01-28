@@ -69,6 +69,8 @@ typedef struct
 
 typedef struct
 {
+	// Rotation quaternion
+	quaternion Q;
 	// Rotation matrix
 	matrix3by3 rotationMatrix;
 	// Acceleration vector
@@ -145,6 +147,7 @@ void ahrs_vectorUpdate(vector3fData * vector, float32_t i, float32_t j, float32_
 void ahrs_matrix3by3_init(matrix3by3 * matrix);
 void ahrs_generate_rotationMatrix(matrix3by3 * matrix, float roll, float pitch, float yaw);
 void ahrs_generate_rotationUpdateMatrix(float32_t x, float32_t y, float32_t z, matrix3by3 * matrix);
+ErrorStatus ahrs_updateQuaternion(void);
 arm_status ahrs_mult_vector_scalar(vector3fData * vectorA, float32_t scalar);
 arm_status ahrs_vect_cross_product(vector3fData * vectorA, vector3fData * vectorB, vector3fData * vectorC);
 arm_status ahrs_mult_matrixes(matrix3by3 * matrixA, matrix3by3 * matrixB, matrix3by3 * matrixC);

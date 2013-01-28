@@ -37,11 +37,25 @@ typedef enum {ROW = 0, COLUMN = !ROW} VectType;
 #define Ryz			7
 #define Rzz			8
 
+// Structure for float quaternion
+typedef struct
+{
+	float32_t w;
+	float32_t x;
+	float32_t y;
+	float32_t z;
+	float32_t fDataTime;
+	float32_t fDeltaTime;
+	uint32_t dataTime;
+}__attribute__((aligned(4),packed)) quaternion;
+
 // Structure for float vector with 3 elements
 typedef struct
 {
 	float32_t vector3fData[3];
 	vector3f vector;
+	float32_t fDataTime;
+	float32_t fDeltaTime;
 	uint32_t dataTime;
 	uint32_t deltaTime;		// Time that has passed between two samples
 	VectType type;

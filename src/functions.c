@@ -7,6 +7,18 @@
 #include "allinclude.h"
 #include <string.h>
 
+ErrorStatus getFTime(float32_t* var)
+{
+	float32_t time = 0;
+	float32_t timeFrac = 0;
+	time = systemTime;
+	timeFrac = (float32_t)(TIM14->CNT);
+	timeFrac = timeFrac / 1000;
+	time = time + timeFrac;
+	*var = time;
+	return SUCCESS;
+}
+
 ErrorStatus FS_Initialize(void)
 {
 	if(!SD_INITIALIZED)

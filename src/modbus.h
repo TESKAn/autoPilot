@@ -122,6 +122,13 @@ void crcOnMessage(unsigned int uiDataLen);
 #define AHRS_YAW			MODBUSReg[73]
 // baro altitude - fraction
 #define BARO_FRAC			MODBUSReg[74]
+// external graphs
+#define GRAPH_1				MODBUSReg[75]
+#define GRAPH_2				MODBUSReg[76]
+#define GRAPH_3				MODBUSReg[77]
+#define GRAPH_4				MODBUSReg[78]
+#define GRAPH_5				MODBUSReg[79]
+#define GRAPH_6				MODBUSReg[80]
 
 // Typedefs
 // MODBUS data structure

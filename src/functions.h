@@ -8,6 +8,7 @@
 #ifndef FUNCTIONS_H_
 #define FUNCTIONS_H_
 
+ErrorStatus getFTime(float32_t* var);
 ErrorStatus FS_Initialize(void);
 void storeAHRSAngles(void);
 void openLog(void);
