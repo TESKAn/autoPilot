@@ -272,7 +272,10 @@ void copySensorData(void)
 	BARO = BARO | (I2C2_DMABufRX[21] & 0x00ff);
 	BARO_FRAC = I2C2_DMABufRX[22] >> 4;
 	// Update AHRS
-	ahrs_updateRotationMatrix(&ahrs_data);
+	ahrs_updateQuaternion();
+
+
+	//ahrs_updateRotationMatrix(&ahrs_data);
 	// Store angles
 	storeAHRSAngles();
 	// Check if we are nulling
@@ -607,7 +610,7 @@ ErrorStatus masterSend(uint8_t device, uint8_t *dataBuffer, uint8_t byteCount)
 		// Call sensor timer
 		sensorTimer();
 		// Check for DMA error
-		if(I2C_DMACheckForError(DMA_I2C2_TX) == ERROR)
+		if((I2C_DMACheckForError(DMA_I2C2_TX) == ERROR))//||(sensorTimeCounter > I2C2_ERRORTIMEOUT))
 		{
 			return ERROR;
 			break;
