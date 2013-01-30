@@ -55,6 +55,11 @@ typedef union
 	 }bits;
 }Flag;
 
+typedef union
+{
+	float32_t f;
+	unsigned char ch[4];
+} C_Float;
 // Flag variable
 extern volatile Flag flag0;
 
@@ -147,5 +152,6 @@ extern uint8_t Buffer[64];
 extern char StringBuffer[161];			// Buffer for string manipulation
 extern char FSBuffer[FATFS_BUFF_SIZE];	// Pointer to buffer for file write
 
+extern volatile C_Float floatToUint32;
 
 #endif /* VAR_H_ */

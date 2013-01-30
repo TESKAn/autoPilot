@@ -183,6 +183,7 @@ int main(void)
         {
         	// Reset AHRS matrix
         	ahrs_resetRotationMatrix();
+        	ahrs_resetQuaternion();
         	SCR1 = SCR1 & ~SCR_11;
         }
         if(SCR1 & SCR_12)

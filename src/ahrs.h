@@ -135,6 +135,7 @@ arm_status ahrs_updateRotationMatrix(AHRSData * data);
 ErrorStatus ahrs_updateQuaternion(void);
 void ahrs_resetPID(PI3Data* PID);
 void ahrs_resetRotationMatrix(void);
+void ahrs_resetQuaternion(void);
 void ahrs_normalizeOrthogonalizeMatrix(matrix3by3 * rotMatrix);
 void ahrs_getAngles(matrix3by3 * rotMatrix, vector3f *vector);
 

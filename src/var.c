@@ -100,3 +100,5 @@ uint8_t Buffer[64];
 char StringBuffer[161];			// Buffer for string manipulation
 char FSBuffer[FATFS_BUFF_SIZE];	// Pointer to buffer for file write
 
+volatile C_Float floatToUint32;
+

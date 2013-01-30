@@ -15,6 +15,7 @@ AHRSData ahrs_data;
 matrix3by3 tempMatrix;
 matrix3by3 holdMatrix;
 vector3fData tempVector;
+volatile quaternion Qtemp;
 
 void initAHRSStructure(AHRSData * ahrsStructure)
 {
@@ -245,18 +246,23 @@ ErrorStatus ahrs_updateQuaternion(void)
 	dWx = dWx - ahrs_data.PIData.Rx;
 	dWy = dWy - ahrs_data.PIData.Ry;
 	dWz = dWz - ahrs_data.PIData.Rz;
+
 	// Calculate delta time var * 0.5
-	delta = 0.5f * ahrs_data.GyroVector.fDeltaTime;
+	delta = 0.5f * ahrs_data.GyroVector.fDeltaTime * SYSTIME_TOSECONDS;
+	// Calculate change in delta time / 2
+	dWx = dWx * delta;
+	dWy = dWy * delta;
+	dWz = dWz * delta;
 	// Store current quaternion
-	qw = ahrs_data.Q.w;
-	qx = ahrs_data.Q.x;
-	qy = ahrs_data.Q.y;
-	qz = ahrs_data.Q.z;
+	Qtemp.w = ahrs_data.Q.w;
+	Qtemp.x = ahrs_data.Q.x;
+	Qtemp.y = ahrs_data.Q.y;
+	Qtemp.z = ahrs_data.Q.z;
 	// Do updating
-	ahrs_data.Q.w = qw + (-qx * dWx - qy * dWy - qz * dWz) * delta;
-	ahrs_data.Q.x = qx + (qw * dWx + qz * dWy - qy * dWz) * delta;
-	ahrs_data.Q.y = qy + (qw * dWy + qx * dWz - qz * dWx) * delta;
-	ahrs_data.Q.z = qz + (qw * dWz + qy * dWx - qx * dWy) * delta;
+	ahrs_data.Q.w = Qtemp.w - (Qtemp.x * dWx) - (Qtemp.y * dWy) - (Qtemp.z * dWz);
+	ahrs_data.Q.x = Qtemp.x + (Qtemp.w * dWx) + (Qtemp.z * dWy) - (Qtemp.y * dWz);
+	ahrs_data.Q.y = Qtemp.y + (Qtemp.w * dWy) + (Qtemp.x * dWz) - (Qtemp.z * dWx);
+	ahrs_data.Q.z = Qtemp.z + (Qtemp.w * dWz) + (Qtemp.y * dWx) - (Qtemp.x * dWy);
 	// Normalize
 	// Calculate scalar product
 	delta = (ahrs_data.Q.w * ahrs_data.Q.w) + (ahrs_data.Q.x * ahrs_data.Q.x) + (ahrs_data.Q.y * ahrs_data.Q.y) + (ahrs_data.Q.z * ahrs_data.Q.z);
@@ -265,6 +271,7 @@ ErrorStatus ahrs_updateQuaternion(void)
 	// Calculate 1/2
 	delta = delta / 2;
 	// Multiply
+
 	ahrs_data.Q.w = ahrs_data.Q.w * delta;
 	ahrs_data.Q.x = ahrs_data.Q.x * delta;
 	ahrs_data.Q.y = ahrs_data.Q.y * delta;
@@ -272,15 +279,16 @@ ErrorStatus ahrs_updateQuaternion(void)
 
 
 	// Generate new rotation matrix
-	ahrs_data.rotationMatrix.vector.pData[Rxx] = ahrs_data.Q.w * ahrs_data.Q.w + ahrs_data.Q.x * ahrs_data.Q.x - ahrs_data.Q.y * ahrs_data.Q.y - ahrs_data.Q.z * ahrs_data.Q.z;
-	ahrs_data.rotationMatrix.vector.pData[Ryx] = 2 * ahrs_data.Q.x * ahrs_data.Q.y + 2 * ahrs_data.Q.w * ahrs_data.Q.z;
-	ahrs_data.rotationMatrix.vector.pData[Rzx] = 2 * ahrs_data.Q.x * ahrs_data.Q.z - 2 * ahrs_data.Q.w * ahrs_data.Q.y;
-	ahrs_data.rotationMatrix.vector.pData[Rxy] = 2 * ahrs_data.Q.x * ahrs_data.Q.y - 2 * ahrs_data.Q.w * ahrs_data.Q.z;
-	ahrs_data.rotationMatrix.vector.pData[Ryy] = ahrs_data.Q.w * ahrs_data.Q.w - ahrs_data.Q.x * ahrs_data.Q.x + ahrs_data.Q.y * ahrs_data.Q.y - ahrs_data.Q.z * ahrs_data.Q.z;
-	ahrs_data.rotationMatrix.vector.pData[Rzy] = 2 * ahrs_data.Q.y * ahrs_data.Q.z + 2 * ahrs_data.Q.w * ahrs_data.Q.x;
+
+	ahrs_data.rotationMatrix.vector.pData[Rxx] = 1 - (2 * ahrs_data.Q.y * ahrs_data.Q.y) - (2* ahrs_data.Q.z * ahrs_data.Q.z);
+	ahrs_data.rotationMatrix.vector.pData[Ryx] = 2 * ahrs_data.Q.x * ahrs_data.Q.y - 2 * ahrs_data.Q.w * ahrs_data.Q.z;
 	ahrs_data.rotationMatrix.vector.pData[Rzx] = 2 * ahrs_data.Q.x * ahrs_data.Q.z + 2 * ahrs_data.Q.w * ahrs_data.Q.y;
+	ahrs_data.rotationMatrix.vector.pData[Rxy] = 2 * ahrs_data.Q.x * ahrs_data.Q.y + 2 * ahrs_data.Q.w * ahrs_data.Q.z;
+	ahrs_data.rotationMatrix.vector.pData[Ryy] = 1 - (2*ahrs_data.Q.x * ahrs_data.Q.x) - (2*ahrs_data.Q.z * ahrs_data.Q.z);
 	ahrs_data.rotationMatrix.vector.pData[Rzy] = 2 * ahrs_data.Q.y * ahrs_data.Q.z - 2 * ahrs_data.Q.w * ahrs_data.Q.x;
-	ahrs_data.rotationMatrix.vector.pData[Rzz] = ahrs_data.Q.w * ahrs_data.Q.w - ahrs_data.Q.x * ahrs_data.Q.x - ahrs_data.Q.y * ahrs_data.Q.y + ahrs_data.Q.z * ahrs_data.Q.z;
+	ahrs_data.rotationMatrix.vector.pData[Rzx] = 2 * ahrs_data.Q.x * ahrs_data.Q.z - 2 * ahrs_data.Q.w * ahrs_data.Q.y;
+	ahrs_data.rotationMatrix.vector.pData[Rzy] = 2 * ahrs_data.Q.y * ahrs_data.Q.z + 2 * ahrs_data.Q.w * ahrs_data.Q.x;
+	ahrs_data.rotationMatrix.vector.pData[Rzz] = 1 - (2*ahrs_data.Q.x * ahrs_data.Q.x) - (2*ahrs_data.Q.y * ahrs_data.Q.y);
 
 
 	return SUCCESS;
@@ -304,6 +312,14 @@ void ahrs_resetRotationMatrix(void)
 	ahrs_data.rotationMatrix.vector.pData[6] = 0;
 	ahrs_data.rotationMatrix.vector.pData[7] = 0;
 	ahrs_data.rotationMatrix.vector.pData[8] = 1;
+}
+
+void ahrs_resetQuaternion(void)
+{
+	ahrs_data.Q.w = 1;
+	ahrs_data.Q.x = 0;
+	ahrs_data.Q.y = 0;
+	ahrs_data.Q.z = 0;
 }
 
 /// Make matrix orthogonal and normalized

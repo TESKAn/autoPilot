@@ -19,6 +19,9 @@
 #include "math.h"
 #include "math_custom.h"
 
+// File with macro functions
+#include "macroFunctions.h"
+
 // USB defines
 #include "usbd_hid_core.h"
 #include "usbd_usr.h"

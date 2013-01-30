@@ -256,7 +256,7 @@ __ALIGN_BEGIN static uint8_t CustomHID_ReportDescriptor[CUSTOMHID_SIZ_REPORT_DES
   0x15, 0x00,            /*     LOGICAL_MINIMUM (0)        */
   0x26, 0xff, 0x00,      /*     LOGICAL_MAXIMUM (255)      */
   0x75, 0x08,            /*     REPORT_SIZE (8)            */
-  0x95, 0x3f,            /*     REPORT_COUNT (2)           */
+  0x95, 0x3f,            /*     REPORT_COUNT (64)          */
   0x81, 0x82,            /*     INPUT (Data,Var,Abs,Vol)   */
   0x85, 0x02,            /*     REPORT_ID (6)              */
   0x09, 0x06,            /*     USAGE (ADC in)             */
