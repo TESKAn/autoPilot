@@ -76,6 +76,8 @@ typedef struct
 {
 	float32_t vector3fData[9];
 	vector3f vector;
+	float32_t fDataTime;
+	float32_t fDeltaTime;
 	uint32_t dataTime;
 }__attribute__((aligned(4),packed)) matrix3by3;
 

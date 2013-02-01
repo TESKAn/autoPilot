@@ -90,9 +90,11 @@ typedef struct
 	// Magnetometer vector
 	vector3fData MagVector;
 	// Magnetometer offset vector
-	vector3qData MagOffsetVector;
+	vector3fData MagOffsetVector;
 	// Magnetometer scale vector
 	vector3fData MagScaleVector;
+	// Magnetometer rotation and scale matrix
+	matrix3by3 magRotationMatrix;
 	// Pitch, roll, yaw angles in rad
 	vector3fData RollPitchYaw;
 	// GPS data
@@ -125,6 +127,7 @@ extern AHRSData ahrs_data;
 extern matrix3by3 tempMatrix;
 extern matrix3by3 holdMatrix;
 extern vector3fData tempVector;
+extern vector3fData tempVector1;
 
 // Function exports - ahrs.h
 void initAHRSStructure(AHRSData * ahrsStructure);
@@ -152,6 +155,8 @@ void ahrs_generate_rotationUpdateMatrix(float32_t x, float32_t y, float32_t z, m
 arm_status ahrs_mult_vector_scalar(vector3fData * vectorA, float32_t scalar);
 arm_status ahrs_vect_cross_product(vector3fData * vectorA, vector3fData * vectorB, vector3fData * vectorC);
 arm_status ahrs_mult_matrixes(matrix3by3 * matrixA, matrix3by3 * matrixB, matrix3by3 * matrixC);
-arm_status ahrs_mult_vector_matrix(vector3fData * vectorA, matrix3by3 * matrix, vector3fData * vectorB);
+arm_status ahrs_mult_vector_matrix(matrix3by3 * matrixA, vector3fData * vectorA, vector3fData * vectorB);
+arm_status ahrs_matrix_transponse(matrix3by3 * matrixA, matrix3by3 * matrixB);
+arm_status ahrs_normalize_vector(vector3fData * vectorA);
 
 #endif /* AHRS_H_ */

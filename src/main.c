@@ -60,6 +60,7 @@ int main(void)
 	ahrs_matrix3by3_init(&tempMatrix);
 	ahrs_matrix3by3_init(&holdMatrix);
 	math_vector3fDataInit(&tempVector, ROW);
+	math_vector3fDataInit(&tempVector1, ROW);
 
 	//SD_CardInfo cardinfo;
 	int i = 0;
@@ -84,6 +85,7 @@ int main(void)
 	PWMOUT_11 = TIM1_PULSE;
 	PWMOUT_12 = TIM1_PULSE;
 
+
 	// Initialize USB
 	  USBD_Init(&USB_OTG_dev,
 	#ifdef USE_USB_OTG_HS
@@ -96,6 +98,7 @@ int main(void)
 	  &USR_cb);
 	// Peripherals initialized, wait 1 sec
 	Delayms(1000);
+
 	// Initialize external peripheral
 	extPeripheralInit();
 

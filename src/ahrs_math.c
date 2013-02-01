@@ -198,18 +198,53 @@ arm_status ahrs_mult_matrixes(matrix3by3 * matrixA, matrix3by3 * matrixB, matrix
 }
 
 // Multiply vectorA and matrix into vectorB
-arm_status ahrs_mult_vector_matrix(vector3fData * vectorA, matrix3by3 * matrix, vector3fData * vectorB)
+arm_status ahrs_mult_vector_matrix(matrix3by3 * matrixA, vector3fData * vectorA, vector3fData * vectorB)
 {
 	arm_status status;
-
 	// Multiply
-	status = arm_mat_mult_f32(&(vectorA->vector), &(matrix->vector), &(vectorB->vector));
+	status = arm_mat_mult_f32(&(vectorA->vector), &(matrixA->vector), &(vectorB->vector));
+	//status = arm_mat_mult_f32(&(matrixA->vector), &(vectorA->vector), &(vectorB->vector));
 	if(status == ARM_MATH_SUCCESS)
 	{
 		// Update time when we multiplied
 		vectorB->dataTime = systemTime;
+		getFTime(&(vectorB->fDataTime));
 	}
 	return status;
 }
 
+arm_status ahrs_matrix_transponse(matrix3by3 * matrixA, matrix3by3 * matrixB)
+{
+	arm_status status;
+
+	status = arm_mat_trans_f32(&(matrixA->vector), &(matrixB->vector));
+	if(status == ARM_MATH_SUCCESS)
+	{
+		// Update time when we multiplied
+		getFTime(&(matrixB->fDataTime));
+	}
+	return status;
+}
+
+// Normalize vector A to 1
+arm_status ahrs_normalize_vector(vector3fData * vectorA)
+{
+	arm_status status = ARM_MATH_SUCCESS;
+	float32_t scale = 0;
+	scale = vectorA->vector.pData[VECT_X];
+	scale = scale * vectorA->vector.pData[VECT_X];
+	scale = scale +(vectorA->vector.pData[VECT_Y] * vectorA->vector.pData[VECT_Y]);
+	scale = scale + +(vectorA->vector.pData[VECT_Z] * vectorA->vector.pData[VECT_Z]);
+	// Calculate 3 - scalar
+	scale = 3 - scale;
+	// Calculate one half
+	scale = scale / 2;
+
+
+	vectorA->vector.pData[VECT_X] = vectorA->vector.pData[VECT_X] * scale;
+	vectorA->vector.pData[VECT_Y] = vectorA->vector.pData[VECT_Y] * scale;
+	vectorA->vector.pData[VECT_Z] = vectorA->vector.pData[VECT_Z] * scale;
+	getFTime(&(vectorA->fDataTime));
+	return status;
+}
 

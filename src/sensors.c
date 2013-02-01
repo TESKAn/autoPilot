@@ -257,16 +257,10 @@ void copySensorData(void)
 	// Reg 73,78 (14,19) is mag data
 	MAG_X = (I2C2_DMABufRX[14] << 8) & 0xff00;
 	MAG_X = MAG_X | (I2C2_DMABufRX[15] & 0x00ff);
-	// Remove offset
-	MAG_X = MAG_X - ahrs_data.MagOffsetVector.vector.pData[VECT_X];
 	MAG_Y = (I2C2_DMABufRX[16] << 8) & 0xff00;
 	MAG_Y = MAG_Y | (I2C2_DMABufRX[17] & 0x00ff);
-	// Remove offset
-	MAG_Y = MAG_Y - ahrs_data.MagOffsetVector.vector.pData[VECT_Y];
 	MAG_Z = (I2C2_DMABufRX[18] << 8) & 0xff00;
 	MAG_Z = MAG_Z | (I2C2_DMABufRX[19] & 0x00ff);
-	// Remove offset
-	MAG_Z = MAG_Z - ahrs_data.MagOffsetVector.vector.pData[VECT_Z];
 	// Reg 79,80 (20,21) is barometer data
 	BARO = (I2C2_DMABufRX[20] << 8) & 0xff00;
 	BARO = BARO | (I2C2_DMABufRX[21] & 0x00ff);
