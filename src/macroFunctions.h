@@ -50,6 +50,36 @@
 	Buffer[27] = floatToUint32.ch[1];\
 	Buffer[28] = floatToUint32.ch[2];\
 	Buffer[29] = floatToUint32.ch[3];\
+	floatToUint32.f = ahrs_data.magCorrectionError.vector.pData[VECT_X];\
+	Buffer[30] = floatToUint32.ch[0];\
+	Buffer[31] = floatToUint32.ch[1];\
+	Buffer[31] = floatToUint32.ch[2];\
+	Buffer[33] = floatToUint32.ch[3];\
+	floatToUint32.f = ahrs_data.magCorrectionError.vector.pData[VECT_Y];\
+	Buffer[34] = floatToUint32.ch[0];\
+	Buffer[35] = floatToUint32.ch[1];\
+	Buffer[36] = floatToUint32.ch[2];\
+	Buffer[37] = floatToUint32.ch[3];\
+	floatToUint32.f = ahrs_data.magCorrectionError.vector.pData[VECT_Z];\
+	Buffer[38] = floatToUint32.ch[0];\
+	Buffer[39] = floatToUint32.ch[1];\
+	Buffer[40] = floatToUint32.ch[2];\
+	Buffer[41] = floatToUint32.ch[3];\
+	floatToUint32.f = ahrs_data.RollPitchCorrection.vector.pData[VECT_X];\
+	Buffer[42] = floatToUint32.ch[0];\
+	Buffer[43] = floatToUint32.ch[1];\
+	Buffer[44] = floatToUint32.ch[2];\
+	Buffer[45] = floatToUint32.ch[3];\
+	floatToUint32.f = ahrs_data.RollPitchCorrection.vector.pData[VECT_Y];\
+	Buffer[46] = floatToUint32.ch[0];\
+	Buffer[47] = floatToUint32.ch[1];\
+	Buffer[48] = floatToUint32.ch[2];\
+	Buffer[49] = floatToUint32.ch[3];\
+	floatToUint32.f = ahrs_data.RollPitchCorrection.vector.pData[VECT_Z];\
+	Buffer[50] = floatToUint32.ch[0];\
+	Buffer[51] = floatToUint32.ch[1];\
+	Buffer[52] = floatToUint32.ch[2];\
+	Buffer[53] = floatToUint32.ch[3];\
     USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64)
 #endif
 
