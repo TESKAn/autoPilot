@@ -46,7 +46,7 @@
  */
 
 // USB related
-__ALIGN_BEGIN	USB_OTG_CORE_HANDLE  USB_OTG_dev __ALIGN_END;
+USB_OTG_CORE_HANDLE  USB_OTG_dev;
 
 // AHRS
 float32_t t1 = 0;
@@ -61,6 +61,7 @@ int main(void)
 	ahrs_matrix3by3_init(&holdMatrix);
 	math_vector3fDataInit(&tempVector, ROW);
 	math_vector3fDataInit(&tempVector1, ROW);
+	math_vector3fDataInit(&tempVector2, ROW);
 
 	//SD_CardInfo cardinfo;
 	int i = 0;

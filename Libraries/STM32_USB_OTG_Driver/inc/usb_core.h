@@ -297,8 +297,7 @@ typedef struct USB_OTG_handle
 #ifdef USE_OTG_MODE
   OTG_DEV     otg;
 #endif
-}
-USB_OTG_CORE_HANDLE , *PUSB_OTG_CORE_HANDLE;
+}__attribute__((aligned(4),packed)) USB_OTG_CORE_HANDLE , *PUSB_OTG_CORE_HANDLE;
 
 /**
   * @}

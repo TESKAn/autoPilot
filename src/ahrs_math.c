@@ -27,7 +27,7 @@ arm_status ahrs_updateVectorPID(PI3Data* PID, vector3fData * errorVector)
 	PID->Iz = ahrs_limitFloat(PID->Iz, PID->maxIz, PID->minIz);
 	PID->Rz = (errorVector->vector.pData[VECT_Z] * PID->Kpz) + (PID->Iz * PID->Kiz);
 
-	return SUCCESS;
+	return ARM_MATH_SUCCESS;
 }
 
 float32_t ahrs_limitFloat(float32_t number, float32_t max, float32_t min)
@@ -162,6 +162,15 @@ void ahrs_generate_rotationUpdateMatrix(float32_t x, float32_t y, float32_t z, m
 	matrix->vector3fData[8] = 1;
 }
 
+// Substract two vectors, A - B
+arm_status ahrs_vector_substract(vector3fData * vectorA, vector3fData * vectorB, vector3fData * vectorC)
+{
+	vectorC->vector.pData[VECT_X] = vectorA->vector.pData[VECT_X]  - vectorB->vector.pData[VECT_X];
+	vectorC->vector.pData[VECT_Y] = vectorA->vector.pData[VECT_Y]  - vectorB->vector.pData[VECT_Y];
+	vectorC->vector.pData[VECT_Z] = vectorA->vector.pData[VECT_Z]  - vectorB->vector.pData[VECT_Z];
+	getFTime(&(vectorC->fDataTime));
+	return ARM_MATH_SUCCESS;
+}
 
 // Multiply vector by scalar
 arm_status ahrs_mult_vector_scalar(vector3fData * vector, float32_t scalar)
@@ -169,7 +178,7 @@ arm_status ahrs_mult_vector_scalar(vector3fData * vector, float32_t scalar)
 	vector->vector.pData[VECT_X] = vector->vector.pData[VECT_X] * scalar;
 	vector->vector.pData[VECT_Y] = vector->vector.pData[VECT_Y] * scalar;
 	vector->vector.pData[VECT_Z] = vector->vector.pData[VECT_Z] * scalar;
-	return SUCCESS;
+	return ARM_MATH_SUCCESS;
 }
 
 // Calculate cross product of vectors A and B, store to vector C
@@ -181,7 +190,7 @@ arm_status ahrs_vect_cross_product(vector3fData * vectorA, vector3fData * vector
 	vectorC->vector.pData[VECT_Y] = vectorA->vector.pData[VECT_Z]*vectorB->vector.pData[VECT_X] - vectorA->vector.pData[VECT_X]*vectorB->vector.pData[VECT_Z];
 	// Result Z = Ax*By - Ay*Bx
 	vectorC->vector.pData[VECT_Z] = vectorA->vector.pData[VECT_X]*vectorB->vector.pData[VECT_Y] - vectorA->vector.pData[VECT_Y]*vectorB->vector.pData[VECT_X];
-	return SUCCESS;
+	return ARM_MATH_SUCCESS;
 }
 
 // Multiply matrices A and B into matrix C
@@ -248,3 +257,12 @@ arm_status ahrs_normalize_vector(vector3fData * vectorA)
 	return status;
 }
 
+// Copy vector A to B
+arm_status ahrs_copy_vector(vector3fData * vectorA, vector3fData * vectorB)
+{
+	vectorB->vector.pData[VECT_X] = vectorA->vector.pData[VECT_X];
+	vectorB->vector.pData[VECT_Y] = vectorA->vector.pData[VECT_Y];
+	vectorB->vector.pData[VECT_Z] = vectorA->vector.pData[VECT_Z];
+	vectorB->fDataTime = vectorA->fDataTime;
+	return ARM_MATH_SUCCESS;
+}

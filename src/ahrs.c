@@ -16,6 +16,7 @@ matrix3by3 tempMatrix;
 matrix3by3 holdMatrix;
 vector3fData tempVector;
 vector3fData tempVector1;
+vector3fData tempVector2;
 volatile quaternion Qtemp;
 
 void initAHRSStructure(AHRSData * ahrsStructure)
@@ -81,6 +82,13 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 	math_vector3fDataInit(&(ahrsStructure->YawCorrection), ROW);
 	ahrsStructure->RollPitchCorrectionScale = DEFAULT_ROLLPITCHCORRECTIONSCALE;
 	ahrsStructure->YawCorrectionScale = DEFAULT_YAWCORRECTIONSCALE;
+	math_vector3fDataInit(&(ahrsStructure->magp), ROW);
+	math_vector3fDataInit(&(ahrsStructure->xp), ROW);
+	math_vector3fDataInit(&(ahrsStructure->magCorrectionError), ROW);
+	math_vector3fDataInit(&(ahrsStructure->totalCorrectionError), ROW);
+
+
+
 
 	// Store offsets for mag
 	ahrsStructure->MagOffsetVector.vector.pData[VECT_X] = -554.266138f;
@@ -110,7 +118,8 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 
 void ahrs_updateMagReading(void)
 {
-	float32_t error = 0;
+	// Store previous vector
+	ahrs_copy_vector(&(ahrs_data.MagVector), &(ahrs_data.magp));
 	// Store data to vector and remove offset
 	tempVector.vector.pData[VECT_X] = (float32_t)((int16_t)MAG_X);
 	tempVector.vector.pData[VECT_X] = tempVector.vector.pData[VECT_X] - ahrs_data.MagOffsetVector.vector.pData[VECT_X];
@@ -250,7 +259,7 @@ ErrorStatus ahrs_updateQuaternion(void)
 	// Update vectors
 	updateScaledVector(&(ahrs_data.GyroVector), GYRO_X, GYRO_Y, GYRO_Z, ahrs_data.gyroRate * DEG_TO_RAD);
 	updateScaledVector(&(ahrs_data.AccVector), ACC_X, ACC_Y, ACC_Z, ahrs_data.accRate);
-	updateScaledVector(&(ahrs_data.MagVector), MAG_X, MAG_Y, MAG_Z, ahrs_data.magRate);
+	//updateScaledVector(&(ahrs_data.MagVector), MAG_X, MAG_Y, MAG_Z, ahrs_data.magRate);
 	// Update altitude reading
 	ahrs_update_altitude();
 	// Update mag reading
@@ -272,44 +281,34 @@ ErrorStatus ahrs_updateQuaternion(void)
 	ahrs_vect_cross_product(&tempVector, &(ahrs_data.GravityVector), &(ahrs_data.RollPitchCorrection));
 
 
-	// Add yaw error
-	// Multiply R*mag -> mag in earth frame
-	ahrs_mult_vector_matrix(&(ahrs_data.rotationMatrix), &(ahrs_data.MagVector), &tempVector);
-	// Set Z = 0
-	tempVector.vector.pData[VECT_Z] = 0;
-	// Take cross product of mag in earth frame with [1,0,0] -> this is error in earth frame
-	tempVector1.vector.pData[VECT_X] = 1;
-	tempVector1.vector.pData[VECT_Y] = 0;
-	tempVector1.vector.pData[VECT_Z] = 0;
-	ahrs_vect_cross_product(&tempVector, &tempVector1, &(ahrs_data.YawCorrection));
-	// Calculate transpose
-	ahrs_matrix_transponse(&(ahrs_data.rotationMatrix), &tempMatrix);
-	// Multiply correction vector with transpose
-	ahrs_mult_vector_matrix(&tempMatrix, &(ahrs_data.MagVector), &tempVector);
-	// Store correction
-	ahrs_data.YawCorrection.vector.pData[VECT_X] = tempVector.vector.pData[VECT_X] * 0.1f;
-	ahrs_data.YawCorrection.vector.pData[VECT_Y] = tempVector.vector.pData[VECT_Y] * 0.1f;
-	ahrs_data.YawCorrection.vector.pData[VECT_Z] = tempVector.vector.pData[VECT_Z] * 0.1f;
 
 	// Add correction to rollPitchCorrection vector
-	ahrs_data.RollPitchCorrection.vector.pData[VECT_X] = ahrs_data.RollPitchCorrection.vector.pData[VECT_X] - ahrs_data.YawCorrection.vector.pData[VECT_X];
-	ahrs_data.RollPitchCorrection.vector.pData[VECT_Y] = ahrs_data.RollPitchCorrection.vector.pData[VECT_Y] - ahrs_data.YawCorrection.vector.pData[VECT_Y];
-	ahrs_data.RollPitchCorrection.vector.pData[VECT_Z] = ahrs_data.RollPitchCorrection.vector.pData[VECT_Z] - ahrs_data.YawCorrection.vector.pData[VECT_Z];
+	/*
+	ahrs_data.RollPitchCorrection.vector.pData[VECT_X] = ahrs_data.RollPitchCorrection.vector.pData[VECT_X] + ahrs_data.magCorrectionError.vector.pData[VECT_X];
+	ahrs_data.RollPitchCorrection.vector.pData[VECT_Y] = ahrs_data.RollPitchCorrection.vector.pData[VECT_Y] + ahrs_data.magCorrectionError.vector.pData[VECT_Y];
+	ahrs_data.RollPitchCorrection.vector.pData[VECT_Z] = ahrs_data.RollPitchCorrection.vector.pData[VECT_Z] + ahrs_data.magCorrectionError.vector.pData[VECT_Z];
+*/
+
+	ahrs_data.totalCorrectionError.vector.pData[VECT_X] = ahrs_data.magCorrectionError.vector.pData[VECT_X];
+	ahrs_data.totalCorrectionError.vector.pData[VECT_Y] = ahrs_data.magCorrectionError.vector.pData[VECT_Y];
+	ahrs_data.totalCorrectionError.vector.pData[VECT_Z] = ahrs_data.magCorrectionError.vector.pData[VECT_Z];
+
 	// Scale error
-	ahrs_mult_vector_scalar(&(ahrs_data.RollPitchCorrection), ahrs_data.RollPitchCorrectionScale);
+	ahrs_mult_vector_scalar(&(ahrs_data.totalCorrectionError), ahrs_data.RollPitchCorrectionScale);
 
 	// Update PI error regulator
-	ahrs_updateVectorPID(&(ahrs_data.PIData), &(ahrs_data.RollPitchCorrection));
+	ahrs_updateVectorPID(&(ahrs_data.PIData), &(ahrs_data.totalCorrectionError));
 
 	// Calculate change in radians/sec
 	dWx = ahrs_data.GyroVector.vector.pData[VECT_X];// * dT;
 	dWy = ahrs_data.GyroVector.vector.pData[VECT_Y];// * dT;
 	dWz = ahrs_data.GyroVector.vector.pData[VECT_Z];// * dT;
+	/*
 	// Remove drift error
 	dWx = dWx - ahrs_data.PIData.Rx;
 	dWy = dWy - ahrs_data.PIData.Ry;
 	dWz = dWz - ahrs_data.PIData.Rz;
-
+*/
 	// Calculate delta time var * 0.5
 	delta = 0.5f * ahrs_data.GyroVector.fDeltaTime * SYSTIME_TOSECONDS;
 	// Calculate change in delta time / 2
@@ -362,7 +361,31 @@ ErrorStatus ahrs_updateQuaternion(void)
 	ahrs_data.rotationMatrix.vector.pData[Rzx] = xz - wy;
 	ahrs_data.rotationMatrix.vector.pData[Rzy] = yz + wx;
 	ahrs_data.rotationMatrix.vector.pData[Rzz] = 1 - xx - yy;
+	// Store update time
+	getFTime(&(ahrs_data.rotationMatrix.fDataTime));
 
+	// Calculate errors from magnetometer data
+	// Mag t-1 X mag t
+	ahrs_vect_cross_product(&(ahrs_data.magp), &(ahrs_data.MagVector), &tempVector);
+	// Xt-y X Xt
+	tempVector2.vector.pData[VECT_X] = ahrs_data.rotationMatrix.vector.pData[Rxx];
+	tempVector2.vector.pData[VECT_Y] = ahrs_data.rotationMatrix.vector.pData[Rxy];
+	tempVector2.vector.pData[VECT_Z] = ahrs_data.rotationMatrix.vector.pData[Rxz];
+	tempVector2.fDataTime = ahrs_data.rotationMatrix.fDataTime;
+
+	ahrs_vect_cross_product(&(ahrs_data.xp), &tempVector2, &tempVector1);
+
+	// Store previous vector
+	ahrs_copy_vector(&(tempVector2), &(ahrs_data.xp));
+
+	// Calculate error = tempVector - tempVector1
+	ahrs_vector_substract(&tempVector, &tempVector1, &tempVector2);
+
+	// Multiply with 0.1
+	//ahrs_mult_vector_scalar(&tempVector2, 0.1f);
+
+	// Store error
+	ahrs_copy_vector(&tempVector2, &(ahrs_data.magCorrectionError));
 
 	return SUCCESS;
 }
