@@ -280,19 +280,17 @@ ErrorStatus ahrs_updateQuaternion(void)
 	// Calculate roll pitch error
 	ahrs_vect_cross_product(&tempVector, &(ahrs_data.GravityVector), &(ahrs_data.RollPitchCorrection));
 
-
-
 	// Add correction to rollPitchCorrection vector
-	/*
-	ahrs_data.RollPitchCorrection.vector.pData[VECT_X] = ahrs_data.RollPitchCorrection.vector.pData[VECT_X] + ahrs_data.magCorrectionError.vector.pData[VECT_X];
-	ahrs_data.RollPitchCorrection.vector.pData[VECT_Y] = ahrs_data.RollPitchCorrection.vector.pData[VECT_Y] + ahrs_data.magCorrectionError.vector.pData[VECT_Y];
-	ahrs_data.RollPitchCorrection.vector.pData[VECT_Z] = ahrs_data.RollPitchCorrection.vector.pData[VECT_Z] + ahrs_data.magCorrectionError.vector.pData[VECT_Z];
-*/
 
+	ahrs_data.totalCorrectionError.vector.pData[VECT_X] = ahrs_data.RollPitchCorrection.vector.pData[VECT_X] + ahrs_data.magCorrectionError.vector.pData[VECT_X];
+	ahrs_data.totalCorrectionError.vector.pData[VECT_Y] = ahrs_data.RollPitchCorrection.vector.pData[VECT_Y] + ahrs_data.magCorrectionError.vector.pData[VECT_Y];
+	ahrs_data.totalCorrectionError.vector.pData[VECT_Z] = ahrs_data.RollPitchCorrection.vector.pData[VECT_Z] + ahrs_data.magCorrectionError.vector.pData[VECT_Z];
+
+/*
 	ahrs_data.totalCorrectionError.vector.pData[VECT_X] = ahrs_data.magCorrectionError.vector.pData[VECT_X];
 	ahrs_data.totalCorrectionError.vector.pData[VECT_Y] = ahrs_data.magCorrectionError.vector.pData[VECT_Y];
 	ahrs_data.totalCorrectionError.vector.pData[VECT_Z] = ahrs_data.magCorrectionError.vector.pData[VECT_Z];
-
+*/
 	// Scale error
 	ahrs_mult_vector_scalar(&(ahrs_data.totalCorrectionError), ahrs_data.RollPitchCorrectionScale);
 
@@ -303,12 +301,12 @@ ErrorStatus ahrs_updateQuaternion(void)
 	dWx = ahrs_data.GyroVector.vector.pData[VECT_X];// * dT;
 	dWy = ahrs_data.GyroVector.vector.pData[VECT_Y];// * dT;
 	dWz = ahrs_data.GyroVector.vector.pData[VECT_Z];// * dT;
-	/*
+
 	// Remove drift error
 	dWx = dWx - ahrs_data.PIData.Rx;
 	dWy = dWy - ahrs_data.PIData.Ry;
 	dWz = dWz - ahrs_data.PIData.Rz;
-*/
+
 	// Calculate delta time var * 0.5
 	delta = 0.5f * ahrs_data.GyroVector.fDeltaTime * SYSTIME_TOSECONDS;
 	// Calculate change in delta time / 2
