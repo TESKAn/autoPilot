@@ -143,6 +143,7 @@ void ahrs_update_altitude(void);
 arm_status ahrs_updateAccelerationToGyro(void);
 arm_status ahrs_updateGPSToGyro(void);
 arm_status ahrs_updateRotationMatrix(AHRSData * data);
+ErrorStatus ahrs_initQuaternion(void);
 ErrorStatus ahrs_updateQuaternion(void);
 void ahrs_resetPID(PI3Data* PID);
 void ahrs_resetRotationMatrix(void);

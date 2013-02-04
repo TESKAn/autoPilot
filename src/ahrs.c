@@ -238,6 +238,14 @@ arm_status ahrs_updateRotationMatrix(AHRSData * data)
 	}
 }
 
+// Initialize quaternion yaw with data from magnetometer
+ErrorStatus ahrs_initQuaternion(void)
+{
+
+	//asinf
+	return SUCCESS;
+}
+
 
 ErrorStatus ahrs_updateQuaternion(void)
 {
