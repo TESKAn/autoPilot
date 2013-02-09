@@ -225,7 +225,7 @@ void sensorInit()
 // Copies sensor data from I2C to variables
 void copySensorData(void)
 {
-	uint16_t uiTemp = 0;
+	//uint16_t uiTemp = 0;
 	// Data is in I2C2_DMABufRX
 	// Starts with reg 59, accel X high
 	ACC_X = (I2C2_DMABufRX[0] << 8) & 0xff00;

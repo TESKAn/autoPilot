@@ -40,3 +40,5 @@ xfer
 kix
 min
 quaternion
+xearth
+zearth

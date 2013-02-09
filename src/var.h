@@ -68,6 +68,9 @@ extern volatile float32_t globalFloatTemp;
 // Temp variable
 extern volatile int globalTemp;
 
+// Global set variable, can be set over comm
+extern volatile float32_t globalVar;
+
 // System time variable
 extern volatile uint32_t systemTime;
 

@@ -37,6 +37,9 @@ typedef struct
 	float32_t minIx;
 	float32_t minIy;
 	float32_t minIz;
+	// Error min value
+	float32_t eMin;
+	float32_t eMax;
 
 }__attribute__((aligned(4),packed)) PI3Data;
 
@@ -163,10 +166,12 @@ void ahrs_generate_rotationMatrix(matrix3by3 * matrix, float roll, float pitch, 
 void ahrs_generate_rotationUpdateMatrix(float32_t x, float32_t y, float32_t z, matrix3by3 * matrix);
 arm_status ahrs_vector_substract(vector3fData * vectorA, vector3fData * vectorB, vector3fData * vectorC);
 arm_status ahrs_mult_vector_scalar(vector3fData * vectorA, float32_t scalar);
+arm_status ahrs_vect_dot_product(vector3fData * vectorA, vector3fData * vectorB, float32_t * scalarC);
 arm_status ahrs_vect_cross_product(vector3fData * vectorA, vector3fData * vectorB, vector3fData * vectorC);
 arm_status ahrs_mult_matrixes(matrix3by3 * matrixA, matrix3by3 * matrixB, matrix3by3 * matrixC);
 arm_status ahrs_mult_vector_matrix(matrix3by3 * matrixA, vector3fData * vectorA, vector3fData * vectorB);
 arm_status ahrs_matrix_transponse(matrix3by3 * matrixA, matrix3by3 * matrixB);
+arm_status ahrs_normalize_vector_taylor(vector3fData * vectorA);
 arm_status ahrs_normalize_vector(vector3fData * vectorA);
 arm_status ahrs_copy_vector(vector3fData * vectorA, vector3fData * vectorB);
 

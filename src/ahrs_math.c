@@ -9,6 +9,11 @@
 
 arm_status ahrs_updateVectorPID(PI3Data* PID, vector3fData * errorVector)
 {
+	// Limit error
+	errorVector->vector.pData[VECT_X] = ahrs_limitFloat(errorVector->vector.pData[VECT_X], PID->eMax, PID->eMin);
+	errorVector->vector.pData[VECT_Y] = ahrs_limitFloat(errorVector->vector.pData[VECT_Y], PID->eMax, PID->eMin);
+	errorVector->vector.pData[VECT_Z] = ahrs_limitFloat(errorVector->vector.pData[VECT_Z], PID->eMax, PID->eMin);
+
 	// Update PID x
 	PID->Ix = PID->Ix + errorVector->vector.pData[VECT_X];
 	// Limit I part
@@ -181,6 +186,18 @@ arm_status ahrs_mult_vector_scalar(vector3fData * vector, float32_t scalar)
 	return ARM_MATH_SUCCESS;
 }
 
+// Calculate dot product of vectors A and B, store to vector C
+arm_status ahrs_vect_dot_product(vector3fData * vectorA, vector3fData * vectorB, float32_t * scalarC)
+{
+
+	*scalarC = vectorA->vector.pData[VECT_X]*vectorB->vector.pData[VECT_X];
+
+	*scalarC = *scalarC + vectorA->vector.pData[VECT_Y]*vectorB->vector.pData[VECT_Y];
+
+	*scalarC = *scalarC + vectorA->vector.pData[VECT_Z]*vectorB->vector.pData[VECT_Z];
+	return ARM_MATH_SUCCESS;
+}
+
 // Calculate cross product of vectors A and B, store to vector C
 arm_status ahrs_vect_cross_product(vector3fData * vectorA, vector3fData * vectorB, vector3fData * vectorC)
 {
@@ -236,7 +253,7 @@ arm_status ahrs_matrix_transponse(matrix3by3 * matrixA, matrix3by3 * matrixB)
 }
 
 // Normalize vector A to 1
-arm_status ahrs_normalize_vector(vector3fData * vectorA)
+arm_status ahrs_normalize_vector_taylor(vector3fData * vectorA)
 {
 	arm_status status = ARM_MATH_SUCCESS;
 	float32_t scale = 0;
@@ -249,6 +266,27 @@ arm_status ahrs_normalize_vector(vector3fData * vectorA)
 	// Calculate one half
 	scale = scale / 2;
 
+
+	vectorA->vector.pData[VECT_X] = vectorA->vector.pData[VECT_X] * scale;
+	vectorA->vector.pData[VECT_Y] = vectorA->vector.pData[VECT_Y] * scale;
+	vectorA->vector.pData[VECT_Z] = vectorA->vector.pData[VECT_Z] * scale;
+	getFTime(&(vectorA->fDataTime));
+	return status;
+}
+
+// Normalize vector A to 1
+arm_status ahrs_normalize_vector(vector3fData * vectorA)
+{
+	arm_status status = ARM_MATH_SUCCESS;
+	float32_t scale = 0;
+	float32_t xx = 0;
+	float32_t yy = 0;
+	float32_t zz = 0;
+	xx = vectorA->vector.pData[VECT_X] * vectorA->vector.pData[VECT_X];
+	yy = vectorA->vector.pData[VECT_Y] * vectorA->vector.pData[VECT_Y];
+	zz = vectorA->vector.pData[VECT_Z] * vectorA->vector.pData[VECT_Z];
+
+	scale = sqrtf(xx + yy + zz);
 
 	vectorA->vector.pData[VECT_X] = vectorA->vector.pData[VECT_X] * scale;
 	vectorA->vector.pData[VECT_Y] = vectorA->vector.pData[VECT_Y] * scale;

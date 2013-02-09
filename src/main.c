@@ -86,6 +86,7 @@ int main(void)
 	PWMOUT_11 = TIM1_PULSE;
 	PWMOUT_12 = TIM1_PULSE;
 
+	globalVar = 0.001f;
 
 	// Initialize USB
 	  USBD_Init(&USB_OTG_dev,
@@ -215,19 +216,15 @@ int main(void)
         }
         if(SCR1 & SCR_15)
         {
-        	ahrs_data.PIData.Kpx = ahrs_data.PIData.Kpx + 0.1f;
-        	ahrs_data.PIData.Kpy = ahrs_data.PIData.Kpy + 0.1f;
-        	ahrs_data.PIData.Kpz = ahrs_data.PIData.Kpz + 0.1f;
-    		float32ToStr(ahrs_data.PIData.Kpx, "Kp=", StringBuffer);
+        	globalVar = globalVar + 0.0005f;
+    		float32ToStr(globalVar, "GV=", StringBuffer);
     		sendUSBMessage(StringBuffer);
         	SCR1 = SCR1 & ~SCR_15;
         }
         if(SCR1 & SCR_16)
         {
-        	ahrs_data.PIData.Kpx = ahrs_data.PIData.Kpx - 0.1f;
-        	ahrs_data.PIData.Kpy = ahrs_data.PIData.Kpy - 0.1f;
-        	ahrs_data.PIData.Kpz = ahrs_data.PIData.Kpz - 0.1f;
-    		float32ToStr(ahrs_data.PIData.Kpx, "Kp=", StringBuffer);
+        	globalVar = globalVar - 0.0005f;
+    		float32ToStr(globalVar, "GV=", StringBuffer);
     		sendUSBMessage(StringBuffer);
         	SCR1 = SCR1 & ~SCR_16;
         }

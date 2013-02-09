@@ -16,6 +16,9 @@ volatile float32_t globalFloatTemp = 0;
 // Temp variable
 volatile int globalTemp = 0;
 
+// Global set variable, can be set over comm
+volatile float32_t globalVar = 0;
+
 // System time variable
 volatile uint32_t systemTime = 0;
 

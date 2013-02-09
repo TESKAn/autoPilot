@@ -86,26 +86,24 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 	math_vector3fDataInit(&(ahrsStructure->xp), ROW);
 	math_vector3fDataInit(&(ahrsStructure->magCorrectionError), ROW);
 	math_vector3fDataInit(&(ahrsStructure->totalCorrectionError), ROW);
-
-
-
-
 	// Store offsets for mag
 	ahrsStructure->MagOffsetVector.vector.pData[VECT_X] = -554.266138f;
 	ahrsStructure->MagOffsetVector.vector.pData[VECT_Y] = 91.5731854f;
 	ahrsStructure->MagOffsetVector.vector.pData[VECT_Z] = 678.547399f;
 	// Store transformation matrix for mag
-	ahrsStructure->magRotationMatrix.vector.pData[Rxx] = 0.00191123174f;
-	ahrsStructure->magRotationMatrix.vector.pData[Ryx] = -1.33473334e-5f;
-	ahrsStructure->magRotationMatrix.vector.pData[Rzx] = -6.56999257e-5f;
-	ahrsStructure->magRotationMatrix.vector.pData[Rxy] = -1.33473334e-5f;
-	ahrsStructure->magRotationMatrix.vector.pData[Ryy] = 0.00211779709f;
-	ahrsStructure->magRotationMatrix.vector.pData[Rzy] = 1.49881559e-5f;
-	ahrsStructure->magRotationMatrix.vector.pData[Rxz] = -6.56999257e-5f;
-	ahrsStructure->magRotationMatrix.vector.pData[Ryz] = 1.49881559e-5f;
-	ahrsStructure->magRotationMatrix.vector.pData[Rzz] = 0.00189577429f;
+	ahrsStructure->magRotationMatrix.vector.pData[Rxx] = SOFTMAG_DEFAULT_RXX;
+	ahrsStructure->magRotationMatrix.vector.pData[Ryx] = SOFTMAG_DEFAULT_RYX;
+	ahrsStructure->magRotationMatrix.vector.pData[Rzx] = SOFTMAG_DEFAULT_RZX;
+	ahrsStructure->magRotationMatrix.vector.pData[Rxy] = SOFTMAG_DEFAULT_RXY;
+	ahrsStructure->magRotationMatrix.vector.pData[Ryy] = SOFTMAG_DEFAULT_RYY;
+	ahrsStructure->magRotationMatrix.vector.pData[Rzy] = SOFTMAG_DEFAULT_RZY;
+	ahrsStructure->magRotationMatrix.vector.pData[Rxz] = SOFTMAG_DEFAULT_RZX;
+	ahrsStructure->magRotationMatrix.vector.pData[Ryz] = SOFTMAG_DEFAULT_RZY;
+	ahrsStructure->magRotationMatrix.vector.pData[Rzz] = SOFTMAG_DEFAULT_RZZ;
 
-
+	// Min Max error values
+	ahrsStructure->PIData.eMax = DEFAULT_MAXERR;
+	ahrsStructure->PIData.eMin = DEFAULT_MINERR;
 	// Try to load values from SD card
 	if(loadSettings() == ERROR)
 	{
@@ -284,23 +282,37 @@ ErrorStatus ahrs_updateQuaternion(void)
 	tempVector.vector.pData[VECT_X] = ahrs_data.rotationMatrix.vector.pData[Rzx];
 	tempVector.vector.pData[VECT_Y] = ahrs_data.rotationMatrix.vector.pData[Rzy];
 	tempVector.vector.pData[VECT_Z] = ahrs_data.rotationMatrix.vector.pData[Rzz];
-
 	// Calculate roll pitch error
 	ahrs_vect_cross_product(&tempVector, &(ahrs_data.GravityVector), &(ahrs_data.RollPitchCorrection));
 
+
+	// Calculate yaw error
+	// Cross product of normalized mag vector with Xearth in plane coordinate
+	tempVector.vector.pData[VECT_X] = ahrs_data.rotationMatrix.vector.pData[Rxx];
+	tempVector.vector.pData[VECT_Y] = ahrs_data.rotationMatrix.vector.pData[Rxy];
+	tempVector.vector.pData[VECT_Z] = ahrs_data.rotationMatrix.vector.pData[Rxz];
+	// Calculate cross product
+	ahrs_vect_cross_product(&(ahrs_data.MagVector), &(tempVector), &(tempVector1));
+	// Dot product of previous cross product with Zearth in plane coordinates
+	// Store Zep to yaw error vector
+	ahrs_data.YawCorrection.vector.pData[VECT_X] = ahrs_data.rotationMatrix.vector.pData[Rzx];
+	ahrs_data.YawCorrection.vector.pData[VECT_Y] = ahrs_data.rotationMatrix.vector.pData[Rzy];
+	ahrs_data.YawCorrection.vector.pData[VECT_Z] = ahrs_data.rotationMatrix.vector.pData[Rzz];
+	// Calculate dot product
+	ahrs_vect_dot_product(&tempVector1, &(ahrs_data.YawCorrection), &delta);
+	// Scale delta
+	delta = delta * globalVar;
+	// Scale earth vector Z to get yaw error
+	ahrs_mult_vector_scalar(&(ahrs_data.YawCorrection), delta);
+
+
 	// Add correction to rollPitchCorrection vector
+	ahrs_data.totalCorrectionError.vector.pData[VECT_X] = ahrs_data.RollPitchCorrection.vector.pData[VECT_X] - ahrs_data.YawCorrection.vector.pData[VECT_X];
+	ahrs_data.totalCorrectionError.vector.pData[VECT_Y] = ahrs_data.RollPitchCorrection.vector.pData[VECT_Y] - ahrs_data.YawCorrection.vector.pData[VECT_Y];
+	ahrs_data.totalCorrectionError.vector.pData[VECT_Z] = ahrs_data.RollPitchCorrection.vector.pData[VECT_Z] - ahrs_data.YawCorrection.vector.pData[VECT_Z];
 
-	ahrs_data.totalCorrectionError.vector.pData[VECT_X] = ahrs_data.RollPitchCorrection.vector.pData[VECT_X] + ahrs_data.magCorrectionError.vector.pData[VECT_X];
-	ahrs_data.totalCorrectionError.vector.pData[VECT_Y] = ahrs_data.RollPitchCorrection.vector.pData[VECT_Y] + ahrs_data.magCorrectionError.vector.pData[VECT_Y];
-	ahrs_data.totalCorrectionError.vector.pData[VECT_Z] = ahrs_data.RollPitchCorrection.vector.pData[VECT_Z] + ahrs_data.magCorrectionError.vector.pData[VECT_Z];
-
-/*
-	ahrs_data.totalCorrectionError.vector.pData[VECT_X] = ahrs_data.magCorrectionError.vector.pData[VECT_X];
-	ahrs_data.totalCorrectionError.vector.pData[VECT_Y] = ahrs_data.magCorrectionError.vector.pData[VECT_Y];
-	ahrs_data.totalCorrectionError.vector.pData[VECT_Z] = ahrs_data.magCorrectionError.vector.pData[VECT_Z];
-*/
 	// Scale error
-	ahrs_mult_vector_scalar(&(ahrs_data.totalCorrectionError), ahrs_data.RollPitchCorrectionScale);
+	//ahrs_mult_vector_scalar(&(ahrs_data.totalCorrectionError), ahrs_data.RollPitchCorrectionScale);
 
 	// Update PI error regulator
 	ahrs_updateVectorPID(&(ahrs_data.PIData), &(ahrs_data.totalCorrectionError));
