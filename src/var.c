@@ -105,3 +105,5 @@ char FSBuffer[FATFS_BUFF_SIZE];	// Pointer to buffer for file write
 
 volatile C_Float floatToUint32;
 
+volatile vector3fData gravityVector;
+

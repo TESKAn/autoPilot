@@ -7,30 +7,58 @@
 
 #include "allinclude.h"
 
-arm_status ahrs_updateVectorPID(PI3Data* PID, vector3fData * errorVector)
+arm_status ahrs_updateVectorPID(PI3Data* PID, vector3fData * errorVector, float32_t deltaT)
 {
+	float32_t temp = 0;
 	// Limit error
 	errorVector->vector.pData[VECT_X] = ahrs_limitFloat(errorVector->vector.pData[VECT_X], PID->eMax, PID->eMin);
 	errorVector->vector.pData[VECT_Y] = ahrs_limitFloat(errorVector->vector.pData[VECT_Y], PID->eMax, PID->eMin);
 	errorVector->vector.pData[VECT_Z] = ahrs_limitFloat(errorVector->vector.pData[VECT_Z], PID->eMax, PID->eMin);
 
 	// Update PID x
-	PID->Ix = PID->Ix + errorVector->vector.pData[VECT_X];
+	// Calculate error I add
+	temp = errorVector->vector.pData[VECT_X] * PID->Kix * deltaT * SYSTIME_TOSECONDS;
+	// Add
+	PID->Ix = PID->Ix + temp;
 	// Limit I part
 	PID->Ix = ahrs_limitFloat(PID->Ix, PID->maxIx, PID->minIx);
-	PID->Rx = (errorVector->vector.pData[VECT_X] * PID->Kpx) + (PID->Ix * PID->Kix);
+	// Calculate error P add
+	temp = errorVector->vector.pData[VECT_X] * PID->Kpx;
+	PID->Px = temp;
+	// Add to PI result
+	PID->Rx = PID->Px + PID->Ix;
+	// Limit
+	ahrs_limitFloat(PID->Rx, PID->rMax, PID->rMin);
 
 	// Update PID y
-	PID->Iy = PID->Iy + errorVector->vector.pData[VECT_Y];
+	// Calculate error I add
+	temp = errorVector->vector.pData[VECT_Y] * PID->Kiy * deltaT * SYSTIME_TOSECONDS;
+	// Add
+	PID->Iy = PID->Iy + temp;
 	// Limit I part
 	PID->Iy = ahrs_limitFloat(PID->Iy, PID->maxIy, PID->minIy);
-	PID->Ry = (errorVector->vector.pData[VECT_Y] * PID->Kpy) + (PID->Iy * PID->Kiy);
+	// Calculate error P add
+	temp = errorVector->vector.pData[VECT_Y] * PID->Kpy;
+	PID->Py = temp;
+	// Add to PI result
+	PID->Ry = PID->Py + PID->Iy;
+	// Limit
+	ahrs_limitFloat(PID->Ry, PID->rMax, PID->rMin);
 
 	// Update PID z
-	PID->Iz = PID->Iz + errorVector->vector.pData[VECT_Z];
+	// Calculate error I add
+	temp = errorVector->vector.pData[VECT_Z] * PID->Kiz * deltaT * SYSTIME_TOSECONDS;
+	// Add
+	PID->Iz = PID->Iz + temp;
 	// Limit I part
 	PID->Iz = ahrs_limitFloat(PID->Iz, PID->maxIz, PID->minIz);
-	PID->Rz = (errorVector->vector.pData[VECT_Z] * PID->Kpz) + (PID->Iz * PID->Kiz);
+	// Calculate error P add
+	temp = errorVector->vector.pData[VECT_Z] * PID->Kpz;
+	PID->Pz = temp;
+	// Add to PI result
+	PID->Rz = PID->Pz + PID->Iz;
+	// Limit
+	ahrs_limitFloat(PID->Rz, PID->rMax, PID->rMin);
 
 	return ARM_MATH_SUCCESS;
 }
@@ -286,7 +314,7 @@ arm_status ahrs_normalize_vector(vector3fData * vectorA)
 	yy = vectorA->vector.pData[VECT_Y] * vectorA->vector.pData[VECT_Y];
 	zz = vectorA->vector.pData[VECT_Z] * vectorA->vector.pData[VECT_Z];
 
-	scale = sqrtf(xx + yy + zz);
+	scale = 1/sqrtf(xx + yy + zz);
 
 	vectorA->vector.pData[VECT_X] = vectorA->vector.pData[VECT_X] * scale;
 	vectorA->vector.pData[VECT_Y] = vectorA->vector.pData[VECT_Y] * scale;

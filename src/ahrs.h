@@ -17,6 +17,10 @@ typedef struct
 	float32_t Kpx;
 	float32_t Kpy;
 	float32_t Kpz;
+	// Proportional variables
+	float32_t Px;
+	float32_t Py;
+	float32_t Pz;
 	// Integral gain
 	float32_t Kix;
 	float32_t Kiy;
@@ -37,9 +41,12 @@ typedef struct
 	float32_t minIx;
 	float32_t minIy;
 	float32_t minIz;
-	// Error min value
+	// Error min/max value
 	float32_t eMin;
 	float32_t eMax;
+	// Result min/max value
+	float32_t rMin;
+	float32_t rMax;
 
 }__attribute__((aligned(4),packed)) PI3Data;
 
@@ -155,7 +162,7 @@ void ahrs_normalizeOrthogonalizeMatrix(matrix3by3 * rotMatrix);
 void ahrs_getAngles(matrix3by3 * rotMatrix, vector3f *vector);
 
 // Function exports - ahrs_math.h
-arm_status ahrs_updateVectorPID(PI3Data* PID, vector3fData * errorVector);
+arm_status ahrs_updateVectorPID(PI3Data* PID, vector3fData * errorVector, float32_t deltaT);
 float32_t ahrs_limitFloat(float32_t number, float32_t max, float32_t min);
 void updateScaledVector(vector3fData * vector, uint16_t x, uint16_t y, uint16_t z, float rate);
 void ahrs_vector3fDataInit(vector3fData * vector, VectType type);
