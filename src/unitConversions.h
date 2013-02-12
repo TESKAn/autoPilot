@@ -19,7 +19,7 @@
 #define DEFAULT_YAWCORRECTIONSCALE	0.5f		// Weight of yaw correction error
 // PID defaults
 #define DEFAULT_KP						2.0f					// Default Kp value
-#define DEFAULT_KI						0.2f					// Default Ki value
+#define DEFAULT_KI						0.01f					// Default Ki value
 #define DEFAULT_MAXERR					1.0f
 #define DEFAULT_MINERR					-1.0f
 #define DEFAULT_MAXI					5.0f					// Maximum integral value - +2 rad/sec = 2 / 0.001 = 2000

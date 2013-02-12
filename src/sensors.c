@@ -18,8 +18,8 @@ uint8_t I2C2_DMABufRX[DMA_BUF_COUNT];
 volatile int I2C2_DMABufTXCount = 0;
 volatile int I2C2_DMABufRXCount = 0;
 volatile int I2C2_PollTimer = 0;
-volatile uint16_t sensorTimeCounter = 0;
-volatile uint16_t sensoruTimeCounter = 0;
+volatile uint32_t sensorTimeCounter = 0;
+volatile uint32_t sensoruTimeCounter = 0;
 // Data taken at time
 uint32_t sensorAcquisitionTime = 0;
 float32_t fSensorAcquisitionTime = 0;
@@ -28,6 +28,8 @@ float32_t fSensorAcquisitionTime = 0;
 uint8_t gyroOffsetSampleCount = 0;
 uint8_t accOffsetSampleCount = 0;
 uint8_t magOffsetSampleCount = 0;
+
+#define I2C_TIMEOUT			250000
 
 // Timeout function
 void sensorTimer(void)
@@ -42,6 +44,12 @@ void sensorTimer(void)
 		{
 			sensorTimeCounter = 65534;
 		}
+#ifdef DEBUG_USB
+		if(sensorTimeCounter > I2C_TIMEOUT)
+		{
+			sendUSBMessage("I2C timeout");
+		}
+#endif
 	}
 	Delaynus(2);
 }
@@ -599,6 +607,11 @@ ErrorStatus masterSend(uint8_t device, uint8_t *dataBuffer, uint8_t byteCount)
 	{
 		// Call sensor timer
 		sensorTimer();
+		if(sensorTimeCounter > I2C_TIMEOUT)
+		{
+			return ERROR;
+			break;
+		}
 		// Check for DMA error
 		if((I2C_DMACheckForError(DMA_I2C2_TX) == ERROR))//||(sensorTimeCounter > I2C2_ERRORTIMEOUT))
 		{
@@ -642,6 +655,11 @@ ErrorStatus masterSend(uint8_t device, uint8_t *dataBuffer, uint8_t byteCount)
 		{
 			// Call sensor timer
 			sensorTimer();
+			if(sensorTimeCounter > I2C_TIMEOUT)
+			{
+				return ERROR;
+				break;
+			}
 			// Check for I2C error
 			if(I2C_CheckForError(I2C2) == ERROR)
 			{
@@ -659,6 +677,11 @@ ErrorStatus masterSend(uint8_t device, uint8_t *dataBuffer, uint8_t byteCount)
 	{
 		// Call sensor timer
 		sensorTimer();
+		if(sensorTimeCounter > I2C_TIMEOUT)
+		{
+			return ERROR;
+			break;
+		}
 		// Check for I2C error
 		if(I2C_CheckForError(I2C2) == ERROR)
 		{
@@ -675,6 +698,11 @@ ErrorStatus masterSend(uint8_t device, uint8_t *dataBuffer, uint8_t byteCount)
 	{
 		// Call sensor timer
 		sensorTimer();
+		if(sensorTimeCounter > I2C_TIMEOUT)
+		{
+			return ERROR;
+			break;
+		}
 		// Check for I2C error
 		if(I2C_CheckForError(I2C2) == ERROR)
 		{
@@ -706,6 +734,11 @@ ErrorStatus masterSend(uint8_t device, uint8_t *dataBuffer, uint8_t byteCount)
 		}
 		// Call sensor timer
 		sensorTimer();
+		if(sensorTimeCounter > I2C_TIMEOUT)
+		{
+			return ERROR;
+			break;
+		}
 		// Check for DMA error
 		if(I2C_DMACheckForError(DMA_I2C2_TX) == ERROR)
 		{
@@ -721,6 +754,11 @@ ErrorStatus masterSend(uint8_t device, uint8_t *dataBuffer, uint8_t byteCount)
 	{
 		// Call sensor timer
 		sensorTimer();
+		if(sensorTimeCounter > I2C_TIMEOUT)
+		{
+			return ERROR;
+			break;
+		}
 		// Check for DMA error
 		if(I2C_DMACheckForError(DMA_I2C2_TX) == ERROR)
 		{
@@ -735,6 +773,11 @@ ErrorStatus masterSend(uint8_t device, uint8_t *dataBuffer, uint8_t byteCount)
 	{
 		// Call sensor timer
 		sensorTimer();
+		if(sensorTimeCounter > I2C_TIMEOUT)
+		{
+			return ERROR;
+			break;
+		}
 		// Check for I2C error
 		if(I2C_CheckForError(I2C2) == ERROR)
 		{
@@ -754,6 +797,11 @@ ErrorStatus masterSend(uint8_t device, uint8_t *dataBuffer, uint8_t byteCount)
 	{
 		// Call sensor timer
 		sensorTimer();
+		if(sensorTimeCounter > I2C_TIMEOUT)
+		{
+			return ERROR;
+			break;
+		}
 		// Check for DMA error
 		if(I2C_DMACheckForError(DMA_I2C2_TX) == ERROR)
 		{
@@ -784,6 +832,11 @@ ErrorStatus masterReceive_beginDMA(uint8_t device, uint8_t startReg, uint8_t *da
 	{
 		// Call sensor timer
 		sensorTimer();
+		if(sensorTimeCounter > I2C_TIMEOUT)
+		{
+			return ERROR;
+			break;
+		}
 		// Check for DMA error
 		if(I2C_DMACheckForError(DMA_I2C2_RX) == ERROR)
 		{
@@ -832,6 +885,11 @@ ErrorStatus masterReceive_beginDMA(uint8_t device, uint8_t startReg, uint8_t *da
 		{
 			// Call sensor timer
 			sensorTimer();
+			if(sensorTimeCounter > I2C_TIMEOUT)
+			{
+				return ERROR;
+				break;
+			}
 			// Check for I2C error
 			if(I2C_CheckForError(I2C2) == ERROR)
 			{
@@ -849,6 +907,11 @@ ErrorStatus masterReceive_beginDMA(uint8_t device, uint8_t startReg, uint8_t *da
 	{
 		// Call sensor timer
 		sensorTimer();
+		if(sensorTimeCounter > I2C_TIMEOUT)
+		{
+			return ERROR;
+			break;
+		}
 		// Check for I2C error
 		if(I2C_CheckForError(I2C2) == ERROR)
 		{
@@ -863,6 +926,11 @@ ErrorStatus masterReceive_beginDMA(uint8_t device, uint8_t startReg, uint8_t *da
 	{
 		// Call sensor timer
 		sensorTimer();
+		if(sensorTimeCounter > I2C_TIMEOUT)
+		{
+			return ERROR;
+			break;
+		}
 		// Check for I2C error
 		if(I2C_CheckForError(I2C2) == ERROR)
 		{
@@ -878,6 +946,11 @@ ErrorStatus masterReceive_beginDMA(uint8_t device, uint8_t startReg, uint8_t *da
 	{
 		// Call sensor timer
 		sensorTimer();
+		if(sensorTimeCounter > I2C_TIMEOUT)
+		{
+			return ERROR;
+			break;
+		}
 		// Check for I2C error
 		if(I2C_CheckForError(I2C2) == ERROR)
 		{
@@ -896,6 +969,11 @@ ErrorStatus masterReceive_beginDMA(uint8_t device, uint8_t startReg, uint8_t *da
 	{
 		// Call sensor timer
 		sensorTimer();
+		if(sensorTimeCounter > I2C_TIMEOUT)
+		{
+			return ERROR;
+			break;
+		}
 		// Check for I2C error
 		if(I2C_CheckForError(I2C2) == ERROR)
 		{
@@ -912,6 +990,11 @@ ErrorStatus masterReceive_beginDMA(uint8_t device, uint8_t startReg, uint8_t *da
 	{
 		// Call sensor timer
 		sensorTimer();
+		if(sensorTimeCounter > I2C_TIMEOUT)
+		{
+			return ERROR;
+			break;
+		}
 		// Check for I2C error
 		if(I2C_CheckForError(I2C2) == ERROR)
 		{
@@ -944,6 +1027,11 @@ ErrorStatus masterReceive(uint8_t device, uint8_t startReg, uint8_t *dataBuffer,
 	{
 		// Call sensor timer
 		sensorTimer();
+		if(sensorTimeCounter > I2C_TIMEOUT)
+		{
+			return ERROR;
+			break;
+		}
 		// Check for DMA error
 		if(I2C_DMACheckForError(DMA_I2C2_RX) == ERROR)
 		{
@@ -992,6 +1080,11 @@ ErrorStatus masterReceive(uint8_t device, uint8_t startReg, uint8_t *dataBuffer,
 		{
 			// Call sensor timer
 			sensorTimer();
+			if(sensorTimeCounter > I2C_TIMEOUT)
+			{
+				return ERROR;
+				break;
+			}
 			// Check for I2C error
 			if(I2C_CheckForError(I2C2) == ERROR)
 			{
@@ -1010,6 +1103,11 @@ ErrorStatus masterReceive(uint8_t device, uint8_t startReg, uint8_t *dataBuffer,
 	{
 		// Call sensor timer
 		sensorTimer();
+		if(sensorTimeCounter > I2C_TIMEOUT)
+		{
+			return ERROR;
+			break;
+		}
 		// Check for I2C error
 		if(I2C_CheckForError(I2C2) == ERROR)
 		{
@@ -1025,6 +1123,11 @@ ErrorStatus masterReceive(uint8_t device, uint8_t startReg, uint8_t *dataBuffer,
 	{
 		// Call sensor timer
 		sensorTimer();
+		if(sensorTimeCounter > I2C_TIMEOUT)
+		{
+			return ERROR;
+			break;
+		}
 		// Check for I2C error
 		if(I2C_CheckForError(I2C2) == ERROR)
 		{
@@ -1040,6 +1143,11 @@ ErrorStatus masterReceive(uint8_t device, uint8_t startReg, uint8_t *dataBuffer,
 	{
 		// Call sensor timer
 		sensorTimer();
+		if(sensorTimeCounter > I2C_TIMEOUT)
+		{
+			return ERROR;
+			break;
+		}
 		// Check for I2C error
 		if(I2C_CheckForError(I2C2) == ERROR)
 		{
@@ -1057,6 +1165,11 @@ ErrorStatus masterReceive(uint8_t device, uint8_t startReg, uint8_t *dataBuffer,
 	{
 		// Call sensor timer
 		sensorTimer();
+		if(sensorTimeCounter > I2C_TIMEOUT)
+		{
+			return ERROR;
+			break;
+		}
 		// Check for I2C error
 		if(I2C_CheckForError(I2C2) == ERROR)
 		{
@@ -1074,6 +1187,11 @@ ErrorStatus masterReceive(uint8_t device, uint8_t startReg, uint8_t *dataBuffer,
 	{
 		// Call sensor timer
 		sensorTimer();
+		if(sensorTimeCounter > I2C_TIMEOUT)
+		{
+			return ERROR;
+			break;
+		}
 		// Check for I2C error
 		if(I2C_CheckForError(I2C2) == ERROR)
 		{
@@ -1094,6 +1212,11 @@ ErrorStatus masterReceive(uint8_t device, uint8_t startReg, uint8_t *dataBuffer,
 	{
 		// Call sensor timer
 		sensorTimer();
+		if(sensorTimeCounter > I2C_TIMEOUT)
+		{
+			return ERROR;
+			break;
+		}
 		// Check for DMA error
 		if(I2C_DMACheckForError(DMA_I2C2_RX) == ERROR)
 		{
@@ -1108,6 +1231,11 @@ ErrorStatus masterReceive(uint8_t device, uint8_t startReg, uint8_t *dataBuffer,
 	{
 		// Call sensor timer
 		sensorTimer();
+		if(sensorTimeCounter > I2C_TIMEOUT)
+		{
+			return ERROR;
+			break;
+		}
 		// Check for DMA error
 		if(I2C_DMACheckForError(DMA_I2C2_RX) == ERROR)
 		{
@@ -1127,6 +1255,11 @@ ErrorStatus masterReceive(uint8_t device, uint8_t startReg, uint8_t *dataBuffer,
 	{
 		// Call sensor timer
 		sensorTimer();
+		if(sensorTimeCounter > I2C_TIMEOUT)
+		{
+			return ERROR;
+			break;
+		}
 		// Check for DMA error
 		if(I2C_DMACheckForError(DMA_I2C2_RX) == ERROR)
 		{
