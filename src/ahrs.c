@@ -27,7 +27,7 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 	ahrsStructure->Q.y = 0;
 	ahrsStructure->Q.z = 0;
 	ahrsStructure->Q.dataTime = systemTime;
-	getFTime(&(ahrsStructure->Q.fDataTime));
+	ahrsStructure->Q.fDataTime = getFTime();
 	ahrsStructure->Q.fDeltaTime = 0;
 	math_vector3fDataInit(&(ahrsStructure->AccVector), ROW);
 	math_vector3qDataInit(&(ahrsStructure->AccOffsetVector), ROW);
@@ -92,9 +92,9 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 	math_vector3fDataInit(&(ahrsStructure->magCorrectionError), ROW);
 	math_vector3fDataInit(&(ahrsStructure->totalCorrectionError), ROW);
 	// Store offsets for mag
-	ahrsStructure->MagOffsetVector.vector.pData[VECT_X] = -554.266138f;
-	ahrsStructure->MagOffsetVector.vector.pData[VECT_Y] = 91.5731854f;
-	ahrsStructure->MagOffsetVector.vector.pData[VECT_Z] = 678.547399f;
+	ahrsStructure->MagOffsetVector.vector.pData[VECT_X] = HARDIRON_DEFAULT_X;
+	ahrsStructure->MagOffsetVector.vector.pData[VECT_Y] = HARDIRON_DEFAULT_Y;
+	ahrsStructure->MagOffsetVector.vector.pData[VECT_Z] = HARDIRON_DEFAULT_Z;
 	// Store transformation matrix for mag
 	ahrsStructure->magRotationMatrix.vector.pData[Rxx] = SOFTMAG_DEFAULT_RXX;
 	ahrsStructure->magRotationMatrix.vector.pData[Ryx] = SOFTMAG_DEFAULT_RYX;
@@ -109,6 +109,8 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 	// Min Max error values
 	ahrsStructure->PIData.eMax = DEFAULT_MAXERR;
 	ahrsStructure->PIData.eMin = DEFAULT_MINERR;
+
+	ahrsStructure->Heading = 0;
 	// Try to load values from SD card
 	if(loadSettings() == ERROR)
 	{
@@ -117,7 +119,6 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 		sendUSBMessage("Using default values");
 #endif
 	}
-
 
 	ahrsStructure->PIData.Kix = DEFAULT_KI;
 	ahrsStructure->PIData.Kiy = DEFAULT_KI;
@@ -199,6 +200,12 @@ arm_status ahrs_updateRotationMatrix(AHRSData * data)
 	updateScaledVector(&(ahrs_data.MagVector), MAG_X, MAG_Y, MAG_Z, ahrs_data.magRate);
 	// Update altitude reading
 	ahrs_update_altitude();
+	// Update mag reading
+	ahrs_updateMagReading();
+	// Inverse if necessary
+	ahrs_data.AccVector.vector.pData[VECT_X] = -ahrs_data.AccVector.vector.pData[VECT_X];
+	ahrs_data.AccVector.vector.pData[VECT_Y] = -ahrs_data.AccVector.vector.pData[VECT_Y];
+	ahrs_data.AccVector.vector.pData[VECT_Z] = -ahrs_data.AccVector.vector.pData[VECT_Z];
 
 
 	// Calculate gravity vector
@@ -223,7 +230,7 @@ arm_status ahrs_updateRotationMatrix(AHRSData * data)
 
 
 	// Update PI error regulator
-	//ahrs_updateVectorPID(&(ahrs_data.PIData), &(ahrs_data.RollPitchCorrection));
+	ahrs_updateVectorPID(&(ahrs_data.PIData), &(ahrs_data.RollPitchCorrection), ahrs_data.GyroVector.fDeltaTime);
 
 	// Calculate change in time
 	dT = (float)(data->GyroVector.deltaTime) * SYSTIME_TOSECONDS;
@@ -288,6 +295,7 @@ ErrorStatus ahrs_updateQuaternion(void)
 	float32_t dWx = 0;
 	float32_t dWy = 0;
 	float32_t dWz = 0;
+	float32_t dT = 0;
 
 	// Update vectors
 	updateScaledVector(&(ahrs_data.GyroVector), GYRO_X, GYRO_Y, GYRO_Z, ahrs_data.gyroRate * DEG_TO_RAD);
@@ -297,6 +305,10 @@ ErrorStatus ahrs_updateQuaternion(void)
 	ahrs_update_altitude();
 	// Update mag reading
 	ahrs_updateMagReading();
+	// Inverse if necessary
+	ahrs_data.AccVector.vector.pData[VECT_X] = -ahrs_data.AccVector.vector.pData[VECT_X];
+	ahrs_data.AccVector.vector.pData[VECT_Y] = -ahrs_data.AccVector.vector.pData[VECT_Y];
+	ahrs_data.AccVector.vector.pData[VECT_Z] = -ahrs_data.AccVector.vector.pData[VECT_Z];
 
 	// Calculate change in radians/sec
 	dWx = ahrs_data.GyroVector.vector.pData[VECT_X];// * dT;
@@ -304,26 +316,33 @@ ErrorStatus ahrs_updateQuaternion(void)
 	dWz = ahrs_data.GyroVector.vector.pData[VECT_Z];// * dT;
 
 	// Remove drift error
+
 	dWx = dWx - ahrs_data.PIData.Rx;
 	dWy = dWy - ahrs_data.PIData.Ry;
 	dWz = dWz - ahrs_data.PIData.Rz;
 
-	// Calculate delta time var * 0.5
-	delta = 0.5f * ahrs_data.GyroVector.fDeltaTime * SYSTIME_TOSECONDS;
-	// Calculate change in delta time / 2
-	dWx = dWx * delta;
-	dWy = dWy * delta;
-	dWz = dWz * delta;
+
 	// Store current quaternion
 	Qtemp.w = ahrs_data.Q.w;
 	Qtemp.x = ahrs_data.Q.x;
 	Qtemp.y = ahrs_data.Q.y;
 	Qtemp.z = ahrs_data.Q.z;
-	// Do updating
-	ahrs_data.Q.w = Qtemp.w - (Qtemp.x * dWx) - (Qtemp.y * dWy) - (Qtemp.z * dWz);
-	ahrs_data.Q.x = Qtemp.x + (Qtemp.w * dWx) + (Qtemp.z * dWy) - (Qtemp.y * dWz);
-	ahrs_data.Q.y = Qtemp.y + (Qtemp.w * dWy) + (Qtemp.x * dWz) - (Qtemp.z * dWx);
-	ahrs_data.Q.z = Qtemp.z + (Qtemp.w * dWz) + (Qtemp.y * dWx) - (Qtemp.x * dWy);
+
+	xx = ahrs_data.Q.x;
+	yy = ahrs_data.Q.y;
+	zz = ahrs_data.Q.z;
+
+    dT = (float)(ahrs_data.GyroVector.deltaTime) * SYSTIME_TOSECONDS;
+
+    Qtemp.w = Qtemp.w + (-Qtemp.x*dWx-Qtemp.y*dWy-Qtemp.z*dWz)*(0.5 * dT);
+    Qtemp.x = xx + (Qtemp.w * dWx + yy * dWz - zz * dWy)*(0.5 * dT);
+    Qtemp.y = yy + (Qtemp.w * dWy - xx * dWz + zz * dWx)*(0.5 * dT);
+    Qtemp.z = zz + (Qtemp.w * dWz + xx * dWy - yy * dWx)*(0.5 * dT);
+    ahrs_data.Q.w = Qtemp.w;
+    ahrs_data.Q.x = Qtemp.x;
+    ahrs_data.Q.y = Qtemp.y;
+    ahrs_data.Q.z = Qtemp.z;
+
 
 	// Generate new rotation matrix
 	// Calculate intermittent products
@@ -359,40 +378,67 @@ ErrorStatus ahrs_updateQuaternion(void)
 	tempVector.vector.pData[VECT_X] = ahrs_data.rotationMatrix.vector.pData[Rzx];
 	tempVector.vector.pData[VECT_Y] = ahrs_data.rotationMatrix.vector.pData[Rzy];
 	tempVector.vector.pData[VECT_Z] = ahrs_data.rotationMatrix.vector.pData[Rzz];
-	// Copy
-	gravityVector.vector.pData[VECT_X] = tempVector.vector.pData[VECT_X];
-	gravityVector.vector.pData[VECT_Y] = tempVector.vector.pData[VECT_Y];
-	gravityVector.vector.pData[VECT_Z] = tempVector.vector.pData[VECT_Z];
 	// Calculate roll pitch error
 	ahrs_vect_cross_product(&tempVector, &(ahrs_data.GravityVector), &(ahrs_data.RollPitchCorrection));
 
 	// Calculate mag in earth plane
 	ahrs_mult_vector_matrix(&(ahrs_data.rotationMatrix), &(ahrs_data.MagVector), &tempVector);
+	// Calculate heading
+	ahrs_data.Heading = atan2f(tempVector.vector.pData[VECT_X], tempVector.vector.pData[VECT_Y]);
+	// Store heading
+	MAG_HEADING = (uint16_t)((int16_t)(ahrs_data.Heading * 1000));
+
+	// Store mag vector in earth frame to gravityVector variable
+	gravityVector.vector.pData[VECT_X] = tempVector.vector.pData[VECT_X];
+	gravityVector.vector.pData[VECT_Y] = tempVector.vector.pData[VECT_Y];
+	gravityVector.vector.pData[VECT_Z] = tempVector.vector.pData[VECT_Z];
+
 	// Z = 0
 	tempVector.vector.pData[VECT_Z] = 0;
 	// Cross with (1,0,0)
 	tempVector1.vector.pData[VECT_X] = 1;
 	tempVector1.vector.pData[VECT_Y] = 0;
 	tempVector1.vector.pData[VECT_Z] = 0;
-	ahrs_vect_cross_product(&tempVector, &tempVector1, &tempVector2);
+	ahrs_vect_cross_product(&tempVector1, &tempVector, &tempVector2);
 	// Transform to plane coordinates
 	// Create matrix transpose
-	ahrs_matrix_transponse(&(ahrs_data.rotationMatrix), &tempMatrix);
+	//ahrs_matrix_transponse(&(ahrs_data.rotationMatrix), &tempMatrix);
 	// Move vector to plane coordinate system
-	ahrs_mult_vector_matrix(&tempMatrix, &tempVector2, &(ahrs_data.YawCorrection));
+	ahrs_mult_vector_matrix_transpose(&(ahrs_data.rotationMatrix), &tempVector2, &(ahrs_data.YawCorrection));
+
+	ahrs_data.Wrp = ahrs_get_vector_norm(&(ahrs_data.RollPitchCorrection)) * 10;
+	if(ahrs_data.Wrp < 0)
+	{
+		ahrs_data.Wrp = -ahrs_data.Wrp;
+	}
+
+	if(ahrs_data.Wrp > 1)
+	{
+		ahrs_data.Wrp = 1;
+	}
+
+	ahrs_data.Wy = ahrs_get_vector_norm(&(ahrs_data.YawCorrection)) * 0.5;
+	if(ahrs_data.Wy < 0)
+	{
+		ahrs_data.Wy = -ahrs_data.Wy;
+	}
+	if(ahrs_data.Wy > 0.5)
+	{
+		ahrs_data.Wy = 0.5;
+	}
 
 
 	// Add correction to rollPitchCorrection vector
-	ahrs_data.totalCorrectionError.vector.pData[VECT_X] = ahrs_data.RollPitchCorrection.vector.pData[VECT_X] - ahrs_data.YawCorrection.vector.pData[VECT_X];
-	ahrs_data.totalCorrectionError.vector.pData[VECT_Y] = ahrs_data.RollPitchCorrection.vector.pData[VECT_Y] - ahrs_data.YawCorrection.vector.pData[VECT_Y];
-	ahrs_data.totalCorrectionError.vector.pData[VECT_Z] = ahrs_data.RollPitchCorrection.vector.pData[VECT_Z] - ahrs_data.YawCorrection.vector.pData[VECT_Z];
+	ahrs_data.totalCorrectionError.vector.pData[VECT_X] = -ahrs_data.RollPitchCorrection.vector.pData[VECT_X];// * ahrs_data.Wrp + ahrs_data.YawCorrection.vector.pData[VECT_X] * ahrs_data.Wy;
+	ahrs_data.totalCorrectionError.vector.pData[VECT_Y] = -ahrs_data.RollPitchCorrection.vector.pData[VECT_Y];// * ahrs_data.Wrp + ahrs_data.YawCorrection.vector.pData[VECT_Y] * ahrs_data.Wy;
+	ahrs_data.totalCorrectionError.vector.pData[VECT_Z] = -ahrs_data.RollPitchCorrection.vector.pData[VECT_Z];// * ahrs_data.Wrp + ahrs_data.YawCorrection.vector.pData[VECT_Z] * ahrs_data.Wy;
 
 	// Update PI error regulator
 	ahrs_updateVectorPID(&(ahrs_data.PIData), &(ahrs_data.totalCorrectionError), ahrs_data.GyroVector.fDeltaTime);
 
 
 	// Store update time
-	getFTime(&(ahrs_data.rotationMatrix.fDataTime));
+	ahrs_data.rotationMatrix.fDataTime = getFTime();
 
 	return SUCCESS;
 }

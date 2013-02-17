@@ -18,8 +18,8 @@
 #define DEFAULT_ROLLPITCHCORRECTIONSCALE	0.5f// Weight of roll pitch correction error
 #define DEFAULT_YAWCORRECTIONSCALE	0.5f		// Weight of yaw correction error
 // PID defaults
-#define DEFAULT_KP						2.0f					// Default Kp value
-#define DEFAULT_KI						0.01f					// Default Ki value
+#define DEFAULT_KP						0.05f					// Default Kp value
+#define DEFAULT_KI						0.002f					// Default Ki value
 #define DEFAULT_MAXERR					1.0f
 #define DEFAULT_MINERR					-1.0f
 #define DEFAULT_MAXI					5.0f					// Maximum integral value - +2 rad/sec = 2 / 0.001 = 2000
@@ -41,6 +41,7 @@
 #define SOFTMAG_DEFAULT_RYZ				1.49881559e-5f
 #define SOFTMAG_DEFAULT_RZZ				0.00189577429f
 */
+/*
 #define SOFTMAG_DEFAULT_RXX				0.000635f
 #define SOFTMAG_DEFAULT_RYX				2.03287907e-20f
 #define SOFTMAG_DEFAULT_RZX				-2.79520873e-20f
@@ -50,6 +51,20 @@
 #define SOFTMAG_DEFAULT_RXZ				-8.21621959e-20f
 #define SOFTMAG_DEFAULT_RYZ				6.77626358e-21f
 #define SOFTMAG_DEFAULT_RZZ				0.000635f
+*/
+
+#define SOFTMAG_DEFAULT_RXX   0.000635f
+#define SOFTMAG_DEFAULT_RYX   -2.71050543121376e-20f
+#define SOFTMAG_DEFAULT_RZX   6.7762635780344e-21f
+#define SOFTMAG_DEFAULT_RXY   -2.71050543121376e-20f
+#define SOFTMAG_DEFAULT_RYY   0.000635f
+#define SOFTMAG_DEFAULT_RZY   -2.87991202066462e-20f
+#define SOFTMAG_DEFAULT_RXZ   0.0f
+#define SOFTMAG_DEFAULT_RYZ   -2.87991202066462e-20f
+#define SOFTMAG_DEFAULT_RZZ   0.000635f
+#define HARDIRON_DEFAULT_X    -496.684295131459f
+#define HARDIRON_DEFAULT_Y    466.563236932304f
+#define HARDIRON_DEFAULT_Z    -1134.83727157793f
 
 
 #endif /* UNITCONVERSIONS_H_ */

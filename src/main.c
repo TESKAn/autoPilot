@@ -63,6 +63,9 @@ int main(void)
 	math_vector3fDataInit(&tempVector1, ROW);
 	math_vector3fDataInit(&tempVector2, ROW);
 
+	math_vector3fDataInit(&gravityVector, ROW);
+
+
 	//SD_CardInfo cardinfo;
 	int i = 0;
 	int registerCount = 0;
@@ -278,7 +281,7 @@ int main(void)
         	// Store data
         	Buffer[0] = 2;
         	Buffer[1] = 2;
-        	for(i=2;i<56;i+=2)
+        	for(i=2;i<64;i+=2)
         	{
         		// Store high byte of register
         		Buffer[i] = (MODBUSReg[registerCount] >> 8) & 0x00FF;

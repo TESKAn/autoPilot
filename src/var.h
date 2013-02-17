@@ -60,6 +60,10 @@ typedef union
 	float32_t f;
 	unsigned char ch[4];
 } C_Float;
+
+// STM studio vars
+extern volatile int exportVars[64];
+
 // Flag variable
 extern volatile Flag flag0;
 

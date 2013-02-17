@@ -25,7 +25,7 @@ void math_vector3fDataInit(vector3fData * vector, VectType type)
 {
 	vector->dataTime = systemTime;
 	vector->deltaTime = 0;
-	getFTime(&(vector->fDataTime));
+	vector->fDataTime = getFTime();
 	vector->fDeltaTime = 0;
 	vector->type = ROW;
 

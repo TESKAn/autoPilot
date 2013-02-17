@@ -70,7 +70,7 @@ extern uint8_t accOffsetSampleCount;
 extern volatile int16_t magOffsets[3];
 extern uint8_t magOffsetSampleCount;
 
-#define I2C2_POLLTIME		100
+#define I2C2_POLLTIME		10
 
 // I2C2 process states
 #define I2C2_IDLE			0

@@ -7,7 +7,75 @@
 #include "allinclude.h"
 #include <string.h>
 
-ErrorStatus getFTime(float32_t* var)
+void updateExportVars(void)
+{
+	exportVars[0] = (int)systemTime;
+	exportVars[1] = (int)ACC_X;
+	exportVars[2] = (int)ACC_Y;
+	exportVars[3] = (int)ACC_Z;
+	exportVars[4] = (int)MAG_X;
+	exportVars[5] = (int)MAG_Y;
+	exportVars[6] = (int)MAG_Z;
+	exportVars[7] = (int)GYRO_X;
+	exportVars[8] = (int)GYRO_Y;
+	exportVars[9] = (int)GYRO_Z;
+	exportVars[10] = (int)(ahrs_data.Q.w * 1000000);
+	exportVars[11] = (int)(ahrs_data.Q.x * 1000000);
+	exportVars[12] = (int)(ahrs_data.Q.y * 1000000);
+	exportVars[13] = (int)(ahrs_data.Q.z * 1000000);
+	exportVars[14] = (int)(ahrs_data.AccVector.vector.pData[VECT_X] * 1000000);
+	exportVars[15] = (int)(ahrs_data.AccVector.vector.pData[VECT_Y] * 1000000);
+	exportVars[16] = (int)(ahrs_data.AccVector.vector.pData[VECT_Z] * 1000000);
+
+	exportVars[17] = (int)(ahrs_data.MagVector.vector.pData[VECT_X] * 1000000);
+	exportVars[18] = (int)(ahrs_data.MagVector.vector.pData[VECT_Y] * 1000000);
+	exportVars[19] = (int)(ahrs_data.MagVector.vector.pData[VECT_Z] * 1000000);
+
+	exportVars[20] = (int)(ahrs_data.GyroVector.vector.pData[VECT_X] * 1000000);
+	exportVars[21] = (int)(ahrs_data.GyroVector.vector.pData[VECT_Y] * 1000000);
+	exportVars[22] = (int)(ahrs_data.GyroVector.vector.pData[VECT_Z] * 1000000);
+
+	exportVars[23] = (int)(ahrs_data.GravityVector.vector.pData[VECT_X] * 1000000);
+	exportVars[24] = (int)(ahrs_data.GravityVector.vector.pData[VECT_Y] * 1000000);
+	exportVars[25] = (int)(ahrs_data.GravityVector.vector.pData[VECT_Z] * 1000000);
+
+	exportVars[26] = (int)(ahrs_data.RollPitchCorrection.vector.pData[VECT_X] * 1000000);
+	exportVars[27] = (int)(ahrs_data.RollPitchCorrection.vector.pData[VECT_Y] * 1000000);
+	exportVars[28] = (int)(ahrs_data.RollPitchCorrection.vector.pData[VECT_Z] * 1000000);
+
+	exportVars[29] = (int)(ahrs_data.YawCorrection.vector.pData[VECT_X] * 1000000);
+	exportVars[30] = (int)(ahrs_data.YawCorrection.vector.pData[VECT_Y] * 1000000);
+	exportVars[31] = (int)(ahrs_data.YawCorrection.vector.pData[VECT_Z] * 1000000);
+
+	exportVars[32] = (int)(ahrs_data.totalCorrectionError.vector.pData[VECT_X] * 1000000);
+	exportVars[33] = (int)(ahrs_data.totalCorrectionError.vector.pData[VECT_Y] * 1000000);
+	exportVars[34] = (int)(ahrs_data.totalCorrectionError.vector.pData[VECT_Z] * 1000000);
+
+	exportVars[35] = (int)(ahrs_data.PIData.Ix * 1000000);
+	exportVars[36] = (int)(ahrs_data.PIData.Iy * 1000000);
+	exportVars[37] = (int)(ahrs_data.PIData.Iz * 1000000);
+
+	exportVars[38] = (int)(ahrs_data.PIData.Rx * 1000000);
+	exportVars[39] = (int)(ahrs_data.PIData.Ry * 1000000);
+	exportVars[40] = (int)(ahrs_data.PIData.Rz * 1000000);
+
+	exportVars[41] = (int)(ahrs_data.rotationMatrix.vector.pData[Rxx] * 1000000);
+	exportVars[42] = (int)(ahrs_data.rotationMatrix.vector.pData[Ryx] * 1000000);
+	exportVars[43] = (int)(ahrs_data.rotationMatrix.vector.pData[Rzx] * 1000000);
+
+	exportVars[44] = (int)(ahrs_data.rotationMatrix.vector.pData[Rxy] * 1000000);
+	exportVars[45] = (int)(ahrs_data.rotationMatrix.vector.pData[Ryy] * 1000000);
+	exportVars[46] = (int)(ahrs_data.rotationMatrix.vector.pData[Rzy] * 1000000);
+
+	exportVars[47] = (int)(ahrs_data.rotationMatrix.vector.pData[Rxz] * 1000000);
+	exportVars[48] = (int)(ahrs_data.rotationMatrix.vector.pData[Ryz] * 1000000);
+	exportVars[49] = (int)(ahrs_data.rotationMatrix.vector.pData[Rzz] * 1000000);
+
+
+}
+
+
+float32_t getFTime(void)
 {
 	float32_t time = 0;
 	float32_t timeFrac = 0;
@@ -15,8 +83,7 @@ ErrorStatus getFTime(float32_t* var)
 	timeFrac = (float32_t)(TIM14->CNT);
 	timeFrac = timeFrac / 1000;
 	time = time + timeFrac;
-	*var = time;
-	return SUCCESS;
+	return time;
 }
 
 ErrorStatus FS_Initialize(void)
@@ -865,7 +932,7 @@ void extPeripheralInit(void)
 	// Mark sensors initiated
 	EXTSENS_INIT_DONE = 1;
 	// Mark null sensor
-	EXTSENS_NULLING_GYRO = 1;
+	//EXTSENS_NULLING_GYRO = 1;
 #ifdef DEBUG_USB
 	sendUSBMessage("Sensors configured");
 #endif
@@ -874,6 +941,7 @@ void extPeripheralInit(void)
 	sendUSBMessage("Reset matrix");
 #endif
 	ahrs_resetRotationMatrix();
+	ahrs_resetQuaternion();
 #ifdef DEBUG_USB
 	sendUSBMessage("AutoPilot OnLine");
 	sendUSBMessage("initialization done");

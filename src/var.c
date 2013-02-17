@@ -7,6 +7,9 @@
 
 #include "allinclude.h"
 
+// STM studio vars
+volatile int exportVars[64];
+
 // Flag variable
 volatile Flag flag0;
 

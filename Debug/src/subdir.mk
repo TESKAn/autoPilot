@@ -4,6 +4,7 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../src/adc.c \
 ../src/ahrs.c \
 ../src/ahrs_math.c \
 ../src/compass.c \
@@ -20,6 +21,8 @@ C_SRCS += \
 ../src/stm32f4xx_it.c \
 ../src/syscalls.c \
 ../src/system_stm32f4xx.c \
+../src/tiny_printf.c \
+../src/usb.c \
 ../src/usb_bsp.c \
 ../src/usbd_desc.c \
 ../src/usbd_usr.c \
@@ -29,6 +32,7 @@ S_UPPER_SRCS += \
 ../src/startup_stm32f4xx.S 
 
 OBJS += \
+./src/adc.o \
 ./src/ahrs.o \
 ./src/ahrs_math.o \
 ./src/compass.o \
@@ -46,12 +50,15 @@ OBJS += \
 ./src/stm32f4xx_it.o \
 ./src/syscalls.o \
 ./src/system_stm32f4xx.o \
+./src/tiny_printf.o \
+./src/usb.o \
 ./src/usb_bsp.o \
 ./src/usbd_desc.o \
 ./src/usbd_usr.o \
 ./src/var.o 
 
 C_DEPS += \
+./src/adc.d \
 ./src/ahrs.d \
 ./src/ahrs_math.d \
 ./src/compass.d \
@@ -68,6 +75,8 @@ C_DEPS += \
 ./src/stm32f4xx_it.d \
 ./src/syscalls.d \
 ./src/system_stm32f4xx.d \
+./src/tiny_printf.d \
+./src/usb.d \
 ./src/usb_bsp.d \
 ./src/usbd_desc.d \
 ./src/usbd_usr.d \

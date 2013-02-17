@@ -8,7 +8,6 @@
 #ifndef AHRS_H_
 #define AHRS_H_
 
-
 // Structure for 3 floating point PI regulators
 typedef struct
 {
@@ -134,6 +133,9 @@ typedef struct
 	vector3fData magCorrectionError;
 	// Total correction vector
 	vector3fData totalCorrectionError;
+	float32_t Wrp;
+	float32_t Wy;
+	float32_t Heading;
 
 }__attribute__((aligned(4),packed)) AHRSData;
 
@@ -146,6 +148,10 @@ extern matrix3by3 holdMatrix;
 extern vector3fData tempVector;
 extern vector3fData tempVector1;
 extern vector3fData tempVector2;
+
+#ifdef __cplusplus
+ extern "C" {
+#endif
 
 // Function exports - ahrs.h
 void initAHRSStructure(AHRSData * ahrsStructure);
@@ -177,9 +183,16 @@ arm_status ahrs_vect_dot_product(vector3fData * vectorA, vector3fData * vectorB,
 arm_status ahrs_vect_cross_product(vector3fData * vectorA, vector3fData * vectorB, vector3fData * vectorC);
 arm_status ahrs_mult_matrixes(matrix3by3 * matrixA, matrix3by3 * matrixB, matrix3by3 * matrixC);
 arm_status ahrs_mult_vector_matrix(matrix3by3 * matrixA, vector3fData * vectorA, vector3fData * vectorB);
+arm_status ahrs_mult_vector_matrix_transpose(matrix3by3 * matrixA, vector3fData * vectorA, vector3fData * vectorB);
 arm_status ahrs_matrix_transponse(matrix3by3 * matrixA, matrix3by3 * matrixB);
 arm_status ahrs_normalize_vector_taylor(vector3fData * vectorA);
 arm_status ahrs_normalize_vector(vector3fData * vectorA);
+float32_t ahrs_get_vector_norm(vector3fData * vector);
 arm_status ahrs_copy_vector(vector3fData * vectorA, vector3fData * vectorB);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* AHRS_H_ */

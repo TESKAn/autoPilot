@@ -20,7 +20,7 @@ void crcOnMessage(unsigned int uiDataLen);
 #define MB_SLAVEID						0x33
 
 // Define total registers
-#define MB_TOTALREGISTERS				80
+#define MB_TOTALREGISTERS				90
 
 // Define number of total bytes to be used for MODBUS receive/send
 #define MB_TOTALBYTES					200//18 + (MB_TOTALREGISTERS * 2) + 2	// Add two to be certain
@@ -129,6 +129,9 @@ void crcOnMessage(unsigned int uiDataLen);
 #define GRAPH_4				MODBUSReg[78]
 #define GRAPH_5				MODBUSReg[79]
 #define GRAPH_6				MODBUSReg[80]
+
+// Magnetometer heading in deg/10
+#define MAG_HEADING			MODBUSReg[81]
 
 // Typedefs
 // MODBUS data structure

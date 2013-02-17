@@ -145,7 +145,9 @@ void ahrs_vector3qDataInit(vector3qData * vector, VectType type)
 void ahrs_vectorUpdate(vector3fData * vector, float32_t i, float32_t j, float32_t k)
 {
 	vector->deltaTime = systemTime - vector->dataTime;
+	vector->fDeltaTime = getFTime() - vector->fDataTime;
 	vector->dataTime = systemTime;
+	vector->fDataTime = getFTime();
 	vector->vector.pData[0] = i;
 	vector->vector.pData[1] = j;
 	vector->vector.pData[2] = k;
@@ -154,6 +156,7 @@ void ahrs_vectorUpdate(vector3fData * vector, float32_t i, float32_t j, float32_
 void ahrs_matrix3by3_init(matrix3by3 * matrix)
 {
 	matrix->dataTime = systemTime;
+	matrix->fDataTime = getFTime();
 	matrix->vector.numCols = 3;
 	matrix->vector.numRows = 3;
 	matrix->vector.pData = matrix->vector3fData;
@@ -162,6 +165,7 @@ void ahrs_matrix3by3_init(matrix3by3 * matrix)
 void ahrs_generate_rotationMatrix(matrix3by3 * matrix, float roll, float pitch, float yaw)
 {
 	matrix->dataTime = systemTime;
+	matrix->fDataTime = getFTime();
 
 	float cp = arm_cos_f32(pitch);
 	float sp = arm_sin_f32(pitch);
@@ -184,6 +188,7 @@ void ahrs_generate_rotationMatrix(matrix3by3 * matrix, float roll, float pitch, 
 void ahrs_generate_rotationUpdateMatrix(float32_t x, float32_t y, float32_t z, matrix3by3 * matrix)
 {
 	matrix->dataTime = systemTime;
+	matrix->fDataTime = getFTime();
 	matrix->vector3fData[0] = 1;
 	matrix->vector3fData[1] = z;
 	matrix->vector3fData[2] = -y;
@@ -201,7 +206,7 @@ arm_status ahrs_vector_substract(vector3fData * vectorA, vector3fData * vectorB,
 	vectorC->vector.pData[VECT_X] = vectorA->vector.pData[VECT_X]  - vectorB->vector.pData[VECT_X];
 	vectorC->vector.pData[VECT_Y] = vectorA->vector.pData[VECT_Y]  - vectorB->vector.pData[VECT_Y];
 	vectorC->vector.pData[VECT_Z] = vectorA->vector.pData[VECT_Z]  - vectorB->vector.pData[VECT_Z];
-	getFTime(&(vectorC->fDataTime));
+	vectorC->fDataTime = getFTime();
 	return ARM_MATH_SUCCESS;
 }
 
@@ -235,6 +240,8 @@ arm_status ahrs_vect_cross_product(vector3fData * vectorA, vector3fData * vector
 	vectorC->vector.pData[VECT_Y] = vectorA->vector.pData[VECT_Z]*vectorB->vector.pData[VECT_X] - vectorA->vector.pData[VECT_X]*vectorB->vector.pData[VECT_Z];
 	// Result Z = Ax*By - Ay*Bx
 	vectorC->vector.pData[VECT_Z] = vectorA->vector.pData[VECT_X]*vectorB->vector.pData[VECT_Y] - vectorA->vector.pData[VECT_Y]*vectorB->vector.pData[VECT_X];
+
+	vectorC->fDataTime = getFTime();
 	return ARM_MATH_SUCCESS;
 }
 
@@ -247,6 +254,7 @@ arm_status ahrs_mult_matrixes(matrix3by3 * matrixA, matrix3by3 * matrixB, matrix
 	{
 		// Update time when we multiplied
 		matrixC->dataTime = systemTime;
+		matrixC->fDataTime = getFTime();
 	}
 	return status;
 }
@@ -254,17 +262,49 @@ arm_status ahrs_mult_matrixes(matrix3by3 * matrixA, matrix3by3 * matrixB, matrix
 // Multiply vectorA and matrix into vectorB
 arm_status ahrs_mult_vector_matrix(matrix3by3 * matrixA, vector3fData * vectorA, vector3fData * vectorB)
 {
-	arm_status status;
 	// Multiply
-	status = arm_mat_mult_f32(&(vectorA->vector), &(matrixA->vector), &(vectorB->vector));
+	vectorB->vector.pData[VECT_X] = matrixA->vector.pData[Rxx] * vectorA->vector.pData[VECT_X] +
+			matrixA->vector.pData[Rxy] * vectorA->vector.pData[VECT_Y]+
+			matrixA->vector.pData[Rxz] * vectorA->vector.pData[VECT_Z];
+
+	vectorB->vector.pData[VECT_Y] = matrixA->vector.pData[Ryx] * vectorA->vector.pData[VECT_X] +
+			matrixA->vector.pData[Ryy] * vectorA->vector.pData[VECT_Y]+
+			matrixA->vector.pData[Ryz] * vectorA->vector.pData[VECT_Z];
+
+	vectorB->vector.pData[VECT_Z] = matrixA->vector.pData[Rzx] * vectorA->vector.pData[VECT_X] +
+			matrixA->vector.pData[Rzy] * vectorA->vector.pData[VECT_Y]+
+			matrixA->vector.pData[Rzz] * vectorA->vector.pData[VECT_Z];
+
+	vectorB->dataTime = vectorA->dataTime;
+	vectorB->fDataTime = vectorA->fDataTime;
+
+	//status = arm_mat_mult_f32(&(vectorA->vector), &(matrixA->vector), &(vectorB->vector));
 	//status = arm_mat_mult_f32(&(matrixA->vector), &(vectorA->vector), &(vectorB->vector));
-	if(status == ARM_MATH_SUCCESS)
-	{
-		// Update time when we multiplied
-		vectorB->dataTime = systemTime;
-		getFTime(&(vectorB->fDataTime));
-	}
-	return status;
+	return ARM_MATH_SUCCESS;
+}
+
+// Multiply vectorA and matrix transpose into vectorB
+arm_status ahrs_mult_vector_matrix_transpose(matrix3by3 * matrixA, vector3fData * vectorA, vector3fData * vectorB)
+{
+	// Multiply
+	vectorB->vector.pData[VECT_X] = matrixA->vector.pData[Rxx] * vectorA->vector.pData[VECT_X] +
+			matrixA->vector.pData[Ryx] * vectorA->vector.pData[VECT_Y]+
+			matrixA->vector.pData[Rzx] * vectorA->vector.pData[VECT_Z];
+
+	vectorB->vector.pData[VECT_Y] = matrixA->vector.pData[Rxy] * vectorA->vector.pData[VECT_X] +
+			matrixA->vector.pData[Ryy] * vectorA->vector.pData[VECT_Y]+
+			matrixA->vector.pData[Rzy] * vectorA->vector.pData[VECT_Z];
+
+	vectorB->vector.pData[VECT_Z] = matrixA->vector.pData[Rxz] * vectorA->vector.pData[VECT_X] +
+			matrixA->vector.pData[Ryz] * vectorA->vector.pData[VECT_Y]+
+			matrixA->vector.pData[Rzz] * vectorA->vector.pData[VECT_Z];
+
+	vectorB->dataTime = vectorA->dataTime;
+	vectorB->fDataTime = vectorA->fDataTime;
+
+	//status = arm_mat_mult_f32(&(vectorA->vector), &(matrixA->vector), &(vectorB->vector));
+	//status = arm_mat_mult_f32(&(matrixA->vector), &(vectorA->vector), &(vectorB->vector));
+	return ARM_MATH_SUCCESS;
 }
 
 arm_status ahrs_matrix_transponse(matrix3by3 * matrixA, matrix3by3 * matrixB)
@@ -272,11 +312,7 @@ arm_status ahrs_matrix_transponse(matrix3by3 * matrixA, matrix3by3 * matrixB)
 	arm_status status;
 
 	status = arm_mat_trans_f32(&(matrixA->vector), &(matrixB->vector));
-	if(status == ARM_MATH_SUCCESS)
-	{
-		// Update time when we multiplied
-		getFTime(&(matrixB->fDataTime));
-	}
+
 	return status;
 }
 
@@ -294,11 +330,10 @@ arm_status ahrs_normalize_vector_taylor(vector3fData * vectorA)
 	// Calculate one half
 	scale = scale / 2;
 
-
 	vectorA->vector.pData[VECT_X] = vectorA->vector.pData[VECT_X] * scale;
 	vectorA->vector.pData[VECT_Y] = vectorA->vector.pData[VECT_Y] * scale;
 	vectorA->vector.pData[VECT_Z] = vectorA->vector.pData[VECT_Z] * scale;
-	getFTime(&(vectorA->fDataTime));
+
 	return status;
 }
 
@@ -319,8 +354,18 @@ arm_status ahrs_normalize_vector(vector3fData * vectorA)
 	vectorA->vector.pData[VECT_X] = vectorA->vector.pData[VECT_X] * scale;
 	vectorA->vector.pData[VECT_Y] = vectorA->vector.pData[VECT_Y] * scale;
 	vectorA->vector.pData[VECT_Z] = vectorA->vector.pData[VECT_Z] * scale;
-	getFTime(&(vectorA->fDataTime));
+
 	return status;
+}
+
+float32_t ahrs_get_vector_norm(vector3fData * vector)
+{
+	float32_t result = 0;
+	result = vector->vector.pData[VECT_X] * vector->vector.pData[VECT_X];
+	result = result + vector->vector.pData[VECT_Y] * vector->vector.pData[VECT_Y];
+	result = result + vector->vector.pData[VECT_Z] * vector->vector.pData[VECT_Z];
+	result = sqrtf(result);
+	return result;
 }
 
 // Copy vector A to B
