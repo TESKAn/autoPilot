@@ -148,15 +148,20 @@ void ahrs_updateMagReading(void)
 	ahrs_copy_vector(&(ahrs_data.MagVector), &(ahrs_data.magp));
 	// Store data to vector and remove offset
 	tempVector.vector.pData[VECT_X] = (float32_t)((int16_t)MAG_X);
-	tempVector.vector.pData[VECT_X] = tempVector.vector.pData[VECT_X] - ahrs_data.MagOffsetVector.vector.pData[VECT_X];
+	tempVector.vector.pData[VECT_X] = -ahrs_data.MagOffsetVector.vector.pData[VECT_X] + tempVector.vector.pData[VECT_X];
 
 	tempVector.vector.pData[VECT_Y] = (float32_t)((int16_t)MAG_Y);
-	tempVector.vector.pData[VECT_Y] = tempVector.vector.pData[VECT_Y] - ahrs_data.MagOffsetVector.vector.pData[VECT_Y];
+	tempVector.vector.pData[VECT_Y] = -ahrs_data.MagOffsetVector.vector.pData[VECT_Y] + tempVector.vector.pData[VECT_Y];
 
 	tempVector.vector.pData[VECT_Z] = (float32_t)((int16_t)MAG_Z);
-	tempVector.vector.pData[VECT_Z] = tempVector.vector.pData[VECT_Z] - ahrs_data.MagOffsetVector.vector.pData[VECT_Z];
+	tempVector.vector.pData[VECT_Z] = -ahrs_data.MagOffsetVector.vector.pData[VECT_Z] + tempVector.vector.pData[VECT_Z];
 	// Transform
 	ahrs_mult_vector_matrix(&(ahrs_data.magRotationMatrix), &tempVector, &(ahrs_data.MagVector));
+	// Scale
+	ahrs_data.MagVector.vector.pData[VECT_X] = ahrs_data.MagVector.vector.pData[VECT_X] / SOFTMAG_SCALE;
+	ahrs_data.MagVector.vector.pData[VECT_Y] = ahrs_data.MagVector.vector.pData[VECT_Y] / SOFTMAG_SCALE;
+	ahrs_data.MagVector.vector.pData[VECT_Z] = ahrs_data.MagVector.vector.pData[VECT_Z] / SOFTMAG_SCALE;
+
 	// Normalize
 	ahrs_normalize_vector(&(ahrs_data.MagVector));
 }
@@ -281,8 +286,6 @@ ErrorStatus ahrs_initQuaternion(void)
 
 ErrorStatus ahrs_updateQuaternion(void)
 {
-	float32_t delta = 0;
-
 	float32_t xx = 0;
 	float32_t yy = 0;
 	float32_t zz = 0;
@@ -343,6 +346,22 @@ ErrorStatus ahrs_updateQuaternion(void)
     ahrs_data.Q.y = Qtemp.y;
     ahrs_data.Q.z = Qtemp.z;
 
+    // Normalize quaternion
+    // Calculate squares
+    wx = ahrs_data.Q.w * ahrs_data.Q.w;
+    xx = ahrs_data.Q.x * ahrs_data.Q.x;
+    yy = ahrs_data.Q.y * ahrs_data.Q.y;
+    zz = ahrs_data.Q.z * ahrs_data.Q.z;
+    // Calculate root
+    wy = sqrtf(wx + xx + yy + zz);
+    // Calculate multiplication factor
+    wz = 1 / wy;
+    // Normalize
+    ahrs_data.Q.w = ahrs_data.Q.w * wz;
+    ahrs_data.Q.x = ahrs_data.Q.x * wz;
+    ahrs_data.Q.y = ahrs_data.Q.y * wz;
+    ahrs_data.Q.z = ahrs_data.Q.z * wz;
+
 
 	// Generate new rotation matrix
 	// Calculate intermittent products
@@ -383,8 +402,19 @@ ErrorStatus ahrs_updateQuaternion(void)
 
 	// Calculate mag in earth plane
 	ahrs_mult_vector_matrix(&(ahrs_data.rotationMatrix), &(ahrs_data.MagVector), &tempVector);
+
+	// Z = 0
+	tempVector.vector.pData[VECT_Z] = 0;
+
+	// Normalize vector
+	ahrs_normalize_vector(&tempVector);
 	// Calculate heading
 	ahrs_data.Heading = atan2f(tempVector.vector.pData[VECT_X], tempVector.vector.pData[VECT_Y]);
+	// Convert to 0 - 360
+	if(ahrs_data.Heading < 0)
+	{
+		ahrs_data.Heading = ahrs_data.Heading + 2*PI;
+	}
 	// Store heading
 	MAG_HEADING = (uint16_t)((int16_t)(ahrs_data.Heading * 1000));
 
@@ -393,19 +423,30 @@ ErrorStatus ahrs_updateQuaternion(void)
 	gravityVector.vector.pData[VECT_Y] = tempVector.vector.pData[VECT_Y];
 	gravityVector.vector.pData[VECT_Z] = tempVector.vector.pData[VECT_Z];
 
-	// Z = 0
-	tempVector.vector.pData[VECT_Z] = 0;
+	xx = cosf(ahrs_data.Heading);	// COG X
+	yy = sinf(ahrs_data.Heading);	// COG Y
+
+	xy = ahrs_data.rotationMatrix.vector.pData[Rxx] * yy;
+	xz = ahrs_data.rotationMatrix.vector.pData[Ryx] * xx;
+
+	xx = xy - xz;
+	ahrs_data.YawCorrection.vector.pData[VECT_X] = ahrs_data.rotationMatrix.vector.pData[Rzx];
+	ahrs_data.YawCorrection.vector.pData[VECT_Y] = ahrs_data.rotationMatrix.vector.pData[Rzy];
+	ahrs_data.YawCorrection.vector.pData[VECT_Z] = ahrs_data.rotationMatrix.vector.pData[Rzz];
+	ahrs_mult_vector_scalar(&(ahrs_data.YawCorrection), xx);
+
+	/*
 	// Cross with (1,0,0)
 	tempVector1.vector.pData[VECT_X] = 1;
 	tempVector1.vector.pData[VECT_Y] = 0;
 	tempVector1.vector.pData[VECT_Z] = 0;
-	ahrs_vect_cross_product(&tempVector1, &tempVector, &tempVector2);
+	ahrs_vect_cross_product(&tempVector, &tempVector1, &tempVector2);
 	// Transform to plane coordinates
 	// Create matrix transpose
 	//ahrs_matrix_transponse(&(ahrs_data.rotationMatrix), &tempMatrix);
 	// Move vector to plane coordinate system
 	ahrs_mult_vector_matrix_transpose(&(ahrs_data.rotationMatrix), &tempVector2, &(ahrs_data.YawCorrection));
-
+*/
 	ahrs_data.Wrp = ahrs_get_vector_norm(&(ahrs_data.RollPitchCorrection)) * 10;
 	if(ahrs_data.Wrp < 0)
 	{
@@ -422,16 +463,16 @@ ErrorStatus ahrs_updateQuaternion(void)
 	{
 		ahrs_data.Wy = -ahrs_data.Wy;
 	}
-	if(ahrs_data.Wy > 0.5)
+	if(ahrs_data.Wy > 0.2)
 	{
-		ahrs_data.Wy = 0.5;
+		ahrs_data.Wy = 0.2;
 	}
 
 
 	// Add correction to rollPitchCorrection vector
-	ahrs_data.totalCorrectionError.vector.pData[VECT_X] = -ahrs_data.RollPitchCorrection.vector.pData[VECT_X];// * ahrs_data.Wrp + ahrs_data.YawCorrection.vector.pData[VECT_X] * ahrs_data.Wy;
-	ahrs_data.totalCorrectionError.vector.pData[VECT_Y] = -ahrs_data.RollPitchCorrection.vector.pData[VECT_Y];// * ahrs_data.Wrp + ahrs_data.YawCorrection.vector.pData[VECT_Y] * ahrs_data.Wy;
-	ahrs_data.totalCorrectionError.vector.pData[VECT_Z] = -ahrs_data.RollPitchCorrection.vector.pData[VECT_Z];// * ahrs_data.Wrp + ahrs_data.YawCorrection.vector.pData[VECT_Z] * ahrs_data.Wy;
+	ahrs_data.totalCorrectionError.vector.pData[VECT_X] = ahrs_data.RollPitchCorrection.vector.pData[VECT_X];// * ahrs_data.Wrp + ahrs_data.YawCorrection.vector.pData[VECT_X] * ahrs_data.Wy;
+	ahrs_data.totalCorrectionError.vector.pData[VECT_Y] = ahrs_data.RollPitchCorrection.vector.pData[VECT_Y];// * ahrs_data.Wrp + ahrs_data.YawCorrection.vector.pData[VECT_Y] * ahrs_data.Wy;
+	ahrs_data.totalCorrectionError.vector.pData[VECT_Z] = ahrs_data.RollPitchCorrection.vector.pData[VECT_Z];// * ahrs_data.Wrp + ahrs_data.YawCorrection.vector.pData[VECT_Z] * ahrs_data.Wy;
 
 	// Update PI error regulator
 	ahrs_updateVectorPID(&(ahrs_data.PIData), &(ahrs_data.totalCorrectionError), ahrs_data.GyroVector.fDeltaTime);
