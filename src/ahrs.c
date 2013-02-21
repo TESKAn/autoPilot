@@ -400,8 +400,10 @@ ErrorStatus ahrs_updateQuaternion(void)
 	// Calculate roll pitch error
 	ahrs_vect_cross_product(&tempVector, &(ahrs_data.GravityVector), &(ahrs_data.RollPitchCorrection));
 
+
+
 	// Calculate mag in earth plane
-	ahrs_mult_vector_matrix(&(ahrs_data.rotationMatrix), &(ahrs_data.MagVector), &tempVector);
+	ahrs_mult_vector_matrix_transpose(&(ahrs_data.rotationMatrix), &(ahrs_data.MagVector), &tempVector);
 
 	// Z = 0
 	tempVector.vector.pData[VECT_Z] = 0;
