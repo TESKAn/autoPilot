@@ -65,6 +65,7 @@ int main(void)
 
 	math_vector3fDataInit(&gravityVector, ROW);
 
+	AHRS_FIRSTRUN = 1;
 
 	//SD_CardInfo cardinfo;
 	int i = 0;

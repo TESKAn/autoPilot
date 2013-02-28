@@ -67,6 +67,7 @@
 #define SD_WRITING_BUF1			flag0.bits.BIT22
 #define SD_WRITING_BUF2			flag0.bits.BIT23
 #define SD_BUF_IN_USE			flag0.bits.BIT24	// 0 - writing buf1, 1 - writing buf2
+#define AHRS_FIRSTRUN			flag0.bits.BIT25	// Mark to run once
 
 
 // DMA macros

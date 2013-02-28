@@ -72,6 +72,7 @@
   @{
  */
 
+
 /*  CMSIS CM4 definitions */
 #define __CM4_CMSIS_VERSION_MAIN  (0x02)                                                       /*!< [31:16] CMSIS HAL main version */
 #define __CM4_CMSIS_VERSION_SUB   (0x10)                                                       /*!< [15:0]  CMSIS HAL sub version  */
@@ -79,6 +80,7 @@
 
 #define __CORTEX_M                (0x04)                                                       /*!< Cortex core                    */
 
+#define __FPU_PRESENT             1 /*!< FPU present                                  */
 
 #if   defined ( __CC_ARM )
   #define __ASM            __asm                                      /*!< asm keyword for ARM Compiler          */
