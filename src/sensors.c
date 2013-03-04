@@ -29,7 +29,7 @@ uint8_t gyroOffsetSampleCount = 0;
 uint8_t accOffsetSampleCount = 0;
 uint8_t magOffsetSampleCount = 0;
 
-#define I2C_TIMEOUT			250000
+#define I2C_TIMEOUT			25000
 
 // Timeout function
 void sensorTimer(void)
@@ -239,30 +239,24 @@ void copySensorData(void)
 	// Starts with reg 59, accel X high
 	ACC_X = (I2C2_DMABufRX[0] << 8) & 0xff00;
 	ACC_X = ACC_X | (I2C2_DMABufRX[1] & 0x00ff);
-	// Remove offset
-	//ACC_X = ACC_X - ahrs_data.AccOffsetVector.vector.pData[VECT_X];
+
 	ACC_Y = (I2C2_DMABufRX[2] << 8) & 0xff00;
 	ACC_Y = ACC_Y | (I2C2_DMABufRX[3] & 0x00ff);
-	// Remove offset
-	//ACC_Y = ACC_Y - ahrs_data.AccOffsetVector.vector.pData[VECT_Y];
+
 	ACC_Z = (I2C2_DMABufRX[4] << 8) & 0xff00;
 	ACC_Z = ACC_Z | (I2C2_DMABufRX[5] & 0x00ff);
-	// Remove offset
-	//ACC_Z = ACC_Z - ahrs_data.AccOffsetVector.vector.pData[VECT_Z];
+
 	// Reg 65,66(6,7) is IC temperature
 	// Reg 67, 72 (8,13)is gyro
 	GYRO_X = (I2C2_DMABufRX[8] << 8) & 0xff00;
 	GYRO_X = GYRO_X | (I2C2_DMABufRX[9] & 0x00ff);
-	// Remove offset
-	//GYRO_X = GYRO_X - ahrs_data.GyroOffsetVector.vector.pData[VECT_X];
+
 	GYRO_Y = (I2C2_DMABufRX[10] << 8) & 0xff00;
 	GYRO_Y = GYRO_Y | (I2C2_DMABufRX[11] & 0x00ff);
-	// Remove offset
-	//GYRO_Y = GYRO_Y - ahrs_data.GyroOffsetVector.vector.pData[VECT_Y];
+
 	GYRO_Z = (I2C2_DMABufRX[12] << 8) & 0xff00;
 	GYRO_Z = GYRO_Z | (I2C2_DMABufRX[13] & 0x00ff);
-	// Remove offset
-	//GYRO_Z = GYRO_Z - ahrs_data.GyroOffsetVector.vector.pData[VECT_Z];
+
 	// Reg 73,78 (14,19) is mag data
 	MAG_X = (I2C2_DMABufRX[14] << 8) & 0xff00;
 	MAG_X = MAG_X | (I2C2_DMABufRX[15] & 0x00ff);
@@ -275,8 +269,8 @@ void copySensorData(void)
 	BARO = BARO | (I2C2_DMABufRX[21] & 0x00ff);
 	BARO_FRAC = I2C2_DMABufRX[22] >> 4;
 	// Update AHRS
-	ahrs_updateQuaternion();
-	//ahrs_updateRotationMatrix(&ahrs_data);
+	//ahrs_updateQuaternion();
+	ahrs_updateRotationMatrix(&ahrs_data);
 	// Store angles
 	storeAHRSAngles();
 

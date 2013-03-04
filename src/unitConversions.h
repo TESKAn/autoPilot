@@ -18,7 +18,7 @@
 #define DEFAULT_ROLLPITCHCORRECTIONSCALE	0.5f// Weight of roll pitch correction error
 #define DEFAULT_YAWCORRECTIONSCALE	0.5f		// Weight of yaw correction error
 // PID defaults
-#define DEFAULT_KP						0.05f					// Default Kp value
+#define DEFAULT_KP						5.0f					// Default Kp value
 #define DEFAULT_KI						0.002f					// Default Ki value
 #define DEFAULT_MAXERR					1.0f
 #define DEFAULT_MINERR					-1.0f
