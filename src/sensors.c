@@ -286,16 +286,19 @@ void copySensorData(void)
 	{
 		nullAcc(&ahrs_data);
 	}
-	// Check if we are sending sensor data back at full speed
-	if(EXTSENS_FS_REPORT)
-	{
-     	if(USB_OTG_dev.dev.device_status == USB_OTG_CONFIGURED)
-     	{
-     		// Send data over USB
-     		REPORT_AHRS;
-     	}
-	}
-
+	if(USB_OTG_dev.dev.device_status == USB_OTG_CONFIGURED)
+    {
+		// Check which data are we sending
+		if(fastDataSelect == 1)
+		{
+			// Send data over USB
+			REPORT_AHRS_DCM_MATRIX_MAG_VECTOR;
+		}
+		if(fastDataSelect == 2)
+		{
+			REPORT_AHRS_ACC_GYRO_MAG_TOTALCORRECTION;
+		}
+    }
 }
 
 ErrorStatus MPU6000_Enable(FunctionalState newState)

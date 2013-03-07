@@ -163,4 +163,6 @@ extern volatile C_Float floatToUint32;
 
 extern vector3fData gravityVector;
 
+extern volatile uint16_t fastDataSelect;
+
 #endif /* VAR_H_ */

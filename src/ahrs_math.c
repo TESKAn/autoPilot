@@ -348,9 +348,16 @@ arm_status ahrs_normalize_vector(vector3fData * vectorA)
 	xx = vectorA->vector.pData[VECT_X] * vectorA->vector.pData[VECT_X];
 	yy = vectorA->vector.pData[VECT_Y] * vectorA->vector.pData[VECT_Y];
 	zz = vectorA->vector.pData[VECT_Z] * vectorA->vector.pData[VECT_Z];
-
-	scale = 1/sqrtf(xx + yy + zz);
-
+	scale = xx + yy + zz;
+	if(scale > 0)
+	{
+		scale = 1/sqrtf(scale);
+	}
+	else
+	{
+		scale = 0;
+		status = ARM_MATH_SINGULAR;
+	}
 	vectorA->vector.pData[VECT_X] = vectorA->vector.pData[VECT_X] * scale;
 	vectorA->vector.pData[VECT_Y] = vectorA->vector.pData[VECT_Y] * scale;
 	vectorA->vector.pData[VECT_Z] = vectorA->vector.pData[VECT_Z] * scale;
@@ -375,5 +382,36 @@ arm_status ahrs_copy_vector(vector3fData * vectorA, vector3fData * vectorB)
 	vectorB->vector.pData[VECT_Y] = vectorA->vector.pData[VECT_Y];
 	vectorB->vector.pData[VECT_Z] = vectorA->vector.pData[VECT_Z];
 	vectorB->fDataTime = vectorA->fDataTime;
+	return ARM_MATH_SUCCESS;
+}
+
+// Calculate vector magnitude
+float32_t ahrs_vector_magnitude(vector3fData * vectorA)
+{
+	float32_t result = 0;
+	result = vectorA->vector.pData[VECT_X] * vectorA->vector.pData[VECT_X];
+	result = result + vectorA->vector.pData[VECT_Y] * vectorA->vector.pData[VECT_Y];
+	result = result + vectorA->vector.pData[VECT_Z] * vectorA->vector.pData[VECT_Z];
+	result = sqrtf(result);
+	return result;
+}
+
+// Calculate fast inverse square root of a number
+float32_t ahrs_fast_inverse_root(float32_t num)
+{
+	float32_t result = 0;
+	union { float32_t f; uint32_t u; } y = {num};
+	y.u = (uint32_t)(0x5F1FFF77) - (y.u >> 1);
+	result = 0.703974056f * y.f * (2.38919526f - (num * y.f * y.f));
+	return result;
+}
+
+// Add two vectors, A + B
+arm_status ahrs_vector_add(vector3fData * vectorA, vector3fData * vectorB, vector3fData * vectorC)
+{
+	vectorC->vector.pData[VECT_X] = vectorA->vector.pData[VECT_X]  + vectorB->vector.pData[VECT_X];
+	vectorC->vector.pData[VECT_Y] = vectorA->vector.pData[VECT_Y]  + vectorB->vector.pData[VECT_Y];
+	vectorC->vector.pData[VECT_Z] = vectorA->vector.pData[VECT_Z]  + vectorB->vector.pData[VECT_Z];
+	vectorC->fDataTime = getFTime();
 	return ARM_MATH_SUCCESS;
 }

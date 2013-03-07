@@ -533,12 +533,16 @@ static uint8_t  USBD_HID_DataOut (void *pdev, uint8_t epnum)
 				}
 				case 5:
 				{
-					// Write to SD card
+					// Write fast data buffer
+					USB_RecData_Cnt = (Buffer[2] << 8) | Buffer[3];
+					fastDataSelect = fastDataSelect | USB_RecData_Cnt;
 					break;
 				}
 				case 6:
 				{
-					// Read from SD card
+					// Clear fast data buffer
+					USB_RecData_Cnt = (Buffer[2] << 8) | Buffer[3];
+					fastDataSelect = fastDataSelect & ~USB_RecData_Cnt;
 					break;
 				}
 			  default:

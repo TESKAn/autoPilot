@@ -102,6 +102,10 @@ typedef struct
 	vector3fData MagOffsetVector;
 	// Magnetometer scale vector
 	vector3fData MagScaleVector;
+	// Previous mag measurement
+	vector3fData MagPreviousResult;
+	// Vector offset gain
+	float32_t MagOffsetCalcGain;
 	// Magnetometer rotation and scale matrix
 	matrix3by3 magRotationMatrix;
 	// Pitch, roll, yaw angles in rad
@@ -190,6 +194,9 @@ arm_status ahrs_normalize_vector(vector3fData * vectorA);
 float32_t ahrs_get_vector_norm(vector3fData * vector);
 arm_status ahrs_copy_vector(vector3fData * vectorA, vector3fData * vectorB);
 
+float32_t ahrs_vector_magnitude(vector3fData * vectorA);
+float32_t ahrs_fast_inverse_root(float32_t num);
+arm_status ahrs_vector_add(vector3fData * vectorA, vector3fData * vectorB, vector3fData * vectorC);
 
 #ifdef __cplusplus
 }

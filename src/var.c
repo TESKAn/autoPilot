@@ -110,3 +110,4 @@ volatile C_Float floatToUint32;
 
 vector3fData gravityVector;
 
+volatile uint16_t fastDataSelect = 0;

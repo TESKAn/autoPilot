@@ -39,6 +39,8 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 	math_vector3fDataInit(&(ahrsStructure->MagVector), ROW);
 	math_vector3fDataInit(&(ahrsStructure->MagOffsetVector), ROW);
 	math_vector3fDataInit(&(ahrsStructure->MagScaleVector), ROW);
+	math_vector3fDataInit(&(ahrsStructure->MagPreviousResult), ROW);
+	ahrsStructure->MagOffsetCalcGain = 0.1f;
 	math_vector3fDataInit(&(ahrsStructure->RollPitchYaw), ROW);
 	math_matrix3by3Init(&(ahrsStructure->rotationMatrix), MATH_YES);
 	math_matrix3by3Init(&(ahrsStructure->magRotationMatrix), MATH_YES);
@@ -92,9 +94,14 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 	math_vector3fDataInit(&(ahrsStructure->magCorrectionError), ROW);
 	math_vector3fDataInit(&(ahrsStructure->totalCorrectionError), ROW);
 	// Store offsets for mag
+	/*
 	ahrsStructure->MagOffsetVector.vector.pData[VECT_X] = HARDIRON_DEFAULT_X;
 	ahrsStructure->MagOffsetVector.vector.pData[VECT_Y] = HARDIRON_DEFAULT_Y;
 	ahrsStructure->MagOffsetVector.vector.pData[VECT_Z] = HARDIRON_DEFAULT_Z;
+	*/
+	ahrsStructure->MagOffsetVector.vector.pData[VECT_X] = 0;
+	ahrsStructure->MagOffsetVector.vector.pData[VECT_Y] = 0;
+	ahrsStructure->MagOffsetVector.vector.pData[VECT_Z] = 0;
 	// Store transformation matrix for mag
 	ahrsStructure->magRotationMatrix.vector.pData[Rxx] = SOFTMAG_DEFAULT_RXX;
 	ahrsStructure->magRotationMatrix.vector.pData[Ryx] = SOFTMAG_DEFAULT_RYX;
@@ -144,26 +151,48 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 
 void ahrs_updateMagReading(void)
 {
+	float32_t magDifference = 0;
 	// Store previous vector
-	ahrs_copy_vector(&(ahrs_data.MagVector), &(ahrs_data.magp));
+	ahrs_copy_vector(&(ahrs_data.MagVector), &(ahrs_data.MagPreviousResult));
+	// Calculate fixed vector = current vector - offset
+	// Calculate new vector
+	updateScaledVector(&(ahrs_data.MagVector), MAG_X, MAG_Y, MAG_Z, ahrs_data.magRate);
+	// Normalize
+	//ahrs_normalize_vector(&(ahrs_data.MagVector));
+	// Remove offset
+	ahrs_vector_substract(&(ahrs_data.MagVector), &(ahrs_data.MagOffsetVector), &(ahrs_data.MagVector));
+	// Update offset
+	// Calculate difference
+	ahrs_vector_substract(&(ahrs_data.MagVector), &(ahrs_data.MagPreviousResult), &tempVector);
+	// Normalize difference
+	ahrs_normalize_vector(&tempVector);
+	// Calculate difference of magnitudes
+	magDifference = ahrs_vector_magnitude(&(ahrs_data.MagVector)) - ahrs_vector_magnitude(&(ahrs_data.MagPreviousResult));
+	// Multiply by gain
+	magDifference = magDifference * ahrs_data.MagOffsetCalcGain;
+	// Calculate offset correction
+	ahrs_mult_vector_scalar(&tempVector, magDifference);
+	// Add to offset
+	ahrs_vector_add(&tempVector, &(ahrs_data.MagOffsetVector), &(ahrs_data.MagOffsetVector));
+
+	// Turn to earth frame
+	ahrs_mult_vector_matrix(&(ahrs_data.rotationMatrix), &(ahrs_data.MagVector), &gravityVector);
+
+/*
 	// Store data to vector and remove offset
 	tempVector.vector.pData[VECT_X] = (float32_t)((int16_t)MAG_X);
-	tempVector.vector.pData[VECT_X] = -ahrs_data.MagOffsetVector.vector.pData[VECT_X] + tempVector.vector.pData[VECT_X];
+	tempVector.vector.pData[VECT_X] = tempVector.vector.pData[VECT_X] - ahrs_data.MagOffsetVector.vector.pData[VECT_X];
 
 	tempVector.vector.pData[VECT_Y] = (float32_t)((int16_t)MAG_Y);
-	tempVector.vector.pData[VECT_Y] = -ahrs_data.MagOffsetVector.vector.pData[VECT_Y] + tempVector.vector.pData[VECT_Y];
+	tempVector.vector.pData[VECT_Y] = tempVector.vector.pData[VECT_Y] - ahrs_data.MagOffsetVector.vector.pData[VECT_Y];
 
 	tempVector.vector.pData[VECT_Z] = (float32_t)((int16_t)MAG_Z);
-	tempVector.vector.pData[VECT_Z] = -ahrs_data.MagOffsetVector.vector.pData[VECT_Z] + tempVector.vector.pData[VECT_Z];
+	tempVector.vector.pData[VECT_Z] = tempVector.vector.pData[VECT_Z] - ahrs_data.MagOffsetVector.vector.pData[VECT_Z];
 	// Transform
 	ahrs_mult_vector_matrix(&(ahrs_data.magRotationMatrix), &tempVector, &(ahrs_data.MagVector));
-	// Scale
-	//ahrs_data.MagVector.vector.pData[VECT_X] = ahrs_data.MagVector.vector.pData[VECT_X] / SOFTMAG_SCALE;
-	//ahrs_data.MagVector.vector.pData[VECT_Y] = ahrs_data.MagVector.vector.pData[VECT_Y] / SOFTMAG_SCALE;
-	//ahrs_data.MagVector.vector.pData[VECT_Z] = ahrs_data.MagVector.vector.pData[VECT_Z] / SOFTMAG_SCALE;
-
 	// Normalize
 	ahrs_normalize_vector(&(ahrs_data.MagVector));
+	*/
 }
 
 void ahrs_update_altitude(void)
@@ -202,7 +231,7 @@ arm_status ahrs_updateRotationMatrix(AHRSData * data)
 	// Update vectors
 	updateScaledVector(&(ahrs_data.GyroVector), GYRO_X, GYRO_Y, GYRO_Z, ahrs_data.gyroRate * DEG_TO_RAD);
 	updateScaledVector(&(ahrs_data.AccVector), ACC_X, ACC_Y, ACC_Z, ahrs_data.accRate);
-	updateScaledVector(&(ahrs_data.MagVector), MAG_X, MAG_Y, MAG_Z, ahrs_data.magRate);
+	//updateScaledVector(&(ahrs_data.MagVector), MAG_X, MAG_Y, MAG_Z, ahrs_data.magRate);
 	// Update altitude reading
 	ahrs_update_altitude();
 	// Update mag reading
