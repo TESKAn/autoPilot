@@ -36,6 +36,7 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 	math_vector3fDataInit(&(ahrsStructure->GyroVector), ROW);
 	math_vector3qDataInit(&(ahrsStructure->GyroOffsetVector), ROW);
 	math_vector3fDataInit(&(ahrsStructure->GyroScaleVector), ROW);
+	math_vector3fDataInit(&(ahrsStructure->GyroValueAdjusted), ROW);
 	math_vector3fDataInit(&(ahrsStructure->MagVector), ROW);
 	math_vector3fDataInit(&(ahrsStructure->MagOffsetVector), ROW);
 	math_vector3fDataInit(&(ahrsStructure->MagScaleVector), ROW);
@@ -94,14 +95,16 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 	math_vector3fDataInit(&(ahrsStructure->magCorrectionError), ROW);
 	math_vector3fDataInit(&(ahrsStructure->totalCorrectionError), ROW);
 	// Store offsets for mag
-	/*
+
 	ahrsStructure->MagOffsetVector.vector.pData[VECT_X] = HARDIRON_DEFAULT_X;
 	ahrsStructure->MagOffsetVector.vector.pData[VECT_Y] = HARDIRON_DEFAULT_Y;
 	ahrsStructure->MagOffsetVector.vector.pData[VECT_Z] = HARDIRON_DEFAULT_Z;
-	*/
+
+	/*
 	ahrsStructure->MagOffsetVector.vector.pData[VECT_X] = 0;
 	ahrsStructure->MagOffsetVector.vector.pData[VECT_Y] = 0;
 	ahrsStructure->MagOffsetVector.vector.pData[VECT_Z] = 0;
+	*/
 	// Store transformation matrix for mag
 	ahrsStructure->magRotationMatrix.vector.pData[Rxx] = SOFTMAG_DEFAULT_RXX;
 	ahrsStructure->magRotationMatrix.vector.pData[Ryx] = SOFTMAG_DEFAULT_RYX;
@@ -147,10 +150,13 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 	ahrsStructure->PIData.minIz = DEFAULT_MINI;
 	ahrsStructure->PIData.rMax = DEFAULT_RMAX;
 	ahrsStructure->PIData.rMin = DEFAULT_RMIN;
+	ahrsStructure->sampleDiscardCount = DEFAULT_DISCARD_COUNT;
+
 }
 
 void ahrs_updateMagReading(void)
 {
+	/*
 	float32_t magDifference = 0;
 	// Store previous vector
 	ahrs_copy_vector(&(ahrs_data.MagVector), &(ahrs_data.MagPreviousResult));
@@ -168,17 +174,17 @@ void ahrs_updateMagReading(void)
 	ahrs_normalize_vector(&tempVector);
 	// Calculate difference of magnitudes
 	magDifference = ahrs_vector_magnitude(&(ahrs_data.MagVector)) - ahrs_vector_magnitude(&(ahrs_data.MagPreviousResult));
-	// Multiply by gain
-	magDifference = magDifference * ahrs_data.MagOffsetCalcGain;
-	// Calculate offset correction
-	ahrs_mult_vector_scalar(&tempVector, magDifference);
-	// Add to offset
-	ahrs_vector_add(&tempVector, &(ahrs_data.MagOffsetVector), &(ahrs_data.MagOffsetVector));
-
-	// Turn to earth frame
-	ahrs_mult_vector_matrix(&(ahrs_data.rotationMatrix), &(ahrs_data.MagVector), &gravityVector);
-
-/*
+	// Check difference magnitude, if below limit, do nothing
+	if(magDifference > 0.0005f)
+	{
+		// Multiply by gain
+		magDifference = magDifference * ahrs_data.MagOffsetCalcGain;
+		// Calculate offset correction
+		ahrs_mult_vector_scalar(&tempVector, magDifference);
+		// Add to offset
+		ahrs_vector_add(&tempVector, &(ahrs_data.MagOffsetVector), &(ahrs_data.MagOffsetVector));
+	}
+*/
 	// Store data to vector and remove offset
 	tempVector.vector.pData[VECT_X] = (float32_t)((int16_t)MAG_X);
 	tempVector.vector.pData[VECT_X] = tempVector.vector.pData[VECT_X] - ahrs_data.MagOffsetVector.vector.pData[VECT_X];
@@ -192,7 +198,9 @@ void ahrs_updateMagReading(void)
 	ahrs_mult_vector_matrix(&(ahrs_data.magRotationMatrix), &tempVector, &(ahrs_data.MagVector));
 	// Normalize
 	ahrs_normalize_vector(&(ahrs_data.MagVector));
-	*/
+
+	// Turn to earth frame
+	ahrs_mult_vector_matrix(&(ahrs_data.rotationMatrix), &(ahrs_data.MagVector), &magEarthVector);
 }
 
 void ahrs_update_altitude(void)
@@ -241,57 +249,68 @@ arm_status ahrs_updateRotationMatrix(AHRSData * data)
 	ahrs_data.AccVector.vector.pData[VECT_Y] = -ahrs_data.AccVector.vector.pData[VECT_Y];
 	ahrs_data.AccVector.vector.pData[VECT_Z] = -ahrs_data.AccVector.vector.pData[VECT_Z];
 
-
-	// Calculate gravity vector
-	ahrs_data.GravityVector.vector.pData[VECT_X] = ahrs_data.AccVector.vector.pData[VECT_X];
-	ahrs_data.GravityVector.vector.pData[VECT_Y] = ahrs_data.AccVector.vector.pData[VECT_Y];
-	ahrs_data.GravityVector.vector.pData[VECT_Z] = ahrs_data.AccVector.vector.pData[VECT_Z];
-	// Remove angular acceleration from acceleration result
-	// Angular acceleration = cross product of velocity and rotation rate
-
-	// Get plane reference gravity vector
-	tempVector.vector.pData[VECT_X] = ahrs_data.rotationMatrix.vector.pData[Rzx];
-	tempVector.vector.pData[VECT_Y] = ahrs_data.rotationMatrix.vector.pData[Rzy];
-	tempVector.vector.pData[VECT_Z] = ahrs_data.rotationMatrix.vector.pData[Rzz];
-
-
-	// Calculate roll pitch error
-	ahrs_vect_cross_product(&tempVector, &(ahrs_data.GravityVector), &(ahrs_data.RollPitchCorrection));
-	// Scale error
-	ahrs_mult_vector_scalar(&(ahrs_data.RollPitchCorrection), ahrs_data.RollPitchCorrectionScale);
-
-	// Add yaw error
-
-	ahrs_data.Wrp = ahrs_get_vector_norm(&(ahrs_data.RollPitchCorrection)) * 0.1;
-	if(ahrs_data.Wrp < 0)
+	errorUpdateInterval++;
+	if(errorUpdateInterval > 10)
 	{
-		ahrs_data.Wrp = -ahrs_data.Wrp;
+		errorUpdateInterval = 0;
+		// Update error once every second
+		// Calculate gravity vector
+		ahrs_data.GravityVector.vector.pData[VECT_X] = ahrs_data.AccVector.vector.pData[VECT_X];
+		ahrs_data.GravityVector.vector.pData[VECT_Y] = ahrs_data.AccVector.vector.pData[VECT_Y];
+		ahrs_data.GravityVector.vector.pData[VECT_Z] = ahrs_data.AccVector.vector.pData[VECT_Z];
+		// Remove angular acceleration from acceleration result
+		// Angular acceleration = cross product of velocity and rotation rate
+
+		// Normalize gravity
+		ahrs_normalize_vector(&(ahrs_data.GravityVector));
+
+		// Get plane reference gravity vector
+		tempVector.vector.pData[VECT_X] = ahrs_data.rotationMatrix.vector.pData[Rzx];
+		tempVector.vector.pData[VECT_Y] = ahrs_data.rotationMatrix.vector.pData[Rzy];
+		tempVector.vector.pData[VECT_Z] = ahrs_data.rotationMatrix.vector.pData[Rzz];
+
+		// Calculate roll pitch error
+		ahrs_vect_cross_product(&tempVector, &(ahrs_data.GravityVector), &(ahrs_data.RollPitchCorrection));
+		// Scale error
+		ahrs_mult_vector_scalar(&(ahrs_data.RollPitchCorrection), ahrs_data.RollPitchCorrectionScale);
+
+		// Add yaw error
+
+		ahrs_data.Wrp = ahrs_get_vector_norm(&(ahrs_data.RollPitchCorrection)) * 0.1;
+		if(ahrs_data.Wrp < 0)
+		{
+			ahrs_data.Wrp = -ahrs_data.Wrp;
+		}
+
+		if(ahrs_data.Wrp > 0.1)
+		{
+			ahrs_data.Wrp = 0.1;
+		}
+
+		ahrs_data.Wy = ahrs_get_vector_norm(&(ahrs_data.YawCorrection)) * 0.1;
+		if(ahrs_data.Wy < 0)
+		{
+			ahrs_data.Wy = -ahrs_data.Wy;
+		}
+		if(ahrs_data.Wy > 0.1)
+		{
+			ahrs_data.Wy = 0.1;
+		}
+
+		// Add correction to rollPitchCorrection vector
+		ahrs_data.totalCorrectionError.vector.pData[VECT_X] = ahrs_data.RollPitchCorrection.vector.pData[VECT_X];// * ahrs_data.Wrp + ahrs_data.YawCorrection.vector.pData[VECT_X] * ahrs_data.Wy;
+		ahrs_data.totalCorrectionError.vector.pData[VECT_Y] = ahrs_data.RollPitchCorrection.vector.pData[VECT_Y];// * ahrs_data.Wrp + ahrs_data.YawCorrection.vector.pData[VECT_Y] * ahrs_data.Wy;
+		ahrs_data.totalCorrectionError.vector.pData[VECT_Z] = ahrs_data.RollPitchCorrection.vector.pData[VECT_Z];// * ahrs_data.Wrp + ahrs_data.YawCorrection.vector.pData[VECT_Z] * ahrs_data.Wy;
+
+		// Check error change
+		dT = ahrs_vector_magnitude(&(ahrs_data.totalCorrectionError));
+		if(dT > 0.0001)
+		{
+			// Only update PID if error is > than threshold
+			// Update PI error regulator
+			ahrs_updateVectorPID(&(ahrs_data.PIData), &(ahrs_data.totalCorrectionError), ahrs_data.GyroVector.fDeltaTime);
+		}
 	}
-
-	if(ahrs_data.Wrp > 0.1)
-	{
-		ahrs_data.Wrp = 0.1;
-	}
-
-	ahrs_data.Wy = ahrs_get_vector_norm(&(ahrs_data.YawCorrection)) * 0.1;
-	if(ahrs_data.Wy < 0)
-	{
-		ahrs_data.Wy = -ahrs_data.Wy;
-	}
-	if(ahrs_data.Wy > 0.1)
-	{
-		ahrs_data.Wy = 0.1;
-	}
-
-
-	// Add correction to rollPitchCorrection vector
-	ahrs_data.totalCorrectionError.vector.pData[VECT_X] = ahrs_data.RollPitchCorrection.vector.pData[VECT_X];// * ahrs_data.Wrp + ahrs_data.YawCorrection.vector.pData[VECT_X] * ahrs_data.Wy;
-	ahrs_data.totalCorrectionError.vector.pData[VECT_Y] = ahrs_data.RollPitchCorrection.vector.pData[VECT_Y];// * ahrs_data.Wrp + ahrs_data.YawCorrection.vector.pData[VECT_Y] * ahrs_data.Wy;
-	ahrs_data.totalCorrectionError.vector.pData[VECT_Z] = ahrs_data.RollPitchCorrection.vector.pData[VECT_Z];// * ahrs_data.Wrp + ahrs_data.YawCorrection.vector.pData[VECT_Z] * ahrs_data.Wy;
-
-	// Update PI error regulator
-	ahrs_updateVectorPID(&(ahrs_data.PIData), &(ahrs_data.totalCorrectionError), ahrs_data.GyroVector.fDeltaTime);
-
 
 	// Calculate change in time
 	dT = (float)(data->GyroVector.deltaTime) * SYSTIME_TOSECONDS;
@@ -300,6 +319,44 @@ arm_status ahrs_updateRotationMatrix(AHRSData * data)
 	dWx = data->GyroVector.vector.pData[VECT_X];// * dT;
 	dWy = data->GyroVector.vector.pData[VECT_Y];// * dT;
 	dWz = data->GyroVector.vector.pData[VECT_Z];// * dT;
+
+	// If run for first time
+	if(AHRS_FIRSTRUN_PID)
+	{
+		// Update PID I term with initial
+		ahrs_data.PIData.Ix = dWx;
+		ahrs_data.PIData.Iy = dWy;
+		ahrs_data.PIData.Iz = dWz;
+
+		ahrs_data.PIData.Rx = dWx;
+		ahrs_data.PIData.Ry = dWy;
+		ahrs_data.PIData.Rz = dWz;
+
+		AHRS_FIRSTRUN_PID = 0;
+	}
+
+	if(AHRS_FIRSTRUN_MATRIX)
+	{
+		// Update rotation matrix for initial state
+		// Generate update matrix
+		ahrs_generate_rotationUpdateMatrix(ahrs_data.totalCorrectionError.vector.pData[VECT_X], ahrs_data.totalCorrectionError.vector.pData[VECT_Y], ahrs_data.totalCorrectionError.vector.pData[VECT_Z], &tempMatrix);
+		// Update main rot matrix
+		status = ahrs_mult_matrixes(&(ahrs_data.rotationMatrix), &tempMatrix, &holdMatrix);
+		// Copy new matrix
+		if(status == ARM_MATH_SUCCESS)
+		{
+			ahrs_data.rotationMatrix.dataTime = systemTime;
+			for(i=0; i < 9; i++)
+			{
+				ahrs_data.rotationMatrix.vector.pData[i] = holdMatrix.vector.pData[i];
+			}
+			// Normalize and orthogonalize matrix
+			ahrs_normalizeOrthogonalizeMatrix(&(ahrs_data.rotationMatrix));
+		}
+
+		AHRS_FIRSTRUN_MATRIX = 0;
+	}
+
 	// Remove drift error
 	dWx = dWx - data->PIData.Rx;
 	dWy = dWy - data->PIData.Ry;
@@ -309,30 +366,46 @@ arm_status ahrs_updateRotationMatrix(AHRSData * data)
 	dWx = dWx * dT;
 	dWy = dWy * dT;
 	dWz = dWz * dT;
-	// Generate update matrix
-	ahrs_generate_rotationUpdateMatrix(dWx, dWy, dWz, &tempMatrix);
-	// Update main rot matrix
-	status = ahrs_mult_matrixes(&(data->rotationMatrix), &tempMatrix, &holdMatrix);
-	// Copy new matrix
-	if(status == ARM_MATH_SUCCESS)
+
+
+	ahrs_data.GyroValueAdjusted.vector.pData[VECT_X] = dWx;
+	ahrs_data.GyroValueAdjusted.vector.pData[VECT_Y] = dWy;
+	ahrs_data.GyroValueAdjusted.vector.pData[VECT_Z] = dWz;
+
+	// Check rotation magnitude
+	dT = ahrs_vector_magnitude(&(ahrs_data.GyroValueAdjusted));
+	// If rotation is larger than error, update matrix
+	if(dT > 0.0001)
 	{
-		data->rotationMatrix.dataTime = systemTime;
-		for(i=0; i < 9; i++)
+		// Generate update matrix
+		ahrs_generate_rotationUpdateMatrix(dWx, dWy, dWz, &tempMatrix);
+		// Update main rot matrix
+		//status = ahrs_mult_matrixes(&(ahrs_data.rotationMatrix), &tempMatrix, &holdMatrix);
+		status = ahrs_mult_matrixes(&tempMatrix, &(ahrs_data.rotationMatrix), &holdMatrix);
+		// Copy new matrix
+		if(status == ARM_MATH_SUCCESS)
 		{
-			data->rotationMatrix.vector.pData[i] = holdMatrix.vector.pData[i];
+			data->rotationMatrix.dataTime = systemTime;
+			for(i=0; i < 9; i++)
+			{
+				data->rotationMatrix.vector.pData[i] = holdMatrix.vector.pData[i];
+			}
+			// Normalize and orthogonalize matrix
+			ahrs_normalizeOrthogonalizeMatrix(&(data->rotationMatrix));
+
+			// Transform mag to earth frame
+			ahrs_mult_vector_matrix(&(ahrs_data.rotationMatrix), &(ahrs_data.MagVector), &(gravityVector));
+
+			return SUCCESS;
 		}
-		// Normalize and orthogonalize matrix
-		ahrs_normalizeOrthogonalizeMatrix(&(data->rotationMatrix));
-
-		// Transform mag to earth frame
-		ahrs_mult_vector_matrix(&(ahrs_data.rotationMatrix), &(ahrs_data.MagVector), &(gravityVector));
-
-
-		return SUCCESS;
+		else
+		{
+			return ERROR;
+		}
 	}
 	else
 	{
-		return ERROR;
+		return SUCCESS;
 	}
 }
 
@@ -380,7 +453,7 @@ ErrorStatus ahrs_updateQuaternion(void)
 	dWz = ahrs_data.GyroVector.vector.pData[VECT_Z];// * dT;
 
 	// If run for first time
-	if(AHRS_FIRSTRUN)
+	if(AHRS_FIRSTRUN_PID)
 	{
 		// Update PID I term with initial
 		ahrs_data.PIData.Ix = dWx;
@@ -391,7 +464,7 @@ ErrorStatus ahrs_updateQuaternion(void)
 		ahrs_data.PIData.Ry = dWy;
 		ahrs_data.PIData.Rz = dWz;
 
-		AHRS_FIRSTRUN = 0;
+		AHRS_FIRSTRUN_PID = 0;
 	}
 
 	// Remove drift error
@@ -647,50 +720,63 @@ void ahrs_normalizeOrthogonalizeMatrix(matrix3by3 * rotMatrix)
 	error = error + rotMatrix->vector.pData[Rxz] * rotMatrix->vector.pData[Ryz];
 	// Add half error to X, half to Y
 	error = error / 2;
-	// Add to X
-	rotMatrix->vector.pData[Rxx] = rotMatrix->vector.pData[Rxx] - error * rotMatrix->vector.pData[Ryx];
-	rotMatrix->vector.pData[Rxy] = rotMatrix->vector.pData[Rxy] - error * rotMatrix->vector.pData[Ryy];
-	rotMatrix->vector.pData[Rxz] = rotMatrix->vector.pData[Rxz] - error * rotMatrix->vector.pData[Ryz];
-	// Add to Y
-	rotMatrix->vector.pData[Ryx] = rotMatrix->vector.pData[Ryx] - error * rotMatrix->vector.pData[Rxx];
-	rotMatrix->vector.pData[Ryy] = rotMatrix->vector.pData[Ryy] - error * rotMatrix->vector.pData[Rxy];
-	rotMatrix->vector.pData[Ryz] = rotMatrix->vector.pData[Ryz] - error * rotMatrix->vector.pData[Rxz];
-	// Normalize matrix X and Y
-	// Calculate scalar X.X
-	error = (rotMatrix->vector.pData[Rxx] * rotMatrix->vector.pData[Rxx])+(rotMatrix->vector.pData[Rxy] * rotMatrix->vector.pData[Rxy])+(rotMatrix->vector.pData[Rxz] * rotMatrix->vector.pData[Rxz]);
-	// Calculate 3 - scalar
-	error = 3 - error;
-	// Calculate one half
-	error = error / 2;
-	// Multiply with X
-	rotMatrix->vector.pData[Rxx] = rotMatrix->vector.pData[Rxx] * error;
-	rotMatrix->vector.pData[Rxy] = rotMatrix->vector.pData[Rxy] * error;
-	rotMatrix->vector.pData[Rxz] = rotMatrix->vector.pData[Rxz] * error;
-	// Calculate scalar Y.Y
-	error = (rotMatrix->vector.pData[Ryx] * rotMatrix->vector.pData[Ryx])+(rotMatrix->vector.pData[Ryy] * rotMatrix->vector.pData[Ryy])+(rotMatrix->vector.pData[Ryz] * rotMatrix->vector.pData[Ryz]);
-	// Calculate 3 - scalar
-	error = 3 - error;
-	// Calculate one half
-	error = error / 2;
-	// Multiply with Y
-	rotMatrix->vector.pData[Ryx] = rotMatrix->vector.pData[Ryx] * error;
-	rotMatrix->vector.pData[Ryy] = rotMatrix->vector.pData[Ryy] * error;
-	rotMatrix->vector.pData[Ryz] = rotMatrix->vector.pData[Ryz] * error;
-	// Calculate Z as cross product of X and Y
-	rotMatrix->vector.pData[Rzx] = (rotMatrix->vector.pData[Rxy]*rotMatrix->vector.pData[Ryz]) - (rotMatrix->vector.pData[Rxz]*rotMatrix->vector.pData[Ryy]);
-	rotMatrix->vector.pData[Rzy] = (rotMatrix->vector.pData[Rxz]*rotMatrix->vector.pData[Ryx]) - (rotMatrix->vector.pData[Rxx]*rotMatrix->vector.pData[Ryz]);
-	rotMatrix->vector.pData[Rzz] = (rotMatrix->vector.pData[Rxx]*rotMatrix->vector.pData[Ryy]) - (rotMatrix->vector.pData[Rxy]*rotMatrix->vector.pData[Ryx]);
-	// Normalize matrix Z
-	// Calculate scalar Z.Z
-	error = (rotMatrix->vector.pData[Rzx] * rotMatrix->vector.pData[Rzx])+(rotMatrix->vector.pData[Rzy] * rotMatrix->vector.pData[Rzy])+(rotMatrix->vector.pData[Rzz] * rotMatrix->vector.pData[Rzz]);
-	// Calculate 3 - scalar
-	error = 3 - error;
-	// Calculate one half
-	error = error / 2;
-	// Multiply with Z
-	rotMatrix->vector.pData[Rzx] = rotMatrix->vector.pData[Rzx] * error;
-	rotMatrix->vector.pData[Rzy] = rotMatrix->vector.pData[Rzy] * error;
-	rotMatrix->vector.pData[Rzz] = rotMatrix->vector.pData[Rzz] * error;
+	// Only add if error is larger than 0.0001
+	//if(error > 0.0001f)
+	{
+		// Add to X
+		rotMatrix->vector.pData[Rxx] = rotMatrix->vector.pData[Rxx] - error * rotMatrix->vector.pData[Ryx];
+		rotMatrix->vector.pData[Rxy] = rotMatrix->vector.pData[Rxy] - error * rotMatrix->vector.pData[Ryy];
+		rotMatrix->vector.pData[Rxz] = rotMatrix->vector.pData[Rxz] - error * rotMatrix->vector.pData[Ryz];
+		// Add to Y
+		rotMatrix->vector.pData[Ryx] = rotMatrix->vector.pData[Ryx] - error * rotMatrix->vector.pData[Rxx];
+		rotMatrix->vector.pData[Ryy] = rotMatrix->vector.pData[Ryy] - error * rotMatrix->vector.pData[Rxy];
+		rotMatrix->vector.pData[Ryz] = rotMatrix->vector.pData[Ryz] - error * rotMatrix->vector.pData[Rxz];
+		// Normalize matrix X and Y
+		// Calculate scalar X.X
+		error = (rotMatrix->vector.pData[Rxx] * rotMatrix->vector.pData[Rxx])+(rotMatrix->vector.pData[Rxy] * rotMatrix->vector.pData[Rxy])+(rotMatrix->vector.pData[Rxz] * rotMatrix->vector.pData[Rxz]);
+		// Calculate 3 - scalar
+		error = 3 - error;
+		// Calculate one half
+		error = error / 2;
+		//if(error > 0.0001f)
+		{
+			// Multiply with X
+			rotMatrix->vector.pData[Rxx] = rotMatrix->vector.pData[Rxx] * error;
+			rotMatrix->vector.pData[Rxy] = rotMatrix->vector.pData[Rxy] * error;
+			rotMatrix->vector.pData[Rxz] = rotMatrix->vector.pData[Rxz] * error;
+		}
+		// Calculate scalar Y.Y
+		error = (rotMatrix->vector.pData[Ryx] * rotMatrix->vector.pData[Ryx])+(rotMatrix->vector.pData[Ryy] * rotMatrix->vector.pData[Ryy])+(rotMatrix->vector.pData[Ryz] * rotMatrix->vector.pData[Ryz]);
+		// Calculate 3 - scalar
+		error = 3 - error;
+		// Calculate one half
+		error = error / 2;
+		//if(error > 0.0001f)
+		{
+			// Multiply with Y
+			rotMatrix->vector.pData[Ryx] = rotMatrix->vector.pData[Ryx] * error;
+			rotMatrix->vector.pData[Ryy] = rotMatrix->vector.pData[Ryy] * error;
+			rotMatrix->vector.pData[Ryz] = rotMatrix->vector.pData[Ryz] * error;
+		}
+		// Calculate Z as cross product of X and Y
+		rotMatrix->vector.pData[Rzx] = (rotMatrix->vector.pData[Rxy]*rotMatrix->vector.pData[Ryz]) - (rotMatrix->vector.pData[Rxz]*rotMatrix->vector.pData[Ryy]);
+		rotMatrix->vector.pData[Rzy] = (rotMatrix->vector.pData[Rxz]*rotMatrix->vector.pData[Ryx]) - (rotMatrix->vector.pData[Rxx]*rotMatrix->vector.pData[Ryz]);
+		rotMatrix->vector.pData[Rzz] = (rotMatrix->vector.pData[Rxx]*rotMatrix->vector.pData[Ryy]) - (rotMatrix->vector.pData[Rxy]*rotMatrix->vector.pData[Ryx]);
+		// Normalize matrix Z
+		// Calculate scalar Z.Z
+		error = (rotMatrix->vector.pData[Rzx] * rotMatrix->vector.pData[Rzx])+(rotMatrix->vector.pData[Rzy] * rotMatrix->vector.pData[Rzy])+(rotMatrix->vector.pData[Rzz] * rotMatrix->vector.pData[Rzz]);
+		// Calculate 3 - scalar
+		error = 3 - error;
+		// Calculate one half
+		error = error / 2;
+		//if(error > 0.0001f)
+		{
+			// Multiply with Z
+			rotMatrix->vector.pData[Rzx] = rotMatrix->vector.pData[Rzx] * error;
+			rotMatrix->vector.pData[Rzy] = rotMatrix->vector.pData[Rzy] * error;
+			rotMatrix->vector.pData[Rzz] = rotMatrix->vector.pData[Rzz] * error;
+		}
+	}
 }
 
 void ahrs_getAngles(matrix3by3 * rotMatrix, vector3f *vector)

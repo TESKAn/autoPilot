@@ -162,7 +162,10 @@ extern char FSBuffer[FATFS_BUFF_SIZE];	// Pointer to buffer for file write
 extern volatile C_Float floatToUint32;
 
 extern vector3fData gravityVector;
+extern vector3fData magEarthVector;
 
-extern volatile uint16_t fastDataSelect;
+extern volatile uint32_t fastDataSelect;
+
+extern volatile uint16_t errorUpdateInterval;
 
 #endif /* VAR_H_ */

@@ -18,14 +18,15 @@
 #define DEFAULT_ROLLPITCHCORRECTIONSCALE	0.5f// Weight of roll pitch correction error
 #define DEFAULT_YAWCORRECTIONSCALE	0.5f		// Weight of yaw correction error
 // PID defaults
-#define DEFAULT_KP						0.05f					// Default Kp value
-#define DEFAULT_KI						0.002f					// Default Ki value
+#define DEFAULT_KP						0.5f					// Default Kp value
+#define DEFAULT_KI						0.2f					// Default Ki value
 #define DEFAULT_MAXERR					1.0f
 #define DEFAULT_MINERR					-1.0f
 #define DEFAULT_MAXI					5.0f					// Maximum integral value - +2 rad/sec = 2 / 0.001 = 2000
 #define DEFAULT_MINI					-5.0f					// Minimum integral value
 #define DEFAULT_RMAX					5.0f
 #define DEFAULT_RMIN					-5.0f
+#define DEFAULT_DISCARD_COUNT			100						//how many samples to discard after boot
 #define DEFAULT_MAG_INCLINATION			0.0542506509161570f		// Deviation of magnetic field from true north in radians
 #define DEFAULT_MAG_DECLINATION			1,0902441579423135f		// Angle of magnetic field
 

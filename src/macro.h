@@ -67,7 +67,8 @@
 #define SD_WRITING_BUF1			flag0.bits.BIT22
 #define SD_WRITING_BUF2			flag0.bits.BIT23
 #define SD_BUF_IN_USE			flag0.bits.BIT24	// 0 - writing buf1, 1 - writing buf2
-#define AHRS_FIRSTRUN			flag0.bits.BIT25	// Mark to run once
+#define AHRS_FIRSTRUN_PID		flag0.bits.BIT25	// Mark to run once
+#define AHRS_FIRSTRUN_MATRIX	flag0.bits.BIT26
 
 
 // DMA macros
@@ -186,5 +187,27 @@
 #define DEBUG_PIN_ON		GPIO_WriteBit(GPIOE, GPIO_Pin_5, 1)
 #define DEBUG_PIN_OFF		GPIO_WriteBit(GPIOE, GPIO_Pin_5, 0)
 #define DEBUG_PIN_TOGGLE	GPIO_ToggleBits(GPIOE, GPIO_Pin_5)
+
+// Fast report macros
+#define REPORT_DCM				0x00001
+#define REPORT_ACC				0x00002
+#define REPORT_GYRO				0x00004
+#define REPORT_MAG				0x00008
+#define REPORT_TC				0x00010
+#define REPORT_RPC				0x00020
+#define REPORT_YAWC				0x00040
+#define REPORT_GRAVITY			0x00080
+#define REPORT_MAG_OFFSET		0x00100
+#define REPORT_PID_I			0x00200
+#define REPORT_PID_P			0x00400
+#define REPORT_PID_R			0x00800
+#define REPORT_DCM_XE_B			0x01000		// Earth X axis expressed in body coordinate system
+#define REPORT_DCM_YE_B			0x02000
+#define REPORT_DCM_ZE_B			0x04000
+#define REPORT_DCM_XB_E			0x08000		// X body axis expressed in earth coordinate system
+#define REPORT_DCM_YB_E			0x10000
+#define REPORT_DCM_ZB_E			0x20000
+#define REPORT_GYRO_ADJUSTED	0x40000
+#define REPORT_MAG_EARTH		0x80000
 
 #endif /* MACRO_H_ */

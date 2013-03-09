@@ -54,7 +54,7 @@ extern uint8_t I2C2_DMABufRX[DMA_BUF_COUNT];
 extern volatile int I2C2_DMABufTXCount;
 extern volatile int I2C2_DMABufRXCount;
 extern volatile int I2C2_PollTimer;
-extern volatile uint32_t sensorTimeCounter;
+extern volatile int sensorTimeCounter;
 extern volatile uint32_t sensoruTimeCounter;
 // Data taken at time
 extern uint32_t sensorAcquisitionTime;

@@ -475,6 +475,7 @@ static uint8_t  USBD_HID_DataIn (void  *pdev, uint8_t epnum)
 static uint8_t  USBD_HID_DataOut (void *pdev, uint8_t epnum)
 {
 	uint16_t USB_RecData_Cnt;
+	uint32_t fastDataTemp = 0;
 	int i = 0;
 	if (epnum == HID_OUT_EP)
 	{
@@ -534,15 +535,21 @@ static uint8_t  USBD_HID_DataOut (void *pdev, uint8_t epnum)
 				case 5:
 				{
 					// Write fast data buffer
-					USB_RecData_Cnt = (Buffer[2] << 8) | Buffer[3];
-					fastDataSelect = fastDataSelect | USB_RecData_Cnt;
+					fastDataTemp = (Buffer[2] << 24) | (Buffer[3] << 16) | (Buffer[4] << 8) | Buffer[5];
+					fastDataSelect = fastDataSelect | fastDataTemp;
 					break;
 				}
 				case 6:
 				{
 					// Clear fast data buffer
-					USB_RecData_Cnt = (Buffer[2] << 8) | Buffer[3];
-					fastDataSelect = fastDataSelect & ~USB_RecData_Cnt;
+					fastDataTemp = (Buffer[2] << 24) | (Buffer[3] << 16) | (Buffer[4] << 8) | Buffer[5];
+					fastDataSelect = fastDataSelect & ~fastDataTemp;
+					break;
+				}
+				case 7:
+				{
+					// Reset fast data send
+					fastDataSelect = 0;
 					break;
 				}
 			  default:

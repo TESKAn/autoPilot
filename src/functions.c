@@ -451,6 +451,14 @@ int storeNegativeNumber(uint16_t number, char* buffer, int offset)
 	return offset - charWritten;
 }
 
+ErrorStatus int16ToStr(int16_t value, char* text, char* str)
+{
+	int n = strlen(text);
+	strcpy (str, text);
+	n += sprintf (str+n, "%d", value);
+	return SUCCESS;
+}
+
 ErrorStatus float32ToStr(float32_t value, char* text, char* str)
 {
 	int n = strlen(text);
@@ -463,8 +471,8 @@ ErrorStatus float32ToStr(float32_t value, char* text, char* str)
 	strcat(str, ".");
 	n++;
 	value = value - (float)num;
-	multi = 10000000000;
-	for(i=0; i < 10; i++)
+	multi = 1000000;
+	for(i=0; i < 6; i++)
 	{
 		value = value * 10;
 		multi = multi / 10;
@@ -905,7 +913,7 @@ void extPeripheralInit(void)
 #ifdef DEBUG_USB
 	sendUSBMessage("GPS configured");
 #endif
-	Delayms(1000);
+	Delayms(100);
 	// Setup sensors
 #ifdef DEBUG_USB
 	sendUSBMessage("Configuring sensors");
@@ -916,10 +924,10 @@ void extPeripheralInit(void)
 	// set PS busy
 	PSBUSY = 1;
 	// Short delay
-	Delaynus(50000);
+	Delaynus(5000);
 	// Reset PS
 	PSReset();
-	Delayms(1000);
+	Delayms(100);
 	PSBUSY = 0;
 #ifdef DEBUG_USB
 	sendUSBMessage("Configure I2C sensors");
@@ -936,7 +944,7 @@ void extPeripheralInit(void)
 #ifdef DEBUG_USB
 	sendUSBMessage("Sensors configured");
 #endif
-	Delayms(1000);
+	Delayms(100);
 #ifdef DEBUG_USB
 	sendUSBMessage("Reset matrix");
 #endif

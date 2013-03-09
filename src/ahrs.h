@@ -96,6 +96,8 @@ typedef struct
 	vector3qData GyroOffsetVector;
 	// Gyroscope scale vector
 	vector3fData GyroScaleVector;
+	// Gyroscope value out after correction
+	vector3fData GyroValueAdjusted;
 	// Magnetometer vector
 	vector3fData MagVector;
 	// Magnetometer offset vector
@@ -140,6 +142,7 @@ typedef struct
 	float32_t Wrp;
 	float32_t Wy;
 	float32_t Heading;
+	int16_t sampleDiscardCount;
 
 }__attribute__((aligned(4),packed)) AHRSData;
 

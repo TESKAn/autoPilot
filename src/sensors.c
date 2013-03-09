@@ -18,7 +18,7 @@ uint8_t I2C2_DMABufRX[DMA_BUF_COUNT];
 volatile int I2C2_DMABufTXCount = 0;
 volatile int I2C2_DMABufRXCount = 0;
 volatile int I2C2_PollTimer = 0;
-volatile uint32_t sensorTimeCounter = 0;
+volatile int sensorTimeCounter = 0;
 volatile uint32_t sensoruTimeCounter = 0;
 // Data taken at time
 uint32_t sensorAcquisitionTime = 0;
@@ -29,7 +29,7 @@ uint8_t gyroOffsetSampleCount = 0;
 uint8_t accOffsetSampleCount = 0;
 uint8_t magOffsetSampleCount = 0;
 
-#define I2C_TIMEOUT			25000
+#define I2C_TIMEOUT			2500
 
 // Timeout function
 void sensorTimer(void)
@@ -40,9 +40,22 @@ void sensorTimer(void)
 		sensoruTimeCounter = 0;
 		// Function is called once every millisecond
 		sensorTimeCounter++;
-		if(sensorTimeCounter > 65534)
+
+		if(sensorTimeCounter > 2000)
 		{
-			sensorTimeCounter = 65534;
+			sensoruTimeCounter++;
+		}
+
+#ifdef DEBUG_USB
+		if(sensorTimeCounter > 2)
+		{
+			int16ToStr(sensorTimeCounter, "Timer=", StringBuffer);
+			sendUSBMessage(StringBuffer);
+		}
+#endif
+		if(sensorTimeCounter > 65000)
+		{
+			sensorTimeCounter = 65000;
 		}
 #ifdef DEBUG_USB
 		if(sensorTimeCounter > I2C_TIMEOUT)
@@ -51,16 +64,16 @@ void sensorTimer(void)
 		}
 #endif
 	}
-	Delaynus(2);
+	Delaynus(200);
 }
 
 void sensorInterruptTimer(void)
 {
 	// Function is called once every millisecond
 	sensorTimeCounter++;
-	if(sensorTimeCounter > 65534)
+	if(sensorTimeCounter > 65000)
 	{
-		sensorTimeCounter = 65534;
+		sensorTimeCounter = 65000;
 	}
 }
 
@@ -234,6 +247,7 @@ void sensorInit()
 void copySensorData(void)
 {
 
+	uint16_t i = 0;
 	//uint16_t uiTemp = 0;
 	// Data is in I2C2_DMABufRX
 	// Starts with reg 59, accel X high
@@ -268,9 +282,17 @@ void copySensorData(void)
 	BARO = (I2C2_DMABufRX[20] << 8) & 0xff00;
 	BARO = BARO | (I2C2_DMABufRX[21] & 0x00ff);
 	BARO_FRAC = I2C2_DMABufRX[22] >> 4;
-	// Update AHRS
-	//ahrs_updateQuaternion();
-	ahrs_updateRotationMatrix(&ahrs_data);
+
+	if(ahrs_data.sampleDiscardCount == 0)
+	{
+		// Update AHRS
+		//ahrs_updateQuaternion();
+		ahrs_updateRotationMatrix(&ahrs_data);
+	}
+	else
+	{
+		ahrs_data.sampleDiscardCount--;
+	}
 	// Store angles
 	storeAHRSAngles();
 
@@ -286,18 +308,706 @@ void copySensorData(void)
 	{
 		nullAcc(&ahrs_data);
 	}
-	if(USB_OTG_dev.dev.device_status == USB_OTG_CONFIGURED)
+	if((USB_OTG_dev.dev.device_status == USB_OTG_CONFIGURED)&&(fastDataSelect != 0))
     {
-		// Check which data are we sending
-		if(fastDataSelect == 1)
+		// Build two byte data index
+		Buffer[0] = 2;
+		Buffer[1] = 5;
+		Buffer[2] = (fastDataSelect >> 8) & 0x00ff;
+		Buffer[3] = fastDataSelect & 0x00ff;
+		i = 4;
+		if((fastDataSelect & REPORT_DCM) != 0)
 		{
-			// Send data over USB
-			REPORT_AHRS_DCM_MATRIX_MAG_VECTOR;
+			// Store DCM
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Rxx];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Ryx];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Rzx];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Rxy];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Ryy];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Rzy];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Rxz];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Ryz];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Rzz];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
 		}
-		if(fastDataSelect == 2)
+		if(((fastDataSelect & REPORT_ACC) != 0)&&(i < 61))
 		{
-			REPORT_AHRS_ACC_GYRO_MAG_TOTALCORRECTION;
+			// Store acceleration
+			floatToUint32.f = ahrs_data.AccVector.vector.pData[VECT_X];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.AccVector.vector.pData[VECT_Y];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.AccVector.vector.pData[VECT_Z];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
 		}
+		if(((fastDataSelect & REPORT_GYRO) != 0)&&(i < 61))
+		{
+			// Store gyro
+			floatToUint32.f = ahrs_data.GyroVector.vector.pData[VECT_X];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.GyroVector.vector.pData[VECT_Y];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.GyroVector.vector.pData[VECT_Z];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+		}
+		if(((fastDataSelect & REPORT_MAG) != 0)&&(i < 61))
+		{
+			// Store mag
+			floatToUint32.f = ahrs_data.MagVector.vector.pData[VECT_X];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.MagVector.vector.pData[VECT_Y];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.MagVector.vector.pData[VECT_Z];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+		}
+		if(((fastDataSelect & REPORT_TC) != 0)&&(i < 61))
+		{
+			// Store total correction
+			floatToUint32.f = ahrs_data.totalCorrectionError.vector.pData[VECT_X];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.totalCorrectionError.vector.pData[VECT_Y];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.totalCorrectionError.vector.pData[VECT_Z];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+		}
+		if(((fastDataSelect & REPORT_RPC) != 0)&&(i < 61))
+		{
+			// Store RP correction
+			floatToUint32.f = ahrs_data.RollPitchCorrection.vector.pData[VECT_X];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.RollPitchCorrection.vector.pData[VECT_Y];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.RollPitchCorrection.vector.pData[VECT_Z];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+		}
+		if(((fastDataSelect & REPORT_YAWC) != 0)&&(i < 61))
+		{
+			// Store yaw correction
+			floatToUint32.f = ahrs_data.YawCorrection.vector.pData[VECT_X];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.YawCorrection.vector.pData[VECT_Y];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.YawCorrection.vector.pData[VECT_Z];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+		}
+		if(((fastDataSelect & REPORT_GRAVITY) != 0)&&(i < 61))
+		{
+			// Store gravity
+			floatToUint32.f = ahrs_data.GravityVector.vector.pData[VECT_X];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.GravityVector.vector.pData[VECT_Y];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.GravityVector.vector.pData[VECT_Z];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+		}
+
+		if(((fastDataSelect & REPORT_MAG_OFFSET) != 0)&&(i < 61))
+		{
+			// Store mag offset
+			floatToUint32.f = ahrs_data.MagOffsetVector.vector.pData[VECT_X];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.MagOffsetVector.vector.pData[VECT_Y];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.MagOffsetVector.vector.pData[VECT_Z];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+		}
+
+		if(((fastDataSelect & REPORT_PID_I) != 0)&&(i < 61))
+		{
+			// Store mag offset
+			floatToUint32.f = ahrs_data.PIData.Ix;
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.PIData.Iy;
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.PIData.Iz;
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+		}
+
+		if(((fastDataSelect & REPORT_PID_P) != 0)&&(i < 61))
+		{
+			// Store mag offset
+			floatToUint32.f = ahrs_data.PIData.Px;
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.PIData.Py;
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.PIData.Pz;
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+		}
+
+		if(((fastDataSelect & REPORT_PID_R) != 0)&&(i < 61))
+		{
+			// Store mag offset
+			floatToUint32.f = ahrs_data.PIData.Rx;
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.PIData.Ry;
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.PIData.Rz;
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+		}
+
+		if(((fastDataSelect & REPORT_DCM_XE_B) != 0)&&(i < 61))
+		{
+			// Store mag offset
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Rxx];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Rxy];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Rxz];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+		}
+
+		if(((fastDataSelect & REPORT_DCM_YE_B) != 0)&&(i < 61))
+		{
+			// Store mag offset
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Ryx];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Ryy];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Ryz];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+		}
+
+		if(((fastDataSelect & REPORT_DCM_ZE_B) != 0)&&(i < 61))
+		{
+			// Store mag offset
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Rzx];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Rzy];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Rzz];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+		}
+
+		if(((fastDataSelect & REPORT_DCM_XB_E) != 0)&&(i < 61))
+		{
+			// Store mag offset
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Rxx];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Ryx];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Rzx];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+		}
+
+		if(((fastDataSelect & REPORT_DCM_YB_E) != 0)&&(i < 61))
+		{
+			// Store mag offset
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Rxy];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Ryy];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Rzy];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+		}
+
+		if(((fastDataSelect & REPORT_DCM_ZB_E) != 0)&&(i < 61))
+		{
+			// Store mag offset
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Rxz];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Ryz];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.rotationMatrix.vector.pData[Rzz];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+		}
+		if(((fastDataSelect & REPORT_GYRO_ADJUSTED) != 0)&&(i < 61))
+		{
+			// Store mag offset
+			floatToUint32.f = ahrs_data.GyroValueAdjusted.vector.pData[VECT_X];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.GyroValueAdjusted.vector.pData[VECT_Y];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = ahrs_data.GyroValueAdjusted.vector.pData[VECT_Z];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+		}
+
+		if(((fastDataSelect & REPORT_MAG_EARTH) != 0)&&(i < 61))
+		{
+			// Store mag offset
+			floatToUint32.f = magEarthVector.vector.pData[VECT_X];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = magEarthVector.vector.pData[VECT_Y];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			floatToUint32.f = magEarthVector.vector.pData[VECT_Z];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+		}
+
+		while(i < 64)
+		{
+			Buffer[i] = 0;
+			i++;
+		}
+		USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
     }
 }
 

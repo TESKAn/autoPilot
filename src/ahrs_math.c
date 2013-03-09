@@ -351,7 +351,8 @@ arm_status ahrs_normalize_vector(vector3fData * vectorA)
 	scale = xx + yy + zz;
 	if(scale > 0)
 	{
-		scale = 1/sqrtf(scale);
+		//scale = 1/sqrtf(scale);
+		scale = ahrs_fast_inverse_root(scale);
 	}
 	else
 	{

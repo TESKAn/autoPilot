@@ -17,6 +17,7 @@ void closeLog(void);
 void write_toLog(void);
 int storeNumber(uint16_t number, char* buffer, int offset);
 int storeNegativeNumber(uint16_t number, char* buffer, int offset);
+ErrorStatus int16ToStr(int16_t value, char* text, char* str);
 ErrorStatus float32ToStr(float32_t value, char* text, char* str);
 ErrorStatus strToFloat32(float32_t* result, char* file, char* str);
 uint16_t strTouint16(char* file, char* str);
