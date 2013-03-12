@@ -247,8 +247,45 @@ arm_status ahrs_vect_cross_product(vector3fData * vectorA, vector3fData * vector
 
 // Multiply matrices A and B into matrix C
 arm_status ahrs_mult_matrixes(matrix3by3 * matrixA, matrix3by3 * matrixB, matrix3by3 * matrixC)
-{
+{/*
 	// Multiply matrices
+	matrixC->vector.pData[Rxx] = matrixA->vector.pData[Rxx] * matrixB->vector.pData[Rxx] +
+			matrixA->vector.pData[Rxy] * matrixB->vector.pData[Ryx] +
+			matrixA->vector.pData[Rxz] * matrixB->vector.pData[Rzx] ;
+
+	matrixC->vector.pData[Ryx] = matrixA->vector.pData[Ryx] * matrixB->vector.pData[Rxx] +
+			matrixA->vector.pData[Ryy] * matrixB->vector.pData[Ryx] +
+			matrixA->vector.pData[Ryz] * matrixB->vector.pData[Rzx] ;
+
+	matrixC->vector.pData[Rzx] = matrixA->vector.pData[Rzx] * matrixB->vector.pData[Rxx] +
+			matrixA->vector.pData[Rzy] * matrixB->vector.pData[Ryx] +
+			matrixA->vector.pData[Rzz] * matrixB->vector.pData[Rzx] ;
+
+	matrixC->vector.pData[Rxy] = matrixA->vector.pData[Rxx] * matrixB->vector.pData[Rxy] +
+			matrixA->vector.pData[Rxy] * matrixB->vector.pData[Ryy] +
+			matrixA->vector.pData[Rxz] * matrixB->vector.pData[Rzy] ;
+
+	matrixC->vector.pData[Ryy] = matrixA->vector.pData[Ryx] * matrixB->vector.pData[Rxy] +
+			matrixA->vector.pData[Ryy] * matrixB->vector.pData[Ryy] +
+			matrixA->vector.pData[Ryz] * matrixB->vector.pData[Rzy] ;
+
+	matrixC->vector.pData[Rzy] = matrixA->vector.pData[Rzx] * matrixB->vector.pData[Rxy] +
+			matrixA->vector.pData[Rzy] * matrixB->vector.pData[Ryy] +
+			matrixA->vector.pData[Rzz] * matrixB->vector.pData[Rzy] ;
+
+	matrixC->vector.pData[Rxz] = matrixA->vector.pData[Rxx] * matrixB->vector.pData[Rxz] +
+			matrixA->vector.pData[Rxy] * matrixB->vector.pData[Ryz] +
+			matrixA->vector.pData[Rxz] * matrixB->vector.pData[Rzz] ;
+
+	matrixC->vector.pData[Ryz] = matrixA->vector.pData[Ryx] * matrixB->vector.pData[Rxz] +
+			matrixA->vector.pData[Ryy] * matrixB->vector.pData[Ryz] +
+			matrixA->vector.pData[Ryz] * matrixB->vector.pData[Rzz] ;
+
+	matrixC->vector.pData[Rzz] = matrixA->vector.pData[Rzx] * matrixB->vector.pData[Rxz] +
+			matrixA->vector.pData[Rzy] * matrixB->vector.pData[Ryz] +
+			matrixA->vector.pData[Rzz] * matrixB->vector.pData[Rzz] ;
+*/
+
 	arm_status status = arm_mat_mult_f32(&(matrixA->vector), &(matrixB->vector), &(matrixC->vector));
 	if(status == ARM_MATH_SUCCESS)
 	{
@@ -256,25 +293,43 @@ arm_status ahrs_mult_matrixes(matrix3by3 * matrixA, matrix3by3 * matrixB, matrix
 		matrixC->dataTime = systemTime;
 		matrixC->fDataTime = getFTime();
 	}
-	return status;
+	return ARM_MATH_SUCCESS;
 }
 
 // Multiply vectorA and matrix into vectorB
 arm_status ahrs_mult_vector_matrix(matrix3by3 * matrixA, vector3fData * vectorA, vector3fData * vectorB)
 {
+	float32_t a = 0;
+	float32_t b = 0;
+	float32_t c = 0;
 	// Multiply
+	a = matrixA->vector.pData[Rxx] * vectorA->vector.pData[VECT_X];
+	b = matrixA->vector.pData[Rxy] * vectorA->vector.pData[VECT_Y];
+	c = matrixA->vector.pData[Rxz] * vectorA->vector.pData[VECT_Z];
+	vectorB->vector.pData[VECT_X] = a + b + c;
+	/*
 	vectorB->vector.pData[VECT_X] = matrixA->vector.pData[Rxx] * vectorA->vector.pData[VECT_X] +
 			matrixA->vector.pData[Rxy] * vectorA->vector.pData[VECT_Y]+
 			matrixA->vector.pData[Rxz] * vectorA->vector.pData[VECT_Z];
-
+*/
+	a = matrixA->vector.pData[Ryx] * vectorA->vector.pData[VECT_X];
+	b = matrixA->vector.pData[Ryy] * vectorA->vector.pData[VECT_Y];
+	c = matrixA->vector.pData[Ryz] * vectorA->vector.pData[VECT_Z];
+	vectorB->vector.pData[VECT_Y] = a + b + c;
+	/*
 	vectorB->vector.pData[VECT_Y] = matrixA->vector.pData[Ryx] * vectorA->vector.pData[VECT_X] +
 			matrixA->vector.pData[Ryy] * vectorA->vector.pData[VECT_Y]+
 			matrixA->vector.pData[Ryz] * vectorA->vector.pData[VECT_Z];
-
+*/
+	a = matrixA->vector.pData[Rzx] * vectorA->vector.pData[VECT_X];
+	b = matrixA->vector.pData[Rzy] * vectorA->vector.pData[VECT_Y];
+	c = matrixA->vector.pData[Rzz] * vectorA->vector.pData[VECT_Z];
+	vectorB->vector.pData[VECT_Z] = a + b + c;
+	/*
 	vectorB->vector.pData[VECT_Z] = matrixA->vector.pData[Rzx] * vectorA->vector.pData[VECT_X] +
 			matrixA->vector.pData[Rzy] * vectorA->vector.pData[VECT_Y]+
 			matrixA->vector.pData[Rzz] * vectorA->vector.pData[VECT_Z];
-
+*/
 	vectorB->dataTime = vectorA->dataTime;
 	vectorB->fDataTime = vectorA->fDataTime;
 
@@ -286,19 +341,37 @@ arm_status ahrs_mult_vector_matrix(matrix3by3 * matrixA, vector3fData * vectorA,
 // Multiply vectorA and matrix transpose into vectorB
 arm_status ahrs_mult_vector_matrix_transpose(matrix3by3 * matrixA, vector3fData * vectorA, vector3fData * vectorB)
 {
+	float32_t a = 0;
+	float32_t b = 0;
+	float32_t c = 0;
+	a = matrixA->vector.pData[Rxx] * vectorA->vector.pData[VECT_X];
+	b = matrixA->vector.pData[Ryx] * vectorA->vector.pData[VECT_Y];
+	c = matrixA->vector.pData[Rzx] * vectorA->vector.pData[VECT_Z];
+	vectorB->vector.pData[VECT_X] = a + b + c;
+	/*
 	// Multiply
 	vectorB->vector.pData[VECT_X] = matrixA->vector.pData[Rxx] * vectorA->vector.pData[VECT_X] +
 			matrixA->vector.pData[Ryx] * vectorA->vector.pData[VECT_Y]+
 			matrixA->vector.pData[Rzx] * vectorA->vector.pData[VECT_Z];
-
+*/
+	a = matrixA->vector.pData[Rxy] * vectorA->vector.pData[VECT_X];
+	b = matrixA->vector.pData[Ryy] * vectorA->vector.pData[VECT_Y];
+	c = matrixA->vector.pData[Rzy] * vectorA->vector.pData[VECT_Z];
+	vectorB->vector.pData[VECT_Y] = a + b + c;
+	/*
 	vectorB->vector.pData[VECT_Y] = matrixA->vector.pData[Rxy] * vectorA->vector.pData[VECT_X] +
 			matrixA->vector.pData[Ryy] * vectorA->vector.pData[VECT_Y]+
 			matrixA->vector.pData[Rzy] * vectorA->vector.pData[VECT_Z];
-
+*/
+	a = matrixA->vector.pData[Rxz] * vectorA->vector.pData[VECT_X];
+	b = matrixA->vector.pData[Ryz] * vectorA->vector.pData[VECT_Y];
+	c = matrixA->vector.pData[Rzz] * vectorA->vector.pData[VECT_Z];
+	vectorB->vector.pData[VECT_Z] = a + b + c;
+	/*
 	vectorB->vector.pData[VECT_Z] = matrixA->vector.pData[Rxz] * vectorA->vector.pData[VECT_X] +
 			matrixA->vector.pData[Ryz] * vectorA->vector.pData[VECT_Y]+
 			matrixA->vector.pData[Rzz] * vectorA->vector.pData[VECT_Z];
-
+*/
 	vectorB->dataTime = vectorA->dataTime;
 	vectorB->fDataTime = vectorA->fDataTime;
 
