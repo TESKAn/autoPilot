@@ -9,6 +9,7 @@
 #define FUNCTIONS_H_
 
 void updateExportVars(void);
+uint32_t getSystemTime(void);
 float32_t getFTime(void);
 ErrorStatus FS_Initialize(void);
 void storeAHRSAngles(void);

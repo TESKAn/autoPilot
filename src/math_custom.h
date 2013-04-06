@@ -44,9 +44,8 @@ typedef struct
 	float32_t x;
 	float32_t y;
 	float32_t z;
-	float32_t fDataTime;
-	float32_t fDeltaTime;
 	uint32_t dataTime;
+	uint32_t deltaTime;		// Time that has passed between two samples
 }__attribute__((aligned(4),packed)) quaternion;
 
 // Structure for float vector with 3 elements
@@ -54,8 +53,6 @@ typedef struct
 {
 	float32_t vector3fData[3];
 	vector3f vector;
-	float32_t fDataTime;
-	float32_t fDeltaTime;
 	uint32_t dataTime;
 	uint32_t deltaTime;		// Time that has passed between two samples
 	VectType type;
@@ -76,9 +73,8 @@ typedef struct
 {
 	float32_t vector3fData[9];
 	vector3f vector;
-	float32_t fDataTime;
-	float32_t fDeltaTime;
 	uint32_t dataTime;
+	uint32_t deltaTime;		// Time that has passed between two samples
 }__attribute__((aligned(4),packed)) matrix3by3;
 
 float32_t math_float32Abs(float32_t x);

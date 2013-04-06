@@ -436,8 +436,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 					for(retriesCount = I2C2_ERROR_RETRIESCOUNT; retriesCount > 0; retriesCount --)
 					{
 						// Mark time when data is requested
-						sensorAcquisitionTime = systemTime;
-						fSensorAcquisitionTime = getFTime();
+						sensorAcquisitionTime = getSystemTime();
 						error = masterReceive_beginDMA(MPU6000_ADDRESS, 59, I2C2_DMABufRX, 22);
 						if(error == SUCCESS)
 						{

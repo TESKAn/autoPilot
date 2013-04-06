@@ -74,6 +74,17 @@ void updateExportVars(void)
 
 }
 
+uint32_t getSystemTime(void)
+{
+	uint32_t time = 0;
+	uint32_t timeFrac = 0;
+	time = systemTime * 100;
+	timeFrac = (uint32_t)(TIM14->CNT);
+	timeFrac = timeFrac / 10;	// Period is 1000 usec
+	time = time + timeFrac;
+	return time;
+}
+
 
 float32_t getFTime(void)
 {

@@ -26,9 +26,8 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 	ahrsStructure->Q.x = 0;
 	ahrsStructure->Q.y = 0;
 	ahrsStructure->Q.z = 0;
-	ahrsStructure->Q.dataTime = systemTime;
-	ahrsStructure->Q.fDataTime = getFTime();
-	ahrsStructure->Q.fDeltaTime = 0;
+	ahrsStructure->Q.dataTime = getSystemTime();
+	ahrsStructure->Q.deltaTime = 0;
 	math_vector3fDataInit(&(ahrsStructure->AccVector), ROW);
 	math_vector3qDataInit(&(ahrsStructure->AccOffsetVector), ROW);
 	math_vector3fDataInit(&(ahrsStructure->AccScaleVector), ROW);
@@ -42,12 +41,13 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 	math_vector3fDataInit(&(ahrsStructure->MagScaleVector), ROW);
 	math_vector3fDataInit(&(ahrsStructure->MagPreviousResult), ROW);
 	ahrsStructure->MagOffsetCalcGain = 0.1f;
+	math_vector3fDataInit(&(ahrsStructure->MagInEarthFrame), ROW);
 	math_vector3fDataInit(&(ahrsStructure->RollPitchYaw), ROW);
 	math_matrix3by3Init(&(ahrsStructure->rotationMatrix), MATH_YES);
 	math_matrix3by3Init(&(ahrsStructure->magRotationMatrix), MATH_YES);
 	ahrsStructure->GPSData.altitude = 0;
-	ahrsStructure->GPSData.dataTime = systemTime;
-	ahrsStructure->GPSData.dataStartTime = systemTime;
+	ahrsStructure->GPSData.dataTime = getSystemTime();
+	ahrsStructure->GPSData.dataStartTime = getSystemTime();
 	ahrsStructure->GPSData.dataValid = INVALID;
 	ahrsStructure->GPSData.latitude = 0;
 	ahrsStructure->GPSData.longitude = 0;
@@ -55,7 +55,7 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 	ahrsStructure->GPSData.trackAngle = 0;
 	math_matrix3by3Init(&(ahrsStructure->GPSReference), MATH_NO);
 	ahrsStructure->Altitude.currentAltitude = 0;
-	ahrsStructure->Altitude.dataTime = systemTime;
+	ahrsStructure->Altitude.dataTime = getSystemTime();
 	ahrsStructure->Altitude.deltaTime = 0;
 	ahrsStructure->Altitude.lastAltitude = 0;
 	ahrsStructure->Altitude.verticalAcceleration = 0;
@@ -85,7 +85,7 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 	ahrsStructure->PIData.minIz = DEFAULT_MINI;
 	ahrsStructure->PIData.rMax = DEFAULT_RMAX;
 	ahrsStructure->PIData.rMin = DEFAULT_RMIN;
-	ahrsStructure->PIData.dataTime = systemTime;
+	ahrsStructure->PIData.dataTime = getSystemTime();
 	math_vector3fDataInit(&(ahrsStructure->RollPitchCorrection), ROW);
 	math_vector3fDataInit(&(ahrsStructure->YawCorrection), ROW);
 	ahrsStructure->RollPitchCorrectionScale = DEFAULT_ROLLPITCHCORRECTIONSCALE;
@@ -151,7 +151,22 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 	ahrsStructure->PIData.rMax = DEFAULT_RMAX;
 	ahrsStructure->PIData.rMin = DEFAULT_RMIN;
 	ahrsStructure->sampleDiscardCount = DEFAULT_DISCARD_COUNT;
+	ahrsStructure->PIDErrorThreshold = DEFAULT_PID_ERROR_THRESHOLD;
 
+}
+
+void ahrs_updateGyroReading(void)
+{
+	updateScaledVector(&(ahrs_data.GyroVector), GYRO_X, GYRO_Y, GYRO_Z, ahrs_data.gyroRate * DEG_TO_RAD);
+}
+
+void ahrs_updateAccReading(void)
+{
+	updateScaledVector(&(ahrs_data.AccVector), ACC_X, ACC_Y, ACC_Z, ahrs_data.accRate);
+	// Invert to get gravity - acceleration
+	ahrs_data.AccVector.vector.pData[VECT_X] = -ahrs_data.AccVector.vector.pData[VECT_X];
+	ahrs_data.AccVector.vector.pData[VECT_Y] = -ahrs_data.AccVector.vector.pData[VECT_Y];
+	ahrs_data.AccVector.vector.pData[VECT_Z] = -ahrs_data.AccVector.vector.pData[VECT_Z];
 }
 
 void ahrs_updateMagReading(void)
@@ -200,32 +215,19 @@ void ahrs_updateMagReading(void)
 	ahrs_normalize_vector(&(ahrs_data.MagVector));
 
 	// Turn to earth frame
-	ahrs_mult_vector_matrix(&(ahrs_data.rotationMatrix), &(ahrs_data.MagVector), &magEarthVector);
+	ahrs_mult_vector_matrix(&(ahrs_data.rotationMatrix), &(ahrs_data.MagVector), &(ahrs_data.MagInEarthFrame));
 }
 
 void ahrs_update_altitude(void)
 {
+	uint32_t timeCalculation = getSystemTime();
+	float deltaTime = timeCalculation / 100;
 	ahrs_data.Altitude.currentAltitude = (float)((int16_t)BARO) + (float)BARO_FRAC/10;
-	ahrs_data.Altitude.deltaTime = systemTime - ahrs_data.Altitude.dataTime;
-	ahrs_data.Altitude.dataTime = systemTime;
-	ahrs_data.Altitude.verticalSpeed = (ahrs_data.Altitude.lastAltitude - ahrs_data.Altitude.currentAltitude) / (ahrs_data.Altitude.deltaTime * SYSTIME_TOSECONDS);
-	ahrs_data.Altitude.verticalAcceleration = ahrs_data.Altitude.verticalSpeed / (ahrs_data.Altitude.deltaTime * SYSTIME_TOSECONDS);
+	ahrs_data.Altitude.deltaTime = timeCalculation - ahrs_data.Altitude.dataTime;
+	ahrs_data.Altitude.dataTime = timeCalculation;
+	ahrs_data.Altitude.verticalSpeed = (ahrs_data.Altitude.lastAltitude - ahrs_data.Altitude.currentAltitude) / (deltaTime * SYSTIME_TOSECONDS);
+	ahrs_data.Altitude.verticalAcceleration = ahrs_data.Altitude.verticalSpeed / (deltaTime * SYSTIME_TOSECONDS);
 	ahrs_data.Altitude.lastAltitude = ahrs_data.Altitude.currentAltitude;
-}
-
-arm_status ahrs_updateAccelerationToGyro(void)
-{
-	// Get vectors from acceleration sensor
-	// Modify with data from gyroscopes,
-	return SUCCESS;
-}
-
-arm_status ahrs_updateGPSToGyro(void)
-{
-	// Get direction vector from GPS
-	// Calculate error from GPS heading and GPS reference rotation matrix
-	// Update current rotation matrix
-	return SUCCESS;
 }
 
 arm_status ahrs_updateRotationMatrix(AHRSData * data)
@@ -237,17 +239,13 @@ arm_status ahrs_updateRotationMatrix(AHRSData * data)
 	float dWy = 0;
 	float dWz = 0;
 	// Update vectors
-	updateScaledVector(&(ahrs_data.GyroVector), GYRO_X, GYRO_Y, GYRO_Z, ahrs_data.gyroRate * DEG_TO_RAD);
-	updateScaledVector(&(ahrs_data.AccVector), ACC_X, ACC_Y, ACC_Z, ahrs_data.accRate);
-	//updateScaledVector(&(ahrs_data.MagVector), MAG_X, MAG_Y, MAG_Z, ahrs_data.magRate);
+	// Acceleration
+	ahrs_updateAccReading();
+	ahrs_updateGyroReading();
 	// Update altitude reading
 	ahrs_update_altitude();
 	// Update mag reading
 	ahrs_updateMagReading();
-	// Inverse if necessary
-	ahrs_data.AccVector.vector.pData[VECT_X] = -ahrs_data.AccVector.vector.pData[VECT_X];
-	ahrs_data.AccVector.vector.pData[VECT_Y] = -ahrs_data.AccVector.vector.pData[VECT_Y];
-	ahrs_data.AccVector.vector.pData[VECT_Z] = -ahrs_data.AccVector.vector.pData[VECT_Z];
 
 	errorUpdateInterval++;
 	if(errorUpdateInterval > 10)
@@ -279,12 +277,12 @@ arm_status ahrs_updateRotationMatrix(AHRSData * data)
 		// and take mag Y as yaw Z error
 		tempVector.vector.pData[VECT_X] = 0;
 		tempVector.vector.pData[VECT_Y] = 0;
-		tempVector.vector.pData[VECT_Z] = magEarthVector.vector.pData[VECT_Y];
+		tempVector.vector.pData[VECT_Z] = ahrs_data.MagInEarthFrame.vector.pData[VECT_Y];
 		// Just transform it to plane coordinates
 		ahrs_mult_vector_matrix_transpose(&(ahrs_data.rotationMatrix), &tempVector, &(ahrs_data.YawCorrection));
 
 
-		ahrs_data.Wrp = ahrs_get_vector_norm(&(ahrs_data.RollPitchCorrection)) * 0.5;
+		ahrs_data.Wrp = ahrs_get_vector_norm(&(ahrs_data.RollPitchCorrection)) * ahrs_data.RollPitchCorrectionScale;
 		if(ahrs_data.Wrp < 0)
 		{
 			ahrs_data.Wrp = -ahrs_data.Wrp;
@@ -295,7 +293,7 @@ arm_status ahrs_updateRotationMatrix(AHRSData * data)
 			ahrs_data.Wrp = 1;
 		}
 
-		ahrs_data.Wy = ahrs_get_vector_norm(&(ahrs_data.YawCorrection)) * 0.5;
+		ahrs_data.Wy = ahrs_get_vector_norm(&(ahrs_data.YawCorrection)) * ahrs_data.YawCorrectionScale;
 		if(ahrs_data.Wy < 0)
 		{
 			ahrs_data.Wy = -ahrs_data.Wy;
@@ -312,11 +310,11 @@ arm_status ahrs_updateRotationMatrix(AHRSData * data)
 
 		// Check error change
 		dT = ahrs_vector_magnitude(&(ahrs_data.totalCorrectionError));
-		if(dT > 0.0001)
+		if(dT > ahrs_data.PIDErrorThreshold)
 		{
 			// Only update PID if error is > than threshold
 			// Update PI error regulator
-			ahrs_updateVectorPID(&(ahrs_data.PIData), &(ahrs_data.totalCorrectionError), ahrs_data.GyroVector.fDeltaTime);
+			ahrs_updateVectorPID(&(ahrs_data.PIData), &(ahrs_data.totalCorrectionError), ahrs_data.GyroVector.deltaTime);
 		}
 	}
 
@@ -324,9 +322,9 @@ arm_status ahrs_updateRotationMatrix(AHRSData * data)
 	dT = (float)(data->GyroVector.deltaTime) * SYSTIME_TOSECONDS;
 	// Calculate change in angles
 	// Calculate change in radians/sec
-	dWx = data->GyroVector.vector.pData[VECT_X];// * dT;
-	dWy = data->GyroVector.vector.pData[VECT_Y];// * dT;
-	dWz = data->GyroVector.vector.pData[VECT_Z];// * dT;
+	dWx = data->GyroVector.vector.pData[VECT_X];
+	dWy = data->GyroVector.vector.pData[VECT_Y];
+	dWz = data->GyroVector.vector.pData[VECT_Z];
 
 	// If run for first time
 	if(AHRS_FIRSTRUN_PID)
@@ -353,7 +351,7 @@ arm_status ahrs_updateRotationMatrix(AHRSData * data)
 		// Copy new matrix
 		if(status == ARM_MATH_SUCCESS)
 		{
-			ahrs_data.rotationMatrix.dataTime = systemTime;
+			ahrs_data.rotationMatrix.dataTime = getSystemTime();
 			for(i=0; i < 9; i++)
 			{
 				ahrs_data.rotationMatrix.vector.pData[i] = holdMatrix.vector.pData[i];
@@ -393,16 +391,13 @@ arm_status ahrs_updateRotationMatrix(AHRSData * data)
 		// Copy new matrix
 		if(status == ARM_MATH_SUCCESS)
 		{
-			data->rotationMatrix.dataTime = systemTime;
+			data->rotationMatrix.dataTime = getSystemTime();
 			for(i=0; i < 9; i++)
 			{
 				data->rotationMatrix.vector.pData[i] = holdMatrix.vector.pData[i];
 			}
 			// Normalize and orthogonalize matrix
 			ahrs_normalizeOrthogonalizeMatrix(&(data->rotationMatrix));
-
-			// Transform mag to earth frame
-			ahrs_mult_vector_matrix(&(ahrs_data.rotationMatrix), &(ahrs_data.MagVector), &(gravityVector));
 
 			return SUCCESS;
 		}
@@ -582,12 +577,6 @@ ErrorStatus ahrs_updateQuaternion(void)
 	ahrs_vect_cross_product(&tempVector2, &tempVector1, &(ahrs_data.YawCorrection));
 
 
-	// Transform mag to earth frame
-	ahrs_mult_vector_matrix(&(ahrs_data.rotationMatrix), &(ahrs_data.MagVector), &(gravityVector));
-
-
-
-
 /*
 
 	// Calculate gravity vector
@@ -681,11 +670,11 @@ ErrorStatus ahrs_updateQuaternion(void)
 	ahrs_data.totalCorrectionError.vector.pData[VECT_Z] = ahrs_data.RollPitchCorrection.vector.pData[VECT_Z];// * ahrs_data.Wrp + ahrs_data.YawCorrection.vector.pData[VECT_Z] * ahrs_data.Wy;
 
 	// Update PI error regulator
-	ahrs_updateVectorPID(&(ahrs_data.PIData), &(ahrs_data.totalCorrectionError), ahrs_data.GyroVector.fDeltaTime);
+	ahrs_updateVectorPID(&(ahrs_data.PIData), &(ahrs_data.totalCorrectionError), ahrs_data.GyroVector.deltaTime);
 
 
 	// Store update time
-	ahrs_data.rotationMatrix.fDataTime = getFTime();
+	ahrs_data.rotationMatrix.dataTime = getSystemTime();
 
 	return SUCCESS;
 }

@@ -65,10 +65,6 @@ int main(void)
 	math_vector3fDataInit(&tempVector1, ROW);
 	math_vector3fDataInit(&tempVector2, ROW);
 
-	math_vector3fDataInit(&gravityVector, ROW);
-	math_vector3fDataInit(&magEarthVector, ROW);
-
-
 	AHRS_FIRSTRUN_PID = 1;
 	AHRS_FIRSTRUN_MATRIX = 1;
 

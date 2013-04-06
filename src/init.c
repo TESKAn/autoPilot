@@ -22,8 +22,6 @@ void System_Config(void)
 	//I2C_InitTypeDef I2CInitStruct;
 	ADC_InitTypeDef ADC_InitStruct;
 	ADC_CommonInitTypeDef ADC_CommonInitStructure;
-	DAC_InitTypeDef DAC_InitStruct;
-	DMA_InitTypeDef DMAInitStructure;
 	//SPI_InitTypeDef SPIInitStructure;
 
 
@@ -821,6 +819,46 @@ void System_Config(void)
 
 	// End of ADC
 
+	init_DAC();
+
+/*
+	// SD card SPI init
+	// Enable clock = 42 MHz
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
+	SPIInitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
+	SPIInitStructure.SPI_Mode = SPI_Mode_Master;
+	SPIInitStructure.SPI_DataSize = SPI_DataSize_8b;
+	SPIInitStructure.SPI_CPOL = SPI_CPOL_Low;
+	SPIInitStructure.SPI_CPHA = SPI_CPHA_1Edge;
+	SPIInitStructure.SPI_NSS = SPI_NSS_Soft;
+	SPIInitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_32;
+	SPIInitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
+	SPIInitStructure.SPI_CRCPolynomial = 7;
+
+	SPI_Init(SPI2, &SPIInitStructure);
+
+	// Disable CRC calculation
+	SPI_CalculateCRC(SPI2, DISABLE);
+	// Enable interrupt
+	//SPI_ITConfig(SPI2, ...);
+	// Configure DMA
+	//DMA_Init()
+	// Activate DMA
+	//SPI_I2S_DMACmd()
+	//Enable SPI
+	SPI_Cmd(SPI2, ENABLE);
+	// Enable DMA
+	//DMA_Cmd()
+	// End of SD card SPI init
+*/
+
+	NVIC_EnableInterrupts(ENABLE);
+}
+
+void init_DAC(void)
+{
+	DAC_InitTypeDef DAC_InitStruct;
+	DMA_InitTypeDef DMAInitStructure;
 	// DMA for DAC
 	// DMA1_Stream5 channel7 configuration
 	DMA_DeInit(DMA_DAC1);
@@ -864,38 +902,6 @@ void System_Config(void)
 	DAC_Init(DAC_Channel_2, &DAC_InitStruct);
 	DAC_Cmd(DAC_Channel_2, ENABLE);
 	// End of DAC
-/*
-	// SD card SPI init
-	// Enable clock = 42 MHz
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
-	SPIInitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
-	SPIInitStructure.SPI_Mode = SPI_Mode_Master;
-	SPIInitStructure.SPI_DataSize = SPI_DataSize_8b;
-	SPIInitStructure.SPI_CPOL = SPI_CPOL_Low;
-	SPIInitStructure.SPI_CPHA = SPI_CPHA_1Edge;
-	SPIInitStructure.SPI_NSS = SPI_NSS_Soft;
-	SPIInitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_32;
-	SPIInitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
-	SPIInitStructure.SPI_CRCPolynomial = 7;
-
-	SPI_Init(SPI2, &SPIInitStructure);
-
-	// Disable CRC calculation
-	SPI_CalculateCRC(SPI2, DISABLE);
-	// Enable interrupt
-	//SPI_ITConfig(SPI2, ...);
-	// Configure DMA
-	//DMA_Init()
-	// Activate DMA
-	//SPI_I2S_DMACmd()
-	//Enable SPI
-	SPI_Cmd(SPI2, ENABLE);
-	// Enable DMA
-	//DMA_Cmd()
-	// End of SD card SPI init
-*/
-
-	NVIC_EnableInterrupts(ENABLE);
 }
 
 void init_USART3(void)

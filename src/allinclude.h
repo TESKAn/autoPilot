@@ -50,5 +50,6 @@
 #include "sensors.h"
 #include "compass.h"
 
+#include "AudioComm.h"
 
 #endif /* ALLINCLUDE_H_ */

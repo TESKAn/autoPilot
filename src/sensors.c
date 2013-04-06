@@ -22,7 +22,6 @@ volatile int sensorTimeCounter = 0;
 volatile uint32_t sensoruTimeCounter = 0;
 // Data taken at time
 uint32_t sensorAcquisitionTime = 0;
-float32_t fSensorAcquisitionTime = 0;
 
 // Offset registers
 uint8_t gyroOffsetSampleCount = 0;
@@ -973,7 +972,7 @@ void copySensorData(void)
 		if(((fastDataSelect & REPORT_MAG_EARTH) != 0)&&(i < 61))
 		{
 			// Store mag offset
-			floatToUint32.f = magEarthVector.vector.pData[VECT_X];
+			floatToUint32.f = ahrs_data.MagInEarthFrame.vector.pData[VECT_X];
 			Buffer[i] = floatToUint32.ch[0];
 			i++;
 			Buffer[i] = floatToUint32.ch[1];
@@ -982,7 +981,7 @@ void copySensorData(void)
 			i++;
 			Buffer[i] = floatToUint32.ch[3];
 			i++;
-			floatToUint32.f = magEarthVector.vector.pData[VECT_Y];
+			floatToUint32.f = ahrs_data.MagInEarthFrame.vector.pData[VECT_Y];
 			Buffer[i] = floatToUint32.ch[0];
 			i++;
 			Buffer[i] = floatToUint32.ch[1];
@@ -991,7 +990,7 @@ void copySensorData(void)
 			i++;
 			Buffer[i] = floatToUint32.ch[3];
 			i++;
-			floatToUint32.f = magEarthVector.vector.pData[VECT_Z];
+			floatToUint32.f = ahrs_data.MagInEarthFrame.vector.pData[VECT_Z];
 			Buffer[i] = floatToUint32.ch[0];
 			i++;
 			Buffer[i] = floatToUint32.ch[1];

@@ -4,6 +4,7 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../src/AudioComm.c \
 ../src/adc.c \
 ../src/ahrs.c \
 ../src/ahrs_math.c \
@@ -32,6 +33,7 @@ S_UPPER_SRCS += \
 ../src/startup_stm32f4xx.S 
 
 OBJS += \
+./src/AudioComm.o \
 ./src/adc.o \
 ./src/ahrs.o \
 ./src/ahrs_math.o \
@@ -58,6 +60,7 @@ OBJS += \
 ./src/var.o 
 
 C_DEPS += \
+./src/AudioComm.d \
 ./src/adc.d \
 ./src/ahrs.d \
 ./src/ahrs_math.d \

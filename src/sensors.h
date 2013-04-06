@@ -58,7 +58,6 @@ extern volatile int sensorTimeCounter;
 extern volatile uint32_t sensoruTimeCounter;
 // Data taken at time
 extern uint32_t sensorAcquisitionTime;
-extern float32_t fSensorAcquisitionTime;
 
 // Offset registers
 extern volatile int16_t gyroOffsets[3];

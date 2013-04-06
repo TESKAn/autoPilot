@@ -56,24 +56,25 @@ typedef enum {INVALID = 0, VALID = !INVALID} GPSDataValid;
 typedef struct
 {
 	uint32_t dataTime;
+	uint32_t deltaTime;
 	uint32_t dataStartTime;
-	float latitude;
-	float longitude;
-	float speed;
-	float altitude;
-	float trackAngle;
+	float32_t latitude;
+	float32_t longitude;
+	float32_t speed;
+	float32_t altitude;
+	float32_t trackAngle;
 	GPSDataValid dataValid;
 }__attribute__((aligned(4),packed)) GPSTypeDef;
 
 // Altitude
 typedef struct
 {
-	uint32_t dataTime;			// Time at which data was taken
-	uint32_t deltaTime;			// Time that has passed between two samples
-	float currentAltitude;		// Altitude in meters
-	float lastAltitude;			// Previous altitude value
-	float verticalSpeed;		// Vertical speed as (currentAltitude - lastAltitude) / deltaTime
-	float verticalAcceleration;	// Vertical acceleration as verticalSpeed / deltaTime
+	uint32_t dataTime;				// Time at which data was taken
+	uint32_t deltaTime;				// Time that has passed between two samples
+	float32_t currentAltitude;		// Altitude in meters
+	float32_t lastAltitude;			// Previous altitude value
+	float32_t verticalSpeed;		// Vertical speed as (currentAltitude - lastAltitude) / deltaTime
+	float32_t verticalAcceleration;	// Vertical acceleration as verticalSpeed / deltaTime
 }__attribute__((aligned(4),packed)) AltitudeData;
 
 typedef struct
@@ -108,6 +109,8 @@ typedef struct
 	vector3fData MagPreviousResult;
 	// Vector offset gain
 	float32_t MagOffsetCalcGain;
+	// Mag vector in earth frame of reference
+	vector3fData MagInEarthFrame;
 	// Magnetometer rotation and scale matrix
 	matrix3by3 magRotationMatrix;
 	// Pitch, roll, yaw angles in rad
@@ -143,6 +146,8 @@ typedef struct
 	float32_t Wy;
 	float32_t Heading;
 	int16_t sampleDiscardCount;
+	// Error threshold for updating
+	float32_t PIDErrorThreshold;
 
 }__attribute__((aligned(4),packed)) AHRSData;
 
@@ -162,9 +167,10 @@ extern vector3fData tempVector2;
 
 // Function exports - ahrs.h
 void initAHRSStructure(AHRSData * ahrsStructure);
+void ahrs_updateGyroReading(void);
+void ahrs_updateAccReading(void);
+void ahrs_updateMagReading(void);
 void ahrs_update_altitude(void);
-arm_status ahrs_updateAccelerationToGyro(void);
-arm_status ahrs_updateGPSToGyro(void);
 arm_status ahrs_updateRotationMatrix(AHRSData * data);
 ErrorStatus ahrs_initQuaternion(void);
 ErrorStatus ahrs_updateQuaternion(void);
@@ -175,7 +181,7 @@ void ahrs_normalizeOrthogonalizeMatrix(matrix3by3 * rotMatrix);
 void ahrs_getAngles(matrix3by3 * rotMatrix, vector3f *vector);
 
 // Function exports - ahrs_math.h
-arm_status ahrs_updateVectorPID(PI3Data* PID, vector3fData * errorVector, float32_t deltaT);
+arm_status ahrs_updateVectorPID(PI3Data* PID, vector3fData * errorVector, uint32_t deltaT);
 float32_t ahrs_limitFloat(float32_t number, float32_t max, float32_t min);
 void updateScaledVector(vector3fData * vector, uint16_t x, uint16_t y, uint16_t z, float rate);
 void ahrs_vector3fDataInit(vector3fData * vector, VectType type);

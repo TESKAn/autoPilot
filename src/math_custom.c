@@ -23,10 +23,8 @@ float32_t math_limitFloat(float32_t number, float32_t max, float32_t min)
 
 void math_vector3fDataInit(vector3fData * vector, VectType type)
 {
-	vector->dataTime = systemTime;
+	vector->dataTime = getSystemTime();
 	vector->deltaTime = 0;
-	vector->fDataTime = getFTime();
-	vector->fDeltaTime = 0;
 	vector->type = ROW;
 
 	if(type == ROW)
@@ -54,7 +52,7 @@ void math_vector3fDataInit(vector3fData * vector, VectType type)
 
 void math_vector3qDataInit(vector3qData * vector, VectType type)
 {
-	vector->dataTime = systemTime;
+	vector->dataTime = getSystemTime();
 	vector->deltaTime = 0;
 	vector->type = ROW;
 
@@ -83,8 +81,11 @@ void math_vector3qDataInit(vector3qData * vector, VectType type)
 
 void math_vectorUpdate(vector3fData * vector, float32_t i, float32_t j, float32_t k)
 {
-	vector->deltaTime = systemTime - vector->dataTime;
-	vector->dataTime = systemTime;
+	uint32_t timeCalculation = 0;
+	timeCalculation = vector->dataTime;
+	vector->dataTime = getSystemTime();
+	vector->deltaTime = vector->dataTime - timeCalculation;
+
 	vector->vector.pData[VECT_X] = i;
 	vector->vector.pData[VECT_Y] = j;
 	vector->vector.pData[VECT_Z] = k;
@@ -92,7 +93,7 @@ void math_vectorUpdate(vector3fData * vector, float32_t i, float32_t j, float32_
 
 void math_matrix3by3Init(matrix3by3 * matrix, MathYesNo identity)
 {
-	matrix->dataTime = systemTime;
+	matrix->dataTime = getSystemTime();
 	matrix->vector.numCols = 3;
 	matrix->vector.numRows = 3;
 	matrix->vector.pData = matrix->vector3fData;
@@ -125,7 +126,7 @@ void math_matrix3by3Init(matrix3by3 * matrix, MathYesNo identity)
 
 void math_generateRotationUpdateMatrix(float32_t x, float32_t y, float32_t z, matrix3by3 * matrix)
 {
-	matrix->dataTime = systemTime;
+	matrix->dataTime = getSystemTime();
 	matrix->vector3fData[0] = 1;
 	matrix->vector3fData[1] = z;
 	matrix->vector3fData[2] = -y;
@@ -166,7 +167,7 @@ arm_status math_multMatrices(matrix3by3 * matrixA, matrix3by3 * matrixB, matrix3
 	if(status == ARM_MATH_SUCCESS)
 	{
 		// Update time when we multiplied
-		matrixC->dataTime = systemTime;
+		matrixC->dataTime = getSystemTime();
 	}
 	return status;
 }
@@ -196,7 +197,7 @@ arm_status math_multVectorMatrix(vector3fData * vectorA, matrix3by3 * matrix, ve
 	if(status == ARM_MATH_SUCCESS)
 	{
 		// Update time when we multiplied
-		vectorB->dataTime = systemTime;
+		vectorB->dataTime = getSystemTime();
 	}
 	return status;
 }
