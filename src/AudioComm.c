@@ -7,22 +7,6 @@
 
 #include "allinclude.h"
 
-// Typedef to define
-#define TRANSITION_LOW		0
-#define TRANSITION_HIGH		100
-// Buffer length
-#define AC_BUFFER_LENGTH	220
-
-// AC flag definitions
-#define AC_SENDING_MESSAGE		ACflag.bits.BIT0
-#define AC_SET_BUFFER_A			ACflag.bits.BIT1
-#define AC_SET_BUFFER_B			ACflag.bits.BIT2
-#define AC_MESSAGE_IN_BUFFER	ACflag.bits.BIT3
-#define AC_SENDING_BUFFER_A		ACflag.bits.BIT4
-#define AC_SENDING_BUFFER_B		ACflag.bits.BIT5
-#define AC_BUFFER_A_COMMAS		ACflag.bits.BIT6
-#define AC_BUFFER_B_COMMAS		ACflag.bits.BIT7
-
 // Variables
 uint8_t ACBufferA[220];
 uint8_t ACBufferB[220];
@@ -204,7 +188,7 @@ void AC_Serializer(void)
 				ACStoreByte(ACBufferA, AC_EncodeByte(ACMessage[ACMessageIndex]), bufferLoc, &bufferLoc, &AC_NextTransition);
 				ACMessageIndex++;
 				// If whole message is in buffer
-				if(ACMessageIndex > ACMessageLength)
+				if(ACMessageIndex >= ACMessageLength)
 				{
 					// Fill buffer to the end with comma message
 					while(bufferLoc < AC_BUFFER_LENGTH)
@@ -240,7 +224,7 @@ void AC_Serializer(void)
 				ACStoreByte(ACBufferB, AC_EncodeByte(ACMessage[ACMessageIndex]), bufferLoc, &bufferLoc, &AC_NextTransition);
 				ACMessageIndex++;
 				// If whole message is in buffer
-				if(ACMessageIndex > ACMessageLength)
+				if(ACMessageIndex >= ACMessageLength)
 				{
 					// Fill buffer to the end with comma message
 					while(bufferLoc < AC_BUFFER_LENGTH)

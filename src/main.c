@@ -30,7 +30,7 @@
 
 #include "allinclude.h"
 
-
+#include "AudioComm.h"
 
 /* Private macro */
 /* Private variables */
@@ -108,6 +108,14 @@ int main(void)
 
 	// Initialize external peripheral
 	extPeripheralInit();
+
+	AC_InitBuffers();
+	AC_RDisparity = -1;
+	// Put a message in buffer to test audio communication
+	AC_MESSAGE_IN_BUFFER = 1;
+	ACMessage[0] = 0xaa;
+	ACMessage[1] = 0x55;
+	ACMessageLength = 2;
 
     while (1)
     {

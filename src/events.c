@@ -401,6 +401,8 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		systemTime++;
 		DEBUG_PIN_TOGGLE;
 
+		AC_Serializer();
+
 		if(ADC_ENABLED)
 		{
 			ADC_TriggerTimer++;
