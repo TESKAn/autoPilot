@@ -78,7 +78,7 @@ uint32_t getSystemTime(void)
 {
 	uint32_t time = 0;
 	uint32_t timeFrac = 0;
-	time = systemTime * 100;
+	time = systemTime * 100;	// 1 time tick is 10 usec
 	timeFrac = (uint32_t)(TIM14->CNT);
 	timeFrac = timeFrac / 10;	// Period is 1000 usec
 	time = time + timeFrac;
@@ -1073,16 +1073,16 @@ void transferDMA_USART3(uint8_t *data, int length)
 	DMA_ITConfig(DMA_USART3, DMA_IT_TC, ENABLE);
 }
 
-float intToFloat(int whole, int frac)
+float32_t intToFloat(int whole, int frac)
 {
-	float result = 0;
-	float temp = 0;
-	temp = (float)frac;
+	float32_t result = 0;
+	float32_t temp = 0;
+	temp = (float32_t)frac;
 	while(frac > 0)
 	{
 		frac = frac / 10;
 	}
-	result = (float)whole + temp;
+	result = (float32_t)whole + temp;
 	return result;
 }
 

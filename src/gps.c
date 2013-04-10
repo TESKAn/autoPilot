@@ -491,11 +491,10 @@ void GPS_ReceiveProcess(uint8_t data)
 								// Latitude, longitude in rad = res * (pi/180*180)
 								ahrs_data.GPSData.latitude = intToFloat(GPS_LATITUDE, GPS_LATITUDE_FRAC);
 								ahrs_data.GPSData.latitude = (ahrs_data.GPSData.latitude * PI)/32400;
-
 								ahrs_data.GPSData.longitude = intToFloat(GPS_LONGITUDE, GPS_LONGITUDE_FRAC);
 								ahrs_data.GPSData.longitude = (ahrs_data.GPSData.longitude * PI)/10800;
-
-								ahrs_data.GPSData.speed = intToFloat(GPS_SPEED, GPS_SPEED_FRAC);
+								// Convert speed from knots to m/2
+								ahrs_data.GPSData.speed = intToFloat(GPS_SPEED, GPS_SPEED_FRAC) * 0.51444f;
 								ahrs_data.GPSData.trackAngle = intToFloat(GPS_TRACKANGLE, GPS_TRACKANGLE_FRAC);
 								ahrs_data.GPSData.dataTime = ahrs_data.GPSData.dataStartTime;
 								ahrs_data.GPSData.dataValid = VALID;
@@ -525,7 +524,7 @@ void GPS_ReceiveProcess(uint8_t data)
 					GPS_Digits_Count = 0;
 					GPSFLAG_CR_RECEIVED = 0;
 					// Mark new data time
-					ahrs_data.GPSData.dataStartTime = getSystemTime;
+					ahrs_data.GPSData.dataStartTime = getSystemTime();
 					// Store rotation matrix
 					ahrs_data.GPSReference = ahrs_data.rotationMatrix;
 				}
@@ -737,7 +736,7 @@ void GPS_ReceiveProcess(uint8_t data)
 					GPS_Digits_Count = 0;
 					GPSFLAG_CR_RECEIVED = 0;
 					// Mark new data time
-					ahrs_data.GPSData.dataStartTime = getSystemTime;
+					ahrs_data.GPSData.dataStartTime = getSystemTime();
 					// Store rotation matrix
 					ahrs_data.GPSReference = ahrs_data.rotationMatrix;
 				}

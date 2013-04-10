@@ -30,6 +30,10 @@ extern uint8_t AC_NextTransition;
 // Buffer length
 #define AC_BUFFER_LENGTH	220
 
+// AC comma sequence
+#define AC_COMMA_SEQ_NEG	0b0011111001
+#define AC_COMMA_SEQ_POS	0b1100000110
+
 // AC flag definitions
 #define AC_SENDING_MESSAGE		ACflag.bits.BIT0
 #define AC_SET_BUFFER_A			ACflag.bits.BIT1
@@ -39,5 +43,11 @@ extern uint8_t AC_NextTransition;
 #define AC_SENDING_BUFFER_B		ACflag.bits.BIT5
 #define AC_BUFFER_A_COMMAS		ACflag.bits.BIT6
 #define AC_BUFFER_B_COMMAS		ACflag.bits.BIT7
+
+ErrorStatus ACStoreByte(uint8_t * buffer, uint16_t data, uint8_t bufferStartLoc, uint8_t * bufferEndLoc, uint8_t * transition);
+uint16_t AC_EncodeByte(uint8_t data);
+void AC_FillBufferCommas(uint8_t * buffer);
+void AC_InitBuffers(void);
+void AC_Serializer(void);
 
 #endif /* AUDIOCOMM_H_ */

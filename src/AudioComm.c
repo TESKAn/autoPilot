@@ -151,12 +151,12 @@ void AC_FillBufferCommas(uint8_t * buffer)
 		// Check disparity
 		if(AC_RDisparity < 0)
 		{
-			ACStoreByte(buffer, 0b0011111001, bufferLoc, &bufferLoc, &AC_NextTransition);
+			ACStoreByte(buffer, AC_COMMA_SEQ_NEG, bufferLoc, &bufferLoc, &AC_NextTransition);
 			AC_RDisparity = ~AC_RDisparity;
 		}
 		else
 		{
-			ACStoreByte(buffer, 0b1100000110, bufferLoc, &bufferLoc, &AC_NextTransition);
+			ACStoreByte(buffer, AC_COMMA_SEQ_POS, bufferLoc, &bufferLoc, &AC_NextTransition);
 			AC_RDisparity = ~AC_RDisparity;
 		}
 	}
@@ -196,12 +196,12 @@ void AC_Serializer(void)
 						// Check disparity
 						if(AC_RDisparity < 0)
 						{
-							ACStoreByte(ACBufferA, 0b0011111001, bufferLoc, &bufferLoc, &AC_NextTransition);
+							ACStoreByte(ACBufferA, AC_COMMA_SEQ_NEG , bufferLoc, &bufferLoc, &AC_NextTransition);
 							AC_RDisparity = ~AC_RDisparity;
 						}
 						else
 						{
-							ACStoreByte(ACBufferA, 0b1100000110, bufferLoc, &bufferLoc, &AC_NextTransition);
+							ACStoreByte(ACBufferA, AC_COMMA_SEQ_POS, bufferLoc, &bufferLoc, &AC_NextTransition);
 							AC_RDisparity = ~AC_RDisparity;
 						}
 					}
@@ -232,12 +232,12 @@ void AC_Serializer(void)
 						// Check disparity
 						if(AC_RDisparity < 0)
 						{
-							ACStoreByte(ACBufferB, 0b0011111001, bufferLoc, &bufferLoc, &AC_NextTransition);
+							ACStoreByte(ACBufferB, AC_COMMA_SEQ_NEG, bufferLoc, &bufferLoc, &AC_NextTransition);
 							AC_RDisparity = ~AC_RDisparity;
 						}
 						else
 						{
-							ACStoreByte(ACBufferB, 0b1100000110, bufferLoc, &bufferLoc, &AC_NextTransition);
+							ACStoreByte(ACBufferB, AC_COMMA_SEQ_POS, bufferLoc, &bufferLoc, &AC_NextTransition);
 							AC_RDisparity = ~AC_RDisparity;
 						}
 					}

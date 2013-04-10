@@ -6,6 +6,7 @@
  */
 
 #include "allinclude.h"
+#include "AudioComm.h"
 
 /**
   * @brief  This function handles ADC event interrupt request.

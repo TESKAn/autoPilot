@@ -123,6 +123,10 @@ typedef struct
 	AltitudeData Altitude;
 	// Speed data in m/sec
 	float32_t PlaneSpeed;
+	// Speed data in 3D vector
+	vector3fData PlaneSpeedVector;
+	// Accelerometer integral
+	vector3fData AccelerometerIntegral;
 	// Roll Pitch correction vector
 	vector3fData RollPitchCorrection;
 	// Yaw correction vector
@@ -170,6 +174,7 @@ void initAHRSStructure(AHRSData * ahrsStructure);
 void ahrs_updateGyroReading(void);
 void ahrs_updateAccReading(void);
 void ahrs_updateMagReading(void);
+void ahrs_updateAccVelocityReading(void);
 void ahrs_update_altitude(void);
 arm_status ahrs_updateRotationMatrix(AHRSData * data);
 ErrorStatus ahrs_initQuaternion(void);
