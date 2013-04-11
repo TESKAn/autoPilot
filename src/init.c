@@ -771,7 +771,6 @@ void System_Config(void)
 	// I2C2 config
 	// Configure I2C 2 for sensor communication
 	// Enable peripheral clock
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C2, ENABLE);
 	I2C2_Configure(ENABLE);
 
 	// ADC converter init
@@ -854,6 +853,7 @@ void System_Config(void)
 
 	NVIC_EnableInterrupts(ENABLE);
 }
+
 
 void init_DAC(void)
 {

@@ -67,6 +67,7 @@ int main(void)
 
 	AHRS_FIRSTRUN_PID = 1;
 	AHRS_FIRSTRUN_MATRIX = 1;
+	TIMEOUT_USEINTERRUPT = 1;
 
 	//SD_CardInfo cardinfo;
 	int i = 0;

@@ -9,6 +9,7 @@
 #define INIT_H_
 
 void System_Config(void);
+void init_I2C2(void);
 void init_DAC(void);
 void init_USART3(void);
 

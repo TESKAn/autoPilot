@@ -69,6 +69,7 @@
 #define SD_BUF_IN_USE			flag0.bits.BIT24	// 0 - writing buf1, 1 - writing buf2
 #define AHRS_FIRSTRUN_PID		flag0.bits.BIT25	// Mark to run once
 #define AHRS_FIRSTRUN_MATRIX	flag0.bits.BIT26
+#define TIMEOUT_USEINTERRUPT	flag0.bits.BIT27	// Use interrupt to count timeout
 
 
 // DMA macros

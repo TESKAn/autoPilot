@@ -432,7 +432,7 @@ arm_status ahrs_updateRotationMatrix(AHRSData * data)
 	// Check rotation magnitude
 	dT = ahrs_vector_magnitude(&(ahrs_data.GyroValueAdjusted));
 	// If rotation is larger than error, update matrix
-	if(dT > 0.0001)
+	if(dT > DEFAULT_MIN_ROTATION_RATE)
 	{
 		// Generate update matrix
 		ahrs_generate_rotationUpdateMatrix(dWx, dWy, dWz, &tempMatrix);
