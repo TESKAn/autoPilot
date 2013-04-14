@@ -8,6 +8,7 @@
 #include "allinclude.h"
 
 
+
 void System_Config(void)
 {
 
@@ -37,19 +38,6 @@ void System_Config(void)
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
 
 	//GPIO A
-	// A4, A5 - DAC output
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_5;
-	//set output type
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// push/pull
-	//set pull-up
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
-	//set pin mode to alternate function
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
-	//set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-	//write mode to selected pins and selected port
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-
 
 	// A0 - A3, A6, A7 timer output
 	GPIO_PinAFConfig(GPIOA, GPIO_PinSource0, GPIO_AF_TIM2);
@@ -859,6 +847,26 @@ void init_DAC(void)
 {
 	DAC_InitTypeDef DAC_InitStruct;
 	DMA_InitTypeDef DMAInitStructure;
+	GPIO_InitTypeDef  GPIO_InitStructure;
+	// init DAC pins
+	// Configure GPIO pins
+	/* GPIO Peripheral clock enable */
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+
+	//GPIO A
+	// A4, A5 - DAC output
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_5;
+	//set output type
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// push/pull
+	//set pull-up
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
+	//set pin mode to alternate function
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
+	//set pin speed
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	//write mode to selected pins and selected port
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
 	// DMA for DAC
 	// DMA1_Stream5 channel7 configuration
 	DMA_DeInit(DMA_DAC1);
