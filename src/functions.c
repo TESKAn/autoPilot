@@ -742,53 +742,34 @@ ErrorStatus loadSettings(void)
 	float32ToStr(ahrs_data.magRate, "magRate=", StringBuffer);
 	sendUSBMessage(StringBuffer);
 #endif
-
-
-
-	if(strToFloat32(&(ahrs_data.PIData.Kix), &FSBuffer[0], "Kix=") == SUCCESS)
+	// Ki factor
+	if(loadSingleSetting("Kix=", &(ahrs_data.PIData.Kix)) != SUCCESS)
 	{
-		ahrs_data.PIData.Kiy = ahrs_data.PIData.Kix;
-		ahrs_data.PIData.Kiz = ahrs_data.PIData.Kix;
-#ifdef DEBUG_USB
-		float32ToStr(ahrs_data.PIData.Kix, "Ki=", StringBuffer);
-		sendUSBMessage(StringBuffer);
-#endif
-	}
-	else
-	{
+		// Load default value
 		ahrs_data.PIData.Kix = DEFAULT_KI;
-		ahrs_data.PIData.Kiy = DEFAULT_KI;
-		ahrs_data.PIData.Kiz = DEFAULT_KI;
-
-	#ifdef DEBUG_USB
-		sendUSBMessage("Error reading Ki");
-		sendUSBMessage("Using default values");
-	#endif
 	}
-
-	if(strToFloat32(&(ahrs_data.PIData.Kpx), &FSBuffer[0], "Kpx=") == SUCCESS)
-	{
-		ahrs_data.PIData.Kpy = ahrs_data.PIData.Kpx;
-		ahrs_data.PIData.Kpz = ahrs_data.PIData.Kpx;
+	// Store
+	ahrs_data.PIData.Kiy = ahrs_data.PIData.Kix;
+	ahrs_data.PIData.Kiz = ahrs_data.PIData.Kix;
 #ifdef DEBUG_USB
-		float32ToStr(ahrs_data.PIData.Kpx, "Kp=", StringBuffer);
-		sendUSBMessage(StringBuffer);
+	float32ToStr(ahrs_data.PIData.Kix, "Kix=", StringBuffer);
+	sendUSBMessage(StringBuffer);
 #endif
-	}
-	else
-	{
-		ahrs_data.PIData.Kpx = DEFAULT_KP;
-		ahrs_data.PIData.Kpy = DEFAULT_KP;
-		ahrs_data.PIData.Kpz = DEFAULT_KP;
 
-	#ifdef DEBUG_USB
-		sendUSBMessage("Error reading Kp");
-		sendUSBMessage("Using default values");
-	#endif
+	// Kp factor
+	if(loadSingleSetting("Kpx=", &(ahrs_data.PIData.Kpx)) != SUCCESS)
+	{
+		// Load default value
+		ahrs_data.PIData.Kpx = DEFAULT_KP;
 	}
-	//Close and unmount.
-	f_close(&settingsFile);
-	f_mount(0,0);
+	// Store
+	ahrs_data.PIData.Kpy = ahrs_data.PIData.Kpx;
+	ahrs_data.PIData.Kpz = ahrs_data.PIData.Kpx;
+#ifdef DEBUG_USB
+	float32ToStr(ahrs_data.PIData.Kpx, "Kpx=", StringBuffer);
+	sendUSBMessage(StringBuffer);
+#endif
+
 
 #ifdef DEBUG_USB
 	sendUSBMessage("Settings loaded successfully");
