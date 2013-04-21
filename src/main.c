@@ -209,7 +209,8 @@ int main(void)
         }
         if(SCR1 & SCR_12)
         {
-        	loadSettings();
+        	//loadSettings();
+        	loadSingleSetting("hardMagZ=", &temp);
         	SCR1 = SCR1 & ~SCR_12;
         }
         if(SCR1 & SCR_13)

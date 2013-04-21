@@ -524,6 +524,12 @@ ErrorStatus strToFloat32(float32_t* result, char* file, char* str)
 	{
 		// Get pointer to where in file string ends
 		strEnd = strstr(strBeginning, ";");
+		// Check that we have ending
+		if(strEnd == NULL)
+		{
+			// Return error
+			return ERROR;
+		}
 		// Count how many chars to convert
 		convert = (uint8_t)((uint32_t)(strEnd - strBeginning) - strBeginLen);
 		// Convert
@@ -611,33 +617,35 @@ uint8_t numberFromChar(char c)
 	return c - 48;
 }
 
-ErrorStatus loadSettings(void)
+ErrorStatus loadSingleSetting(char* name, float32_t* storeLocation)
 {
 	FATFS FileSystemObject;
 	DSTATUS driveStatus;
 	FIL settingsFile;
 	unsigned int bytesToRead = 0;
 	unsigned int readBytes = 0;
+	unsigned int bytesProcessed = 0;
+	unsigned int fileSize = 0;
 
+	// Load drive
 	if(f_mount(0, &FileSystemObject)!=FR_OK)
 	{
 #ifdef DEBUG_USB
 	sendUSBMessage("FS mount error");
 #endif
-		//flag error
+		// Flag error
 		f_mount(0,0);
 		return ERROR;
 	}
 	driveStatus = disk_initialize(0);
 	if((driveStatus & STA_NOINIT) ||
 		   (driveStatus & STA_NODISK) ||
-		   (driveStatus & STA_PROTECT)
-		   )
+		   (driveStatus & STA_PROTECT))
 	{
 #ifdef DEBUG_USB
 	sendUSBMessage("Drive Status error");
 #endif
-		//flag error.
+		// Flag error.
 		f_mount(0,0);
 		return ERROR;
 	}
@@ -647,74 +655,95 @@ ErrorStatus loadSettings(void)
 #ifdef DEBUG_USB
 	sendUSBMessage("File open error");
 #endif
-		//flag error
+		// Flag error
 		f_mount(0,0);
 		return ERROR;
 	}
-	// Read file to buffer
-	bytesToRead = f_size(&settingsFile);
-	if(f_read (&settingsFile, &FSBuffer[0], bytesToRead, &readBytes) != FR_OK)
-	{
-#ifdef DEBUG_USB
-		sendUSBMessage("File read error");
-#endif
-		//Close and unmount.
-		f_close(&settingsFile);
-		f_mount(0,0);
-		return ERROR;
-	}
-	// Process data
-	if(strToFloat32(&(ahrs_data.accRate), &FSBuffer[0], "accRate=") == SUCCESS)
-	{
-#ifdef DEBUG_USB
 
-		float32ToStr(ahrs_data.accRate, "accRate=", StringBuffer);
-		sendUSBMessage(StringBuffer);
-#endif
-	}
-	else
+	fileSize = f_size(&settingsFile);
+
+	do
 	{
+		bytesToRead = 255;
+		if((bytesToRead + bytesProcessed) > fileSize)
+		{
+			bytesToRead = fileSize - bytesProcessed;
+		}
+		// Read file to buffer
+		if(f_read (&settingsFile, &FSBuffer[0], bytesToRead, &readBytes) != FR_OK)
+		{
+	#ifdef DEBUG_USB
+			sendUSBMessage("File read error");
+	#endif
+			// Close and unmount.
+			f_close(&settingsFile);
+			f_mount(0,0);
+			return ERROR;
+		}
+		// Store null character to last place
+		FSBuffer[254] = '\0';
+		// Check if required data is in settings file
+		if(strToFloat32(storeLocation, &FSBuffer[0], name) == SUCCESS)
+		{
+			// Return success
+			//Close and unmount.
+			f_close(&settingsFile);
+			f_mount(0,0);
+			return SUCCESS;
+		}
+		else
+		{
+			// Set processed bytes
+			bytesProcessed = bytesProcessed + 200;
+			// Else seek for next section
+			f_lseek(&settingsFile, bytesProcessed);
+		}
+	}
+	while(bytesProcessed < fileSize);
+
+
+	//Close and unmount.
+	f_close(&settingsFile);
+	f_mount(0,0);
+
+	return ERROR;
+}
+
+ErrorStatus loadSettings(void)
+{
+	// Load all settings, one at a time
+	// Acceleration rate
+	if(loadSingleSetting("accRate=", &(ahrs_data.accRate)) != SUCCESS)
+	{
+		// Load default value
 		ahrs_data.accRate = DEFAULT_ACC_RATE;
-
-	#ifdef DEBUG_USB
-		sendUSBMessage("Error reading accRate");
-		sendUSBMessage("Using default values");
-	#endif
 	}
-
-	if(strToFloat32(&(ahrs_data.gyroRate), &FSBuffer[0], "gyroRate=") == SUCCESS)
-	{
 #ifdef DEBUG_USB
-		float32ToStr(ahrs_data.gyroRate, "gyroRate=", StringBuffer);
-		sendUSBMessage(StringBuffer);
+	float32ToStr(ahrs_data.accRate, "accRate=", StringBuffer);
+	sendUSBMessage(StringBuffer);
 #endif
-	}
-	else
+	// Gyroscope rate
+	if(loadSingleSetting("gyroRate=", &(ahrs_data.gyroRate)) != SUCCESS)
 	{
-		ahrs_data.gyroRate = DEFAULT_ACC_RATE;
-
-	#ifdef DEBUG_USB
-		sendUSBMessage("Error reading gyroRate");
-		sendUSBMessage("Using default values");
-	#endif
+		// Load default value
+		ahrs_data.gyroRate = DEFAULT_GYRO_RATE;
 	}
-
-	if(strToFloat32(&(ahrs_data.magRate), &FSBuffer[0], "magRate=") == SUCCESS)
-	{
 #ifdef DEBUG_USB
-		float32ToStr(ahrs_data.magRate, "magRate=", StringBuffer);
-		sendUSBMessage(StringBuffer);
+	float32ToStr(ahrs_data.gyroRate, "gyroRate=", StringBuffer);
+	sendUSBMessage(StringBuffer);
 #endif
-	}
-	else
+	// Magnetometer rate
+	if(loadSingleSetting("magRate=", &(ahrs_data.magRate)) != SUCCESS)
 	{
-		ahrs_data.magRate = DEFAULT_ACC_RATE;
-
-	#ifdef DEBUG_USB
-		sendUSBMessage("Error reading magRate");
-		sendUSBMessage("Using default values");
-	#endif
+		// Load default value
+		ahrs_data.magRate = DEFAULT_MAG_RATE;
 	}
+#ifdef DEBUG_USB
+	float32ToStr(ahrs_data.magRate, "magRate=", StringBuffer);
+	sendUSBMessage(StringBuffer);
+#endif
+
+
 
 	if(strToFloat32(&(ahrs_data.PIData.Kix), &FSBuffer[0], "Kix=") == SUCCESS)
 	{

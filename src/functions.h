@@ -22,6 +22,7 @@ ErrorStatus int16ToStr(int16_t value, char* text, char* str);
 ErrorStatus float32ToStr(float32_t value, char* text, char* str);
 ErrorStatus strToFloat32(float32_t* result, char* file, char* str);
 uint16_t strTouint16(char* file, char* str);
+ErrorStatus loadSingleSetting(char* name, float32_t* storeLocation);
 ErrorStatus loadSettings(void);
 char charFromNumber(uint8_t number);
 uint8_t numberFromChar(char c);
