@@ -70,6 +70,7 @@
 #define AHRS_FIRSTRUN_PID		flag0.bits.BIT25	// Mark to run once
 #define AHRS_FIRSTRUN_MATRIX	flag0.bits.BIT26
 #define TIMEOUT_USEINTERRUPT	flag0.bits.BIT27	// Use interrupt to count timeout
+#define PWMEN_OUT_ENABLE		flag0.bits.BIT28
 
 
 // DMA macros
@@ -188,6 +189,13 @@
 #define DEBUG_PIN_ON		GPIO_WriteBit(GPIOE, GPIO_Pin_5, 1)
 #define DEBUG_PIN_OFF		GPIO_WriteBit(GPIOE, GPIO_Pin_5, 0)
 #define DEBUG_PIN_TOGGLE	GPIO_ToggleBits(GPIOE, GPIO_Pin_5)
+
+// PWM enable macro
+#define PWMEN_PIN_TOGGLE	GPIO_ToggleBits(GPIOE, GPIO_Pin_15)
+
+// SD card macros
+// Toggle SD power
+#define SD_POWER_TOGGLE		GPIO_ToggleBits(GPIOA, GPIO_Pin_8)
 
 // Fast report macros
 #define REPORT_DCM				0x00001

@@ -118,6 +118,8 @@ int main(void)
 	ACMessage[1] = 0x55;
 	ACMessageLength = 2;
 
+	PWMEN_OUT_ENABLE = 1;
+
     while (1)
     {
         // Check MODBUS for messages
@@ -210,7 +212,9 @@ int main(void)
         if(SCR1 & SCR_12)
         {
         	//loadSettings();
-        	loadSingleSetting("hardMagZ=", &temp);
+        	//loadSingleSetting("hardMagZ=", &temp);
+        	//PWMEN_OUT_ENABLE = ~PWMEN_OUT_ENABLE;
+        	SD_POWER_TOGGLE;
         	SCR1 = SCR1 & ~SCR_12;
         }
         if(SCR1 & SCR_13)

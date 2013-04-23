@@ -59,6 +59,25 @@ void System_Config(void)
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
+
+	// A8 = GPIO output, set to 1, for SD card power
+	// Set pin to 1
+	GPIO_WriteBit(GPIOA, GPIO_Pin_8, 1);
+	// Select pin 8
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
+	//set output type
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// open drain output
+	//set pull-up
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	//set pin mode to out function
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	//set pin speed
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	//write mode to selected pins and selected port
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	// Set pin to 1
+	GPIO_WriteBit(GPIOA, GPIO_Pin_8, 1);
+
 	//GPIO B
 	//connect pins B0 and B1 to timer output
 	GPIO_PinAFConfig(GPIOB, GPIO_PinSource0, GPIO_AF_TIM3);
@@ -73,6 +92,20 @@ void System_Config(void)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
 	//set pin speed
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	//write mode to selected pins and selected port
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+	// B4 = GPIO input for SD card detect
+	// Select pin 4
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
+	//set output type
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;	// open drain output
+	//set pull-up
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	//set pin mode to out function
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+	//set pin speed
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
@@ -404,6 +437,20 @@ void System_Config(void)
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
 	//set pin mode
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+	//write mode to selected pins and selected port
+	GPIO_Init(GPIOE, &GPIO_InitStructure);
+
+	//connect pin E15 to output
+	//select pin 15
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
+	//set output type
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// push/pull
+	//set pull-up
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
+	//set pin mode to function
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	//set pin speed
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOE, &GPIO_InitStructure);
 

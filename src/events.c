@@ -401,6 +401,11 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		// Update system time
 		systemTime++;
 		DEBUG_PIN_TOGGLE;
+		if(PWMEN_OUT_ENABLE)
+		{
+			PWMEN_PIN_TOGGLE;
+		}
+
 
 		AC_Serializer();
 
