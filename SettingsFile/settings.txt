@@ -1,3 +1,39 @@
 gyroRate=0.030517578125;
 accRate=0.000244140625;
 magRate=0.000635075720;
+magInclination=0.0542506509161570;
+magDeclination=1,0902441579423135;
+PIDThreshold=0.0005;
+MinRotationRate=0.001;
+// Soft mag matrix
+softMagRxx=0.00179807074567474;
+softMagRyx=1.02639947492707e-05;
+softMagRzx=1.68944746965327e-05;
+softMagRxy=1.02639947492707e-05;
+softMagRyy=0.00181033707247978;
+softMagRzy=-5.53886833860487e-06;
+softMagRxz=1.68944746965327e-05;
+softMagRyz=-5.53886833860487e-06;
+softMagRzz=0.00204592378896502;
+// Hard mag vector
+hardMagX=30.2441876259683;
+hardMagY=-213.891056269455;
+hardMagZ=123.456789;
+hardMagScale=591.226172172661;
+Kix=0.7;
+Kpx=2.0;
+// Roll pitch correction
+rollPitchCorrectionScale=0.5;
+yawCorrectionScale=0.5;
+PID_MaxErr=1;
+PID_MinErr=-1;
+PID_MaxI=5;
+PID_MinI=-5;
+PID_MaxR=5;
+PID_MinR=-5;
+discardCount=100;
+magInclination=0.0542506509161570;
+magDeclination=1.0902441579423135;	
+useGPSSpeed=2;
+PIDErrorThreshold=0.0005;
+minRotationRate=0.001;

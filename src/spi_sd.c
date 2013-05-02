@@ -274,6 +274,16 @@ static void socket_cp_init(void)
 
 static inline DWORD socket_is_empty(void)
 {
+	uint8_t bit = GPIO_ReadOutputDataBit(GPIOB, GPIO_Pin_4);
+	if(bit == 0)
+	{
+		return 0;
+	}
+	else
+	{
+		return 1;
+	}
+
 	return 0; /* fake inserted */
 }
 
@@ -319,7 +329,15 @@ static int chk_power(void)		/* Socket power state: 0=off, 1=on */
 
 static void card_power(BYTE on)
 {
-	on=1;
+	if(on)
+	{
+		GPIO_WriteBit(GPIOA, GPIO_Pin_8, 0);
+	}
+	else
+	{
+		GPIO_WriteBit(GPIOA, GPIO_Pin_8, 1);
+	}
+	//on=1;
 }
 
 #if (STM32_SD_DISK_IOCTRL == 1)

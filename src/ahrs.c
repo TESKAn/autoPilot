@@ -349,9 +349,9 @@ arm_status ahrs_updateRotationMatrix(AHRSData * data)
 			}
 
 			// Add correction to rollPitchCorrection vector
-			ahrs_data.totalCorrectionError.vector.pData[VECT_X] = ahrs_data.RollPitchCorrection.vector.pData[VECT_X] * ahrs_data.Wrp + ahrs_data.YawCorrection.vector.pData[VECT_X] * ahrs_data.Wy;
-			ahrs_data.totalCorrectionError.vector.pData[VECT_Y] = ahrs_data.RollPitchCorrection.vector.pData[VECT_Y] * ahrs_data.Wrp + ahrs_data.YawCorrection.vector.pData[VECT_Y] * ahrs_data.Wy;
-			ahrs_data.totalCorrectionError.vector.pData[VECT_Z] = ahrs_data.RollPitchCorrection.vector.pData[VECT_Z] * ahrs_data.Wrp + ahrs_data.YawCorrection.vector.pData[VECT_Z] * ahrs_data.Wy;
+			ahrs_data.totalCorrectionError.vector.pData[VECT_X] = ahrs_data.RollPitchCorrection.vector.pData[VECT_X];// * ahrs_data.Wrp + ahrs_data.YawCorrection.vector.pData[VECT_X] * ahrs_data.Wy;
+			ahrs_data.totalCorrectionError.vector.pData[VECT_Y] = ahrs_data.RollPitchCorrection.vector.pData[VECT_Y];// * ahrs_data.Wrp + ahrs_data.YawCorrection.vector.pData[VECT_Y] * ahrs_data.Wy;
+			ahrs_data.totalCorrectionError.vector.pData[VECT_Z] = ahrs_data.RollPitchCorrection.vector.pData[VECT_Z];// * ahrs_data.Wrp + ahrs_data.YawCorrection.vector.pData[VECT_Z] * ahrs_data.Wy;
 
 			// Check error change
 			dT = ahrs_vector_magnitude(&(ahrs_data.totalCorrectionError));

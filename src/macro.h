@@ -71,7 +71,8 @@
 #define AHRS_FIRSTRUN_MATRIX	flag0.bits.BIT26
 #define TIMEOUT_USEINTERRUPT	flag0.bits.BIT27	// Use interrupt to count timeout
 #define PWMEN_OUT_ENABLE		flag0.bits.BIT28
-
+#define SD_SETTINGS_OPEN		flag0.bits.BIT29
+#define SD_MOUNTED				flag0.bits.BIT30	// Mark SD card is mounted and ready
 
 // DMA macros
 //DMA1_Stream0 used by USB
@@ -194,8 +195,17 @@
 #define PWMEN_PIN_TOGGLE	GPIO_ToggleBits(GPIOE, GPIO_Pin_15)
 
 // SD card macros
+// SD power ON
+#define SD_POWER_ON			GPIO_WriteBit(GPIOA, GPIO_Pin_8, 0)
+// SD power OFF
+#define SD_POWER_OFF		GPIO_WriteBit(GPIOA, GPIO_Pin_8, 1)
 // Toggle SD power
 #define SD_POWER_TOGGLE		GPIO_ToggleBits(GPIOA, GPIO_Pin_8)
+
+// Sensor power ON
+#define SENSOR_POWER_ON		GPIO_WriteBit(GPIOE, GPIO_Pin_7, 0)
+// Sensor power OFF
+#define SENSOR_POWER_OFF	GPIO_WriteBit(GPIOE, GPIO_Pin_7, 1)
 
 // Fast report macros
 #define REPORT_DCM				0x00001

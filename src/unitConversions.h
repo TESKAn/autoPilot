@@ -28,7 +28,7 @@
 #define DEFAULT_RMIN						-5.0f
 #define DEFAULT_DISCARD_COUNT				100						//how many samples to discard after boot
 #define DEFAULT_MAG_INCLINATION				0.0542506509161570f		// Deviation of magnetic field from true north in radians
-#define DEFAULT_MAG_DECLINATION				1,0902441579423135f		// Angle of magnetic field
+#define DEFAULT_MAG_DECLINATION				1.0902441579423135f		// Angle of magnetic field
 
 #define DEFAULT_USE_GPS_SPEED				2.0f					// Min speed in m/s to use GPS heading instead of compass
 

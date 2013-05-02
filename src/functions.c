@@ -137,25 +137,16 @@ void storeAHRSAngles(void)
 void openLog(void)
 {
 	unsigned int bytesWritten;
-	// Open file for writing
-	if(f_mount(0, &FileSystemObject)!=FR_OK)
+
+	// Check that SD card is mounted
+	if(!SD_MOUNTED)
 	{
-		//flag error
-#ifdef DEBUG_USB
-	sendUSBMessage("FS mount error");
-#endif
+		#ifdef DEBUG_USB
+			sendUSBMessage("SD card not mounted!");
+		#endif
+		return;
 	}
-	driveStatus = disk_initialize (0);
-	if((driveStatus & STA_NOINIT) ||
-		   (driveStatus & STA_NODISK) ||
-		   (driveStatus & STA_PROTECT)
-		   )
-	{
-		//flag error.
-#ifdef DEBUG_USB
-	sendUSBMessage("Drive status error");
-#endif
-	}
+
 	// Generate file name
 	// File name = "/LOG_ddmmyyyy_hhmmss.txt"
 
@@ -203,6 +194,19 @@ void openLog(void)
 
 void closeLog(void)
 {
+	// Flush buffers to SD
+	uint32_t BufferCount = SD_Buf1Count;
+	unsigned int temp = 0;
+	// Make pointer to buffer
+	char* Buffer = &SD_Buffer1[0];
+	// If we are using buffer 2, change pointer
+	if(SD_BUF_IN_USE)
+	{
+		Buffer = &SD_Buffer2[0];
+		BufferCount = SD_Buf2Count;
+	}
+	f_write(&logFile, Buffer, BufferCount, &temp);
+
 	//Close and unmount.
 	SCR2 = SCR2 & ~SCR2_LOGOPEN;
 	SD_WRITE_LOG = 0;
@@ -617,22 +621,24 @@ uint8_t numberFromChar(char c)
 	return c - 48;
 }
 
-ErrorStatus loadSingleSetting(char* name, float32_t* storeLocation)
+// Function to mount SD card
+ErrorStatus mountSDCard(void)
 {
-	FATFS FileSystemObject;
-	DSTATUS driveStatus;
-	FIL settingsFile;
-	unsigned int bytesToRead = 0;
-	unsigned int readBytes = 0;
-	unsigned int bytesProcessed = 0;
-	unsigned int fileSize = 0;
-
+	// Check if card is mounted
+	if(SD_MOUNTED)
+	{
+		// If it is, return
+		#ifdef DEBUG_USB
+			sendUSBMessage("FS already mounted");
+		#endif
+		return ERROR;
+	}
 	// Load drive
 	if(f_mount(0, &FileSystemObject)!=FR_OK)
 	{
-#ifdef DEBUG_USB
-	sendUSBMessage("FS mount error");
-#endif
+		#ifdef DEBUG_USB
+			sendUSBMessage("FS mount error");
+		#endif
 		// Flag error
 		f_mount(0,0);
 		return ERROR;
@@ -642,21 +648,57 @@ ErrorStatus loadSingleSetting(char* name, float32_t* storeLocation)
 		   (driveStatus & STA_NODISK) ||
 		   (driveStatus & STA_PROTECT))
 	{
-#ifdef DEBUG_USB
-	sendUSBMessage("Drive Status error");
-#endif
+		#ifdef DEBUG_USB
+			sendUSBMessage("Drive Status error");
+		#endif
 		// Flag error.
 		f_mount(0,0);
+		return ERROR;
+	}
+	// Mark SD card is mounted
+	SD_MOUNTED = 1;
+	return SUCCESS;
+}
+
+// Function to unmount SD card
+ErrorStatus unmountSDCard(void)
+{
+	if(SD_MOUNTED)
+	{
+		// Close all open files
+		f_mount(0,0);
+		return SUCCESS;
+	}
+	else
+	{
+		return ERROR;
+	}
+}
+
+ErrorStatus loadSingleSetting(char* name, float32_t* storeLocation)
+{
+	FIL settingsFile;
+	unsigned int bytesToRead = 0;
+	unsigned int readBytes = 0;
+	unsigned int bytesProcessed = 0;
+	unsigned int fileSize = 0;
+
+	// Check that SD card is mounted
+	if(!SD_MOUNTED)
+	{
+		#ifdef DEBUG_USB
+			sendUSBMessage("SD card not mounted!");
+		#endif
 		return ERROR;
 	}
 	// Open file
 	if(f_open(&settingsFile, "/settings.txt", FA_READ | FA_WRITE | FA_OPEN_ALWAYS)!=FR_OK)
 	{
-#ifdef DEBUG_USB
-	sendUSBMessage("File open error");
-#endif
+		#ifdef DEBUG_USB
+			sendUSBMessage("File open error");
+		#endif
 		// Flag error
-		f_mount(0,0);
+		f_close(&settingsFile);
 		return ERROR;
 	}
 
@@ -677,7 +719,6 @@ ErrorStatus loadSingleSetting(char* name, float32_t* storeLocation)
 	#endif
 			// Close and unmount.
 			f_close(&settingsFile);
-			f_mount(0,0);
 			return ERROR;
 		}
 		// Store null character to last place
@@ -688,7 +729,6 @@ ErrorStatus loadSingleSetting(char* name, float32_t* storeLocation)
 			// Return success
 			//Close and unmount.
 			f_close(&settingsFile);
-			f_mount(0,0);
 			return SUCCESS;
 		}
 		else
@@ -701,10 +741,8 @@ ErrorStatus loadSingleSetting(char* name, float32_t* storeLocation)
 	}
 	while(bytesProcessed < fileSize);
 
-
-	//Close and unmount.
+	// Close
 	f_close(&settingsFile);
-	f_mount(0,0);
 
 	return ERROR;
 }
@@ -769,6 +807,29 @@ ErrorStatus loadSettings(void)
 	float32ToStr(ahrs_data.PIData.Kpx, "Kpx=", StringBuffer);
 	sendUSBMessage(StringBuffer);
 #endif
+	// Load mag matrix
+	// Rxx
+	if(loadSingleSetting("softMagRxx=", &(ahrs_data.rotationMatrix.vector.pData[Rxx])) != SUCCESS)
+	{
+		// Load default value
+		ahrs_data.rotationMatrix.vector.pData[Rxx] = SOFTMAG_DEFAULT_RXX;
+	}
+#ifdef DEBUG_USB
+	float32ToStr(ahrs_data.rotationMatrix.vector.pData[Rxx], "softMagRxx=", StringBuffer);
+	sendUSBMessage(StringBuffer);
+#endif
+
+	// Ryx
+	if(loadSingleSetting("softMagRyx=", &(ahrs_data.rotationMatrix.vector.pData[Ryx])) != SUCCESS)
+	{
+		// Load default value
+		ahrs_data.rotationMatrix.vector.pData[Ryx] = SOFTMAG_DEFAULT_RYX;
+	}
+#ifdef DEBUG_USB
+	float32ToStr(ahrs_data.rotationMatrix.vector.pData[Ryx], "softMagRyx=", StringBuffer);
+	sendUSBMessage(StringBuffer);
+#endif
+
 
 
 #ifdef DEBUG_USB
@@ -916,6 +977,8 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 
 void extPeripheralInit(void)
 {
+	// Turn sensor power ON
+	SENSOR_POWER_ON;
 	// Initialize SD card
 	FS_Initialize();
 #ifdef DEBUG_USB

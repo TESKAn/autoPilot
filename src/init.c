@@ -420,6 +420,24 @@ void System_Config(void)
 	GPIO_Init(GPIOE, &GPIO_InitStructure);
 #endif
 
+	// E7 = GPIO output, set to 1, for sensor power
+	// Set pin to 1
+	GPIO_WriteBit(GPIOE, GPIO_Pin_7, 1);
+	// Select pin 8
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
+	//set output type
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// open drain output
+	//set pull-up
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	//set pin mode to out function
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	//set pin speed
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	//write mode to selected pins and selected port
+	GPIO_Init(GPIOE, &GPIO_InitStructure);
+	// Set pin to 1
+	GPIO_WriteBit(GPIOE, GPIO_Pin_7, 1);
+
 	//config GPIOE pins 9,11,13,14 for output compare
 	//set AF pin source to TIM1
 	GPIO_PinAFConfig(GPIOE, GPIO_PinSource9, GPIO_AF_TIM1);

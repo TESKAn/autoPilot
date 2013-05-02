@@ -26,6 +26,8 @@ ErrorStatus loadSingleSetting(char* name, float32_t* storeLocation);
 ErrorStatus loadSettings(void);
 char charFromNumber(uint8_t number);
 uint8_t numberFromChar(char c);
+ErrorStatus mountSDCard(void);
+ErrorStatus unmountSDCard(void);
 void NVIC_EnableInterrupts(FunctionalState newState);
 void extPeripheralInit(void);
 void Delayms(uint32_t ms);

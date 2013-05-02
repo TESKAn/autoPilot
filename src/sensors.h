@@ -17,10 +17,10 @@
 #define I2C2_ERRORTIMEOUT		2000
 #define I2C2_ERROR_RETRIESCOUNT	5		// How many times to retry communication
 #define OFFSET_SAMPLE_COUNT		20		// How many samples to take for nulling
-#define OFFSET_MAX_VALUE		400		// Maximum combined value of 20 samples
-#define OFFSET_MIN_VALUE		-400	// Minimum combined value of 20 samples
-#define OFFSET_SAMPLE_MAX_VALUE	200		// Maximum sample value to be valid
-#define OFFSET_SAMPLE_MIN_VALUE	-200	// Minimum sample value to be valid
+#define OFFSET_MAX_VALUE		800		// Maximum combined value of 20 samples
+#define OFFSET_MIN_VALUE		-800	// Minimum combined value of 20 samples
+#define OFFSET_SAMPLE_MAX_VALUE	400		// Maximum sample value to be valid
+#define OFFSET_SAMPLE_MIN_VALUE	-400	// Minimum sample value to be valid
 
 void sensorTimer(void);
 void sensorInterruptTimer(void);
