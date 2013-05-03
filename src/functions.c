@@ -6,6 +6,7 @@
  */
 #include "allinclude.h"
 #include <string.h>
+#include <stdlib.h>
 
 void updateExportVars(void)
 {
@@ -141,10 +142,20 @@ void openLog(void)
 	// Check that SD card is mounted
 	if(!SD_MOUNTED)
 	{
+		// Try to mount SD card
+		if(mountSDCard() == SUCCESS)
+		{
+		#ifdef DEBUG_USB
+			sendUSBMessage("SD card mounted");
+		#endif
+		}
+		else
+		{
 		#ifdef DEBUG_USB
 			sendUSBMessage("SD card not mounted!");
 		#endif
-		return;
+			return;
+		}
 	}
 
 	// Generate file name
@@ -180,9 +191,10 @@ void openLog(void)
 	if(f_open(&logFile, FSBuffer, FA_READ | FA_WRITE | FA_OPEN_ALWAYS)!=FR_OK)
 	{
 		//flag error
-#ifdef DEBUG_USB
-	sendUSBMessage("Open file error");
-#endif
+	#ifdef DEBUG_USB
+		sendUSBMessage("Open file error");
+	#endif
+		return;
 	}
 
 	// Write first line
@@ -207,11 +219,10 @@ void closeLog(void)
 	}
 	f_write(&logFile, Buffer, BufferCount, &temp);
 
-	//Close and unmount.
+	// Close.
 	SCR2 = SCR2 & ~SCR2_LOGOPEN;
 	SD_WRITE_LOG = 0;
 	f_close(&logFile);
-	f_mount(0,0);
 #ifdef DEBUG_USB
 	sendUSBMessage("Log closed");
 #endif
@@ -474,35 +485,260 @@ ErrorStatus int16ToStr(int16_t value, char* text, char* str)
 	return SUCCESS;
 }
 
+// value - floating point value to convert
+// text - text to append before value
+// str - buffer for converted string
+
 ErrorStatus float32ToStr(float32_t value, char* text, char* str)
 {
+	C_Float fConvert;
+	unsigned int temp = 0;
 	int n = strlen(text);
 	int i = 0;
 	float multi = 0;
 	int num = 0;
+	int exp = 0;
 	strcpy (str, text);
-	num = (int)value;
-	n += sprintf (str+n, "%d", num);
-	strcat(str, ".");
-	n++;
-	value = value - (float)num;
-	multi = 1000000;
-	for(i=0; i < 6; i++)
+	unsigned int fexp = 0;
+	int fmantissa = 0;
+	float decExp = 0;
+	float mantissa = 0;
+	int factor = 0;
+	float fact01 = 0;
+	float fact001 = 0;
+	float fact0001 = 0;
+	float fact00001 = 0;
+
+	if((value < 1.0f)||(value > 1.0e9f))
 	{
-		value = value * 10;
-		multi = multi / 10;
-		num = (int)value;
-		if(num == 0)
+		fConvert.f = value;
+
+		fexp = fConvert.parts.exponent;
+		fmantissa = fConvert.parts.mantisa;
+
+		// OR mantissa with mask, if exp is non zero
+		if(fexp != 0)
 		{
-			strcat(str, "0");
-			n++;
+			fmantissa = fmantissa | 0x800000;
+		}
+		// Get exponent
+		exp = (int)fexp - 127;
+		// Remove 23 because of 23 bits in mantissa
+		exp = exp - 23;
+		// Convert exp from base 2 to base 10
+		decExp = (float)exp * 0.30102999566398119521373889472449f;
+		// Store whole exp
+		exp = (int)decExp;
+		// Remove to get partial exp
+		decExp = decExp - (float)exp;
+		// Calculate 10 to partial exp
+		// Use three digits
+		// 10^,1 = 1.2589254117941672104239541063958f
+		// 10^,01 = 1.0232929922807541309662751748199f
+		// 10^,001 = 1.0023052380778996719154048893281f
+		// 10^-0001 = 1.0002302850208247526835942556719f
+		// 10^-,1 = 0.79432823472428150206591828283639f
+		// 10^-,01 = 0.97723722095581068269707600696156f
+		// 10^-,001 = 0.99770006382255331719442194285376f
+		// 10^-,0001 = 0.99976976799815658635141604638981f
+
+		// Get first factor
+		decExp = decExp * 10;
+		factor = (int)(decExp);
+		decExp = decExp - (float)factor;
+		// Get right multiplier
+		multi = 1.2589254117941672104239541063958f;
+		if(decExp < 1)
+		{
+			factor *= -1;
+			multi = 0.79432823472428150206591828283639f;
+		}
+		// Do for iterations
+		if(factor > 0)
+		{
+			factor--;
+			fact01 = multi;
+			for(i=0; i < factor; i++)
+			{
+				fact01 *= multi;
+			}
 		}
 		else
 		{
-			value = value * multi;
+			fact01 = 1;
+		}
+		// Get second factor
+		decExp = decExp * 10;
+		factor = (int)(decExp);
+		decExp = decExp - (float)factor;
+		// Get right multiplier
+		multi = 1.0232929922807541309662751748199f;
+		if(decExp < 1)
+		{
+			factor *= -1;
+			multi = 0.97723722095581068269707600696156f;
+		}
+		// Do for iterations
+		if(factor > 0)
+		{
+			factor--;
+			fact001 = multi;
+			for(i=0; i < factor; i++)
+			{
+				fact001 *= multi;
+			}
+		}
+		else
+		{
+			fact001 = 1;
+		}
+		// Get third factor
+		decExp = decExp * 10;
+		factor = (int)(decExp);
+		decExp = decExp - (float)factor;
+		// Get right multiplier
+		multi = 1.0023052380778996719154048893281f;
+		if(decExp < 1)
+		{
+			factor *= -1;
+			multi = 0.99770006382255331719442194285376f;
+		}
+		// Do for iterations
+		if(factor > 0)
+		{
+			factor--;
+			fact0001 = multi;
+			for(i=0; i < factor; i++)
+			{
+				fact0001 *= multi;
+			}
+		}
+		else
+		{
+			fact0001 = 1;
+		}
+		// Get fourth factor
+		decExp = decExp * 10;
+		factor = (int)(decExp);
+		decExp = decExp - (float)factor;
+		// Get right multiplier
+		multi = 1.0002302850208247526835942556719f;
+		if(decExp < 1)
+		{
+			factor *= -1;
+			multi = 0.99976976799815658635141604638981f;
+		}
+		// Do for iterations
+		if(factor > 0)
+		{
+			factor--;
+			fact00001 = multi;
+			for(i=0; i < factor; i++)
+			{
+				fact00001 *= multi;
+			}
+		}
+		else
+		{
+			fact00001 = 1;
+		}
+		// Multiply together
+		decExp = fact01 * fact001 * fact0001 * fact00001;
+
+		// Multiply with mantissa
+		mantissa = (float)fmantissa * decExp;
+		// Store +/-
+		if(fConvert.parts.sign != 0)
+		{
+			// Negative number
+			// Store - sign
+			strcat(str, "-");
+			n++;
+		}
+		// Store mantissa like x.xxxxxey
+		while(mantissa >= 10.0f)
+		{
+			mantissa /= 10;
+			exp = exp + 1;
+		}
+		while(mantissa < 1)
+		{
+			mantissa *= 10;
+			exp = exp - 1;
+		}
+		// Store
+		num = (int)mantissa;
+		n += sprintf (str+n, "%d", num);
+		strcat(str, ".");
+		n++;
+		mantissa = mantissa - (float)num;
+		multi = 1000000;
+		for(i=0; i < 6; i++)
+		{
+			mantissa = mantissa * 10;
+			multi = multi / 10;
+			num = (int)mantissa;
+			if(num == 0)
+			{
+				strcat(str, "0");
+				n++;
+			}
+			else
+			{
+				mantissa = mantissa * multi;
+				num = (int)mantissa;
+				n += sprintf (str+n, "%d", num);
+				break;
+			}
+		}
+
+
+		/*
+		// If mantissa below 10000000, multiply by 10
+		// And decrease exponent
+		while(mantissa < 10000000)
+		{
+			mantissa *= 10;
+			exp = exp - 1;
+		}
+		// Store
+		fmantissa = (int)mantissa;
+
+
+		// Store mantissa
+		n += sprintf (str+n, "%d", fmantissa);
+		*/
+		// Store e
+		strcat(str, "e");
+		n++;
+		// Store exp
+		n += sprintf (str+n, "%d", exp);
+	}
+	else
+	{
+		num = (int)value;
+		n += sprintf (str+n, "%d", num);
+		strcat(str, ".");
+		n++;
+		value = value - (float)num;
+		multi = 1000000;
+		for(i=0; i < 6; i++)
+		{
+			value = value * 10;
+			multi = multi / 10;
 			num = (int)value;
-			sprintf (str+n, "%d", num);
-			break;
+			if(num == 0)
+			{
+				strcat(str, "0");
+				n++;
+			}
+			else
+			{
+				value = value * multi;
+				num = (int)value;
+				sprintf (str+n, "%d", num);
+				break;
+			}
 		}
 	}
 	return SUCCESS;
@@ -512,59 +748,30 @@ ErrorStatus strToFloat32(float32_t* result, char* file, char* str)
 {
 	char* strBeginning = 0;
 	char* strEnd = 0;
-	uint8_t convert = 0;
+	char* numBeginning = 0;
 	uint8_t strBeginLen = strlen(str);
 	float32_t convertedValue = 0;
-	float32_t multiplier = 0;
-	float32_t fraction = 0;
-	uint8_t i = 0;
-	uint8_t part = 0;
-	char currentChar = 0;
+
 	// file - file that contains data
 	// str - string that marks data, in form of val1=1234;
+
 	strBeginning = strstr(file, str);
 	// Check that it is not null
 	if(strBeginning != NULL)
 	{
 		// Get pointer to where in file string ends
 		strEnd = strstr(strBeginning, ";");
+
+		numBeginning = strBeginning + strBeginLen;
+
 		// Check that we have ending
 		if(strEnd == NULL)
 		{
 			// Return error
 			return ERROR;
 		}
-		// Count how many chars to convert
-		convert = (uint8_t)((uint32_t)(strEnd - strBeginning) - strBeginLen);
 		// Convert
-		for(i = 0; i < convert; i++)
-		{
-			currentChar = strBeginning[strBeginLen + i];
-			if(part == 0)
-			{
-				if(currentChar == '.')
-				{
-					part = 1;
-					multiplier = 1;
-				}
-				else
-				{
-					convertedValue = convertedValue * 10;
-					// Get value
-					convertedValue = convertedValue + (float32_t)numberFromChar(currentChar);
-				}
-			}
-			else
-			{
-				fraction = fraction * 10;
-				multiplier = multiplier * 10;
-				// Get value
-				fraction = fraction + (float32_t)numberFromChar(currentChar);
-			}
-		}
-		// Merge
-		fraction = fraction / multiplier;
-		convertedValue = convertedValue + fraction;
+		convertedValue = strtof(numBeginning, (char**)strEnd);
 	}
 	else
 	{
@@ -686,10 +893,20 @@ ErrorStatus loadSingleSetting(char* name, float32_t* storeLocation)
 	// Check that SD card is mounted
 	if(!SD_MOUNTED)
 	{
-		#ifdef DEBUG_USB
-			sendUSBMessage("SD card not mounted!");
-		#endif
-		return ERROR;
+		// Try to mount SD card
+		if(mountSDCard() == SUCCESS)
+		{
+			#ifdef DEBUG_USB
+				sendUSBMessage("SD card mounted");
+			#endif
+		}
+		else
+		{
+			#ifdef DEBUG_USB
+				sendUSBMessage("SD card not mounted!");
+			#endif
+			return ERROR;
+		}
 	}
 	// Open file
 	if(f_open(&settingsFile, "/settings.txt", FA_READ | FA_WRITE | FA_OPEN_ALWAYS)!=FR_OK)

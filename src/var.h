@@ -55,10 +55,18 @@ typedef union
 	 }bits;
 }Flag;
 
+// Float/char/uint32 typedef
 typedef union
 {
 	float32_t f;
 	unsigned char ch[4];
+	uint32_t ui;
+	struct
+	{
+	    unsigned int mantisa : 23;
+	    unsigned int exponent : 8;
+	    unsigned int sign : 1;
+	} parts;
 } C_Float;
 
 // STM studio vars
