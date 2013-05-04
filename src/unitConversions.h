@@ -14,7 +14,7 @@
 #define DEFAULT_MAG_RATE					0.000635075720f			// 1,3/2047 -> gauss
 #define DEG_TO_RAD							0.017453292519f			// 1 deg/sec is this in rad/sec
 #define RAD_TO_DEG							57.295779513082f		// 1 rad/sec is this in deg/sec
-#define SYSTIME_TOSECONDS					0.001f					// Convert systemTime to seconds
+#define SYSTIME_TOSECONDS					0.00001f				// Convert systemTime to seconds, 1 ms timer, time is stored as 1/100 ms, so divide by 100000.
 #define DEFAULT_ROLLPITCHCORRECTIONSCALE	0.5f					// Weight of roll pitch correction error
 #define DEFAULT_YAWCORRECTIONSCALE			0.5f					// Weight of yaw correction error
 // PID defaults
@@ -33,8 +33,8 @@
 #define DEFAULT_USE_GPS_SPEED				2.0f					// Min speed in m/s to use GPS heading instead of compass
 
 
-#define DEFAULT_PID_ERROR_THRESHOLD		0.0005f						// PID error threshold - do not update PID below this
-#define DEFAULT_MIN_ROTATION_RATE		0.001f						// Minimal rotation to count as actual rotation
+#define DEFAULT_PID_ERROR_THRESHOLD		0.0001f						// PID error threshold - do not update PID below this
+#define DEFAULT_MIN_ROTATION_RATE		0.0001f						// Minimal rotation to count as actual rotation
 
 // Softmag matrix elements
 #define SOFTMAG_DEFAULT_RXX   0.00179807074567474f

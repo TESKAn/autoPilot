@@ -370,7 +370,8 @@ arm_status ahrs_updateRotationMatrix(AHRSData * data)
 	}
 
 	// Calculate change in time
-	dT = (float)(data->GyroVector.deltaTime) * SYSTIME_TOSECONDS;
+	dT = (float)(data->GyroVector.deltaTime);
+	dT = dT * SYSTIME_TOSECONDS;
 	// Calculate change in angles
 	// Calculate change in radians/sec
 	dWx = data->GyroVector.vector.pData[VECT_X];

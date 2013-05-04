@@ -656,11 +656,13 @@ ErrorStatus float32ToStr(float32_t value, char* text, char* str)
 			n++;
 		}
 		// Store mantissa like x.xxxxxey
+		// If larger or equal to 10, divide by 10
 		while(mantissa >= 10.0f)
 		{
 			mantissa /= 10;
 			exp = exp + 1;
 		}
+		// If smaller than 1, multiply by 10
 		while(mantissa < 1)
 		{
 			mantissa *= 10;
@@ -691,23 +693,6 @@ ErrorStatus float32ToStr(float32_t value, char* text, char* str)
 				break;
 			}
 		}
-
-
-		/*
-		// If mantissa below 10000000, multiply by 10
-		// And decrease exponent
-		while(mantissa < 10000000)
-		{
-			mantissa *= 10;
-			exp = exp - 1;
-		}
-		// Store
-		fmantissa = (int)mantissa;
-
-
-		// Store mantissa
-		n += sprintf (str+n, "%d", fmantissa);
-		*/
 		// Store e
 		strcat(str, "e");
 		n++;
