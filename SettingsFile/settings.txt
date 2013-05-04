@@ -1,10 +1,6 @@
-gyroRate=0.030517578125;
+gyroRate=0.03051757812;
 accRate=0.000244140625;
 magRate=0.000635075720;
-magInclination=0.0542506509161570;
-magDeclination=1,0902441579423135;
-PIDThreshold=0.0005;
-MinRotationRate=0.001;
 // Soft mag matrix
 softMagRxx=0.00179807074567474;
 softMagRyx=1.02639947492707e-05;

@@ -132,7 +132,7 @@ void TIM4_ISR_Handler(void)
 			PWMIN_1 = (uint16_t)TIM4_IC1_HighWidth;
 			if(PWM_PASSTHROUGH)
 			{
-				TIM_SetCompare1(TIM2, PWMIN_1);
+				TIM_SetCompare4(TIM1, PWMIN_1);
 				PWMOUT_1 = PWMIN_1;
 			}
 		}
@@ -166,7 +166,7 @@ void TIM4_ISR_Handler(void)
 			PWMIN_2 = (uint16_t)TIM4_IC2_HighWidth;
 			if(PWM_PASSTHROUGH)
 			{
-				TIM_SetCompare2(TIM2, PWMIN_2);
+				TIM_SetCompare3(TIM1, PWMIN_2);
 				PWMOUT_2 = PWMIN_2;
 			}
 		}
@@ -197,11 +197,11 @@ void TIM4_ISR_Handler(void)
 		{
 			// Else transition from high to low
 			TIM4_IC3_HighWidth = result;
-			PWMIN_4 = (uint16_t)TIM4_IC3_HighWidth;
+			PWMIN_3 = (uint16_t)TIM4_IC3_HighWidth;
 			if(PWM_PASSTHROUGH)
 			{
-				TIM_SetCompare4(TIM2, PWMIN_4);
-				PWMOUT_4 = PWMIN_4;
+				TIM_SetCompare2(TIM1, PWMIN_3);
+				PWMOUT_3 = PWMIN_3;
 			}
 		}
 		TIM4_IC3_PreviousValue = dataTemp;
@@ -231,11 +231,11 @@ void TIM4_ISR_Handler(void)
 		{
 			// Else transition from high to low
 			TIM4_IC4_HighWidth = result;
-			PWMIN_3 = (uint16_t)TIM4_IC4_HighWidth;
+			PWMIN_4 = (uint16_t)TIM4_IC4_HighWidth;
 			if(PWM_PASSTHROUGH)
 			{
-				TIM_SetCompare3(TIM2, PWMIN_3);
-				PWMOUT_3 = PWMIN_3;
+				TIM_SetCompare1(TIM1, PWMIN_4);
+				PWMOUT_3 = PWMIN_4;
 			}
 		}
 		TIM4_IC4_PreviousValue = dataTemp;
@@ -273,7 +273,7 @@ void TIM8_CC_ISR_Handler(void)
 			PWMIN_5 = (uint16_t)TIM8_IC1_HighWidth;
 			if(PWM_PASSTHROUGH)
 			{
-				TIM_SetCompare1(TIM3, PWMIN_5);
+				TIM_SetCompare4(TIM3, PWMIN_5);
 				PWMOUT_5 = PWMIN_5;
 			}
 		}
@@ -306,7 +306,7 @@ void TIM8_CC_ISR_Handler(void)
 			PWMIN_6 = (uint16_t)TIM8_IC2_HighWidth;
 			if(PWM_PASSTHROUGH)
 			{
-				TIM_SetCompare2(TIM3, PWMIN_6);
+				TIM_SetCompare3(TIM3, PWMIN_6);
 				PWMOUT_6 = PWMIN_6;
 			}
 		}
@@ -340,7 +340,7 @@ void TIM8_CC_ISR_Handler(void)
 			PWMIN_7 = (uint16_t)TIM8_IC3_HighWidth;
 			if(PWM_PASSTHROUGH)
 			{
-				TIM_SetCompare3(TIM3, PWMIN_7);
+				TIM_SetCompare2(TIM3, PWMIN_7);
 				PWMOUT_7 = PWMIN_7;
 			}
 		}
@@ -374,7 +374,7 @@ void TIM8_CC_ISR_Handler(void)
 			PWMIN_8 = (uint16_t)TIM8_IC4_HighWidth;
 			if(PWM_PASSTHROUGH)
 			{
-				TIM_SetCompare4(TIM3, PWMIN_8);
+				TIM_SetCompare1(TIM3, PWMIN_8);
 				PWMOUT_8 = PWMIN_8;
 			}
 		}

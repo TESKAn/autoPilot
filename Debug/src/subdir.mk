@@ -10,6 +10,7 @@ C_SRCS += \
 ../src/ahrs_math.c \
 ../src/compass.c \
 ../src/events.c \
+../src/flight.c \
 ../src/functions.c \
 ../src/gps.c \
 ../src/init.c \
@@ -39,6 +40,7 @@ OBJS += \
 ./src/ahrs_math.o \
 ./src/compass.o \
 ./src/events.o \
+./src/flight.o \
 ./src/functions.o \
 ./src/gps.o \
 ./src/init.o \
@@ -66,6 +68,7 @@ C_DEPS += \
 ./src/ahrs_math.d \
 ./src/compass.d \
 ./src/events.d \
+./src/flight.d \
 ./src/functions.d \
 ./src/gps.d \
 ./src/init.d \

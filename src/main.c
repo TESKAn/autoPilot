@@ -121,7 +121,7 @@ int main(void)
 	PWMEN_OUT_ENABLE = 1;
 
 	// Mount SD card
-	mountSDCard();
+	//mountSDCard();
 
     while (1)
     {
@@ -216,10 +216,10 @@ int main(void)
         {
         	//loadSettings();
         	//loadSingleSetting("hardMagZ=", &temp);
-        	//PWMEN_OUT_ENABLE = ~PWMEN_OUT_ENABLE;
+        	PWMEN_OUT_ENABLE = ~PWMEN_OUT_ENABLE;
         	//SD_POWER_TOGGLE;
-        	temp = 0.0f;
-        	float32ToStr(temp, "test=", StringBuffer);
+        	//float32ToStr(temp, "test=", StringBuffer);
+        	//storeSettings();
         	SCR1 = SCR1 & ~SCR_12;
         }
         if(SCR1 & SCR_13)

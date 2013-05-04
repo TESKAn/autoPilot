@@ -152,6 +152,8 @@ typedef struct
 	int16_t sampleDiscardCount;
 	// Error threshold for updating
 	float32_t PIDErrorThreshold;
+	float32_t MinRotationRate;
+	float32_t MinGPSSpeed;
 
 }__attribute__((aligned(4),packed)) AHRSData;
 

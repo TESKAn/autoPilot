@@ -155,6 +155,8 @@ void initAHRSStructure(AHRSData * ahrsStructure)
 	ahrsStructure->PIData.rMin = DEFAULT_RMIN;
 	ahrsStructure->sampleDiscardCount = DEFAULT_DISCARD_COUNT;
 	ahrsStructure->PIDErrorThreshold = DEFAULT_PID_ERROR_THRESHOLD;
+	ahrsStructure->MinRotationRate = DEFAULT_MIN_ROTATION_RATE;
+	ahrsStructure->MinGPSSpeed = DEFAULT_USE_GPS_SPEED;
 
 }
 

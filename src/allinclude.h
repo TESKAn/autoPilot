@@ -52,4 +52,6 @@
 
 #include "AudioComm.h"
 
+#include "flight.h"
+
 #endif /* ALLINCLUDE_H_ */

@@ -502,6 +502,16 @@ ErrorStatus float32ToStr(float32_t value, char* text, char* str)
 
 	if(value != 0)
 	{
+		// Store +/-
+		if(value < 0)
+		{
+			// Negative number
+			// Store - sign
+			strcat(str, "-");
+			n++;
+			// Make positive
+			value *= -1;
+		}
 		// Move value up or down
 		exp = 0;
 		// If larger or equal to 10, divide by 10
@@ -516,21 +526,14 @@ ErrorStatus float32ToStr(float32_t value, char* text, char* str)
 			value *= 10;
 			exp = exp - 1;
 		}
-		// Store +/-
-		if(value < 0)
-		{
-			// Negative number
-			// Store - sign
-			strcat(str, "-");
-			n++;
-		}
+
 		num = (int)value;
 		n += sprintf (str+n, "%d", num);
 		strcat(str, ".");
 		n++;
 		value = value - (float)num;
-		multi = 10000000000;
-		for(i=0; i < 10; i++)
+		multi = 1000000000;
+		for(i=0; i < 9; i++)
 		{
 			value = value * 10;
 			multi = multi / 10;
@@ -779,6 +782,357 @@ ErrorStatus loadSingleSetting(char* name, float32_t* storeLocation)
 	f_close(&settingsFile);
 
 	return ERROR;
+}
+
+// Store parameters calculated in software
+// Like PID coefficients etc.
+ErrorStatus storeRunningValues(void)
+{
+	FIL settingsFile;
+#ifdef DEBUG_USB
+	sendUSBMessage("Begin saving parameters");
+#endif
+	if(!SD_MOUNTED)
+	{
+		// Try to mount SD card
+		if(mountSDCard() == SUCCESS)
+		{
+			#ifdef DEBUG_USB
+				sendUSBMessage("SD card mounted");
+			#endif
+		}
+		else
+		{
+			#ifdef DEBUG_USB
+				sendUSBMessage("SD card not mounted!");
+			#endif
+			return ERROR;
+		}
+	}
+	// Open file
+	if(f_open(&settingsFile, "/settings1.txt", FA_READ | FA_WRITE | FA_OPEN_ALWAYS)!=FR_OK)
+	{
+		#ifdef DEBUG_USB
+			sendUSBMessage("File open error");
+		#endif
+		// Flag error
+		f_close(&settingsFile);
+		return ERROR;
+	}
+	/*
+	// Store number
+	float32ToStr(ahrs_data.accRate, "accRate=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts ("\r\n", &settingsFile);
+	f_puts (FSBuffer, &settingsFile);
+	*/
+	// Close file
+	f_close(&settingsFile);
+
+#ifdef DEBUG_USB
+	sendUSBMessage("Parameters saved");
+#endif
+
+	return SUCCESS;
+}
+
+// Store program parameters
+ErrorStatus storeSettings(void)
+{
+	FIL settingsFile;
+#ifdef DEBUG_USB
+	sendUSBMessage("Begin saving settings");
+#endif
+	if(!SD_MOUNTED)
+	{
+		// Try to mount SD card
+		if(mountSDCard() == SUCCESS)
+		{
+			#ifdef DEBUG_USB
+				sendUSBMessage("SD card mounted");
+			#endif
+		}
+		else
+		{
+			#ifdef DEBUG_USB
+				sendUSBMessage("SD card not mounted!");
+			#endif
+			return ERROR;
+		}
+	}
+	// Open file
+	if(f_open(&settingsFile, "/settings1.txt", FA_READ | FA_WRITE | FA_OPEN_ALWAYS)!=FR_OK)
+	{
+		#ifdef DEBUG_USB
+			sendUSBMessage("File open error");
+		#endif
+		// Flag error
+		f_close(&settingsFile);
+		return ERROR;
+	}
+	// Store settings
+	// Acc rate
+	// Store number
+	float32ToStr(ahrs_data.accRate, "accRate=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts ("Acceleration rate\r\n", &settingsFile);
+	f_puts (FSBuffer, &settingsFile);
+
+	// Gyro rate
+	// Store number
+	float32ToStr(ahrs_data.gyroRate, "gyroRate=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts ("Gyro rate\r\n", &settingsFile);
+	f_puts (FSBuffer, &settingsFile);
+
+	// Mag rate
+	// Store number
+	float32ToStr(ahrs_data.magRate, "magRate=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts ("Magnetometer rate\r\n", &settingsFile);
+	f_puts (FSBuffer, &settingsFile);
+
+	// Mag inclination
+	// Store number
+	float32ToStr(DEFAULT_MAG_INCLINATION, "magInclination=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts ("Magnetic field inclination\r\n", &settingsFile);
+	f_puts (FSBuffer, &settingsFile);
+
+	// Mag declination
+	// Store number
+	float32ToStr(DEFAULT_MAG_DECLINATION, "magDeclination=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts ("Magnetic field declination\r\n", &settingsFile);
+	f_puts (FSBuffer, &settingsFile);
+
+	// PID threshold
+	// Store number
+	float32ToStr(ahrs_data.PIDErrorThreshold, "PIDThreshold=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts ("Minimal PID error to use\r\n", &settingsFile);
+	f_puts (FSBuffer, &settingsFile);
+
+	// Minimal rotation rate that is detected
+	// Store number
+	float32ToStr(ahrs_data.MinRotationRate, "MinRotationRate=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts ("Minimal detectable rotation rate\r\n", &settingsFile);
+	f_puts (FSBuffer, &settingsFile);
+
+	// Soft mag matrix
+	// Store number
+	float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Rxx], "softMagRxx=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts ("Softmag matrix coefficients\r\n", &settingsFile);
+	f_puts (FSBuffer, &settingsFile);
+
+	// Store number
+	float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Ryx], "softMagRyx=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts (FSBuffer, &settingsFile);
+
+	// Store number
+	float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Rzx], "softMagRzx=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts (FSBuffer, &settingsFile);
+
+	// Store number
+	float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Rxy], "softMagRxy=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts (FSBuffer, &settingsFile);
+
+	// Store number
+	float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Ryy], "softMagRyy=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts (FSBuffer, &settingsFile);
+
+	// Store number
+	float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Rzy], "softMagRzy=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts (FSBuffer, &settingsFile);
+
+	// Store number
+	float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Rxz], "softMagRxz=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts (FSBuffer, &settingsFile);
+
+	// Store number
+	float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Ryz], "softMagRyz=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts (FSBuffer, &settingsFile);
+
+	// Store number
+	float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Rzz], "softMagRzz=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts (FSBuffer, &settingsFile);
+
+	// Hard mag vector
+	// Store number
+	float32ToStr(ahrs_data.MagOffsetVector.vector.pData[VECT_X], "hardMagX=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts ("Hard mag vector\r\n", &settingsFile);
+	f_puts (FSBuffer, &settingsFile);
+
+	// Store number
+	float32ToStr(ahrs_data.MagOffsetVector.vector.pData[VECT_Y], "hardMagY=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts (FSBuffer, &settingsFile);
+
+	// Store number
+	float32ToStr(ahrs_data.MagOffsetVector.vector.pData[VECT_Z], "hardMagZ=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts (FSBuffer, &settingsFile);
+
+	// Hard mag scale
+	// Store number
+	float32ToStr(SOFTMAG_SCALE, "hardMagScale=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts ("Hard mag scale\r\n", &settingsFile);
+	f_puts (FSBuffer, &settingsFile);
+
+	// PID parameters
+	// Store number
+	float32ToStr(ahrs_data.PIData.Kix, "Kix=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts ("PID parameters\r\n", &settingsFile);
+	f_puts (FSBuffer, &settingsFile);
+
+	// Store number
+	float32ToStr(ahrs_data.PIData.Kpx, "Kpx=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts (FSBuffer, &settingsFile);
+
+	// Store number
+	float32ToStr(ahrs_data.PIData.eMax, "PID_MaxErr=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts (FSBuffer, &settingsFile);
+
+	// Store number
+	float32ToStr(ahrs_data.PIData.eMin, "PID_MinErr=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts (FSBuffer, &settingsFile);
+
+	// Store number
+	float32ToStr(ahrs_data.PIData.maxIx, "PID_MaxI=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts (FSBuffer, &settingsFile);
+
+	// Store number
+	float32ToStr(ahrs_data.PIData.minIx, "PID_MinI=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts (FSBuffer, &settingsFile);
+
+	// Store number
+	float32ToStr(ahrs_data.PIData.rMax, "PID_MaxR=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts (FSBuffer, &settingsFile);
+
+	// Store number
+	float32ToStr(ahrs_data.PIData.rMin, "PID_MinR=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts (FSBuffer, &settingsFile);
+
+
+	// Roll, pitch, yaw correction factors
+	// Store number
+	float32ToStr(ahrs_data.RollPitchCorrectionScale, "rollPitchCorrectionScale=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts ("Roll, pitch, yaw correction factors\r\n", &settingsFile);
+	f_puts (FSBuffer, &settingsFile);
+
+	// Store number
+	float32ToStr(ahrs_data.YawCorrectionScale, "yawCorrectionScale=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts (FSBuffer, &settingsFile);
+
+	// Samples to discard on startup
+	// Store number
+	float32ToStr(ahrs_data.sampleDiscardCount, "discardCount=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts ("Samples to discard on startup\r\n", &settingsFile);
+	f_puts (FSBuffer, &settingsFile);
+
+	// Minimum GPS speed to use GPS for yaw
+	// Store number
+	float32ToStr(ahrs_data.MinGPSSpeed, "useGPSSpeed=", FSBuffer);
+	// Store end of line
+	strcat(FSBuffer, ";\r\n");
+	// Write
+	f_puts ("Minimum GPS speed to use GPS for yaw\r\n", &settingsFile);
+	f_puts (FSBuffer, &settingsFile);
+
+	// Close file
+	f_close(&settingsFile);
+
+#ifdef DEBUG_USB
+	sendUSBMessage("Settings saved");
+#endif
+	return SUCCESS;
 }
 
 ErrorStatus loadSettings(void)
