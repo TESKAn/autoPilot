@@ -33,7 +33,7 @@
 #define DEFAULT_USE_GPS_SPEED				2.0f					// Min speed in m/s to use GPS heading instead of compass
 
 
-#define DEFAULT_PID_ERROR_THRESHOLD		0.0001f						// PID error threshold - do not update PID below this
+#define DEFAULT_PID_ERROR_THRESHOLD		0.000154f						// PID error threshold - do not update PID below this
 #define DEFAULT_MIN_ROTATION_RATE		0.0001f						// Minimal rotation to count as actual rotation
 
 // Softmag matrix elements
