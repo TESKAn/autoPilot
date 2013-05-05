@@ -137,6 +137,8 @@ void TIM4_ISR_Handler(void)
 			}
 		}
 		TIM4_IC1_PreviousValue = dataTemp;
+		TIM_ClearITPendingBit(TIM4, TIM_IT_CC1);
+		TIM_ClearFlag(TIM4, TIM_FLAG_CC1);
 	}
 
 	else if((TIM4->SR & TIM_FLAG_CC2) != (u16)RESET)
@@ -171,6 +173,8 @@ void TIM4_ISR_Handler(void)
 			}
 		}
 		TIM4_IC2_PreviousValue = dataTemp;
+		TIM_ClearITPendingBit(TIM4, TIM_IT_CC2);
+		TIM_ClearFlag(TIM4, TIM_FLAG_CC2);
 	}
 
 	else if((TIM4->SR & TIM_FLAG_CC3) != (u16)RESET)
@@ -205,6 +209,8 @@ void TIM4_ISR_Handler(void)
 			}
 		}
 		TIM4_IC3_PreviousValue = dataTemp;
+		TIM_ClearITPendingBit(TIM4, TIM_IT_CC3);
+		TIM_ClearFlag(TIM4, TIM_FLAG_CC3);
 	}
 
 	else if((TIM4->SR & TIM_FLAG_CC4) != (u16)RESET)
@@ -239,6 +245,8 @@ void TIM4_ISR_Handler(void)
 			}
 		}
 		TIM4_IC4_PreviousValue = dataTemp;
+		TIM_ClearITPendingBit(TIM4, TIM_IT_CC4);
+		TIM_ClearFlag(TIM4, TIM_FLAG_CC4);
 	}
 }
 
@@ -278,6 +286,8 @@ void TIM8_CC_ISR_Handler(void)
 			}
 		}
 		TIM8_IC1_PreviousValue = dataTemp;
+		TIM_ClearITPendingBit(TIM8, TIM_IT_CC1);
+		TIM_ClearFlag(TIM8, TIM_FLAG_CC1);
 	}
 	else if((TIM8->SR & TIM_FLAG_CC2) != (u16)RESET)
 	{
@@ -311,6 +321,8 @@ void TIM8_CC_ISR_Handler(void)
 			}
 		}
 		TIM8_IC2_PreviousValue = dataTemp;
+		TIM_ClearITPendingBit(TIM8, TIM_IT_CC2);
+		TIM_ClearFlag(TIM8, TIM_FLAG_CC2);
 	}
 
 	else if((TIM8->SR & TIM_FLAG_CC3) != (u16)RESET)
@@ -345,6 +357,8 @@ void TIM8_CC_ISR_Handler(void)
 			}
 		}
 		TIM8_IC3_PreviousValue = dataTemp;
+		TIM_ClearITPendingBit(TIM8, TIM_IT_CC3);
+		TIM_ClearFlag(TIM8, TIM_FLAG_CC3);
 	}
 
 	else if((TIM8->SR & TIM_FLAG_CC4) != (u16)RESET)
@@ -379,6 +393,61 @@ void TIM8_CC_ISR_Handler(void)
 			}
 		}
 		TIM8_IC4_PreviousValue = dataTemp;
+		TIM_ClearITPendingBit(TIM8, TIM_IT_CC4);
+		TIM_ClearFlag(TIM8, TIM_FLAG_CC4);
+	}
+}
+
+/**
+  * @brief  This function handles Timer 9 event interrupt request.
+  * @param  None
+  * @retval None
+  * @services TIM9
+  */
+void TIM1_BRK_TIM9_ISR_Handler(void)
+{
+	// Received signal strength indicator
+	uint32_t dataTemp = 0;
+	uint32_t result = 0;
+	float32_t strength = 0;
+	if((TIM9->SR & TIM_FLAG_CC1) != (u16)RESET)
+	{
+		// CC on channel 1
+		dataTemp = TIM_GetCapture1(TIM9);
+		// Reset signal strength timeout
+		signalStrengthCount = 0;
+		// Calculate time
+		// Check value
+		if(dataTemp > TIM9_IC1_PreviousValue)
+		{
+			result = dataTemp - TIM9_IC1_PreviousValue;
+		}
+		else
+		{
+			result = (TIM9_PERIOD - TIM9_IC1_PreviousValue) + dataTemp;
+		}
+		// Check input polarity
+		if(GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_5) != 0)
+		{
+			// Input is not 0, transition from low to high
+			TIM9_IC1_LowWidth = result;
+		}
+		else
+		{
+			// Else transition from high to low
+			TIM9_IC1_HighWidth = result;
+			// Calculate DC
+			// Calculate period
+			strength = TIM9_IC1_HighWidth + TIM9_IC1_LowWidth;
+			// Calculate DC
+			strength = TIM9_IC1_LowWidth / strength;
+			strength = strength * 100;
+			RSSI_STRENGTH = (uint16_t)strength;
+
+		}
+		TIM9_IC1_PreviousValue = dataTemp;
+		TIM_ClearITPendingBit(TIM9, TIM_IT_CC1);
+		TIM_ClearFlag(TIM9, TIM_FLAG_CC1);
 	}
 }
 
@@ -397,10 +466,27 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 	if((TIM14->SR & TIM_FLAG_Update) != (u16)RESET)
 	{
 		TIM_ClearFlag(TIM14, TIM_FLAG_Update);
+		TIM_ClearITPendingBit(TIM14, TIM_IT_Update);
 
 		// Update system time
 		systemTime++;
-		DEBUG_PIN_TOGGLE;
+
+		// Signal strength count
+		signalStrengthCount++;
+		if(signalStrengthCount > SIGNALSTRENGTH_MAXTIME)
+		{
+			signalStrengthCount = SIGNALSTRENGTH_MAXTIME;
+			// Check input polarity
+			if(GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_5) != 0)
+			{
+				RSSI_STRENGTH = 0;
+			}
+			else
+			{
+				RSSI_STRENGTH = 100;
+			}
+		}
+		//DEBUG_PIN_TOGGLE;
 		if(PWMEN_OUT_ENABLE)
 		{
 			PWMEN_PIN_TOGGLE;
@@ -501,21 +587,29 @@ void TIM1_CC_ISR_Handler(void)
 	{
 		//read IC1 value
 		TIM1CaptureValue1 = TIM_GetCapture1(TIM1);
+		TIM_ClearITPendingBit(TIM1, TIM_IT_CC1);
+		TIM_ClearFlag(TIM1, TIM_FLAG_CC1);
 	}
 	if((TIM1->SR & TIM_FLAG_CC2) != (u16)RESET)
 	{
 		//read IC2 value
 		TIM1CaptureValue2 = TIM_GetCapture2(TIM1);
+		TIM_ClearITPendingBit(TIM1, TIM_IT_CC2);
+		TIM_ClearFlag(TIM1, TIM_FLAG_CC2);
 	}
 	if((TIM1->SR & TIM_FLAG_CC3) != (u16)RESET)
 	{
 		//read IC3 value
 		TIM1CaptureValue3 = TIM_GetCapture3(TIM1);
+		TIM_ClearITPendingBit(TIM1, TIM_IT_CC3);
+		TIM_ClearFlag(TIM1, TIM_FLAG_CC3);
 	}
 	if((TIM1->SR & TIM_FLAG_CC4) != (u16)RESET)
 	{
 		//read IC4 value
 		TIM1CaptureValue4 = TIM_GetCapture4(TIM1);
+		TIM_ClearITPendingBit(TIM1, TIM_IT_CC4);
+		TIM_ClearFlag(TIM1, TIM_FLAG_CC4);
 	}
 }
 

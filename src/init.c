@@ -392,10 +392,10 @@ void System_Config(void)
 #ifndef GPIOE5_IS_DEBUG
 	//connect pin E5 to timer input
 	GPIO_PinAFConfig(GPIOE, GPIO_PinSource5, GPIO_AF_TIM9);
-	//select pins 12 - 15
+	//select pin 5
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
 	//set output type
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// push/pull
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;	// push/pull
 	//set pull-up
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
 	//set pin mode to alternate function
@@ -712,6 +712,37 @@ void System_Config(void)
 	TIM_Cmd(TIM8, ENABLE);
 
 	// End of timer 8
+
+	// Timer 9 - lost packet indicator
+	// Enable clock(s)
+	// Clock = 84 MHz
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM9, ENABLE);
+	// Populate structure
+	TIM_TimeBaseInitStruct.TIM_ClockDivision = TIM_CKD_DIV1;	//1 - 4
+	TIM_TimeBaseInitStruct.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseInitStruct.TIM_Period = TIM9_PERIOD;
+	TIM_TimeBaseInitStruct.TIM_Prescaler = TIM9_PRESCALER;
+	TIM_TimeBaseInitStruct.TIM_RepetitionCounter = 0;
+	// Configure timer 9
+	TIM_TimeBaseInit(TIM9, &TIM_TimeBaseInitStruct);
+
+	// Populate structure
+	TIM_ICInitStruct.TIM_Channel = TIM_Channel_1;
+	TIM_ICInitStruct.TIM_ICPolarity = TIM_ICPolarity_BothEdge;
+	TIM_ICInitStruct.TIM_ICSelection = TIM_ICSelection_DirectTI;
+	TIM_ICInitStruct.TIM_ICPrescaler = TIM_ICPSC_DIV1;
+	TIM_ICInitStruct.TIM_ICFilter = TIM9_FILTER;
+	TIM_ICInit(TIM9, &TIM_ICInitStruct);
+
+
+	// Configure interrupt
+	TIM_ITConfig(TIM9, TIM_IT_CC1, ENABLE);
+
+	// Enable timer
+	TIM_Cmd(TIM9, ENABLE);
+
+	// End timer 9
+
 
 	// Timer 6 - timing for DAC
 

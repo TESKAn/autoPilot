@@ -133,6 +133,9 @@ void crcOnMessage(unsigned int uiDataLen);
 // Magnetometer heading in deg/10
 #define MAG_HEADING			MODBUSReg[81]
 
+// Signal strength indicator
+#define RSSI_STRENGTH		MODBUSReg[82]
+
 // Typedefs
 // MODBUS data structure
 typedef union

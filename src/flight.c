@@ -17,10 +17,21 @@ PIData YawPID;
 uint16_t PWMValues[12];
 
 // Stabilize flight function
+// When remote control is idle, control roll, pitch, yaw to stabilize plane in level flight
 ErrorStatus FlightStabilize(void)
 {
 	return SUCCESS;
 }
+
+// Return to launch function
+// When remote signal is lost, return plane to launch
+ErrorStatus FlightRTL(void)
+{
+	return SUCCESS;
+}
+
+// Circle function
+// Circle plane
 
 // Flight PID function
 ErrorStatus FlightPID(PIData* PID, float32_t error, uint32_t deltaT)

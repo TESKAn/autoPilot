@@ -230,6 +230,16 @@ void TIM8_TRG_COM_TIM14_IRQHandler(void)
 	TIM8_TRG_COM_TIM14_ISR_Handler();
 }
 
+/**
+  * @brief  This function handles Timer 9 event interrupt request.
+  * @param  None
+  * @retval None
+  * @services TIM9
+  */
+void TIM1_BRK_TIM9_IRQHandler(void)
+{
+	TIM1_BRK_TIM9_ISR_Handler();
+}
 
 /**
   * @brief  This function handles DMA1 stream6 event interrupt request.

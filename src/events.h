@@ -11,6 +11,7 @@
 void ADC_ISR_Handler(void);
 void TIM4_ISR_Handler(void);
 void TIM8_CC_ISR_Handler(void);
+void TIM1_BRK_TIM9_ISR_Handler(void);
 void TIM8_TRG_COM_TIM14_ISR_Handler(void);
 //void DMA1_Stream6_IRQHandler(void);
 void DMA1_Stream4_ISR_Handler(void);

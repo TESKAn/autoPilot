@@ -10,7 +10,7 @@
 
 // Configuration macros
 // Define GPIO pin 5 as debug output
-#define GPIOE5_IS_DEBUG
+//#define GPIOE5_IS_DEBUG
 // Define send debug messages over USB
 #define DEBUG_USB
 
@@ -174,6 +174,12 @@
 #define TIM8_FILTER		1
 #define TIM8_PERIOD		0xFFFF
 
+// Timer 9 macros
+// Set for 0,1 ms/pulse prescaler
+#define TIM9_PRESCALER	8400
+#define TIM9_FILTER		1
+#define TIM9_PERIOD		0xFFFF
+
 // Timer 14 macros
 #define TIM14_PERIOD		1000	//1 ms period = 1000
 #define TIM14_PRESCALER		84		//divide ref clock by 84 to get 1 MHz
@@ -187,9 +193,11 @@
 #define SPI_SDCARD_RELEASE	GPIO_WriteBit(GPIOB, GPIO_Pin_12, 1)
 
 // Debug macros
+/*
 #define DEBUG_PIN_ON		GPIO_WriteBit(GPIOE, GPIO_Pin_5, 1)
 #define DEBUG_PIN_OFF		GPIO_WriteBit(GPIOE, GPIO_Pin_5, 0)
 #define DEBUG_PIN_TOGGLE	GPIO_ToggleBits(GPIOE, GPIO_Pin_5)
+*/
 
 // PWM enable macro
 #define PWMEN_PIN_TOGGLE	GPIO_ToggleBits(GPIOE, GPIO_Pin_15)
@@ -206,6 +214,10 @@
 #define SENSOR_POWER_ON		GPIO_WriteBit(GPIOE, GPIO_Pin_7, 0)
 // Sensor power OFF
 #define SENSOR_POWER_OFF	GPIO_WriteBit(GPIOE, GPIO_Pin_7, 1)
+
+// Signal strength macros
+// How much time between pulses to declare value to be DC
+#define SIGNALSTRENGTH_MAXTIME	3000	// 3 seconds
 
 // Fast report macros
 #define REPORT_DCM				0x00001

@@ -125,6 +125,11 @@ extern volatile uint32_t TIM8_IC4_PreviousValue;
 extern volatile uint32_t TIM8_IC4_LowWidth;
 extern volatile uint32_t TIM8_IC4_HighWidth;
 
+// TIM9 variables
+extern volatile uint32_t TIM9_IC1_PreviousValue;
+extern volatile uint32_t TIM9_IC1_LowWidth;
+extern volatile uint32_t TIM9_IC1_HighWidth;
+
 //GPS variables
 extern volatile uint16_t GPS_Latitude;
 extern volatile uint16_t GPS_Longitude;
@@ -172,5 +177,8 @@ extern volatile C_Float floatToUint32;
 extern volatile uint32_t fastDataSelect;
 
 extern volatile uint16_t errorUpdateInterval;
+
+// Signal strength variables
+extern volatile uint32_t signalStrengthCount;
 
 #endif /* VAR_H_ */

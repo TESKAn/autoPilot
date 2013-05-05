@@ -66,6 +66,11 @@ volatile uint32_t TIM8_IC4_PreviousValue = 0;
 volatile uint32_t TIM8_IC4_LowWidth = 0;
 volatile uint32_t TIM8_IC4_HighWidth = 0;
 
+// TIM9 variables
+volatile uint32_t TIM9_IC1_PreviousValue = 0;
+volatile uint32_t TIM9_IC1_LowWidth = 0;
+volatile uint32_t TIM9_IC1_HighWidth = 0;
+
 // GPS variables
 // Defined in modbus.h
 
@@ -111,3 +116,6 @@ volatile C_Float floatToUint32;
 volatile uint32_t fastDataSelect = 0;
 
 volatile uint16_t errorUpdateInterval = 0;
+
+// Signal strength variables
+volatile uint32_t signalStrengthCount = 0;
