@@ -2098,6 +2098,25 @@ ErrorStatus I2C_CheckForError(I2C_TypeDef* I2Cx)
 void I2C2_Configure(FunctionalState NewState)
 {
 	I2C_InitTypeDef I2CInitStruct;
+	//make structure for configuring pins
+	GPIO_InitTypeDef  GPIO_InitStructure;
+
+	// Config GPIO
+	// Connect pins B10 and B11 to I2C 2
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource10, GPIO_AF_I2C2);
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource11, GPIO_AF_I2C2);
+	// Select pins 10 and 11
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_11;
+	//set output type
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;	// open drain output
+	//set pull-up
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	//set pin mode to alternate function
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+	//set pin speed
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	//write mode to selected pins and selected port
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
 	// Enable clock
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C2, ENABLE);
 	// I2C2 config
