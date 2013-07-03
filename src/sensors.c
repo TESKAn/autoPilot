@@ -297,6 +297,13 @@ void copySensorData(void)
 	// Store angles
 	storeAHRSAngles();
 
+	// Check if we are sending constantly
+	if(CONSTANT_SERIAL_UPDATE)
+	{
+		// If yes, send data
+		MODBUS_SendMessage();
+	}
+
 	// Update export vars
 	//updateExportVars();
 

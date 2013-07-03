@@ -14,6 +14,9 @@ volatile unsigned char ucMBCRCHI = 0;
 volatile int MODBUS_Timeout = 0;
 // MODBUS registers
 uint16_t MODBUSReg[MB_TOTALREGISTERS];
+
+uint16_t MODBUSMessageDivider = 0;
+
 // Var holds data
 Typedef_mbd MODBUSData;
 // MODBUS temp reg variable
@@ -86,34 +89,77 @@ void MODBUS_Timer(void)
 #endif
 }
 
+void MODBUS_SendMessage()
+{
+	int i = 0;
+	int responseByteCount = 0;
+	unsigned int uiTemp = 0;
+	// Increase divider count
+	MODBUSMessageDivider--;
+	// If divider larger than set
+	if(MODBUSMessageDivider < 1)
+	{
+		// Set divider to zero
+		MODBUSMessageDivider = MB_MESSAGEDIVIDER;
+		// Send message over RS232
+		// First setup response
+		responseByteCount = 0;
+		// Store slave ID
+		MODBUSData.bytes.cdata[0] = MB_SLAVEID;
+		// Store function code
+		MODBUSData.bytes.cdata[1] = MBRWMULTIPLEREGISTERS;
+		// Store data quantity
+		MODBUSData.bytes.cdata[2] = MB_TOTALREGISTERS * 2;
+		// Store how much data we have
+		responseByteCount = 3;
+		// Store data
+		for(i=0; i < MB_TOTALREGISTERS; i++)
+		{
+			//uiTemp = *MODBUS_Pointers[i];
+			uiTemp = MODBUSReg[i];
+			// Store data to buffer
+			MODBUSData.bytes.cdata[responseByteCount] = (uiTemp >> 8) & 0x00FF;
+			responseByteCount++;
+			MODBUSData.bytes.cdata[responseByteCount] = uiTemp & 0x00FF;
+			responseByteCount++;
+		}
+		// Store number of bytes
+		MODBUSData.bytes.uiDataCount = responseByteCount;
+		// Calculate CRC and add it to message
+		crcOnMessage(responseByteCount);
+		// Send message with DMA
+		transferDMA_USART2(MODBUSData.bytes.cdata, MODBUSData.bytes.uiDataCount);
+	}
+}
+
 // Function to process data once it is received
 void MODBUS_ExecuteFunction()
 {
-	int i = 0;
-	int writeDataIndex = 0;
 	int responseByteCount = 0;
-	unsigned int uiTemp = 0;
+	uint16_t response = 0;
 	// Check function
 	switch(MODBUSData.data.cFunctionCode)
 	{
 		case MBRWMULTIPLEREGISTERS:
 		{
-			// Read/write registers
-			// First write all registers
-			// Set index to start from 0
-			writeDataIndex = 0;
-			for(i=MODBUSData.data.uiWriteStartingAddress; i < MODBUSData.data.uiWriteStartingAddress + MODBUSData.data.uiDataCount; i++)
+			// Check data
+			switch(MODBUSData.data.uiData[0])
 			{
-				// Check address overflow
-				if((i >= 0) && (i < MB_TOTALREGISTERS))
+				case 0:
 				{
-					//*MODBUS_Pointers[i] = MODBUSData.data.uiData[writeDataIndex];
-
-					MODBUSReg[i] = MODBUSData.data.uiData[writeDataIndex];
-					// Increase data index
-					writeDataIndex++;
+					CONSTANT_SERIAL_UPDATE = 1;
+					response = 1;
+					break;
 				}
+				case 1:
+				{
+					CONSTANT_SERIAL_UPDATE = 0;
+					response = 1;
+					break;
+				}
+
 			}
+
 			// Second read data from registers
 			// First setup response
 			responseByteCount = 0;
@@ -121,29 +167,22 @@ void MODBUS_ExecuteFunction()
 			MODBUSData.bytes.cdata[0] = MB_SLAVEID;
 			// Store function code
 			MODBUSData.bytes.cdata[1] = MBRWMULTIPLEREGISTERS;
-			// Store data quantity
-			MODBUSData.bytes.cdata[2] = MODBUSData.data.uiQuantToRead * 2;
-			// Store how much data we have
-			responseByteCount = 3;
-			// Store data
-			for(i=MODBUSData.data.uiReadStartingAddress; i < MODBUSData.data.uiReadStartingAddress + MODBUSData.data.uiQuantToRead; i++)
-			{
-				// Check address overflow
-				if((i >= 0) && (i < MB_TOTALREGISTERS))
-				{
-					//uiTemp = *MODBUS_Pointers[i];
-					uiTemp = MODBUSReg[i];
-					// Store data to buffer
-					MODBUSData.bytes.cdata[responseByteCount] = (uiTemp >> 8) & 0x00FF;
-					responseByteCount++;
-					MODBUSData.bytes.cdata[responseByteCount] = uiTemp & 0x00FF;
-					responseByteCount++;
-				}
-			}
+			// Store response
+			MODBUSData.bytes.cdata[2] = (response >> 8) & 0x00FF;
+			MODBUSData.bytes.cdata[3] = response & 0x00FF;
+
+			responseByteCount = 4;
+
 			// Store number of bytes
 			MODBUSData.bytes.uiDataCount = responseByteCount;
 			// Calculate CRC and add it to message
 			crcOnMessage(responseByteCount);
+
+			// Make sure there is no interrupt when sending
+			// Set constant message sending delay to 0,5 seconds
+			// One count is ~10 msec
+			MODBUSMessageDivider = 50;
+
 			break;
 		}
 	}

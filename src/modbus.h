@@ -10,6 +10,7 @@
 
 //function definitions
 void MODBUS_Timer(void);
+void MODBUS_SendMessage();
 void MODBUS_ExecuteFunction();
 void MODBUS_ProcessData(unsigned int data);
 void MODBUS_Init(void);
@@ -23,11 +24,13 @@ void crcOnMessage(unsigned int uiDataLen);
 #define MB_TOTALREGISTERS				90
 
 // Define number of total bytes to be used for MODBUS receive/send
-#define MB_TOTALBYTES					200//18 + (MB_TOTALREGISTERS * 2) + 2	// Add two to be certain
+#define MB_TOTALBYTES					256//18 + (MB_TOTALREGISTERS * 2) + 2	// Add two to be certain
 
 // MODBUS functionality include
 #define MB_USETIMEOUTS
 
+// Message sent every Nth time
+#define MB_MESSAGEDIVIDER	10
 
 
 // Define registers
@@ -196,6 +199,8 @@ extern volatile uint16_t MODBUSTempReg;
 extern int volatile MODBUS_Timeout;
 // MODBUS registers
 extern uint16_t MODBUSReg[MB_TOTALREGISTERS];
+
+extern uint16_t MODBUSMessageDivider;
 
 
 // Define MODBUS timeouts

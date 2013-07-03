@@ -271,19 +271,6 @@ int main(void)
         	SCR1 = SCR1 & ~SCR_16;
         }
 
-        // Check SCR2
-        if(SCR2 & SCR_08)
-        {
-        	CONSTANT_SERIAL_UPDATE = 1;
-        	SCR2 = SCR2 & ~SCR_08;
-        }
-
-        if(SCR2 & SCR_09)
-        {
-        	CONSTANT_SERIAL_UPDATE = 0;
-        	SCR2 = SCR2 & ~SCR_09;
-        }
-
         // Send registers 0 - 30
         if(USB_REQUEST_DATA_0)
         {
