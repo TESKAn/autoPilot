@@ -738,6 +738,12 @@ void ahrs_resetPID(PI3Data* PID)
 	PID->Ix = 0;
 	PID->Iy = 0;
 	PID->Iz = 0;
+	PID->Rx = 0;
+	PID->Ry = 0;
+	PID->Rz = 0;
+	PID->Px = 0;
+	PID->Py = 0;
+	PID->Pz = 0;
 }
 
 void ahrs_resetRotationMatrix(void)

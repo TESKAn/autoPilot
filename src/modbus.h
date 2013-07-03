@@ -200,10 +200,10 @@ extern uint16_t MODBUSReg[MB_TOTALREGISTERS];
 
 // Define MODBUS timeouts
 // 50 msec between messages
-#define MB_3CHAR						50
+#define MB_3CHAR						30
 // 10 msec between characters
 #define MB_1CHAR						10
-// Timeout is 1 sec delay
+// Timeout is 1 sec
 #define MB_TIMEOUT						1000
 // Maximum measured time
 #define MB_MAXTIME						1100

@@ -246,6 +246,8 @@ void copySensorData(void)
 	uint16_t i = 0;
 	//uint16_t uiTemp = 0;
 	// Data is in I2C2_DMABufRX
+	// Mark updating sensor data
+	SENSORS_UPDATING = 1;
 	// Starts with reg 59, accel X high
 	ACC_X = (I2C2_DMABufRX[0] << 8) & 0xff00;
 	ACC_X = ACC_X | (I2C2_DMABufRX[1] & 0x00ff);
@@ -279,6 +281,9 @@ void copySensorData(void)
 	BARO = BARO | (I2C2_DMABufRX[21] & 0x00ff);
 	BARO_FRAC = I2C2_DMABufRX[22] >> 4;
 
+	// Mark end of sensor updating
+	SENSORS_UPDATING = 0;
+
 	if(ahrs_data.sampleDiscardCount == 0)
 	{
 		// Update AHRS
@@ -293,7 +298,7 @@ void copySensorData(void)
 	storeAHRSAngles();
 
 	// Update export vars
-	updateExportVars();
+	//updateExportVars();
 
 	// Check if we are nulling
 	if(EXTSENS_NULLING_GYRO)

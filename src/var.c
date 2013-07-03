@@ -12,6 +12,7 @@ volatile int exportVars[64];
 
 // Flag variable
 volatile Flag flag0;
+volatile Flag flag1;
 
 volatile char* fileBuffer;
 volatile float32_t globalFloatTemp = 0;

@@ -922,7 +922,7 @@ void init_GPIO()
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
-	// B12 = GPIO output, set to 1, for SD card
+	// B12 = GPIO output, set to 1, for SD card SS
 	// Set pin to 1
 	GPIO_WriteBit(GPIOB, GPIO_Pin_12, 1);
 	// Select pin 12
@@ -942,7 +942,7 @@ void init_GPIO()
 
 	//GPIO C
 
-	// Set C12 as input
+	// Set C12 as input, GPS PPS pulse
 	// Select C12
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
 	//set output type
@@ -956,7 +956,7 @@ void init_GPIO()
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
 
-	// Set C4 as output
+	// Set C4 as input, sensor FSYNC
 	// Select C4
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
 	//set output type
@@ -964,7 +964,7 @@ void init_GPIO()
 	//set pull-up
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
 	//set pin mode to alternate function
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
 	//set pin speed
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	//write mode to selected pins and selected port
@@ -972,7 +972,7 @@ void init_GPIO()
 	// Set pin to 0
 	GPIO_WriteBit(GPIOC, GPIO_Pin_4, 0);
 
-	// Set C5 as input
+	// Set C5 as input, MPU6050 interrupt
 	// Select C5
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
 	//set output type
@@ -989,13 +989,13 @@ void init_GPIO()
 	// Set C13 as output, pull to zero
 	// C13 = USB OTG power enable
 	// Set pin to 0
-	GPIO_WriteBit(GPIOC, GPIO_Pin_13, 1);
+	GPIO_WriteBit(GPIOC, GPIO_Pin_13, 0);
 	// Select C13
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
 	//set output type
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// push/pull
 	//set pull-up
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
 	//set pin mode to alternate function
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
 	//set pin speed
@@ -1003,9 +1003,9 @@ void init_GPIO()
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
 	// Set pin to 0
-	GPIO_WriteBit(GPIOC, GPIO_Pin_13, 1);
+	GPIO_WriteBit(GPIOC, GPIO_Pin_13, 0);
 
-	// Set C15 as output, set to 1, pull - up
+	// Set C15 as output, set to 1, pull - up, MPL sensor shutdown
 	// Select C15
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
 	//set output type
@@ -1038,7 +1038,7 @@ void init_GPIO()
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOD, &GPIO_InitStructure);
 
-	// Pins 8, 9, 10 as output low
+	// Pins 8, 9, 10 as output low - status LEDs
 	//select pins 8,9,10
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10;
 	//set output type
@@ -1056,7 +1056,7 @@ void init_GPIO()
 	GPIO_WriteBit(GPIOD, GPIO_Pin_9, 0);
 	GPIO_WriteBit(GPIOD, GPIO_Pin_10, 0);
 
-	//configure structure
+	// Pin D 0 - ext. slave select 1
 	//select pins
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
 	//set output type
@@ -1072,7 +1072,7 @@ void init_GPIO()
 
 	//GPIO E
 
-	// E7 = GPIO output, set to 1, for sensor power
+	// E7 = GPIO output, set to 1, for sensor power enable
 	// Set pin to 1
 	GPIO_WriteBit(GPIOE, GPIO_Pin_7, 1);
 	// Select pin 8
@@ -1090,7 +1090,8 @@ void init_GPIO()
 	// Set pin to 1
 	GPIO_WriteBit(GPIOE, GPIO_Pin_7, 1);
 
-	//connect pin E15 to output
+	// Connect pin E15 to output, PWM enable output
+	// This pin switches MUX input select circuit
 	//select pin 15
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
 	//set output type

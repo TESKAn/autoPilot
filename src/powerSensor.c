@@ -69,13 +69,17 @@ void PS_Timer(void)
 
 void PSRequestData(void)
 {
+	uint32_t timeout = 100000;
 	PSBUSY = 1;
 	PS_WAITINGDATA = 1;
 	PS_TIMER = 100;
 	USART_SendData(USART1, 0x57);
 	// Wait
 	while(!USART_GetFlagStatus(USART1, USART_FLAG_TC))
-	{}
+	{
+		timeout--;
+		if(timeout == 0) break;
+	}
 	Delaynus(1000);
 	// Send CRC
 	USART_SendData(USART1, 0x6d);
@@ -83,33 +87,49 @@ void PSRequestData(void)
 
 void PSSetI0(void)
 {
+	uint32_t timeout = 100000;
 	USART_SendData(USART1, 0x58);
 	// Wait
 	Delaynus(1000);
 	// Wait
 	while(!USART_GetFlagStatus(USART1, USART_FLAG_TC))
-	{}
+	{
+		timeout--;
+		if(timeout == 0) break;
+	}
 	// Send CRC
 	USART_SendData(USART1, 0x2c);
 	// Wait for finish
+	timeout = 100000;
 	while(!USART_GetFlagStatus(USART1, USART_FLAG_TC))
-	{}
+	{
+		timeout--;
+		if(timeout == 0) break;
+	}
 }
 
 void PSReset(void)
 {
+	uint32_t timeout = 100000;
 	PSBUSY = 1;
 	USART_SendData(USART1, 0x59);
 	// Wait
 	Delaynus(1000);
 	// Wait
 	while(!USART_GetFlagStatus(USART1, USART_FLAG_TC))
-	{}
+	{
+		timeout--;
+		if(timeout == 0) break;
+	}
 	// Send CRC
 	USART_SendData(USART1, 0x72);
 	// Wait for finish
+	timeout = 100000;
 	while(!USART_GetFlagStatus(USART1, USART_FLAG_TC))
-	{}
+	{
+		timeout--;
+		if(timeout == 0) break;
+	}
 }
 
 void processPSData(void)

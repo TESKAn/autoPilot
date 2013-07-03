@@ -73,6 +73,10 @@
 #define PWMEN_OUT_ENABLE		flag0.bits.BIT28
 #define SD_SETTINGS_OPEN		flag0.bits.BIT29
 #define SD_MOUNTED				flag0.bits.BIT30	// Mark SD card is mounted and ready
+#define SENSORS_UPDATING		flag0.bits.BIT31	// Mark sensor data is being updated
+
+// Flag 1 macros
+#define CONSTANT_SERIAL_UPDATE	flag1.bits.BIT0		// Mark keep sending data over serial line
 
 // DMA macros
 //DMA1_Stream0 used by USB
@@ -141,13 +145,15 @@
 #define SCR_16				0x8000
 
 // SCR2 macros
-#define SCR2_ACCOK			0x0001
-#define SCR2_GYROOK			0x0002
-#define SCR2_MAGOK			0x0004
-#define SCR2_BAROK			0x0008
-#define SCR2_POWEROK		0x0010
-#define SCR2_GPSOK			0x0020
-#define SCR2_LOGOPEN		0x0040
+#define SCR2_ACCOK					0x0001
+#define SCR2_GYROOK					0x0002
+#define SCR2_MAGOK					0x0004
+#define SCR2_BAROK					0x0008
+#define SCR2_POWEROK				0x0010
+#define SCR2_GPSOK					0x0020
+#define SCR2_LOGOPEN				0x0040
+#define SCR2_ENABLECONSTANTUPDATE	0x0080
+#define SCR2_DISABLECONSTANTUPDATE	0x0100
 
 //Timer 1 macros
 #define TIM1_PERIOD		32200

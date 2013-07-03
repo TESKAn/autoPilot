@@ -1,35 +1,50 @@
-gyroRate=0.03051757812;
-accRate=0.000244140625;
-magRate=0.000635075720;
-// Soft mag matrix
-softMagRxx=0.00179807074567474;
-softMagRyx=1.02639947492707e-05;
-softMagRzx=1.68944746965327e-05;
-softMagRxy=1.02639947492707e-05;
-softMagRyy=0.00181033707247978;
-softMagRzy=-5.53886833860487e-06;
-softMagRxz=1.68944746965327e-05;
-softMagRyz=-5.53886833860487e-06;
-softMagRzz=0.00204592378896502;
-// Hard mag vector
-hardMagX=30.2441876259683;
-hardMagY=-213.891056269455;
-hardMagZ=123.456789;
-hardMagScale=591.226172172661;
-Kix=0.7;
-Kpx=2.0;
-// Roll pitch correction
-rollPitchCorrectionScale=0.5;
-yawCorrectionScale=0.5;
-PID_MaxErr=1;
-PID_MinErr=-1;
-PID_MaxI=5;
-PID_MinI=-5;
-PID_MaxR=5;
-PID_MinR=-5;
-discardCount=100;
-magInclination=0.0542506509161570;
-magDeclination=1.0902441579423135;	
-useGPSSpeed=2;
-PIDErrorThreshold=0.0005;
-minRotationRate=0.001;
+Acceleration rate
+accRate=2.441406240e-4;
+Gyro rate
+gyroRate=3.051757812e-2;
+Magnetometer rate
+magRate=6.350756640e-4;
+Magnetic field inclination
+magInclination=5.425065056e-2;
+Magnetic field declination
+magDeclination=1.090244176e0;
+Minimal PID error to use
+PIDThreshold=9.999999040e-5;
+Minimal detectable rotation rate
+MinRotationRate=9.999999040e-5;
+Softmag matrix coefficients
+softMagRxx=1.798070784e-3;
+softMagRyx=1.026399494e-5;
+softMagRzx=1.689447424e-5;
+softMagRxy=1.026399494e-5;
+softMagRyy=1.810337088e-3;
+softMagRzy=-5.538868416e-6;
+softMagRxz=1.689447424e-5;
+softMagRyz=-5.538868416e-6;
+softMagRzz=2.045923708e-3;
+Hard mag vector
+hardMagX=3.024418830e1;
+hardMagY=-2.138910528e2;
+hardMagZ=2.400794752e2;
+Hard mag scale
+hardMagScale=5.912261952e2;
+PID parameters
+Kix=2.000000000e-1;
+Kpx=5.000000000e-1;
+PID_MaxErr=1.000000000e0;
+PID_MinErr=-1.000000000e0;
+PID_MaxI=5.000000000e0;
+PID_MinI=-5.000000000e0;
+PID_MaxR=5.000000000e0;
+PID_MinR=-5.000000000e0;
+Roll, pitch, yaw correction factors
+rollPitchCorrectionScale=5.000000000e-1;
+yawCorrectionScale=5.000000000e-1;
+Samples to discard on startup
+discardCount=0;
+Minimum GPS speed to use GPS for yaw
+useGPSSpeed=2.000000000e0;
+*******************
+Calculated values
+*************
+Calculated values

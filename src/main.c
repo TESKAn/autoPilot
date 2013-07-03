@@ -128,13 +128,17 @@ int main(void)
         // Check MODBUS for messages
         if(MB_HASDATA)
         {
-        	// Execute process data function
-        	MODBUS_ExecuteFunction();
-        	// Send data
-        	// Enable DMA transfer
-        	transferDMA_USART2(MODBUSData.bytes.cdata, MODBUSData.bytes.uiDataCount);
-        	// Set MODBUS to IDLE
-        	MB_SETTOIDLE;
+        	// Check that we are not updating sensor data, else skip
+        	if(!SENSORS_UPDATING)
+        	{
+				// Execute process data function
+				MODBUS_ExecuteFunction();
+				// Send data
+				// Enable DMA transfer
+				transferDMA_USART2(MODBUSData.bytes.cdata, MODBUSData.bytes.uiDataCount);
+				// Set MODBUS to IDLE
+				MB_SETTOIDLE;
+        	}
         }
         //check SCR
         if(SCR1 & SCR_01)
@@ -209,7 +213,7 @@ int main(void)
         	// Reset AHRS matrix
         	ahrs_resetRotationMatrix();
         	ahrs_resetQuaternion();
-        	AHRS_FIRSTRUN_MATRIX = 1;
+        	//AHRS_FIRSTRUN_MATRIX = 1;
         	SCR1 = SCR1 & ~SCR_11;
         }
         if(SCR1 & SCR_12)
@@ -265,6 +269,19 @@ int main(void)
         	float32ToStr(ahrs_data.PIData.Kpx, "Kp=", StringBuffer);
     		sendUSBMessage(StringBuffer);
         	SCR1 = SCR1 & ~SCR_16;
+        }
+
+        // Check SCR2
+        if(SCR2 & SCR_08)
+        {
+        	CONSTANT_SERIAL_UPDATE = 1;
+        	SCR2 = SCR2 & ~SCR_08;
+        }
+
+        if(SCR2 & SCR_09)
+        {
+        	CONSTANT_SERIAL_UPDATE = 0;
+        	SCR2 = SCR2 & ~SCR_09;
         }
 
         // Send registers 0 - 30

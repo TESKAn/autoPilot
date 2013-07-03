@@ -74,6 +74,7 @@ extern volatile int exportVars[64];
 
 // Flag variable
 extern volatile Flag flag0;
+extern volatile Flag flag1;
 
 extern volatile char* fileBuffer;
 extern volatile float32_t globalFloatTemp;
