@@ -8,6 +8,7 @@ C_SRCS += \
 ../src/adc.c \
 ../src/ahrs.c \
 ../src/ahrs_math.c \
+../src/airSpeed.c \
 ../src/compass.c \
 ../src/events.c \
 ../src/flight.c \
@@ -38,6 +39,7 @@ OBJS += \
 ./src/adc.o \
 ./src/ahrs.o \
 ./src/ahrs_math.o \
+./src/airSpeed.o \
 ./src/compass.o \
 ./src/events.o \
 ./src/flight.o \
@@ -66,6 +68,7 @@ C_DEPS += \
 ./src/adc.d \
 ./src/ahrs.d \
 ./src/ahrs_math.d \
+./src/airSpeed.d \
 ./src/compass.d \
 ./src/events.d \
 ./src/flight.d \

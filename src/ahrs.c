@@ -453,16 +453,16 @@ arm_status ahrs_updateRotationMatrix(AHRSData * data)
 			// Normalize and orthogonalize matrix
 			ahrs_normalizeOrthogonalizeMatrix(&(data->rotationMatrix));
 
-			return SUCCESS;
+			return ARM_MATH_SUCCESS;
 		}
 		else
 		{
-			return ERROR;
+			return status;
 		}
 	}
 	else
 	{
-		return SUCCESS;
+		return ARM_MATH_SUCCESS;
 	}
 }
 
