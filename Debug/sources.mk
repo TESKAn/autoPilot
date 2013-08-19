@@ -20,6 +20,7 @@ S_UPPER_DEPS :=
 # Every subdirectory with source files must be described here
 SUBDIRS := \
 src \
+src/sensors \
 Libraries/STM32_USB_OTG_Driver/src \
 Libraries/STM32_USB_Device_Library/Core/src \
 Libraries/STM32_USB_Device_Library/Class/hid_custom/src \

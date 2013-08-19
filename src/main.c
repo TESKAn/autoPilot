@@ -32,6 +32,8 @@
 
 #include "AudioComm.h"
 
+#include "sensors/accelerometer.h"
+
 
 /* Private macro */
 /* Private variables */
