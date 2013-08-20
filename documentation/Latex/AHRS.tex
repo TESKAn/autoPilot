@@ -1,0 +1,260 @@
+\documentclass[]{article}
+\usepackage[utf8]{inputenc}
+\title{DCM in podobno}
+\author{Jure Močnik}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Uporaba DCM matrike za estimacijo pozicije objekta v prostoru.
+\end{abstract}
+
+\clearpage
+
+\tableofcontents
+
+\clearpage
+
+\section{DCM matrika}
+
+DCM matrika vsebuje vse informacije, ki jih potrebujemo, da opišemo transformacijo vektorja v enem koordinatnem sistemu v drugi koordinatni sistem\\*
+$ R = \left[ \begin{array}{ccc}
+r_{xx} & r_{xy} & r_{xz} \\ 
+r_{yx} & r_{yy} & r_{yz} \\ 
+r_{zx} & r_{zy} & r_{zz}
+\end{array} \right]  $\\*\\*
+Množenje z DCM matriko transformira vektor iz koordinat letala v koordinate zemlje\\*
+$ \vec {q_{g}} = R \cdot \vec {q_{p}} $\\*\\*
+Za obratno transformacijo množimo vektor, izražen v koordinatnem sistemu zemlje, z transformirano DCM matriko\\*
+$ \vec {q_{p}} = R^{T} \cdot \vec {q_{g}} $\\*\\*
+
+DCM matriko posodabljamo s kompenziranimi vrednostmi žiroskopa. Od izmerjenih vrednosti odštejemo odmik, lezenje, skaliramo, pretvorimo v radiane in z dobljenimi vrednostmi ustvarimo matriko trenutne rotacije. Ker lahko z DCM matriko sestavljamo rotacijo tako, da pomnožimo rotacijo 1 in rotacijo 2, lahko našo DCM matriko posodabljamo z množenjem z matriko trenutne rotacije:\\*
+$ R = R \cdot R_{t} $\\\\
+Matriko $ R_{t} $ dobimo iz vektorja rotacije, ki jo zazna žiroskop:\\
+$ \omega = \left[ \begin{array}{c}
+ \omega_{x}\\ 
+ \omega_{y}\\ 
+\omega_{z}
+\end{array}\right]   $\\\\
+ko ga pomnožimo z časom, ki je pretekel med meritvami\\
+$ d\Theta_{x} = \omega_{x}dt $\\
+$ d\Theta_{y} = \omega_{y}dt $\\
+$ d\Theta_{z} = \omega_{z}dt $\\\\
+Tako je $ R_{t} $ enak\\
+$ R_{t}= \left[ \begin{array}{ccc}
+1 & -d\Theta_{x} & d\Theta_{y} \\ 
+d\Theta_{z} & 1 & -d\Theta_{x} \\ 
+-d\Theta_{y} & d\Theta_{x}& 1
+\end{array} \right]  $\\\\
+Ker je zaporedje zasukov pomembno, moramo pri posodabljanju matrike paziti, da so zasuki dovolj majhni, da nam ne vnašajo prevelike napake v DCM matriko. Dokler je ta napaka dovolj majhna, jo lahko obvladamo z popravljanjem matrike glede na referenčne vektorje.
+
+\subsection{Normalizacija in ortogonalizacija matrike}
+
+Zaradi napak in približkov, ki jih uporabljamo za računanje DCM matrike, ta s časom ne opisuje več dobro položaja elektronike. Zato moramo te napake določiti in jih sproti odpravljati, preden postanejo prevelike in začnejo vplivati na delovanje.\\*
+DCM matrika ima nekaj lastnosti, ki nam pri tem pomagajo. 
+Kot prvo so trojčki vrstic in stolpcev med sabo pravokotni\\
+$ \left[ \begin{array}{c}
+r_{xx} \\ 
+r_{xy} \\ 
+r_{xz}
+\end{array} \right] \perp 
+\left[ \begin{array}{c}
+r_{yx} \\ 
+r_{yy} \\ 
+r_{yz}
+\end{array} \right] \perp
+\left[ \begin{array}{c}
+r_{zx} \\ 
+r_{zy} \\ 
+r_{zz}
+\end{array} \right]$\\*
+$ \left[ \begin{array}{c}
+r_{xx} \\ 
+r_{yx} \\ 
+r_{zx}
+\end{array} \right] \perp 
+\left[ \begin{array}{c}
+r_{xy} \\ 
+r_{yy} \\ 
+r_{zy}
+\end{array} \right] \perp
+\left[ \begin{array}{c}
+r_{xz} \\ 
+r_{yz} \\ 
+r_{zz}
+\end{array} \right]$\\*\\*
+Druga lastnost pa je, da so dolžine teh vektorjev enake 1\\*
+$ \left| \left[ \begin{array}{c}
+r_{xx} \\ 
+r_{xy} \\ 
+r_{xz}
+\end{array} \right]\right|  =
+\left| \left[ \begin{array}{c}
+r_{yx} \\ 
+r_{yy} \\ 
+r_{yz}
+\end{array} \right]\right|  =
+\left| \left[ \begin{array}{c}
+r_{zx} \\ 
+r_{zy} \\ 
+r_{zz}
+\end{array} \right]\right| = 1 $
+\newline
+\linebreak
+$ \left| \left[ \begin{array}{c}
+r_{xx} \\ 
+r_{yx} \\ 
+r_{zx}
+\end{array} \right]\right|  =
+\left| \left[ \begin{array}{c}
+r_{xy} \\ 
+r_{yy} \\ 
+r_{zy}
+\end{array} \right]\right|  =
+\left| \left[ \begin{array}{c}
+r_{xz} \\ 
+r_{yz} \\ 
+r_{zz}
+\end{array} \right]\right| = 1 $\\*\\*
+Z računanjem odstopanja od teh pogojev in popravljanjem DCM matrike, da jim ustreza po vsaki posodobitvi, držimo napako na dovolj nizki ravni, da ne vpliva na delovanje elektronike.
+\clearpage
+\section{Vektor vrtenja $ \omega $}
+
+Za posodabljanje rotacijske matrike primarno uporabljamo meritve žiroskopa. Ker pa je meritev netočna (zraven koristnega signala so prišteti še odmik in lezenje), moramo te napake določiti in jih odšteti od meritve, ki jo dobimo iz merilnega instrumenta\\*
+$ \omega = \omega_{g} - \omega_{napake} $\\*
+$ \omega_{napake} = \omega_{odmik} + \omega_{lezenja} $\\*\\*
+Napaka zaradi odmika je rezultat, kadar se naprava ne giblje. Je relativno stabilen (med gibanjem naprave se ne spreminja), je pa temperaturno odvisen.
+Napaka zaradi lezenja se pojavi med delovanjem, ko se meritev spreminja s časom, čeprav se naprava ne giblje oziroma se giba enakomerno.
+Za odpravljanje teh napak uporabimo PI regulator, katerega izhod je napaka $ \omega_{napake} $, ki jo odštevamo od meritve. 
+Da lahko določimo vhod v PI regulator, moramo določiti napako vrtenja. Za to rabimo referenco, ki mora biti čim bolj stabilna. Za referenco imamo na razpolago več virov:
+- rezultat meritve pospeška
+- GPS vektor hitrosti
+- rezultat meritve magnetometra
+Iz teh virov lahko določimo vhodno informacijo za PI regulator, katerega izhod se nato s časom približuje napaki $ \omega_{napake} $.
+Posledica takega pristopa k odpravljanju napake je, da z enim mehanizmom odpravimo obe napaki, ne da bi zato od uporabnika zahtevali kalibracijo.
+
+\clearpage
+\section{Vektor pospeška a}
+Izmerjen vektor pospeška nam da trenutni pospešek v koordinatnem sistemu elektronike. V njem so vključeni pospešek gravitacije in pospeški zaradi drugih sil, ki delujejo na elektroniko.
+\begin {subsection}{Odštevanje pospeška gravitacije}
+Gravitacija ima konstantno smer in magnitudo, vendar je v koordinatnem sistemu letala smer gravitacije odvisna od tega, kako je letalo obrnjeno. Tu uporabimo DCM matriko, s katero preslikamo vektor iz koordinatnega sistema letala v koordinatni sistem zemlje\\*
+$ g_{z} = R\cdot g_{l} $\\*\\*
+Od dobljenega vektorja odštejemo vektor pospeška zemlje\\*
+$ g = g_{z} - g_{0} = g_{z} - \left[ \begin{array}{ccc}
+0 & 0 & 1
+\end{array} \right]  $\\*\\*
+in tako dobimo pospeške, ki delujejo na letalo, gledano z zemlje. 
+\begin {subsection}{Odpravljanje napake meritve pospeška}
+Napako meritve pospeška določamo s pomočjo meritve xy hitrosti GPSa in meritve vertikalne hitrosti barometra. Izračunan pospešek letala integriramo in vsako sekundo, ko dobimo meritev hitrosti GPSa, primerjamo hitrost, dobljeno iz GPSa in barometra, s hitrostjo, ki jo izračunamo iz pospeškov in tako dobimo napako pospeškomera. To napako uporabimo za vhod v PI regulator, ki kot izhod da odmik pospeškomera.
+\end {subsection}
+\end {subsection}
+\clearpage
+\section{Magnetometer}
+Magnetometer da vektor magnetnega polja zemlje plus magnetno polje okolice.
+\begin {subsection}{Trdoželezni vektor}
+Del napake pri merjenju magnetnega polja zemlje prispevajo druga, fiksna polja, v katerih je magnetometer. Ta polja so ves čas konstantna in se v rezultatu kažejo kot premik izhodišča vektorja magnetnega polja zemlje.
+\begin {subsection}{Mehkoželezna napaka}
+Ta napaka je rezultat materialov v okolici senzorja, ki sami ne oddajajo magnetnega polja, vplivajo pa na njegovo pot skozi senzor. V rezultatu se kažejo kot deformacija sfere, ki jo opisuje vektor magnetnega polja zemlje med spreminjanjem orientacije senzorja, v elipsoid
+\begin {subsection}{Odpravljanje napake magnetometra}
+Da odpravimo omenjene napake, moramo opraviti meritev vektorja magnetnega polja v vseh orientacijah senzorja. Tem meritvam nato izračunamo elipsoid, ki jim najbolj ustreza. Center elipsoida nam predstavlja odmik sredine sfere magnetnega polja zemlje od koordinatnega izhodišča ali trdoželezni vektor, sam elipsoid pa nam predstavlja deformacijo sfere v elipsoid ali mehkoželezno napako meritve. S temi parametri nato kalibriramo magnetometer, da nam kot izhod da enotski vektor magnetnega polja. Ta vektor lahko nato, če poznamo lokalne lastnosti zemeljskega magnetnega polja (odklon od geografskega severa, odklon od xy ravnine) uporabimo za določanje položaja ali kot referenco za določanje napake drugih senzorjev.
+\end {subsection}
+\end {subsection}
+\end {subsection}
+
+\section{Enačbe, računi}
+\begin {subsection}{Pospeškomer}
+Iz pospeškomera dobimo vektor pospeška, ki je sestavljen iz vsote gravitacijskega pospeška in pospeška zaradi vseh drugih sil, ki delujejo na senzor\\*
+$ \vec{a} = \vec{g_{0}} + \vec{a_{p}} $\\*
+Da iz vektorja pospeška odstranimo $ \vec{g_{0}} $, imamo dve možnosti.
+\begin{subsubsection}{korekcija v koordinatnem sistemu letala}
+ Lahko uporabimo vektor pospeška, izražen v koordinatah letala\\*
+$ \vec{g_{0p}} = R^{T}  \vec{g_{0g}} = R^{T}  \left[ \begin{array}{c}
+0 \\ 
+0 \\ 
+1
+\end{array} \right] = \left[ \begin{array}{c}
+r_{zx} \\ 
+r_{zy} \\ 
+r_{zz}
+\end{array} \right]  $\\*\\*
+Vektor pospeška zemlje v koordinatah letala je tako Z vrstica DCM matrike R. Ko jo odštejemo od rezultata\\*
+$ \vec{a_{p}} = \vec{a} - \vec{g_{0}} = \left[ \begin{array}{c}
+a_{x} - r_{zx} \\ 
+a_{y} - r_{zy} \\ 
+a_{z} - r_{zz}
+\end{array} \right] $\\*\\*
+dobimo vektor pospeškov, ki delujejo na letalo. Te pospeške lahko integriramo po času in dobimo trenutno hitrost v smereh x, y, z\\*
+$ \vec{v} = \int_0^t{\vec{a_{p}} dt} $\\*\\*
+Ker pa imamo podatke iz senzorja na voljo v diskretnih intervalih, se integral spremeni v vsoto\\*
+$ \vec{v} = \sum \vec{a_{p}}(t) \Delta t $\\*\\*
+kjer je $ \Delta t $ interval med posameznimi meritvami.\\*
+Tako dobljeno hitrost lahko primerjamo z hitrostjo, ki jo dobimo iz GPSa in barometra. Ker pa je ta izražena v koordinatnem sistemu zemlje, si spet pomagamo z DCM matriko in transformiramo vektor hitrosti v koordinatni sistem letala\\*
+$ \vec{v_{p}} = R^{T} \vec{v_{g}} $\\*\\*
+Razlika teh vektorjev je tako napaka pospeškomera. To napako lahko nato uporabimo kot vhod v PI regulator, ki nam popravlja odčitek pospeškomera in tako izboljšamo točnost meritev\\*
+$ \vec{a_{popr}} = \vec{a} - \vec{PI_{a}} $\\*\\*
+Ta popravek računamo enkrat na vsako sporočilo GPSa. Pri tem moramo upoštevati, da nam je podatek iz GPSa na voljo z nekim zamikom in da moramo primerjati s hitrostjo v času, ko je GPS meritev bila narejena in ne s hitrostjo, ko je GPS meritev na voljo.
+\begin{subsubsection}{korekcija v koordinatnem sistemu zemlje}
+V drugem primeru pretvorimo meritev pospeška v koordinatni sistem zemlje in od njega odštejemo gravitacijo\\*
+$ \vec{a_{g}} = R\vec{a_{p}} - \vec{g_{0}} = R\vec{a_{p}} - \left[ \begin{array}{ccc}
+0 \\ 
+0 \\ 
+1
+\end{array}\right]   $\\*\\*
+Dobljeni vektor nato numerično integriramo\\*
+$ \vec{v_{g}} = \Sigma \vec{a_{g}} \Delta t$ \\*\\*
+in tako dobljeno hitrost primerjamo z hitrostjo, ki jo dobimo iz GPSa in barometra.
+
+
+\end{subsubsection}
+\end{subsubsection}
+
+\begin {subsection}{Barometer}
+Barometer nam da informacijo o trenutni višini v metrih na 10 cm natančno. To informacijo filtriramo in uporabimo za računanje višine in hitrosti spremembe v smeri x osi, gledano v koordinatnem sistemu zemlje\\*
+$ v_{x} = \frac{\Delta h}{\Delta t} $.\\*\\*
+Ker se lahko pritisk s časom spreminja, za kalibracijo senzorja uporabimo še višinsko informacijo GPS modula.
+
+\begin {subsection}{GPS}
+\begin{subsubsection}{Hitrost v x in y smeri v koordinatnem sistemu zemlje}
+Hitrost iz GPSa dobimo v dveh delih, kot absolutna vrednost hitrosti in kot med geografskim severom in smerjo hitrosti. Za naše potrebe moramo hitrost izraziti kot x in y komponento\\*
+$ \vec{v} = \left[ \begin{array}{c}
+v cos\alpha \\ 
+v sin\alpha \\ 
+0
+\end{array} \right] $\\*\\*
+
+\end{subsubsection}
+\begin {subsection}{Hitrost v koordinatnem sistemu zemlje}
+To nam da informacija GPSa in barometra\\*
+$ \vec{v_{g}} = \left[ \begin{array}{c}
+v_{gps} cos\alpha_{gps} \\ 
+v_{gps} sin\alpha_{gps} \\ 
+\frac{\Delta h_{baro}}{\Delta t}
+\end{array} \right] $\\*\\*
+Če želimo hitrost v koordinatnem sistemu letala, pomnožimo transponirano DCM matriko $ R^{T} $ z vektorjem hitrosti\\*
+$ \vec{v_{p}} = R^{T} \vec{v_{g}} $\\*\\*
+
+\begin {subsection}{Magnetometer}
+Kalibracijo izvedemo tako, da posnamemo serijo podatkov pri različnih orientacijah. Nato tem podatkom priredimo elipsoid, iz parametrov elipsoida pa nato skonstruiramo rotacijsko matriko, skalirni vektor in vektor odmika.
+Iz rotacijske matrike in skalirnega vektorja skonstruiramo transformacijsko matriko\\*
+$ R_{T} = R^{T}_{r}  R_{s}  R_{r} $\\*\\*
+Tako v enem koraku vektor zarotiramo, skaliramo in zarotiramo nazaj.\\*
+Napako magnetometra zaradi mehko - in trdoželeznih vplivov odpravimo v več korakih.\\*
+Najprej od surove meritve odštejemo odmik podatkov od koordinatnega izhodišča\\*
+$ \vec{m} = \vec{m_{r}} - \vec{m_{odmik}}  $\\*\\*
+Nato dobljen vektor pomnožimo z transformacijsko matriko\\*
+$ \vec{m_{popravljen}} = R_{T} \vec{m} $\\*\\*
+Dobljen vektor še renormaliziramo. Ker je klasična renormalizacija potratna (računati moramo kvadratni koren), lahko zaradi dejstva, da se dolžina vektorja ne razlikuje veliko od 1, uporabimo Taylorjevo vrsto\\*
+$ \vec{m_{norm}} = \frac{1}{2}(3 - \vec{m_{popravljen}} \cdot \vec{m_{popravljen}} )\vec{m_{popravljen}} $\\*\\*
+Tako iz surovih podatkov magnetometra dobimo popravljen podatek, ki kaže v smeri lokalnega polja.
+
+\end {subsection}
+
+\end{subsection}
+\end{subsection}
+\end{subsection}
+\end{subsection}
+
+
+\end{document}

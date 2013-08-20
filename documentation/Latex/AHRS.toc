@@ -1,0 +1,19 @@
+\contentsline {section}{\numberline {1}DCM matrika}{3}
+\contentsline {subsection}{\numberline {1.1}Normalizacija in ortogonalizacija matrike}{4}
+\contentsline {section}{\numberline {2}Vektor vrtenja $ \omega $}{5}
+\contentsline {section}{\numberline {3}Vektor pospe\IeC {\v s}ka a}{6}
+\contentsline {subsection}{\numberline {3.1}Od\IeC {\v s}tevanje pospe\IeC {\v s}ka gravitacije}{6}
+\contentsline {subsection}{\numberline {3.2}Odpravljanje napake meritve pospe\IeC {\v s}ka}{6}
+\contentsline {section}{\numberline {4}Magnetometer}{7}
+\contentsline {subsection}{\numberline {4.1}Trdo\IeC {\v z}elezni vektor}{7}
+\contentsline {subsection}{\numberline {4.2}Mehko\IeC {\v z}elezna napaka}{7}
+\contentsline {subsection}{\numberline {4.3}Odpravljanje napake magnetometra}{7}
+\contentsline {section}{\numberline {5}Ena\IeC {\v c}be, ra\IeC {\v c}uni}{7}
+\contentsline {subsection}{\numberline {5.1}Pospe\IeC {\v s}komer}{7}
+\contentsline {subsubsection}{\numberline {5.1.1}korekcija v koordinatnem sistemu letala}{7}
+\contentsline {subsubsection}{\numberline {5.1.2}korekcija v koordinatnem sistemu zemlje}{8}
+\contentsline {subsection}{\numberline {5.2}Barometer}{9}
+\contentsline {subsection}{\numberline {5.3}GPS}{9}
+\contentsline {subsubsection}{\numberline {5.3.1}Hitrost v x in y smeri v koordinatnem sistemu zemlje}{9}
+\contentsline {subsection}{\numberline {5.4}Hitrost v koordinatnem sistemu zemlje}{9}
+\contentsline {subsection}{\numberline {5.5}Magnetometer}{9}
