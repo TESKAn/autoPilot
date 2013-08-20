@@ -10,27 +10,11 @@
 
 typedef struct
 {
-	float32_t x;
-	float32_t y;
-	float32_t z;
-
-}__attribute__((aligned(4),packed)) gyroVectorf;
-
-typedef struct
-{
-	uint16_t x;
-	uint16_t y;
-	uint16_t z;
-
-}__attribute__((aligned(4),packed)) gyroVectorui16;
-
-typedef struct
-{
-	gyroVectorf vector;
-	gyroVectorf vectorRaw;
-	gyroVectorf driftError;
-	gyroVectorf scale;
-	gyroVectorui16 offset;
+	Vectorf vector;
+	Vectorf vectorRaw;
+	Vectorf driftError;
+	Vectorf scale;
+	Vectorui16 offset;
 	uint32_t dataTime;
 	uint32_t deltaTime;
 	float32_t gyroRate;

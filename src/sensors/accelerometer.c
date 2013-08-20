@@ -7,6 +7,9 @@
 
 #include "stm32f4xx.h"
 #include "arm_math.h"
+#include "functions.h"
+#include "customTypedefs.h"
+#include "math/myMath_vec3.h"
 #include "accelerometer.h"
 
 #define ACC_DEFAULT_RATE					0.000244140625f			// 8/32768 -> g

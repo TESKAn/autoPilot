@@ -7,6 +7,9 @@
 
 #include "stm32f4xx.h"
 #include "arm_math.h"
+#include "functions.h"
+#include "customTypedefs.h"
+#include "math/myMath_vec3.h"
 #include "gyro.h"
 
 #define GYRO_DEFAULT_RATE					0.030517578125f			// 1000/32768 -> deg/sec
@@ -74,20 +77,21 @@ ErrorStatus gyro_update(uint16_t rawData_x, uint16_t rawData_y, uint16_t rawData
 	result[2] = (float32_t)rawData_z * _gyroData.gyroRate;
 
 	// Remove drift error
+	// Drift error is calculated in different .c/.h file
 	result[0] -= _gyroData.driftError.x;
 	result[1] -= _gyroData.driftError.y;
 	result[2] -= _gyroData.driftError.z;
 
 	// Calculate time difference
-	deltaTime = dataTime - _accData.dataTime;
+	deltaTime = dataTime - _gyroData.dataTime;
 	// Do checks on time passed...
 
 	_gyroData.vector.x = result[0];
 	_gyroData.vector.y = result[1];
 	_gyroData.vector.z = result[2];
 
-	_accData.dataTime = dataTime;
-	_accData.deltaTime = deltaTime;
+	_gyroData.dataTime = dataTime;
+	_gyroData.deltaTime = deltaTime;
 
 	success = SUCCESS;
 

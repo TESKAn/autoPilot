@@ -32,7 +32,12 @@
 
 #include "AudioComm.h"
 
+#include "math/myMath_vec3.h"
+#include "math/myMath_matrix3.h"
+
 #include "sensors/accelerometer.h"
+#include "sensors/gyro.h"
+#include "sensors/mag.h"
 
 
 /* Private macro */
