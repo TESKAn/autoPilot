@@ -7,7 +7,7 @@
 
 #include "stm32f4xx.h"
 #include "arm_math.h"
-#include "customTypedefs.h"
+#include "myMath_typedefs.h"
 #include "myMath.h"
 #include "myMath_vec3.h"
 #include "myMath_matrix3.h"
@@ -40,7 +40,7 @@ Matrixf matrix3_init(int identity)
 	return mat;
 }
 
-ErrorStatus matrix3_vectorMultiply(Matrixf * mat, Vectorf1 * vecIn, Vectorf1 * vecOut)
+ErrorStatus matrix3_vectorMultiply(Matrixf * mat, Vectorf * vecIn, Vectorf * vecOut)
 {
 	ErrorStatus status = ERROR;
 	float32_t a = 0;
@@ -69,7 +69,7 @@ ErrorStatus matrix3_vectorMultiply(Matrixf * mat, Vectorf1 * vecIn, Vectorf1 * v
 	return status;
 }
 
-ErrorStatus matrix3_transposeVectorMultiply(Matrixf * mat, Vectorf1 * vecIn, Vectorf1 * vecOut)
+ErrorStatus matrix3_transposeVectorMultiply(Matrixf * mat, Vectorf * vecIn, Vectorf * vecOut)
 {
 	ErrorStatus status = ERROR;
 

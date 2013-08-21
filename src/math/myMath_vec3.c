@@ -7,25 +7,25 @@
 
 #include "stm32f4xx.h"
 #include "arm_math.h"
-#include "customTypedefs.h"
-#include "myMath.h"
+#include "myMath_typedefs.h"
 #include "myMath_vec3.h"
+#include "myMath.h"
 
-Vectorf vectorf_init()
+Vectorf vectorf_init(float32_t value)
 {
 	Vectorf vec;
-	vec.x = 0;
-	vec.y = 0;
-	vec.z = 0;
+	vec.x = value;
+	vec.y = value;
+	vec.z = value;
 	return vec;
 }
 
-Vectorui16 vectorui16_init()
+Vectorui16 vectorui16_init(int16_t value)
 {
 	Vectorui16 vec;
-	vec.x = 0;
-	vec.y = 0;
-	vec.z = 0;
+	vec.x = value;
+	vec.y = value;
+	vec.z = value;
 	return vec;
 }
 

@@ -8,7 +8,7 @@
 #include "stm32f4xx.h"
 #include "arm_math.h"
 #include "functions.h"
-#include "customTypedefs.h"
+#include "math/myMath_typedefs.h"
 #include "math/myMath_vec3.h"
 #include "math/myMath_matrix3.h"
 #include "mag.h"
@@ -25,22 +25,16 @@ ErrorStatus mag_initDataStructure()
 	_magData.dataTime = getSystemTime();
 	_magData.deltaTime = 0;
 
-	_magData.hardIron.x = 0;
-	_magData.hardIron.y = 0;
-	_magData.hardIron.z = 0;
+	_magData.hardIron = vectorf_init(0);
 
 	_magData.magRate = MAG_DEFAULT_RATE;
 
 	_magData.softIron = matrix3_init(1);
 
 
-	_magData.vector.x = 0;
-	_magData.vector.y = 0;
-	_magData.vector.z = 0;
+	_magData.vector = vectorf_init(0);
 
-	_magData.vectorRaw.x = 0;
-	_magData.vectorRaw.y = 0;
-	_magData.vectorRaw.z = 0;
+	_magData.vectorRaw = vectorf_init(0);
 
 	success = SUCCESS;
 

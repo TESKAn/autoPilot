@@ -8,7 +8,7 @@
 #include "stm32f4xx.h"
 #include "arm_math.h"
 #include "functions.h"
-#include "customTypedefs.h"
+#include "math/myMath_typedefs.h"
 #include "math/myMath_vec3.h"
 #include "gyro.h"
 
@@ -26,25 +26,15 @@ ErrorStatus gyro_initDataStructure()
 	_gyroData.dataTime = getSystemTime();
 	_gyroData.deltaTime = 0;
 
-	_gyroData.offset.x = 0;
-	_gyroData.offset.y = 0;
-	_gyroData.offset.z = 0;
+	_gyroData.offset = vectorui16_init(0);
 
-	_gyroData.scale.x = 1;
-	_gyroData.scale.y = 1;
-	_gyroData.scale.z = 1;
+	_gyroData.scale = vectorf_init(1);
 
-	_gyroData.vector.x = 0;
-	_gyroData.vector.y = 0;
-	_gyroData.vector.z = 0;
+	_gyroData.vector = vectorf_init(0);
 
-	_gyroData.vectorRaw.x = 0;
-	_gyroData.vectorRaw.y = 0;
-	_gyroData.vectorRaw.z = 0;
+	_gyroData.vectorRaw = vectorf_init(0);
 
-	_gyroData.driftError.x = 0;
-	_gyroData.driftError.y = 0;
-	_gyroData.driftError.z = 0;
+	_gyroData.driftError = vectorf_init(0);
 
 	// gyro rate in radians
 	_gyroData.gyroRate = GYRO_DEFAULT_RATE * GYRO_DEG_TO_RAD;

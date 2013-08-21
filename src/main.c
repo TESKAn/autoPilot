@@ -32,6 +32,8 @@
 
 #include "AudioComm.h"
 
+#include "math/myMath_typedefs.h"
+
 #include "math/myMath_vec3.h"
 #include "math/myMath_matrix3.h"
 

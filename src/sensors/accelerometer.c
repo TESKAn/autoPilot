@@ -8,7 +8,7 @@
 #include "stm32f4xx.h"
 #include "arm_math.h"
 #include "functions.h"
-#include "customTypedefs.h"
+#include "math/myMath_typedefs.h"
 #include "math/myMath_vec3.h"
 #include "accelerometer.h"
 
