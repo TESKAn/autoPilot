@@ -5,8 +5,10 @@
  *      Author: Jure
  */
 
-
-#include "allinclude.h"
+#include "stm32f4xx.h"
+#include "arm_math.h"
+#include "functions.h"
+#include "sensors_typedefs.h"
 
 // We need some variables to calculate airspeed
 // pitot AD sample, which we have to convert to Pa

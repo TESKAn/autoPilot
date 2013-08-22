@@ -54,6 +54,4 @@
 
 #include "flight.h"
 
-#include "airSpeed.h"
-
 #endif /* ALLINCLUDE_H_ */
