@@ -10,6 +10,7 @@
 
 typedef struct
 {
+	uint8_t valid;
 	Vectorf vector;
 	Vectorf vectorRaw;
 	Vectorf driftError;

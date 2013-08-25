@@ -10,9 +10,11 @@
 
 typedef struct
 {
+	uint8_t valid;
 	Vectorf vector;
 	Vectorf vectorRaw;
 	Vectorf scale;
+	Vectorf Speed_3D;
 	Vectorui16 offset;
 	uint32_t dataTime;
 	uint32_t deltaTime;
@@ -22,6 +24,6 @@ typedef struct
 extern AccelerometerData _accData;
 
 ErrorStatus acc_initDataStructure();
-ErrorStatus acc_update(uint16_t rawData_x, uint16_t rawData_y, uint16_t rawData_z, uint32_t dataTime);
+ErrorStatus acc_update(uint16_t rawData_x, uint16_t rawData_y, uint16_t rawData_z, Matrixf * DCM, uint32_t dataTime);
 
 #endif /* ACCELEROMETER_H_ */

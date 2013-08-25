@@ -21,7 +21,7 @@ GyroData _gyroData;
 // Init data structure
 ErrorStatus gyro_initDataStructure()
 {
-	ErrorStatus success = ERROR;
+	ErrorStatus status = ERROR;
 
 	_gyroData.dataTime = getSystemTime();
 	_gyroData.deltaTime = 0;
@@ -39,9 +39,11 @@ ErrorStatus gyro_initDataStructure()
 	// gyro rate in radians
 	_gyroData.gyroRate = GYRO_DEFAULT_RATE * GYRO_DEG_TO_RAD;
 
-	success = SUCCESS;
+	_gyroData.valid = 1;
 
-	return success;
+	status = SUCCESS;
+
+	return status;
 }
 
 // Update gyro reading

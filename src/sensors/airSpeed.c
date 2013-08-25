@@ -9,6 +9,7 @@
 #include "arm_math.h"
 #include "functions.h"
 #include "sensors_typedefs.h"
+#include "airSpeed.h"
 
 // We need some variables to calculate airspeed
 // pitot AD sample, which we have to convert to Pa
@@ -16,13 +17,14 @@
 // Ambient temperature, which has to be in Kelvins
 // AD result is uint16_t
 
-airSpeedData AS_Data;
+airSpeedData _ASData;
 
 ErrorStatus AS_InitData(void)
 {
-	AS_Data.airSpeed = 0;
-	AS_Data.dataTime = getSystemTime();
-	AS_Data.deltaTime = 0;
+	_ASData.valid = 1;
+	_ASData.airSpeed = 0;
+	_ASData.dataTime = getSystemTime();
+	_ASData.deltaTime = 0;
 	return SUCCESS;
 }
 
@@ -42,9 +44,9 @@ ErrorStatus AS_CalculateAirSpeed(uint16_t Pp, float32_t Pb, uint16_t T)
 	result = result / Pb;
 	result = sqrtf(result);
 	// Update airspeed data, do some filtering
-	AS_Data.airSpeed = 0.7f * AS_Data.airSpeed + 0.3f * result;
+	_ASData.airSpeed = 0.7f * _ASData.airSpeed + 0.3f * result;
 	// Mark time when we calculated speed
-	AS_Data.dataTime = getSystemTime();
+	_ASData.dataTime = getSystemTime();
 
 	return status;
 }

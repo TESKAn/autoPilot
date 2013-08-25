@@ -10,6 +10,7 @@
 #include "functions.h"
 #include "math/myMath_typedefs.h"
 #include "math/myMath_vec3.h"
+#include "math/myMath_matrix3.h"
 #include "accelerometer.h"
 
 #define ACC_DEFAULT_RATE					0.000244140625f			// 8/32768 -> g
@@ -21,40 +22,37 @@ AccelerometerData _accData;
 // Init accelerometer data structure
 ErrorStatus acc_initDataStructure()
 {
-	ErrorStatus success = ERROR;
+	ErrorStatus status = ERROR;
 
 	_accData.dataTime = getSystemTime();
 	_accData.deltaTime = 0;
 
-	_accData.offset.x = 0;
-	_accData.offset.y = 0;
-	_accData.offset.z = 0;
+	_accData.offset = vectorui16_init(0);
 
-	_accData.scale.x = 1;
-	_accData.scale.y = 1;
-	_accData.scale.z = 1;
+	_accData.scale = vectorf_init(1);
 
-	_accData.vector.x = 0;
-	_accData.vector.y = 0;
-	_accData.vector.z = 0;
+	_accData.vector = vectorf_init(0);
 
-	_accData.vectorRaw.x = 0;
-	_accData.vectorRaw.y = 0;
-	_accData.vectorRaw.z = 0;
+	_accData.vectorRaw = vectorf_init(0);
+
+	_accData.Speed_3D = vectorf_init(0);
 
 	_accData.accRate = ACC_DEFAULT_RATE;
 
-	success = SUCCESS;
+	_accData.valid = 1;
 
-	return success;
+	status = SUCCESS;
+
+	return status;
 }
 
 // Update accelerometer reading
-ErrorStatus acc_update(uint16_t rawData_x, uint16_t rawData_y, uint16_t rawData_z, uint32_t dataTime)
+ErrorStatus acc_update(uint16_t rawData_x, uint16_t rawData_y, uint16_t rawData_z, Matrixf * DCM, uint32_t dataTime)
 {
 	ErrorStatus success = ERROR;
 	float32_t result[3];
 	uint32_t deltaTime = 0;
+	Vectorf temporaryVector = vectorf_init(0);
 	// Update accelerometer reading
 	// Store raw data
 	_accData.vectorRaw.x = (float32_t)rawData_x * _accData.accRate;
@@ -68,7 +66,8 @@ ErrorStatus acc_update(uint16_t rawData_x, uint16_t rawData_y, uint16_t rawData_
 	result[0] = (float32_t)rawData_x * _accData.accRate;
 	result[1] = (float32_t)rawData_y * _accData.accRate;
 	result[2] = (float32_t)rawData_z * _accData.accRate;
-	// Invert to get gravity - acceleration
+	// Invert to get - gravity - acceleration
+	// Gravity is in body frame of reference
 	result[0] = -result[0];
 	result[1] = -result[1];
 	result[2] = -result[2];
@@ -92,7 +91,22 @@ ErrorStatus acc_update(uint16_t rawData_x, uint16_t rawData_y, uint16_t rawData_
 	// Store time information
 	_accData.dataTime = dataTime;
 	_accData.deltaTime = deltaTime;
-	success = SUCCESS;
 
+	// We have current accelerometer data, calculate speed in earth coordinates
+	// Transfer acceleration data to earth frame of reference
+	matrix3_vectorMultiply(DCM, &_accData.vector, &temporaryVector);
+	// Next remove gravity from measurement
+	//**********************************************************
+	// !!!Check what to do with Z value to get correct result!!!
+	//**********************************************************
+	temporaryVector.z = temporaryVector.z - 1;
+	// Integrate x, y, z acceleration over time to get speed change
+	temporaryVector.x = deltaTime * temporaryVector.x;
+	temporaryVector.y = deltaTime * temporaryVector.y;
+	temporaryVector.z = deltaTime * temporaryVector.z;
+	// Add to previous speed calculation
+	vectorf_add(&temporaryVector, &_accData.Speed_3D, &_accData.Speed_3D);
+
+	success = SUCCESS;
 	return success;
 }

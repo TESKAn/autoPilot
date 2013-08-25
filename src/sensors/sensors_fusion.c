@@ -8,13 +8,49 @@
 #include "stm32f4xx.h"
 #include "arm_math.h"
 #include "functions.h"
+#include "parameters.h"
 #include "math/myMath_typedefs.h"
 #include "math/myMath_vec3.h"
+#include "math/myMath_matrix3.h"
 #include "sensors_typedefs.h"
 #include "gyro.h"
 #include "accelerometer.h"
 #include "mag.h"
 #include "airSpeed.h"
+#include "gps.h"
+#include "sensors_fusion.h"
+
+Matrixf _fusion_DCM;
+
+ErrorStatus fusion_updateRotationMatrix()
+{
+	ErrorStatus status;
+	status = ERROR;
+	Vectorf temporaryVector = vectorf_init(0);
+	Vectorf error_gps_acc = vectorf_init(0);	// Error from GPS and accelerometer data
+
+	// Check if we have valid GPS and accelerometer data
+	// We need speed so do not use if below some value
+	if((1 ==_GPSData.valid)&&(1 == _accData.valid)&&(min_airspeed < vectorf_getNorm(&_GPSData.speed3D)))
+	{
+		// Use GPS and accelerometer speed data to calculate DCM error in earth frame
+		vectorf_crossProduct(&_accData.Speed_3D, &_GPSData.speed3D, &temporaryVector);
+		// Transform to plane frame with DCM transpose
+		matrix3_transposeVectorMultiply(&_fusion_DCM, &temporaryVector, &error_gps_acc);
+	}
+	// Check if we have valid gyro and accelerometer data and calculate error
+
+	// Check if we have valid magnetometer data and calculate error
+
+	// Check if we have valid GPS data and calculate error
+
+
+
+
+
+	status = SUCCESS;
+	return status;
+}
 
 /*
 ErrorStatus fusion_updateRotationMatrix()
