@@ -457,6 +457,7 @@ void TIM1_BRK_TIM9_ISR_Handler(void)
   * @param  None
   * @retval None
   * @services TIM14
+  * 1 ms interval
   */
 void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 {
@@ -557,7 +558,15 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			}
 			LED_ToggleCount = 0;
 			// Toggle LED
-			LED_RUN_TOGGLE;
+			// Check GPS data valid - MODBUSREG[21] bit 15
+			if(MODBUSReg[21] & 32768)
+			{
+				LED_OK_ON;
+			}
+			else
+			{
+				LED_OK_TOGGLE;
+			}
 		}
 		// Call fatfs timer
 		SD_TimerCount++;

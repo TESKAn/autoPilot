@@ -540,7 +540,6 @@ void init_ADC()
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
 
-	//I2C_InitTypeDef I2CInitStruct;
 	ADC_InitTypeDef ADC_InitStruct;
 	ADC_CommonInitTypeDef ADC_CommonInitStructure;
 	// ADC converter init
@@ -1254,6 +1253,29 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	}
 }
 
+// Init pin C0 ad GPIO input with pull - down
+void init_swin()
+{
+	//make structure for configuring pins
+	GPIO_InitTypeDef  GPIO_InitStructure;
+
+	// Init GPIO
+	//connect pins C0 to GPIO
+	//select pin 0
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+	//set output type
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;	// Open drain
+	//set pull-up
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
+	//set pin mode to GPIO input
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+	//set pin speed
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	//write mode to selected pins and selected port
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
+
+}
+
 void System_Config(void)
 {
 
@@ -1282,5 +1304,7 @@ void System_Config(void)
 	init_DAC();
 	// Enable interrupts - don't forget to enable specific interrupts
 	NVIC_EnableInterrupts(ENABLE);
+	// Init ADC0 as GPIO with pull - down
+	init_swin();
 }
 

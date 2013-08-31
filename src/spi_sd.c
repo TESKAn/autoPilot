@@ -523,7 +523,7 @@ void power_on (void)
 {
 	SPI_InitTypeDef  SPI_InitStructure;
 	GPIO_InitTypeDef GPIO_InitStructure;
-	volatile BYTE dummyread;
+	volatile BYTE dummyread = 0;
 
 	/* Enable GPIO clock for CS */
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIO_CS, ENABLE);

@@ -1296,7 +1296,6 @@ void Delayms(uint32_t ms)
 {
 	uint32_t time = systemTime - 1;
 	uint32_t deltaTime = 0;
-	LED_OK_OFF;
 	while(deltaTime < ms)
 	{
 		Delaynus(1500);
@@ -1308,7 +1307,6 @@ void Delayms(uint32_t ms)
 		}
 		deltaTime = systemTime - time;
 	}
-	LED_OK_ON;
 }
 
 /*

@@ -24,6 +24,7 @@ void init_USART3();
 void init_SPI();
 void init_GPIO();
 void NVIC_EnableInterrupts(FunctionalState newState);
+void init_swin();
 void System_Config(void);
 
 #endif /* INIT_H_ */

@@ -17,6 +17,7 @@ C_SRCS += \
 ../src/main.c \
 ../src/math_custom.c \
 ../src/modbus.c \
+../src/parameters.c \
 ../src/powerSensor.c \
 ../src/sensors.c \
 ../src/spi_sd.c \
@@ -47,6 +48,7 @@ OBJS += \
 ./src/main.o \
 ./src/math_custom.o \
 ./src/modbus.o \
+./src/parameters.o \
 ./src/powerSensor.o \
 ./src/sensors.o \
 ./src/spi_sd.o \
@@ -75,6 +77,7 @@ C_DEPS += \
 ./src/main.d \
 ./src/math_custom.d \
 ./src/modbus.d \
+./src/parameters.d \
 ./src/powerSensor.d \
 ./src/sensors.d \
 ./src/spi_sd.d \

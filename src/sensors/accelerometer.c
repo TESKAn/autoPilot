@@ -37,6 +37,8 @@ ErrorStatus acc_initDataStructure()
 
 	_accData.Speed_3D = vectorf_init(0);
 
+	_accData.Speed_3D_Frac = vectorf_init(0);
+
 	_accData.accRate = ACC_DEFAULT_RATE;
 
 	_accData.valid = 1;
@@ -51,6 +53,7 @@ ErrorStatus acc_update(uint16_t rawData_x, uint16_t rawData_y, uint16_t rawData_
 {
 	ErrorStatus success = ERROR;
 	float32_t result[3];
+	int32_t fracCalc = 0;
 	uint32_t deltaTime = 0;
 	Vectorf temporaryVector = vectorf_init(0);
 	// Update accelerometer reading
@@ -104,8 +107,40 @@ ErrorStatus acc_update(uint16_t rawData_x, uint16_t rawData_y, uint16_t rawData_
 	temporaryVector.x = deltaTime * temporaryVector.x;
 	temporaryVector.y = deltaTime * temporaryVector.y;
 	temporaryVector.z = deltaTime * temporaryVector.z;
-	// Add to previous speed calculation
-	vectorf_add(&temporaryVector, &_accData.Speed_3D, &_accData.Speed_3D);
+	// First, add speed to fractional accumulator
+	vectorf_add(&temporaryVector, &_accData.Speed_3D_Frac, &_accData.Speed_3D_Frac);
+	// If speed values are over 0,001 m/s, add to main speed variable
+	// This is to be able to detect and use accelerations smaller than 0,1 m/s
+	if(_accData.Speed_3D_Frac.x > 0.001f)
+	{
+		result[0] = _accData.Speed_3D_Frac.x * 1000;
+		fracCalc = (int32_t) result[0];
+		result[0] = (float32_t)fracCalc;
+		result[0] = result[0] / 1000;
+		_accData.Speed_3D.x += result[0];
+		_accData.Speed_3D_Frac.x -= result[0];
+	}
+
+	if(_accData.Speed_3D_Frac.y > 0.001f)
+	{
+		result[0] = _accData.Speed_3D_Frac.y * 1000;
+		fracCalc = (int32_t) result[0];
+		result[0] = (float32_t)fracCalc;
+		result[0] = result[0] / 1000;
+		_accData.Speed_3D.y += result[0];
+		_accData.Speed_3D_Frac.y -= result[0];
+	}
+
+	if(_accData.Speed_3D_Frac.z > 0.001f)
+	{
+		result[0] = _accData.Speed_3D_Frac.z * 1000;
+		fracCalc = (int32_t) result[0];
+		result[0] = (float32_t)fracCalc;
+		result[0] = result[0] / 1000;
+		_accData.Speed_3D.z += result[0];
+		_accData.Speed_3D_Frac.z -= result[0];
+	}
+
 
 	success = SUCCESS;
 	return success;

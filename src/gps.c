@@ -161,6 +161,7 @@ uint8_t GPS_CharToByte(uint8_t data)
 	return data - 48;
 }
 
+// GGA and RMC message receive process
 void GPS_ReceiveProcess(uint8_t data)
 {
 	uint16_t temp = 0;

@@ -87,8 +87,6 @@ int main(void)
 	Delaynus(500000);
 	// Configure hardware
 	System_Config();
-	// Set LED OK = 1
-	LED_OK_ON;
 	// Set default PWM out values
 	PWMOUT_1 = TIM1_PULSE;
 	PWMOUT_2 = TIM1_PULSE;
@@ -363,18 +361,47 @@ int main(void)
         	SCR2 = SCR2 | SCR2_MAGOK;
         	SCR2 = SCR2 | SCR2_BAROK;
         }
+        // Check pin C0
+        // If 0, stop SD write
+        // If 1, start SD write
+        if(0 != GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_0))
+        {
+        	if(!SD_WRITE_LOG)
+        	{
+    			SD_WRITE_LOG = 1;
+    			// Check if log file is open
+    			if(!SD_LOG_ISOPEN)
+    			{
+    				openLog();
+    			}
+        	}
+        }
+        else
+        {
+        	if(SD_WRITE_LOG)
+        	{
+        		SD_WRITE_LOG = 0;
+        		// Else close file
+        		closeLog();
+        	}
+        }
+
         // Check log write buffers
         if(SD_WRITING_BUF1)
         {
         	//getFTime(&t1);
+        	LED_RUN_ON;
         	f_write(&logFile, SD_Buffer1, SD_Buf1Count, &bytesWritten);
+        	LED_RUN_OFF;
         	//getFTime(&t2);
         	SD_Buf1Count = 0;
         	SD_WRITING_BUF1 = 0;
         }
         if(SD_WRITING_BUF2)
         {
+        	LED_RUN_ON;
         	f_write(&logFile, SD_Buffer2, SD_Buf2Count, &bytesWritten);
+        	LED_RUN_OFF;
         	SD_Buf2Count = 0;
         	SD_WRITING_BUF2 = 0;
         }

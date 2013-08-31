@@ -121,6 +121,7 @@
 
 #define LED_OK_ON		GPIO_WriteBit(GPIOD, GPIO_Pin_9, 1)
 #define LED_OK_OFF		GPIO_WriteBit(GPIOD, GPIO_Pin_9, 0)
+#define LED_OK_TOGGLE	GPIO_ToggleBits(GPIOD, GPIO_Pin_9)
 
 #define LED_RUN_ON		GPIO_WriteBit(GPIOD, GPIO_Pin_10, 1)
 #define LED_RUN_OFF		GPIO_WriteBit(GPIOD, GPIO_Pin_10, 0)
