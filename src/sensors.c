@@ -6,6 +6,7 @@
  */
 
 #include "allinclude.h"
+#include "sensors/altimeter.h"
 
 volatile uint16_t I2C2_ProcesState = 0;
 volatile Flag I2C2_Flags;
@@ -244,6 +245,9 @@ void copySensorData(void)
 {
 
 	uint16_t i = 0;
+	uint32_t ui32Temp = 0;
+	uint32_t ui32Temp1 = 0;
+	uint16_t ui16Temp = 0;
 	//uint16_t uiTemp = 0;
 	// Data is in I2C2_DMABufRX
 	// Mark updating sensor data
@@ -276,10 +280,28 @@ void copySensorData(void)
 	MAG_Y = MAG_Y | (I2C2_DMABufRX[19] & 0x00ff);
 	MAG_Z = (I2C2_DMABufRX[16] << 8) & 0xff00;
 	MAG_Z = MAG_Z | (I2C2_DMABufRX[17] & 0x00ff);
-	// Reg 79,80 (20,21) is barometer data
+	// Reg 79,80, 81 (20,21,22) is barometer data
 	BARO = (I2C2_DMABufRX[20] << 8) & 0xff00;
 	BARO = BARO | (I2C2_DMABufRX[21] & 0x00ff);
 	BARO_FRAC = I2C2_DMABufRX[22] >> 4;
+
+	// Update new variables
+
+
+	// Barometer pressure and temperature
+	ui32Temp = 0;
+	ui32Temp = ((uint32_t)I2C2_DMABufRX[20] << 16);
+	ui32Temp1 = ((uint32_t)I2C2_DMABufRX[21] << 8);
+	ui32Temp = ui32Temp + ui32Temp1;
+	ui32Temp1 = ((uint32_t)I2C2_DMABufRX[22]);
+	ui32Temp = ui32Temp + ui32Temp1;
+	ui16Temp = 0;
+	ui16Temp = ((uint16_t)I2C2_DMABufRX[23] << 8);
+	ui16Temp = ui16Temp + ((uint16_t)I2C2_DMABufRX[24]);
+
+	altimeter_update(ui32Temp, ui16Temp, sensorAcquisitionTime);
+
+
 
 	// Mark end of sensor updating
 	SENSORS_UPDATING = 0;
@@ -302,6 +324,12 @@ void copySensorData(void)
 	{
 		// If yes, send data
 		MODBUS_SendMessage();
+	}
+
+	// Check if we are saving to log
+	if(SD_WRITE_LOG && SCR2_LOGOPEN)
+	{
+		write_toLog();
 	}
 
 	// Update export vars
@@ -1149,20 +1177,22 @@ ErrorStatus MPU6000_ConfigureI2CMaster(void)
 	I2C2_DMABufTX[0] = 36;
 	// I2C master control = 0101 1101; last four bits = I2C clock = 400 kHz
 	I2C2_DMABufTX[1] = 0x5d;
+	// Slave 0 is magnetometer
 	// Registers 37 - 39 - master 0 control
 	// 37 - I2C_SLV0_ADDR = 1001 1110
 	I2C2_DMABufTX[2] = 0x9E;
 	// 38 - I2C_SLV0_REG - start read at this reg
 	I2C2_DMABufTX[3] = 0x03;
-	// 39 - I2C_SLV0_CTRL = 1000 0110
+	// 39 - I2C_SLV0_CTRL = 1000 0110 -> enable, read 6 bytes
 	I2C2_DMABufTX[4] = 0x86;
+	// Slave 1 is barometer
 	// Registers 40 - 42 - master 1 control
 	// 40 - I2C SLV1_ADDR = 1110 0000
 	I2C2_DMABufTX[5] = 0xE0;
 	// 41 = I2C_SLV1_REG - start read at this reg
 	I2C2_DMABufTX[6] = 0x01;
-	// 42 - I2C_SLV1_CTRL = 1000 0011
-	I2C2_DMABufTX[7] = 0x83;
+	// 42 - I2C_SLV1_CTRL = 1000 0101 -> enable, read 5 bytes, pressure + temperature
+	I2C2_DMABufTX[7] = 0x85;
 	for(retriesCount = I2C2_ERROR_RETRIESCOUNT; retriesCount > 0; retriesCount --)
 	{
 		error = masterSend(MPU6000_ADDRESS, I2C2_DMABufTX, 8);
@@ -1279,12 +1309,15 @@ ErrorStatus MPL3115A2_Enable(FunctionalState newState)
 	if(newState == ENABLE)
 	{
 		// Mode = enable, altimeter mode
-		I2C2_DMABufTX[1] = 0x81;
+		//I2C2_DMABufTX[1] = 0x81;
+		// Mode = enable, barometer mode
+		I2C2_DMABufTX[1] = 0x01;
 	}
 	else
 	{
 		// Mode = disable
-		I2C2_DMABufTX[1] = 0x80;
+		//I2C2_DMABufTX[1] = 0x80;
+		I2C2_DMABufTX[1] = 0x00;
 	}
 	//
 	I2C2_DMABufTX[2] = 0x00;

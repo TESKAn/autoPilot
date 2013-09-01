@@ -7,6 +7,7 @@
 #include "allinclude.h"
 #include <string.h>
 #include <stdlib.h>
+#include "sensors/altimeter.h"
 
 void updateExportVars(void)
 {
@@ -198,7 +199,7 @@ void openLog(void)
 	}
 
 	// Write first line
-	f_write(&logFile, "Time;GPS Lock;Lat;;Lon;;Alt;Speed;Track angle;HDOP;GG;AccX;AccY;AccZ;GyroX;GyroY;GyroZ;MagX;MagY;MagZ;Baro;Voltage;Current;mAh;T1;T2;T3\r\n", 136, &bytesWritten);
+	f_write(&logFile, "Time;GPS Lock;Lat;;Lon;;Alt;Speed;Track angle;HDOP;GG;AccX;AccY;AccZ;GyroX;GyroY;GyroZ;MagX;MagY;MagZ;Baro;AirSpeed\r\n", 136, &bytesWritten);
 #ifdef DEBUG_USB
 	sendUSBMessage("Log opened");
 #endif
@@ -230,6 +231,8 @@ void closeLog(void)
 
 void write_toLog(void)
 {
+	uint16_t temp1, temp2;
+	uint32_t temp = 0;
 	// Make pointer to buffer place
 	uint32_t* BufferPointer = &SD_Buf1Count;
 	// Make pointer to buffer
@@ -248,24 +251,7 @@ void write_toLog(void)
 		if(SD_WRITING_BUF1) return;
 	}
 	// Store time
-	Buffer[*BufferPointer] = charFromNumber(GPS_HOURS / 10);
-	*BufferPointer = *BufferPointer + 1;
-	Buffer[*BufferPointer] = charFromNumber(GPS_HOURS % 10);
-	*BufferPointer = *BufferPointer + 1;
-	Buffer[*BufferPointer] = ':';
-	*BufferPointer = *BufferPointer + 1;
-	Buffer[*BufferPointer] = charFromNumber(GPS_MINUTES / 10);
-	*BufferPointer = *BufferPointer + 1;
-	Buffer[*BufferPointer] = charFromNumber(GPS_MINUTES % 10);
-	*BufferPointer = *BufferPointer + 1;
-	Buffer[*BufferPointer] = ':';
-	*BufferPointer = *BufferPointer + 1;
-	Buffer[*BufferPointer] = charFromNumber(GPS_SECONDS / 10);
-	*BufferPointer = *BufferPointer + 1;
-	Buffer[*BufferPointer] = charFromNumber(GPS_SECONDS % 10);
-	*BufferPointer = *BufferPointer + 1;
-	Buffer[*BufferPointer] = ';';
-	*BufferPointer = *BufferPointer + 1;
+	*BufferPointer += sprintf (&Buffer[*BufferPointer], "%d:%d:%d;", GPS_HOURS, GPS_MINUTES, GPS_SECONDS);
 	// Store GPS data
 	// GPS lock
 	if ((GPS_VALID & 32768) != 0)
@@ -280,11 +266,7 @@ void write_toLog(void)
 	Buffer[*BufferPointer] = ';';
 	*BufferPointer = *BufferPointer + 1;
 	// Latitude
-	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_LATITUDE, Buffer, *BufferPointer);
-	// Change ; to ,
-	Buffer[*BufferPointer - 1] = ',';
-	// Latitude frac
-	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_LATITUDE_FRAC, Buffer, *BufferPointer);
+	*BufferPointer += sprintf (&Buffer[*BufferPointer], "%d,%d;", GPS_LATITUDE, GPS_LATITUDE_FRAC);
 	// N/S
 	if((GPS_NS_EW & 1) != 0)
 	{
@@ -298,11 +280,7 @@ void write_toLog(void)
 	Buffer[*BufferPointer] = ';';
 	*BufferPointer = *BufferPointer + 1;
 	// Longitude
-	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_LONGITUDE, Buffer, *BufferPointer);
-	// Change ; to ,
-	Buffer[*BufferPointer - 1] = ',';
-	// Longitude frac
-	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_LONGITUDE_FRAC, Buffer, *BufferPointer);
+	*BufferPointer += sprintf (&Buffer[*BufferPointer], "%d,%d;", GPS_LONGITUDE, GPS_LONGITUDE_FRAC);
 	// E/W
 	if((GPS_NS_EW & 2) != 0)
 	{
@@ -316,50 +294,35 @@ void write_toLog(void)
 	Buffer[*BufferPointer] = ';';
 	*BufferPointer = *BufferPointer + 1;
 	// Altitude
-	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_ALTITUDE, Buffer, *BufferPointer);
-	// Change ; to ,
-	Buffer[*BufferPointer - 1] = ',';
-	// Altitude frac
-	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_ALTITUDE_FRAC, Buffer, *BufferPointer);
+	*BufferPointer += sprintf (&Buffer[*BufferPointer], "%d,%d;", GPS_ALTITUDE, GPS_ALTITUDE_FRAC);
 	// Speed
-	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_SPEED, Buffer, *BufferPointer);
-	// Change ; to ,
-	Buffer[*BufferPointer - 1] = ',';
-	// Speed frac
-	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_SPEED_FRAC, Buffer, *BufferPointer);
+	*BufferPointer += sprintf (&Buffer[*BufferPointer], "%d,%d;", GPS_SPEED, GPS_SPEED_FRAC);
 	// Track angle
-	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_TRACKANGLE, Buffer, *BufferPointer);
-	// Change ; to ,
-	Buffer[*BufferPointer - 1] = ',';
-	// Track angle frac
-	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_TRACKANGLE_FRAC, Buffer, *BufferPointer);
+	*BufferPointer += sprintf (&Buffer[*BufferPointer], "%d,%d;", GPS_TRACKANGLE, GPS_TRACKANGLE_FRAC);
 	// HDOP
-	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_HDOP, Buffer, *BufferPointer);
-	// Change ; to ,
-	Buffer[*BufferPointer - 1] = ',';
-	// HDOP frac
-	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_HDOP_FRAC, Buffer, *BufferPointer);
+	*BufferPointer += sprintf (&Buffer[*BufferPointer], "%d,%d;", GPS_HDOP, GPS_HDOP_FRAC);
 	// GG
-	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_GG, Buffer, *BufferPointer);
-	// Change ; to ,
-	Buffer[*BufferPointer - 1] = ',';
-	// GG frac
-	*BufferPointer = *BufferPointer + storeNegativeNumber(GPS_GG_FRAC, Buffer, *BufferPointer);
+	*BufferPointer += sprintf (&Buffer[*BufferPointer], "%d,%d;", GPS_GG, GPS_GG_FRAC);
 
 	// Store accelerometer X, Y, Z
-	*BufferPointer = *BufferPointer + storeNegativeNumber(ACC_X, Buffer, *BufferPointer);
-	*BufferPointer = *BufferPointer + storeNegativeNumber(ACC_Y, Buffer, *BufferPointer);
-	*BufferPointer = *BufferPointer + storeNegativeNumber(ACC_Z, Buffer, *BufferPointer);
+	*BufferPointer += sprintf (&Buffer[*BufferPointer], "%d;%d;%d;", (int16_t)ACC_X, (int16_t)ACC_Y, (int16_t)ACC_Z);
 	// Store gyro X, Y, Z
-	*BufferPointer = *BufferPointer + storeNegativeNumber(GYRO_X, Buffer, *BufferPointer);
-	*BufferPointer = *BufferPointer + storeNegativeNumber(GYRO_Y, Buffer, *BufferPointer);
-	*BufferPointer = *BufferPointer + storeNegativeNumber(GYRO_Z, Buffer, *BufferPointer);
+	*BufferPointer += sprintf (&Buffer[*BufferPointer], "%d;%d;%d;", (int16_t)GYRO_X, (int16_t)GYRO_Y, (int16_t)GYRO_Z);
 	// Store magnetometer X, Y, Z
-	*BufferPointer = *BufferPointer + storeNegativeNumber(MAG_X, Buffer, *BufferPointer);
-	*BufferPointer = *BufferPointer + storeNegativeNumber(MAG_Y, Buffer, *BufferPointer);
-	*BufferPointer = *BufferPointer + storeNegativeNumber(MAG_Z, Buffer, *BufferPointer);
-	// Store baro altitude
-	*BufferPointer = *BufferPointer + storeNegativeNumber(BARO, Buffer, *BufferPointer);
+	*BufferPointer += sprintf (&Buffer[*BufferPointer], "%d;%d;%d;", (int16_t)MAG_X, (int16_t)MAG_Y, (int16_t)MAG_Z);
+	// Store barometer pressure
+	temp1 = (uint16_t)(_altimeterData.pressure / 1000);
+	temp2 = (uint16_t)(_altimeterData.pressure % 1000);
+
+	*BufferPointer += sprintf (&Buffer[*BufferPointer], "%d%d", temp1, temp2);
+
+	temp1 = (uint16_t)(_altimeterData.pressure_frac);
+
+	*BufferPointer += sprintf (&Buffer[*BufferPointer], ",%d;", temp1);
+
+	*BufferPointer += sprintf (&Buffer[*BufferPointer], "%d;", AIN3);
+
+/*
 	// Store power Uin, Iin, mAh used, T1, T2, T3 - always positive 16 bit
 	*BufferPointer = *BufferPointer + storeNumber(VOLTAGE, Buffer, *BufferPointer);
 	*BufferPointer = *BufferPointer + storeNumber(CURRENT, Buffer, *BufferPointer);
@@ -367,7 +330,7 @@ void write_toLog(void)
 	*BufferPointer = *BufferPointer + storeNumber(T1, Buffer, *BufferPointer);
 	*BufferPointer = *BufferPointer + storeNumber(T2, Buffer, *BufferPointer);
 	*BufferPointer = *BufferPointer + storeNumber(T3, Buffer, *BufferPointer);
-
+*/
 
 	// Write \r\n
 	Buffer[*BufferPointer] = 0x0d;
@@ -483,6 +446,14 @@ ErrorStatus int16ToStr(int16_t value, char* text, char* str)
 	int n = strlen(text);
 	strcpy (str, text);
 	n += sprintf (str+n, "%d", value);
+	return SUCCESS;
+}
+
+ErrorStatus uint32ToStr(uint32_t value, char* text, char* str)
+{
+	int n = strlen(text);
+	strcpy (str, text);
+
 	return SUCCESS;
 }
 

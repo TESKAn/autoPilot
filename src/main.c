@@ -41,6 +41,7 @@
 #include "sensors/gyro.h"
 #include "sensors/mag.h"
 #include "sensors/airSpeed.h"
+#include "sensors/altimeter.h"
 
 
 /* Private macro */
@@ -67,6 +68,14 @@ int main(void)
 {
 	unsigned int bytesWritten;
 	float32_t temp = 0;
+
+	// Init sensor data structures
+	acc_initDataStructure();
+	gyro_initDataStructure();
+	mag_initDataStructure();
+	AirSpeed_initDataStructure();
+	altimeter_initDataStructure();
+
 	// Init vectors
 	// Initialize matrices
 	ahrs_matrix3by3_init(&tempMatrix);

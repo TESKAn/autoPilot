@@ -532,7 +532,8 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 					{
 						// Mark time when data is requested
 						sensorAcquisitionTime = getSystemTime();
-						error = masterReceive_beginDMA(MPU6000_ADDRESS, 59, I2C2_DMABufRX, 22);
+						// Read from MPU, start at reg 59, read 25 bytes
+						error = masterReceive_beginDMA(MPU6000_ADDRESS, 59, I2C2_DMABufRX, 25);
 						if(error == SUCCESS)
 						{
 							break;
@@ -552,10 +553,12 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		{
 			// Event every second
 			// Write log
+			/*
 			if(SD_WRITE_LOG && SCR2_LOGOPEN)
 			{
 				write_toLog();
 			}
+			*/
 			LED_ToggleCount = 0;
 			// Toggle LED
 			// Check GPS data valid - MODBUSREG[21] bit 15
