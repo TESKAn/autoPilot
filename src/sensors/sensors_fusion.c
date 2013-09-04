@@ -31,7 +31,7 @@ ErrorStatus fusion_updateRotationMatrix()
 
 	// Check if we have valid GPS and accelerometer data
 	// We need speed so do not use if below some value
-	if((1 ==_GPSData.valid)&&(1 == _accData.valid)&&(min_airspeed < vectorf_getNorm(&_GPSData.speed3D)))
+	if((1 ==_GPSData.valid)&&(1 == _accData.valid)&&(param_min_airspeed < vectorf_getNorm(&_GPSData.speed3D)))
 	{
 		// Use GPS and accelerometer speed data to calculate DCM error in earth frame
 		vectorf_crossProduct(&_accData.Speed_3D, &_GPSData.speed3D, &temporaryVector);
@@ -39,10 +39,29 @@ ErrorStatus fusion_updateRotationMatrix()
 		matrix3_transposeVectorMultiply(&_fusion_DCM, &temporaryVector, &error_gps_acc);
 	}
 	// Check if we have valid gyro and accelerometer data and calculate error
+	// Do only if speed below limit
 
 	// Check if we have valid magnetometer data and calculate error
 
 	// Check if we have valid GPS data and calculate error
+
+	// If error above limit, update PID
+
+	// Calculate rotation angle
+
+	// If rotation angle above limit, update rotation matrix
+
+	// Generate update matrix
+
+	// Backup current DCM matrix
+
+	// Multiply DCM and update matrix
+
+	// Renormalize and orthogonalize DCM matrix
+
+	// Check if matrix is OK
+
+	// Else restore previous
 
 
 
