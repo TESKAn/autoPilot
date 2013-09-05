@@ -15,29 +15,31 @@
 // Create and initialize new 3x3 matrix
 // if identity == 0, init matrix with all zeroes
 // if identity == 1, init identity matrix
-Matrixf matrix3_init(int identity)
+ErrorStatus matrix3_init(int identity, Matrixf * mat)
 {
-	Matrixf mat;
-	mat.a.x = 0;
-	mat.a.y = 0;
-	mat.a.z = 0;
+	ErrorStatus error = ERROR;
+	mat->a.x = 0;
+	mat->a.y = 0;
+	mat->a.z = 0;
 
-	mat.b.x = 0;
-	mat.b.y = 0;
-	mat.b.z = 0;
+	mat->b.x = 0;
+	mat->b.y = 0;
+	mat->b.z = 0;
 
-	mat.c.x = 0;
-	mat.c.y = 0;
-	mat.c.z = 0;
+	mat->c.x = 0;
+	mat->c.y = 0;
+	mat->c.z = 0;
 
 	if(0 != identity)
 	{
-		mat.a.x = 1;
-		mat.b.y = 1;
-		mat.c.z = 1;
+		mat->a.x = 1;
+		mat->b.y = 1;
+		mat->c.z = 1;
 	}
 
-	return mat;
+	error = SUCCESS;
+
+	return error;
 }
 
 ErrorStatus matrix3_vectorMultiply(Matrixf * mat, Vectorf * vecIn, Vectorf * vecOut)
@@ -189,7 +191,43 @@ ErrorStatus matrix3_copy(Matrixf * matA, Matrixf * matB)
 	matA->c.z = matB->c.z;
 
 	status = SUCCESS;
-
 	return status;
 }
 
+// Make matrix orthogonal and normalized
+ErrorStatus matrix3_normalizeOrthogonalizeMatrix(Matrixf * rotMatrix)
+{
+	ErrorStatus status = ERROR;
+	float32_t error = 0;
+	Vectorf tempVector = vectorf_init(0);
+	Vectorf tempVector1 = vectorf_init(0);
+
+	// Calculate error = X.Y
+	vectorf_dotProduct(&rotMatrix->a, &rotMatrix->b, &error);
+	// Add half error to X, half to Y
+	error = error / 2;
+	vectorf_scalarProduct(&rotMatrix->a, error, &tempVector);
+	vectorf_scalarProduct(&rotMatrix->b, error, &tempVector1);
+
+	vectorf_substract(&rotMatrix->a, &tempVector1, &rotMatrix->a);
+	vectorf_substract(&rotMatrix->b, &tempVector, &rotMatrix->b);
+	// Normalize a
+	vectorf_dotProduct(&rotMatrix->a, &rotMatrix->a, &error);
+	error = 3 - error;
+	error = error / 2;
+	vectorf_scalarProduct(&rotMatrix->a, error, &rotMatrix->a);
+	// Normalize b
+	vectorf_dotProduct(&rotMatrix->b, &rotMatrix->b, &error);
+	error = 3 - error;
+	error = error / 2;
+	vectorf_scalarProduct(&rotMatrix->b, error, &rotMatrix->b);
+	// Calculate Z as cross product of X and Y
+	vectorf_crossProduct(&rotMatrix->a, &rotMatrix->b, &rotMatrix->c);
+	// Normalize c
+	vectorf_dotProduct(&rotMatrix->c, &rotMatrix->c, &error);
+	error = 3 - error;
+	error = error / 2;
+	vectorf_scalarProduct(&rotMatrix->c, error, &rotMatrix->c);
+	status = SUCCESS;
+	return status;
+}

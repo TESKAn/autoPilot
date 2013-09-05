@@ -12,6 +12,7 @@
 #include "math/myMath_typedefs.h"
 #include "math/myMath_vec3.h"
 #include "math/myMath_matrix3.h"
+#include "math/myMath_pid.h"
 #include "sensors_typedefs.h"
 #include "gyro.h"
 #include "accelerometer.h"
@@ -22,12 +23,39 @@
 
 Matrixf _fusion_DCM;
 
+ErrorStatus fusion_generateUpdateMatrix(Vectorf * omega, Matrixf * updateMatrix)
+{
+	ErrorStatus status = ERROR;
+
+	// First create identity matrix
+	matrix3_init(1, updateMatrix);
+	// Populate elements of matrix
+	updateMatrix->a.y = -omega->z;
+	updateMatrix->a.z = omega->y;
+
+	updateMatrix->b.x = omega->z;
+	updateMatrix->b.z = -omega->x;
+
+	updateMatrix->c.x = -omega->y;
+	updateMatrix->c.y = omega->x;
+
+	status = SUCCESS;
+	return status;
+}
+
 ErrorStatus fusion_updateRotationMatrix()
 {
 	ErrorStatus status;
 	status = ERROR;
 	Vectorf temporaryVector = vectorf_init(0);
-	Vectorf error_gps_acc = vectorf_init(0);	// Error from GPS and accelerometer data
+	Vectorf error_gps_acc = vectorf_init(0);				// Error from GPS and accelerometer data
+	Vectorf error_acc_gravity = vectorf_init(0);			// Error from acceleration and gravity
+	Vectorf error = vectorf_init(0);						// Cumulative error
+	Vectorf omega = vectorf_init(0);						// Rotation value
+	Matrixf updateMatrix;									// Update matrix
+	Matrixf newMatrix;										// Place to store new DCM matrix
+	float32_t fTemp = 0;
+	float32_t dt = 0;
 
 	// Check if we have valid GPS and accelerometer data
 	// We need speed so do not use if below some value
@@ -40,32 +68,57 @@ ErrorStatus fusion_updateRotationMatrix()
 	}
 	// Check if we have valid gyro and accelerometer data and calculate error
 	// Do only if speed below limit
+	if((param_min_airspeed > vectorf_getNorm(&_GPSData.speed3D))&&(1 == _accData.valid))
+	{
+		// Store estimated gravity vector
+		temporaryVector.x = _fusion_DCM.c.x;
+		temporaryVector.y = _fusion_DCM.c.y;
+		temporaryVector.z = _fusion_DCM.c.z;
+		vectorf_crossProduct(&temporaryVector, &_accData.vector, &error_acc_gravity);
+	}
 
 	// Check if we have valid magnetometer data and calculate error
 
-	// Check if we have valid GPS data and calculate error
+	// Check if we have valid GPS data and calculate yaw error
+
+	// Calculate delta time
+	dt = (float32_t)_gyroData.deltaTime;
+	dt = dt * param_systime_toseconds;
 
 	// If error above limit, update PID
+	fTemp = vectorf_getNorm(&error);
+	if(param_min_rot_error < fTemp)
+	{
+		// Calculate delta time in seconds
+		math_PID3(&error, dt, &_gyroErrorPID);
+	}
+
+	// Remove error from gyro data
+	temporaryVector.x = _gyroData.vector.x - _gyroErrorPID.x.result;
+	temporaryVector.y = _gyroData.vector.y - _gyroErrorPID.y.result;
+	temporaryVector.z = _gyroData.vector.z - _gyroErrorPID.z.result;
 
 	// Calculate rotation angle
+	// Is gyro value * delta time in seconds
+	vectorf_scalarProduct(&_gyroData.vector, dt, &omega);
 
 	// If rotation angle above limit, update rotation matrix
+	fTemp = vectorf_getNorm(&omega);
+	if(param_min_rotation < fTemp)
+	{
+		// Generate update matrix
+		fusion_generateUpdateMatrix(&omega, &updateMatrix);
+		// Backup current DCM matrix
+		//
+		// Multiply DCM and update matrix
+		matrix3_MatrixMultiply(&updateMatrix, &_fusion_DCM, &newMatrix);
 
-	// Generate update matrix
+		// Renormalize and orthogonalize DCM matrix
+		matrix3_normalizeOrthogonalizeMatrix(&newMatrix);
 
-	// Backup current DCM matrix
-
-	// Multiply DCM and update matrix
-
-	// Renormalize and orthogonalize DCM matrix
-
-	// Check if matrix is OK
-
-	// Else restore previous
-
-
-
-
+		// Check if matrix is OK and copy data
+		matrix3_copy(&newMatrix, &_fusion_DCM);
+	}
 
 	status = SUCCESS;
 	return status;

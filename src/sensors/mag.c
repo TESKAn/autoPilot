@@ -30,8 +30,7 @@ ErrorStatus mag_initDataStructure()
 
 	_magData.magRate = MAG_DEFAULT_RATE;
 
-	_magData.softIron = matrix3_init(1);
-
+	matrix3_init(1, &_magData.softIron);
 
 	_magData.vector = vectorf_init(0);
 
