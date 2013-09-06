@@ -197,13 +197,18 @@ ErrorStatus matrix3_copy(Matrixf * matA, Matrixf * matB)
 // Make matrix orthogonal and normalized
 ErrorStatus matrix3_normalizeOrthogonalizeMatrix(Matrixf * rotMatrix)
 {
-	ErrorStatus status = ERROR;
+	ErrorStatus status = SUCCESS;
 	float32_t error = 0;
 	Vectorf tempVector = vectorf_init(0);
 	Vectorf tempVector1 = vectorf_init(0);
 
 	// Calculate error = X.Y
 	vectorf_dotProduct(&rotMatrix->a, &rotMatrix->b, &error);
+	// If error is larger than we permit, return ERROR
+	if(param_dcm_max_orth_error < error)
+	{
+		return ERROR;
+	}
 	// Add half error to X, half to Y
 	error = error / 2;
 	vectorf_scalarProduct(&rotMatrix->a, error, &tempVector);
@@ -215,11 +220,21 @@ ErrorStatus matrix3_normalizeOrthogonalizeMatrix(Matrixf * rotMatrix)
 	vectorf_dotProduct(&rotMatrix->a, &rotMatrix->a, &error);
 	error = 3 - error;
 	error = error / 2;
+	// If error is larger than we permit, return ERROR
+	if(param_dcm_max_orth_error < error)
+	{
+		return ERROR;
+	}
 	vectorf_scalarProduct(&rotMatrix->a, error, &rotMatrix->a);
 	// Normalize b
 	vectorf_dotProduct(&rotMatrix->b, &rotMatrix->b, &error);
 	error = 3 - error;
 	error = error / 2;
+	// If error is larger than we permit, return ERROR
+	if(param_dcm_max_orth_error < error)
+	{
+		return ERROR;
+	}
 	vectorf_scalarProduct(&rotMatrix->b, error, &rotMatrix->b);
 	// Calculate Z as cross product of X and Y
 	vectorf_crossProduct(&rotMatrix->a, &rotMatrix->b, &rotMatrix->c);
@@ -227,7 +242,11 @@ ErrorStatus matrix3_normalizeOrthogonalizeMatrix(Matrixf * rotMatrix)
 	vectorf_dotProduct(&rotMatrix->c, &rotMatrix->c, &error);
 	error = 3 - error;
 	error = error / 2;
+	// If error is larger than we permit, return ERROR
+	if(param_dcm_max_orth_error < error)
+	{
+		return ERROR;
+	}
 	vectorf_scalarProduct(&rotMatrix->c, error, &rotMatrix->c);
-	status = SUCCESS;
 	return status;
 }

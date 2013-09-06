@@ -46,7 +46,7 @@ ErrorStatus fusion_generateUpdateMatrix(Vectorf * omega, Matrixf * updateMatrix)
 ErrorStatus fusion_updateRotationMatrix()
 {
 	ErrorStatus status;
-	status = ERROR;
+	status = SUCCESS;
 	Vectorf temporaryVector = vectorf_init(0);
 	Vectorf error_gps_acc = vectorf_init(0);				// Error from GPS and accelerometer data
 	Vectorf error_acc_gravity = vectorf_init(0);			// Error from acceleration and gravity
@@ -108,19 +108,18 @@ ErrorStatus fusion_updateRotationMatrix()
 	{
 		// Generate update matrix
 		fusion_generateUpdateMatrix(&omega, &updateMatrix);
-		// Backup current DCM matrix
-		//
 		// Multiply DCM and update matrix
 		matrix3_MatrixMultiply(&updateMatrix, &_fusion_DCM, &newMatrix);
 
 		// Renormalize and orthogonalize DCM matrix
-		matrix3_normalizeOrthogonalizeMatrix(&newMatrix);
+		status = matrix3_normalizeOrthogonalizeMatrix(&newMatrix);
 
 		// Check if matrix is OK and copy data
-		matrix3_copy(&newMatrix, &_fusion_DCM);
+		if(SUCCESS == status)
+		{
+			matrix3_copy(&newMatrix, &_fusion_DCM);
+		}
 	}
-
-	status = SUCCESS;
 	return status;
 }
 

@@ -14,7 +14,7 @@
 #define DEF_MIN_ROT_ERROR					0.0001f		// Min error to update rotation error PID
 #define DEF_SENSOR_UPDATE_INTERVAL			0.01f		// Time between sensor updates
 #define DEF_SYSTIME_TO_SECONDS				0.00001f	// Convert systemTime to seconds, 1 ms timer, time is stored as 1/100 ms, so divide by 100000.
-
+#define DEF_DCM_MAX_ORTH_ERROR				0.0001f		// Maximum allowable error when we reorthogonalize and renormalize matrix
 
 // Extern definitions
 extern float32_t param_min_airspeed;
@@ -22,5 +22,6 @@ extern float32_t param_min_rotation;
 extern float32_t param_min_rot_error;
 extern float32_t param_sensor_update_interval;
 extern float32_t param_systime_toseconds;
+extern float32_t param_dcm_max_orth_error;
 
 #endif /* PARAMETERS_H_ */
