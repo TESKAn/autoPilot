@@ -419,6 +419,16 @@ void DMA1_Stream0_IRQHandler(void)
 }
 
 /**
+  * @brief  This function handles FPU interrupt request.
+  * @param  None
+  * @retval None
+  */
+void FPU_IRQHandler(void)
+{
+	FPU_ISR_Handler();
+}
+
+/**
   * @brief  This function handles PPP interrupt request.
   * @param  None
   * @retval None

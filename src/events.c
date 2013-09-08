@@ -695,3 +695,52 @@ void USART3_ISR_Handler(void)
 	}
 }
 
+/**
+  * @brief  This function handles FPU interrupt request.
+  * @param  None
+  * @retval None
+  */
+void FPU_ISR_Handler(void)
+{
+	FPU_EXCEPTION = 1;
+	// Clear FPU flags in flagReg1
+	CLEAR_FPU_EXCEPTIONS;
+	// Clear exception flag(s)
+	register uint32_t fpscr_val = 0;
+	register uint32_t fpccr_val = 0;
+	register uint32_t reg_val = 0;
+
+	uint32_t * FPCCR_REG;
+
+	FPCCR_REG = (uint32_t *)0xE000EF34;
+
+	fpccr_val = *FPCCR_REG;
+
+	uint32_t bits = fpccr_val & 0XC0000000;
+
+	bits = bits >> 30;
+
+	if(0 == bits)
+	{
+		reg_val = 1;
+		fpscr_val = __get_FPSCR();
+		//{ check exception flags }
+		fpscr_val &= (uint32_t)~0x8F; // Clear all exception flags
+		__set_FPSCR(fpscr_val);
+	}
+	else if(2 == bits)
+	{
+
+	}
+	else
+	{
+		reg_val = __get_FPSCR(); //dummy access
+		fpscr_val=*(__IO uint32_t*)(FPU->FPCAR +0x40);
+		//{ check exception flags }
+		fpscr_val &= (uint32_t)~0x8F ; // Clear all exception flags
+		*(__IO uint32_t*)(FPU->FPCAR +0x40)=fpscr_val;
+		__DMB() ;
+	}
+}
+
+

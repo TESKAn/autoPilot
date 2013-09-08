@@ -987,8 +987,8 @@ void init_GPIO()
 
 	// Set C13 as output, pull to zero
 	// C13 = USB OTG power enable
-	// Set pin to 0
-	GPIO_WriteBit(GPIOC, GPIO_Pin_13, 0);
+	// Set pin to 1
+	GPIO_WriteBit(GPIOC, GPIO_Pin_13, 1);
 	// Select C13
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
 	//set output type
@@ -1001,8 +1001,8 @@ void init_GPIO()
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
-	// Set pin to 0
-	GPIO_WriteBit(GPIOC, GPIO_Pin_13, 0);
+	// Set pin to 1 - disable switch
+	GPIO_WriteBit(GPIOC, GPIO_Pin_13, 1);
 
 	// Set C15 as output, set to 1, pull - up, MPL sensor shutdown
 	// Select C15
@@ -1235,6 +1235,17 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	//init I2C2 interrupt
 	//set IRQ channel
 	NVCInitStructure.NVIC_IRQChannel = I2C2_EV_IRQn;
+	//set priority 0 - 15
+	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+	//set priority 0 - 15
+	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+	//enable IRQ channel
+	NVCInitStructure.NVIC_IRQChannelCmd = newState;
+	NVIC_Init(&NVCInitStructure);
+
+	//init FPU interrupt
+	//set IRQ channel
+	NVCInitStructure.NVIC_IRQChannel = FPU_IRQn;
 	//set priority 0 - 15
 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
 	//set priority 0 - 15

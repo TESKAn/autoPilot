@@ -7,6 +7,7 @@
 
 #include "stm32f4xx.h"
 #include "arm_math.h"
+#include "allinclude.h"
 #include "myMath_typedefs.h"
 #include "myMath_vec3.h"
 #include "myMath.h"
@@ -32,10 +33,21 @@ Vectorui16 vectorui16_init(int16_t value)
 ErrorStatus vectorf_dotProduct(Vectorf * vecA, Vectorf * vecB, float32_t * res)
 {
 	ErrorStatus status = ERROR;
+	float32_t prod = 0;
+	// Set FPU exception bit to 0
+	FPU_EXCEPTION = 0;
 
-	*res = vecA->x * vecB->x + vecA->y * vecB->y +  vecA->z * vecB->z;
+	prod = vecA->x * vecB->x;
+	prod = prod + vecA->y * vecB->y;
+	prod = prod + vecA->z * vecB->z;
 
-	status = SUCCESS;
+	*res = prod;
+
+	// Check if FPU result is OK
+	if(!FPU_EXCEPTION)
+	{
+		status = SUCCESS;
+	}
 
 	return status;
 }
@@ -43,7 +55,8 @@ ErrorStatus vectorf_dotProduct(Vectorf * vecA, Vectorf * vecB, float32_t * res)
 ErrorStatus vectorf_crossProduct(Vectorf * vecA, Vectorf * vecB, Vectorf * vecC)
 {
 	ErrorStatus status = ERROR;
-
+	// Set FPU exception bit to 0
+	FPU_EXCEPTION = 0;
 	// Result X = Ay*Bz - Az*By
 	vecC->x = vecA->y * vecB->z - vecA->z * vecB->y;
 	// Result Y = Az*Bx - Ax*Bz
@@ -51,20 +64,29 @@ ErrorStatus vectorf_crossProduct(Vectorf * vecA, Vectorf * vecB, Vectorf * vecC)
 	// Result Z = Ax*By - Ay*Bx
 	vecC->z = vecA->x * vecB->y - vecA->y * vecB->x;
 
-	status = SUCCESS;
-
+	// Check if FPU result is OK
+	if(!FPU_EXCEPTION)
+	{
+		status = SUCCESS;
+	}
 	return status;
 }
 
 ErrorStatus vectorf_scalarProduct(Vectorf * vecA, float32_t scalar, Vectorf * vecB)
 {
 	ErrorStatus status = ERROR;
+	// Set FPU exception bit to 0
+	FPU_EXCEPTION = 0;
 
 	vecB->x = vecA->x * scalar;
 	vecB->y = vecA->y * scalar;
 	vecB->z = vecA->z * scalar;
 
-	status = SUCCESS;
+	// Check if FPU result is OK
+	if(!FPU_EXCEPTION)
+	{
+		status = SUCCESS;
+	}
 
 	return status;
 }
@@ -72,11 +94,18 @@ ErrorStatus vectorf_scalarProduct(Vectorf * vecA, float32_t scalar, Vectorf * ve
 ErrorStatus vectorf_substract(Vectorf * vecA, Vectorf * vecB, Vectorf * vecC)
 {
 	ErrorStatus status = ERROR;
+	// Set FPU exception bit to 0
+	FPU_EXCEPTION = 0;
+
 	vecC->x = vecA->x - vecB->x;
 	vecC->y = vecA->y - vecB->y;
 	vecC->z = vecA->z - vecB->z;
 
-	status = SUCCESS;
+	// Check if FPU result is OK
+	if(!FPU_EXCEPTION)
+	{
+		status = SUCCESS;
+	}
 
 	return status;
 }
@@ -84,11 +113,18 @@ ErrorStatus vectorf_substract(Vectorf * vecA, Vectorf * vecB, Vectorf * vecC)
 ErrorStatus vectorf_add(Vectorf * vecA, Vectorf * vecB, Vectorf * vecC)
 {
 	ErrorStatus status = ERROR;
+	// Set FPU exception bit to 0
+	FPU_EXCEPTION = 0;
+
 	vecC->x = vecA->x + vecB->x;
 	vecC->y = vecA->y + vecB->y;
 	vecC->z = vecA->z + vecB->z;
 
-	status = SUCCESS;
+	// Check if FPU result is OK
+	if(!FPU_EXCEPTION)
+	{
+		status = SUCCESS;
+	}
 
 	return status;
 }
@@ -96,6 +132,9 @@ ErrorStatus vectorf_add(Vectorf * vecA, Vectorf * vecB, Vectorf * vecC)
 ErrorStatus vectorf_normalize(Vectorf * vectorA)
 {
 	ErrorStatus status = ERROR;
+	// Set FPU exception bit to 0
+	FPU_EXCEPTION = 0;
+
 	float32_t scale = 0;
 	float32_t xx = 0;
 	float32_t yy = 0;
@@ -118,27 +157,55 @@ ErrorStatus vectorf_normalize(Vectorf * vectorA)
 	vectorA->y = vectorA->y * scale;
 	vectorA->z = vectorA->z * scale;
 
+	// Check if FPU result is OK
+	if(!FPU_EXCEPTION)
+	{
+		status = SUCCESS;
+	}
+	else
+	{
+		status = ERROR;
+	}
+
 	return status;
 }
 
 float32_t vectorf_getNorm(Vectorf * vector)
 {
 	float32_t result = 0;
+	// Set FPU exception bit to 0
+	FPU_EXCEPTION = 0;
+
 	result = vector->x * vector->x;
 	result = result + vector->y * vector->y;
 	result = result + vector->z * vector->z;
 	result = sqrtf(result);
-	return result;
+	// Check if FPU result is OK
+	if(!FPU_EXCEPTION)
+	{
+		return result;
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 ErrorStatus vectorf_copy(Vectorf * vecA, Vectorf * vecB)
 {
 	ErrorStatus status = ERROR;
+	// Set FPU exception bit to 0
+	FPU_EXCEPTION = 0;
+
 	vecA->x = vecB->x;
 	vecA->y = vecB->y;
 	vecA->z = vecB->z;
 
-	status = SUCCESS;
+	// Check if FPU result is OK
+	if(!FPU_EXCEPTION)
+	{
+		status = SUCCESS;
+	}
 
 	return status;
 }

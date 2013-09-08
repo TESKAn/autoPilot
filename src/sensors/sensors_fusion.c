@@ -112,7 +112,7 @@ ErrorStatus fusion_updateRotationMatrix()
 		matrix3_MatrixMultiply(&updateMatrix, &_fusion_DCM, &newMatrix);
 
 		// Renormalize and orthogonalize DCM matrix
-		status = matrix3_normalizeOrthogonalizeMatrix(&newMatrix);
+		status = matrix3_normalizeOrthogonalizeMatrix(&newMatrix, param_dcm_max_orth_error);
 
 		// Check if matrix is OK and copy data
 		if(SUCCESS == status)

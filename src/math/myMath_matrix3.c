@@ -7,6 +7,7 @@
 
 #include "stm32f4xx.h"
 #include "arm_math.h"
+#include "allinclude.h"
 #include "myMath_typedefs.h"
 #include "myMath.h"
 #include "myMath_vec3.h"
@@ -17,7 +18,6 @@
 // if identity == 1, init identity matrix
 ErrorStatus matrix3_init(int identity, Matrixf * mat)
 {
-	ErrorStatus error = ERROR;
 	mat->a.x = 0;
 	mat->a.y = 0;
 	mat->a.z = 0;
@@ -36,15 +36,15 @@ ErrorStatus matrix3_init(int identity, Matrixf * mat)
 		mat->b.y = 1;
 		mat->c.z = 1;
 	}
-
-	error = SUCCESS;
-
-	return error;
+	return SUCCESS;
 }
 
 ErrorStatus matrix3_vectorMultiply(Matrixf * mat, Vectorf * vecIn, Vectorf * vecOut)
 {
 	ErrorStatus status = ERROR;
+	// Set FPU exception bit to 0
+	FPU_EXCEPTION = 0;
+
 	float32_t a = 0;
 	float32_t b = 0;
 	float32_t c = 0;
@@ -66,7 +66,11 @@ ErrorStatus matrix3_vectorMultiply(Matrixf * mat, Vectorf * vecIn, Vectorf * vec
 
 	vecOut->z = a + b + c;
 
-	status = SUCCESS;
+	// Check if FPU result is OK
+	if(!FPU_EXCEPTION)
+	{
+		status = SUCCESS;
+	}
 
 	return status;
 }
@@ -74,6 +78,8 @@ ErrorStatus matrix3_vectorMultiply(Matrixf * mat, Vectorf * vecIn, Vectorf * vec
 ErrorStatus matrix3_transposeVectorMultiply(Matrixf * mat, Vectorf * vecIn, Vectorf * vecOut)
 {
 	ErrorStatus status = ERROR;
+	// Set FPU exception bit to 0
+	FPU_EXCEPTION = 0;
 
 	float32_t a = 0;
 	float32_t b = 0;
@@ -93,7 +99,11 @@ ErrorStatus matrix3_transposeVectorMultiply(Matrixf * mat, Vectorf * vecIn, Vect
 	c = mat->c.z * vecIn->z;
 	vecOut->z = a + b + c;
 
-	status = SUCCESS;
+	// Check if FPU result is OK
+	if(!FPU_EXCEPTION)
+	{
+		status = SUCCESS;
+	}
 
 	return status;
 }
@@ -102,6 +112,8 @@ ErrorStatus matrix3_transposeVectorMultiply(Matrixf * mat, Vectorf * vecIn, Vect
 ErrorStatus matrix3_MatrixMultiply(Matrixf * matA, Matrixf * matB, Matrixf * matC)
 {
 	ErrorStatus status = ERROR;
+	// Set FPU exception bit to 0
+	FPU_EXCEPTION = 0;
 
 	float32_t a = 0;
 	float32_t b = 0;
@@ -148,15 +160,17 @@ ErrorStatus matrix3_MatrixMultiply(Matrixf * matA, Matrixf * matB, Matrixf * mat
 	c = matA->c.z * matB->c.z;
 	matC->c.z = a + b + c;
 
-	status = SUCCESS;
+	// Check if FPU result is OK
+	if(!FPU_EXCEPTION)
+	{
+		status = SUCCESS;
+	}
 
 	return status;
 }
 
 ErrorStatus matrix3_transpose(Matrixf * matA, Matrixf * matB)
 {
-	ErrorStatus status = ERROR;
-
 	matA->a.x = matB->a.x;
 	matA->a.y = matB->b.x;
 	matA->a.z = matB->c.x;
@@ -169,15 +183,11 @@ ErrorStatus matrix3_transpose(Matrixf * matA, Matrixf * matB)
 	matA->c.y = matB->b.z;
 	matA->c.z = matB->c.z;
 
-	status = SUCCESS;
-
-	return status;
+	return SUCCESS;
 }
 
 ErrorStatus matrix3_copy(Matrixf * matA, Matrixf * matB)
 {
-	ErrorStatus status = ERROR;
-
 	matA->a.x = matB->a.x;
 	matA->a.y = matB->a.y;
 	matA->a.z = matB->a.z;
@@ -190,63 +200,72 @@ ErrorStatus matrix3_copy(Matrixf * matA, Matrixf * matB)
 	matA->c.y = matB->c.y;
 	matA->c.z = matB->c.z;
 
-	status = SUCCESS;
-	return status;
+	return SUCCESS;
 }
 
 // Make matrix orthogonal and normalized
-ErrorStatus matrix3_normalizeOrthogonalizeMatrix(Matrixf * rotMatrix)
+ErrorStatus matrix3_normalizeOrthogonalizeMatrix(Matrixf * rotMatrix, float32_t maxError)
 {
 	ErrorStatus status = SUCCESS;
+	// Set FPU exception bit to 0
+	FPU_EXCEPTION = 0;
+
 	float32_t error = 0;
 	Vectorf tempVector = vectorf_init(0);
 	Vectorf tempVector1 = vectorf_init(0);
 
 	// Calculate error = X.Y
-	vectorf_dotProduct(&rotMatrix->a, &rotMatrix->b, &error);
+	status = vectorf_dotProduct(&rotMatrix->a, &rotMatrix->b, &error);
 	// If error is larger than we permit, return ERROR
-	if(param_dcm_max_orth_error < error)
+	if(maxError < error)
 	{
 		return ERROR;
 	}
 	// Add half error to X, half to Y
 	error = error / 2;
-	vectorf_scalarProduct(&rotMatrix->a, error, &tempVector);
-	vectorf_scalarProduct(&rotMatrix->b, error, &tempVector1);
+	status = vectorf_scalarProduct(&rotMatrix->a, error, &tempVector);
+	status = vectorf_scalarProduct(&rotMatrix->b, error, &tempVector1);
 
-	vectorf_substract(&rotMatrix->a, &tempVector1, &rotMatrix->a);
-	vectorf_substract(&rotMatrix->b, &tempVector, &rotMatrix->b);
+	status = vectorf_substract(&rotMatrix->a, &tempVector1, &rotMatrix->a);
+	status = vectorf_substract(&rotMatrix->b, &tempVector, &rotMatrix->b);
 	// Normalize a
-	vectorf_dotProduct(&rotMatrix->a, &rotMatrix->a, &error);
+	status = vectorf_dotProduct(&rotMatrix->a, &rotMatrix->a, &error);
 	error = 3 - error;
 	error = error / 2;
 	// If error is larger than we permit, return ERROR
-	if(param_dcm_max_orth_error < error)
+	if(maxError < error)
 	{
 		return ERROR;
 	}
-	vectorf_scalarProduct(&rotMatrix->a, error, &rotMatrix->a);
+	status = vectorf_scalarProduct(&rotMatrix->a, error, &rotMatrix->a);
 	// Normalize b
-	vectorf_dotProduct(&rotMatrix->b, &rotMatrix->b, &error);
+	status = vectorf_dotProduct(&rotMatrix->b, &rotMatrix->b, &error);
 	error = 3 - error;
 	error = error / 2;
 	// If error is larger than we permit, return ERROR
-	if(param_dcm_max_orth_error < error)
+	if(maxError < error)
 	{
 		return ERROR;
 	}
-	vectorf_scalarProduct(&rotMatrix->b, error, &rotMatrix->b);
+	status = vectorf_scalarProduct(&rotMatrix->b, error, &rotMatrix->b);
 	// Calculate Z as cross product of X and Y
-	vectorf_crossProduct(&rotMatrix->a, &rotMatrix->b, &rotMatrix->c);
+	status = vectorf_crossProduct(&rotMatrix->a, &rotMatrix->b, &rotMatrix->c);
 	// Normalize c
-	vectorf_dotProduct(&rotMatrix->c, &rotMatrix->c, &error);
+	status = vectorf_dotProduct(&rotMatrix->c, &rotMatrix->c, &error);
 	error = 3 - error;
 	error = error / 2;
 	// If error is larger than we permit, return ERROR
-	if(param_dcm_max_orth_error < error)
+	if(maxError < error)
 	{
 		return ERROR;
 	}
-	vectorf_scalarProduct(&rotMatrix->c, error, &rotMatrix->c);
+	status = vectorf_scalarProduct(&rotMatrix->c, error, &rotMatrix->c);
+
+	// Check if FPU result is OK
+	if(!FPU_EXCEPTION)
+	{
+		status = SUCCESS;
+	}
+
 	return status;
 }

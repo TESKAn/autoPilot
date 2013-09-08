@@ -14,6 +14,6 @@ ErrorStatus matrix3_transposeVectorMultiply(Matrixf * mat, Vectorf * vecIn, Vect
 ErrorStatus matrix3_MatrixMultiply(Matrixf * matA, Matrixf * matB, Matrixf * matC);
 ErrorStatus matrix3_transpose(Matrixf * matA, Matrixf * matB);
 ErrorStatus matrix3_copy(Matrixf * matA, Matrixf * matB);
-ErrorStatus matrix3_normalizeOrthogonalizeMatrix(Matrixf * rotMatrix);
+ErrorStatus matrix3_normalizeOrthogonalizeMatrix(Matrixf * rotMatrix, float32_t maxError);
 
 #endif /* MYMATH_MATRIX3_H_ */

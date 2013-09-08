@@ -139,7 +139,9 @@ int main(void)
 	PWMEN_OUT_ENABLE = 1;
 
 	// Mount SD card
-	//mountSDCard();
+	// Try generate FPU interrupt
+	temp = 1;
+	temp = temp / 0;
 
     while (1)
     {
