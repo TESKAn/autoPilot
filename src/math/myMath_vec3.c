@@ -191,6 +191,8 @@ float32_t vectorf_getNorm(Vectorf * vector)
 	}
 }
 
+// Testni komentar, tle je za brez veze...
+
 ErrorStatus vectorf_copy(Vectorf * vecA, Vectorf * vecB)
 {
 	ErrorStatus status = ERROR;
