@@ -12,6 +12,8 @@ typedef struct
 {
 	uint8_t valid;
 	Vectorf speed3D;
+	float32_t heading;
+
 }__attribute__((aligned(4),packed)) GPSData;
 
 extern GPSData _GPSData;

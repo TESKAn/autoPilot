@@ -26,23 +26,15 @@ ErrorStatus acc_initDataStructure()
 
 	_accData.dataTime = getSystemTime();
 	_accData.deltaTime = 0;
-
 	_accData.offset = vectorui16_init(0);
-
 	_accData.scale = vectorf_init(1);
-
 	_accData.vector = vectorf_init(0);
-
 	_accData.vectorRaw = vectorf_init(0);
-
 	_accData.Speed_3D = vectorf_init(0);
-
 	_accData.Speed_3D_Frac = vectorf_init(0);
-
+	_accData.speed_3D_dt = 0;
 	_accData.accRate = ACC_DEFAULT_RATE;
-
 	_accData.valid = 1;
-
 	status = SUCCESS;
 
 	return status;

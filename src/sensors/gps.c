@@ -20,7 +20,7 @@ ErrorStatus gps_initData()
 
 	_GPSData.valid = 1;
 	_GPSData.speed3D = vectorf_init(0);
-
+	_GPSData.heading = 0;
 
 	status = SUCCESS;
 

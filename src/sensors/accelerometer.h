@@ -16,6 +16,7 @@ typedef struct
 	Vectorf scale;
 	Vectorf Speed_3D;
 	Vectorf Speed_3D_Frac;
+	float32_t speed_3D_dt;
 	Vectorui16 offset;
 	uint32_t dataTime;
 	uint32_t deltaTime;
