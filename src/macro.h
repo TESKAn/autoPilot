@@ -235,25 +235,27 @@
 #define SIGNALSTRENGTH_MAXTIME	3000	// 3 seconds
 
 // Fast report macros
-#define REPORT_DCM				0x00001
-#define REPORT_ACC				0x00002
-#define REPORT_GYRO				0x00004
-#define REPORT_MAG				0x00008
-#define REPORT_TC				0x00010
-#define REPORT_RPC				0x00020
-#define REPORT_YAWC				0x00040
-#define REPORT_GRAVITY			0x00080
-#define REPORT_MAG_OFFSET		0x00100
-#define REPORT_PID_I			0x00200
-#define REPORT_PID_P			0x00400
-#define REPORT_PID_R			0x00800
-#define REPORT_DCM_XE_B			0x01000		// Earth X axis expressed in body coordinate system
-#define REPORT_DCM_YE_B			0x02000
-#define REPORT_DCM_ZE_B			0x04000
-#define REPORT_DCM_XB_E			0x08000		// X body axis expressed in earth coordinate system
-#define REPORT_DCM_YB_E			0x10000
-#define REPORT_DCM_ZB_E			0x20000
-#define REPORT_GYRO_ADJUSTED	0x40000
-#define REPORT_MAG_EARTH		0x80000
+#define REPORT_DCM				0x000001
+#define REPORT_ACC				0x000002
+#define REPORT_GYRO				0x000004
+#define REPORT_MAG				0x000008
+#define REPORT_TC				0x000010
+#define REPORT_RPC				0x000020
+#define REPORT_YAWC				0x000040
+#define REPORT_GRAVITY			0x000080
+#define REPORT_MAG_OFFSET		0x000100
+#define REPORT_PID_I			0x000200
+#define REPORT_PID_P			0x000400
+#define REPORT_PID_R			0x000800
+#define REPORT_DCM_XE_B			0x001000		// Earth X axis expressed in body coordinate system
+#define REPORT_DCM_YE_B			0x002000
+#define REPORT_DCM_ZE_B			0x004000
+#define REPORT_DCM_XB_E			0x008000		// X body axis expressed in earth coordinate system
+#define REPORT_DCM_YB_E			0x010000
+#define REPORT_DCM_ZB_E			0x020000
+#define REPORT_GYRO_ADJUSTED	0x040000
+#define REPORT_MAG_EARTH		0x080000
+#define REPORT_ADC				0x100000
+
 
 #endif /* MACRO_H_ */

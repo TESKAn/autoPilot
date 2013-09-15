@@ -248,6 +248,7 @@ void copySensorData(void)
 	uint32_t ui32Temp = 0;
 	uint32_t ui32Temp1 = 0;
 	uint16_t ui16Temp = 0;
+	float32_t fTemp = 0;
 	//uint16_t uiTemp = 0;
 	// Data is in I2C2_DMABufRX
 	// Mark updating sensor data
@@ -1028,6 +1029,44 @@ void copySensorData(void)
 			Buffer[i] = floatToUint32.ch[3];
 			i++;
 			floatToUint32.f = ahrs_data.MagInEarthFrame.vector.pData[VECT_Z];
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+		}
+		if(((fastDataSelect & REPORT_ADC) != 0)&&(i < 61))
+		{
+			// Store ADC result in volts
+			fTemp = (float32_t) AIN0;
+			fTemp = fTemp * 0.0008056640625f;
+
+			floatToUint32.f = fTemp;
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			fTemp = (float32_t) AIN1;
+			fTemp = fTemp * 0.0008056640625f;
+			floatToUint32.f = fTemp;
+			Buffer[i] = floatToUint32.ch[0];
+			i++;
+			Buffer[i] = floatToUint32.ch[1];
+			i++;
+			Buffer[i] = floatToUint32.ch[2];
+			i++;
+			Buffer[i] = floatToUint32.ch[3];
+			i++;
+			fTemp = (float32_t) AIN2;
+			fTemp = fTemp * 0.0008056640625f;
+			floatToUint32.f = fTemp;
 			Buffer[i] = floatToUint32.ch[0];
 			i++;
 			Buffer[i] = floatToUint32.ch[1];
