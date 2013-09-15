@@ -499,7 +499,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		if(ADC_ENABLED)
 		{
 			ADC_TriggerTimer++;
-			if(ADC_TriggerTimer >= 100)
+			if(ADC_TriggerTimer >= 10)
 			{
 				ADC_TriggerTimer = 0;
 	        	ADC_SoftwareStartConv(ADC1);
