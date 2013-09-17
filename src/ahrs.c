@@ -291,6 +291,20 @@ arm_status ahrs_updateRotationMatrix(AHRSData * data)
 	// Update mag reading
 	ahrs_updateMagReading();
 
+	// Zero error vector
+	ahrs_data.totalCorrectionError.vector.pData[VECT_X] = 0;
+	ahrs_data.totalCorrectionError.vector.pData[VECT_Y] = 0;
+	ahrs_data.totalCorrectionError.vector.pData[VECT_Z] = 0;
+
+	ahrs_data.RollPitchCorrection.vector.pData[VECT_X] = 0;
+	ahrs_data.RollPitchCorrection.vector.pData[VECT_Y] = 0;
+	ahrs_data.RollPitchCorrection.vector.pData[VECT_Z] = 0;
+
+	ahrs_data.YawCorrection.vector.pData[VECT_X] = 0;
+	ahrs_data.YawCorrection.vector.pData[VECT_Y] = 0;
+	ahrs_data.YawCorrection.vector.pData[VECT_Z] = 0;
+
+
 	errorUpdateInterval++;
 	if(errorUpdateInterval > 10)
 	{

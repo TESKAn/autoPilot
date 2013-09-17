@@ -30,7 +30,7 @@
 #define DEFAULT_MAG_INCLINATION				0.0542506509161570f		// Deviation of magnetic field from true north in radians
 #define DEFAULT_MAG_DECLINATION				1.0902441579423135f		// Angle of magnetic field
 
-#define DEFAULT_USE_GPS_SPEED				2.0f					// Min speed in m/s to use GPS heading instead of compass
+#define DEFAULT_USE_GPS_SPEED				5.0f					// Min speed in m/s to use GPS heading instead of compass
 
 
 #define DEFAULT_PID_ERROR_THRESHOLD		0.0001f						// PID error threshold - do not update PID below this

@@ -1372,9 +1372,9 @@ float32_t intToFloat(int whole, int frac)
 	float32_t result = 0;
 	float32_t temp = 0;
 	temp = (float32_t)frac;
-	while(frac > 0)
+	while(temp > 1.0f)
 	{
-		frac = frac / 10;
+		temp = temp / 10;
 	}
 	result = (float32_t)whole + temp;
 	return result;
