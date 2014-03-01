@@ -22,6 +22,7 @@ SUBDIRS := \
 src \
 src/sensors \
 src/math \
+src/drivers \
 Libraries/STM32_USB_OTG_Driver/src \
 Libraries/STM32_USB_Device_Library/Core/src \
 Libraries/STM32_USB_Device_Library/Class/hid_custom/src \

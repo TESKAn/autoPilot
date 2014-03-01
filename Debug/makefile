@@ -10,6 +10,7 @@ RM := cs-rm -rf
 -include sources.mk
 -include src/sensors/subdir.mk
 -include src/math/subdir.mk
+-include src/drivers/subdir.mk
 -include src/subdir.mk
 -include Libraries/STM32_USB_OTG_Driver/src/subdir.mk
 -include Libraries/STM32_USB_Device_Library/Core/src/subdir.mk
@@ -54,26 +55,26 @@ all: autopilot_sw.elf secondary-outputs
 autopilot_sw.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: ARM Sourcery Windows GCC C Linker'
-	arm-none-eabi-gcc -T"D:\Jure\Projekti\Git\autopilot_sw\stm32f4_flash.ld" -Xlinker --gc-sections -Wl,-Map,autopilot_sw.map -mcpu=cortex-m4 -mthumb -mfloat-abi=softfp -mfpu=fpv4-sp-d16 -g -gdwarf-2 -o "autopilot_sw.elf" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-none-eabi-gcc -T"C:\Projekti\autopilot_sw\stm32f4_flash.ld" -Xlinker --gc-sections -Wl,-Map,"autopilot_sw.map" -mcpu=cortex-m4 -mthumb -mfloat-abi=softfp -mfpu=fpv4-sp-d16 -g -gdwarf-2 -o "autopilot_sw.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build
 
 autopilot_sw.hex: autopilot_sw.elf
 	@echo 'Invoking: ARM Sourcery Windows GNU Create Flash Image'
-	arm-none-eabi-objcopy -O ihex autopilot_sw.elf  "autopilot_sw.hex"
+	arm-none-eabi-objcopy -O ihex "autopilot_sw.elf"  "autopilot_sw.hex"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 autopilot_sw.lst: autopilot_sw.elf
 	@echo 'Invoking: ARM Sourcery Windows GNU Create Listing'
-	arm-none-eabi-objdump -h -S autopilot_sw.elf > "autopilot_sw.lst"
+	arm-none-eabi-objdump -h -S "autopilot_sw.elf" > "autopilot_sw.lst"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 autopilot_sw.siz: autopilot_sw.elf
 	@echo 'Invoking: ARM Sourcery Windows GNU Print Size'
-	arm-none-eabi-size  --format=berkeley autopilot_sw.elf
+	arm-none-eabi-size  --format=berkeley "autopilot_sw.elf"
 	@echo 'Finished building: $@'
 	@echo ' '
 
