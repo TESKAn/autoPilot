@@ -197,9 +197,9 @@ ErrorStatus vectorf_copy(Vectorf * vecA, Vectorf * vecB)
 	// Set FPU exception bit to 0
 	FPU_EXCEPTION = 0;
 
-	vecA->x = vecB->x;
-	vecA->y = vecB->y;
-	vecA->z = vecB->z;
+	vecB->x = vecA->x;
+	vecB->y = vecA->y;
+	vecB->z = vecA->z;
 
 	// Check if FPU result is OK
 	if(!FPU_EXCEPTION)
