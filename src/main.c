@@ -139,7 +139,6 @@ int main(void)
 	PWMEN_OUT_ENABLE = 1;
 
 	// Mount SD card
-
     while (1)
     {
         // Check MODBUS for messages
