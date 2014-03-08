@@ -106,7 +106,7 @@ src/%.o: ../src/%.c
 src/%.o: ../src/%.S
 	@echo 'Building file: $<'
 	@echo 'Invoking: ARM Sourcery Windows GCC Assembler'
-	arm-none-eabi-gcc -x assembler-with-cpp -I"D:\Jure\Projekti\Git\autopilot_sw\src" -I"D:\Jure\Projekti\Git\autopilot_sw\Libraries\CMSIS\Include" -I"D:\Jure\Projekti\Git\autopilot_sw\Libraries\STM32F4xx_StdPeriph_Driver\inc" -I"D:\Jure\Projekti\Git\autopilot_sw\Libraries\Device\STM32F4xx\Include" -Wall -Wa,-adhlns="$@.lst" -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -mcpu=cortex-m4 -mthumb -mfloat-abi=softfp -mfpu=fpv4-sp-d16 -g -gdwarf-2 -o "$@" "$<"
+	arm-none-eabi-gcc -x assembler-with-cpp -I"D:\Jure\Projekti\Git\autopilot_sw\src" -I"D:\Jure\Projekti\Git\autopilot_sw\Libraries\CMSIS\Include" -I"D:\Jure\Projekti\Git\autopilot_sw\Libraries\STM32F4xx_StdPeriph_Driver\inc" -I"D:\Jure\Projekti\Git\autopilot_sw\Libraries\Device\STM32F4xx\Include" -Wall -Wa,-adhlns="$@.lst" -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -g -gdwarf-2 -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

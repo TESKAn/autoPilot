@@ -10,7 +10,6 @@ RM := cs-rm -rf
 -include sources.mk
 -include src/sensors/subdir.mk
 -include src/math/subdir.mk
--include src/drivers/subdir.mk
 -include src/subdir.mk
 -include Libraries/STM32_USB_OTG_Driver/src/subdir.mk
 -include Libraries/STM32_USB_Device_Library/Core/src/subdir.mk
