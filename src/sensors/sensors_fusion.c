@@ -52,8 +52,8 @@ ErrorStatus fusion_updateRotationMatrix()
 	Vectorf temporaryVector2 = vectorf_init(0);
 	Vectorf error_gps_acc = vectorf_init(0);				// Error from GPS and accelerometer data
 	Vectorf error_acc_gravity = vectorf_init(0);			// Error from acceleration and gravity
-	Vectorf error_yaw_gps = vectorf_init(0);				// Error calculated from GPS data
-	Vectorf error_yaw_mag = vectorf_init(0);				// Error calculated from magnetometer data
+	//Vectorf error_yaw_gps = vectorf_init(0);				// Error calculated from GPS data
+	//Vectorf error_yaw_mag = vectorf_init(0);				// Error calculated from magnetometer data
 	Vectorf error = vectorf_init(0);						// Cumulative error
 	Vectorf omega = vectorf_init(0);						// Rotation value
 	Matrixf updateMatrix;									// Update matrix

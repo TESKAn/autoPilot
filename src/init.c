@@ -1293,6 +1293,7 @@ void System_Config(void)
 	init_GPIO();
 
 	// Configure all the timers
+
 	init_Timer1();
 	init_Timer2();
 	init_Timer3();
