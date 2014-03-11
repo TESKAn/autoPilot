@@ -101,13 +101,13 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 
 	// Check if we have valid GPS and accelerometer data
 	// We need speed so do not use if below some value
-	if((1 ==_GPSData.valid)&&(1 == _accData.valid)&&(param_min_airspeed < GPSSpeed))
+	if((1 ==_GPSData.valid)&&(1 == data->_accelerometer.valid)&&(param_min_airspeed < GPSSpeed))
 	{
 		// Use GPS and accelerometer speed data to calculate DCM error in earth frame
 		// Calculate 1/Dt
-		fTemp = 1 / _accData.speed_3D_dt;
+		fTemp = 1 / data->_accelerometer.speed_3D_dt;
 		// Calculate average acceleration of accelerometer
-		status = vectorf_scalarProduct(&_accData.Speed_3D, fTemp, &temporaryVector);
+		status = vectorf_scalarProduct(&data->_accelerometer.Speed_3D, fTemp, &temporaryVector);
 		// Calculate [0,0,1] - average acceleration of GPS
 		status = vectorf_scalarProduct(&_GPSData.speed3D, -fTemp, &temporaryVector2);
 		temporaryVector2.z = temporaryVector2.z + 1;
@@ -149,13 +149,13 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 	}
 	// Check if we have valid gyro and accelerometer data and calculate error
 	// Do only if speed below limit
-	if((param_min_airspeed > GPSSpeed)&&(1 == _accData.valid))
+	if((param_min_airspeed > GPSSpeed)&&(1 == data->_accelerometer.valid))
 	{
 		// Store estimated gravity vector
 		temporaryVector.x = _fusion_DCM.c.x;
 		temporaryVector.y = _fusion_DCM.c.y;
 		temporaryVector.z = _fusion_DCM.c.z;
-		status = vectorf_crossProduct(&temporaryVector, &_accData.vector, &error_acc_gravity);
+		status = vectorf_crossProduct(&temporaryVector, &data->_accelerometer.vector, &error_acc_gravity);
 		// Check if there was calculation error
 		// If yes, set error to 0
 		if(ERROR == status)
@@ -214,14 +214,14 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 
 	// Update speed integration
 	// Transform accelerometer data to earth frame
-	status = matrix3_vectorMultiply(&_fusion_DCM, &_accData.vector, &temporaryVector);
+	status = matrix3_vectorMultiply(&_fusion_DCM, &data->_accelerometer.vector, &temporaryVector);
 	// Calculate 3D speed gained, acceleration * time
 	// Do not worry about gravity acceleration, we remove that in GPS error update
 	status = vectorf_scalarProduct(&temporaryVector, dt, &temporaryVector);
 	// Integrate speed and time
-	status = vectorf_add(&temporaryVector, &_accData.Speed_3D, &_accData.Speed_3D);
+	status = vectorf_add(&temporaryVector, &data->_accelerometer.Speed_3D, &data->_accelerometer.Speed_3D);
 	// Time integration can have problems after 2,77 hours because of 32 bit float representation
-	_accData.speed_3D_dt = _accData.speed_3D_dt + dt;
+	data->_accelerometer.speed_3D_dt = data->_accelerometer.speed_3D_dt + dt;
 
 	return status;
 }

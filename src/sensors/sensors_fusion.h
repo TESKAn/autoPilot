@@ -9,14 +9,16 @@
 #define SENSORS_FUSION_H_
 
 // Includes
-#include "sensors_typedefs.h"
+
 #include "gyro.h"
 #include "accelerometer.h"
 #include "mag.h"
 #include "airSpeed.h"
 #include "gps.h"
 #include "altimeter.h"
+#include "sensors_typedefs.h"
 
+// Core structure for sensor fusion data
 typedef struct
 {
 	// Structs for individual sensors
@@ -31,6 +33,7 @@ typedef struct
 
 
 }FUSION_CORE;
+
 
 ErrorStatus fusion_init(FUSION_CORE *coreData);
 ErrorStatus fusion_generateUpdateMatrix(Vectorf * omega, Matrixf * updateMatrix);

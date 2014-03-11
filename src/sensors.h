@@ -22,40 +22,40 @@
 #define OFFSET_SAMPLE_MAX_VALUE	400		// Maximum sample value to be valid
 #define OFFSET_SAMPLE_MIN_VALUE	-400	// Minimum sample value to be valid
 
-// Sensor structure
+// Sensor structure, 26 bytes used
 typedef union
 {
-	uint8_t buf[128];
+	uint8_t buf[32];
+	uint16_t buf16[16];
 	struct
 	{
 		// Acceleration
-		int16_t accX;	//0,1
-		int16_t accY;	//2,3
-		int16_t accZ;	//4,5
+		uint16_t accX;	//0,1
+		uint16_t accY;	//2,3
+		uint16_t accZ;	//4,5
 		// Temperature
-		int16_t temperature;	//6,7
+		uint16_t temperature;	//6,7
 		// Gyro
-		int16_t gyroX;	//8,9
-		int16_t gyroY;	//10,11
-		int16_t gyroZ;	//12,13
-		int16_t magX;	//14,15
-		int16_t magZ;	//16,17
-		int16_t magY;	//18,19
-/*
-		// Reg 73,78 (14,19) is mag data - Z and Y are exchanged!
-		MAG_X = (I2C2_DMABufRX[14] << 8) & 0xff00;
-		MAG_X = MAG_X | (I2C2_DMABufRX[15] & 0x00ff);
-		MAG_Y = (I2C2_DMABufRX[18] << 8) & 0xff00;
-		MAG_Y = MAG_Y | (I2C2_DMABufRX[19] & 0x00ff);
-		MAG_Z = (I2C2_DMABufRX[16] << 8) & 0xff00;
-		MAG_Z = MAG_Z | (I2C2_DMABufRX[17] & 0x00ff);
-		// Reg 79,80, 81 (20,21,22) is barometer data
-		BARO = (I2C2_DMABufRX[20] << 8) & 0xff00;
-		BARO = BARO | (I2C2_DMABufRX[21] & 0x00ff);
-		BARO_FRAC = I2C2_DMABufRX[22] >> 4;*/
-
-
-	};
+		uint16_t gyroX;	//8,9
+		uint16_t gyroY;	//10,11
+		uint16_t gyroZ;	//12,13
+		uint16_t magX;	//14,15
+		uint16_t magZ;	//16,17
+		uint16_t magY;	//18,19
+		union
+		{
+			uint32_t statusPressure;
+			struct
+			{
+				uint8_t status;
+				uint8_t OUT_P_MSB;
+				uint8_t OUT_P_CSB;
+				uint8_t OUT_P_LSB;
+			}parts;
+		}pressure;
+		uint16_t baroTemperature;
+		uint8_t padding[6];
+	}data;
 }I2CSensorData;
 
 void sensorTimer(void);
@@ -87,6 +87,7 @@ extern volatile uint16_t I2C2_WriteData;
 extern volatile uint8_t I2C2_DeviceAddress;
 extern uint8_t I2C2_DMABufTX[DMA_BUF_COUNT];
 extern uint8_t I2C2_DMABufRX[DMA_BUF_COUNT];
+extern I2CSensorData I2C2_sensorBufRX;
 extern volatile int I2C2_DMABufTXCount;
 extern volatile int I2C2_DMABufRXCount;
 extern volatile int I2C2_PollTimer;

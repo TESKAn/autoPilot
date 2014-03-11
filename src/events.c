@@ -533,7 +533,8 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 						// Mark time when data is requested
 						sensorAcquisitionTime = getSystemTime();
 						// Read from MPU, start at reg 59, read 25 bytes
-						error = masterReceive_beginDMA(MPU6000_ADDRESS, 59, I2C2_DMABufRX, 25);
+						//error = masterReceive_beginDMA(MPU6000_ADDRESS, 59, I2C2_DMABufRX, 26);
+						error = masterReceive_beginDMA(MPU6000_ADDRESS, 59, I2C2_sensorBufRX.buf, 26);
 						if(error == SUCCESS)
 						{
 							break;

@@ -23,9 +23,8 @@ typedef struct
 	float32_t accRate;
 }__attribute__((aligned(4),packed)) AccelerometerData;
 
-extern AccelerometerData _accData;
 
 ErrorStatus acc_initDataStructure(AccelerometerData *data);
-ErrorStatus acc_update(uint16_t rawData_x, uint16_t rawData_y, uint16_t rawData_z, Matrixf * DCM, uint32_t dataTime);
+ErrorStatus acc_update(AccelerometerData *data, uint16_t rawData_x, uint16_t rawData_y, uint16_t rawData_z, Matrixf * DCM, uint32_t dataTime);
 
 #endif /* ACCELEROMETER_H_ */

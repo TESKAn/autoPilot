@@ -23,6 +23,10 @@
 
 #define NUM 10
 
+#define byte_swap32(val) asm("rev %[swap], %[swap]" : [swap] "=r" (val) : "0" (val));
+
+#define byte_swap16(val) asm("rev16 %[swap], %[swap]" : [swap] "=r" (val) : "0" (val));
+
 // Define bit macros
 #define _BIT0	0x0001
 #define _BIT1	0x0002

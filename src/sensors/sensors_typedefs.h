@@ -10,4 +10,7 @@
 
 
 
+// Structure for passing fusion data
+
+
 #endif /* SENSORS_TYPEDEFS_H_ */

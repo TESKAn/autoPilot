@@ -16,6 +16,7 @@ volatile uint16_t I2C2_WriteData = 0;
 volatile uint8_t I2C2_DeviceAddress = 0;
 uint8_t I2C2_DMABufTX[DMA_BUF_COUNT];
 uint8_t I2C2_DMABufRX[DMA_BUF_COUNT];
+I2CSensorData I2C2_sensorBufRX;
 volatile int I2C2_DMABufTXCount = 0;
 volatile int I2C2_DMABufRXCount = 0;
 volatile int I2C2_PollTimer = 0;
@@ -28,6 +29,8 @@ uint32_t sensorAcquisitionTime = 0;
 uint8_t gyroOffsetSampleCount = 0;
 uint8_t accOffsetSampleCount = 0;
 uint8_t magOffsetSampleCount = 0;
+
+
 
 // Timeout function
 void sensorTimer(void)
@@ -253,6 +256,34 @@ void copySensorData(void)
 	// Data is in I2C2_DMABufRX
 	// Mark updating sensor data
 	SENSORS_UPDATING = 1;
+
+	byte_swap16(I2C2_sensorBufRX.data.accX);
+	byte_swap16(I2C2_sensorBufRX.data.accY);
+	byte_swap16(I2C2_sensorBufRX.data.accZ);
+	byte_swap16(I2C2_sensorBufRX.data.gyroX);
+	byte_swap16(I2C2_sensorBufRX.data.gyroY);
+	byte_swap16(I2C2_sensorBufRX.data.gyroZ);
+	byte_swap16(I2C2_sensorBufRX.data.magX);
+	byte_swap16(I2C2_sensorBufRX.data.magY);
+	byte_swap16(I2C2_sensorBufRX.data.magZ);
+
+
+	ACC_X = I2C2_sensorBufRX.data.accX;
+	ACC_Y = I2C2_sensorBufRX.data.accY;
+	ACC_Z = I2C2_sensorBufRX.data.accZ;
+
+	GYRO_X = I2C2_sensorBufRX.data.gyroX;
+	GYRO_Y = I2C2_sensorBufRX.data.gyroY;
+	GYRO_Z = I2C2_sensorBufRX.data.gyroZ;
+
+	MAG_X = I2C2_sensorBufRX.data.magX;
+	MAG_Y = I2C2_sensorBufRX.data.magY;
+	MAG_Z = I2C2_sensorBufRX.data.magZ;
+
+	BARO = (((I2C2_sensorBufRX.data.pressure.statusPressure) & 0x00ffff00) >> 8);
+
+
+/*
 	// Starts with reg 59, accel X high
 	ACC_X = (I2C2_DMABufRX[0] << 8) & 0xff00;
 	ACC_X = ACC_X | (I2C2_DMABufRX[1] & 0x00ff);
@@ -287,7 +318,7 @@ void copySensorData(void)
 	BARO_FRAC = I2C2_DMABufRX[22] >> 4;
 
 	// Update new variables
-
+*/
 
 	// Barometer pressure and temperature
 	ui32Temp = 0;
@@ -1229,9 +1260,9 @@ ErrorStatus MPU6000_ConfigureI2CMaster(void)
 	// 40 - I2C SLV1_ADDR = 1110 0000
 	I2C2_DMABufTX[5] = 0xE0;
 	// 41 = I2C_SLV1_REG - start read at this reg
-	I2C2_DMABufTX[6] = 0x01;
-	// 42 - I2C_SLV1_CTRL = 1000 0101 -> enable, read 5 bytes, pressure + temperature
-	I2C2_DMABufTX[7] = 0x85;
+	I2C2_DMABufTX[6] = 0x00;
+	// 42 - I2C_SLV1_CTRL = 1000 0110 -> enable, read 6 bytes, status + pressure + temperature
+	I2C2_DMABufTX[7] = 0x86;
 	for(retriesCount = I2C2_ERROR_RETRIESCOUNT; retriesCount > 0; retriesCount --)
 	{
 		error = masterSend(MPU6000_ADDRESS, I2C2_DMABufTX, 8);
