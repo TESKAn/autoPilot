@@ -11,7 +11,6 @@
 #include "math/myMath_typedefs.h"
 #include "math/myMath_vec3.h"
 #include "math/myMath_matrix3.h"
-#include "sensors_fusion.h"
 #include "mag.h"
 
 #define MAG_DEFAULT_RATE					0.000635075720f			// 1,3/2047 -> gauss
@@ -19,24 +18,24 @@
 MagData _magData;
 
 // Init data structure
-ErrorStatus mag_initDataStructure()
+ErrorStatus mag_initDataStructure(MagData *data)
 {
 	ErrorStatus success = ERROR;
 
-	_magData.dataTime = getSystemTime();
-	_magData.deltaTime = 0;
+	data->dataTime = getSystemTime();
+	data->deltaTime = 0;
 
-	_magData.hardIron = vectorf_init(0);
+	data->hardIron = vectorf_init(0);
 
-	_magData.magRate = MAG_DEFAULT_RATE;
+	data->magRate = MAG_DEFAULT_RATE;
 
-	matrix3_init(1, &_magData.softIron);
+	matrix3_init(1, &data->softIron);
 
-	_magData.vector = vectorf_init(0);
+	data->vector = vectorf_init(0);
 
-	_magData.vectorRaw = vectorf_init(0);
+	data->vectorRaw = vectorf_init(0);
 
-	_magData.valid = 1;
+	data->valid = 1;
 
 	success = SUCCESS;
 

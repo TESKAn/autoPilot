@@ -23,7 +23,7 @@ typedef struct
 
 extern GyroData _gyroData;
 
-ErrorStatus gyro_initDataStructure();
+ErrorStatus gyro_initDataStructure(GyroData *data);
 ErrorStatus gyro_update(uint16_t rawData_x, uint16_t rawData_y, uint16_t rawData_z, uint32_t dataTime);
 
 #endif /* GYRO_H_ */

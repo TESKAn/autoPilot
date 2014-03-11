@@ -19,9 +19,43 @@
 #include "mag.h"
 #include "airSpeed.h"
 #include "gps.h"
+#include "altimeter.h"
 #include "sensors_fusion.h"
 
 Matrixf _fusion_DCM;
+
+ErrorStatus fusion_init(FUSION_CORE *coreData)
+{
+
+	if(ERROR == AirSpeed_initDataStructure(&coreData->_airSpeed))
+	{
+		return ERROR;
+	}
+	if(ERROR == altimeter_initDataStructure(&coreData->_altimeter))
+	{
+		return ERROR;
+	}
+	if(ERROR == gyro_initDataStructure(&coreData->_gyro))
+	{
+		return ERROR;
+	}
+
+	if(ERROR == mag_initDataStructure(&coreData->_mag))
+	{
+		return ERROR;
+	}
+
+	if(ERROR == acc_initDataStructure(&coreData->_accelerometer))
+	{
+		return ERROR;
+	}
+
+	// Create identity matrix
+	matrix3_init(1, &coreData->_fusion_DCM);
+
+
+	return SUCCESS;
+}
 
 ErrorStatus fusion_generateUpdateMatrix(Vectorf * omega, Matrixf * updateMatrix)
 {
@@ -43,7 +77,7 @@ ErrorStatus fusion_generateUpdateMatrix(Vectorf * omega, Matrixf * updateMatrix)
 	return status;
 }
 
-ErrorStatus fusion_updateRotationMatrix()
+ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 {
 	ErrorStatus status;
 	status = SUCCESS;

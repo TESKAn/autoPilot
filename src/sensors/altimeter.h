@@ -20,7 +20,7 @@ typedef struct
 
 extern AltimeterData _altimeterData;
 
-ErrorStatus altimeter_initDataStructure();
+ErrorStatus altimeter_initDataStructure(AltimeterData *data);
 ErrorStatus altimeter_update(uint32_t rawData_P, uint16_t rawData_T, uint32_t dataTime);
 
 #endif /* ALTIMETER_H_ */

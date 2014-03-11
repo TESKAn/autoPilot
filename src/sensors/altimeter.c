@@ -15,16 +15,16 @@
 AltimeterData _altimeterData;
 
 // Init data structure
-ErrorStatus altimeter_initDataStructure()
+ErrorStatus altimeter_initDataStructure(AltimeterData *data)
 {
 	ErrorStatus status = ERROR;
 
-	_altimeterData.dataTime = getSystemTime();
-	_altimeterData.deltaTime = 0;
-	_altimeterData.pressure = 0;
-	_altimeterData.pressure_frac = 0;
-	_altimeterData.temperature = 0;
-	_altimeterData.valid = 1;
+	data->dataTime = getSystemTime();
+	data->deltaTime = 0;
+	data->pressure = 0;
+	data->pressure_frac = 0;
+	data->temperature = 0;
+	data->valid = 1;
 
 	status = SUCCESS;
 

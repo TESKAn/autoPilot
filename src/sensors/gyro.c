@@ -19,27 +19,27 @@
 GyroData _gyroData;
 
 // Init data structure
-ErrorStatus gyro_initDataStructure()
+ErrorStatus gyro_initDataStructure(GyroData *data)
 {
 	ErrorStatus status = ERROR;
 
-	_gyroData.dataTime = getSystemTime();
-	_gyroData.deltaTime = 0;
+	data->dataTime = getSystemTime();
+	data->deltaTime = 0;
 
-	_gyroData.offset = vectorui16_init(0);
+	data->offset = vectorui16_init(0);
 
-	_gyroData.scale = vectorf_init(1);
+	data->scale = vectorf_init(1);
 
-	_gyroData.vector = vectorf_init(0);
+	data->vector = vectorf_init(0);
 
-	_gyroData.vectorRaw = vectorf_init(0);
+	data->vectorRaw = vectorf_init(0);
 
-	_gyroData.driftError = vectorf_init(0);
+	data->driftError = vectorf_init(0);
 
 	// gyro rate in radians
-	_gyroData.gyroRate = GYRO_DEFAULT_RATE * GYRO_DEG_TO_RAD;
+	data->gyroRate = GYRO_DEFAULT_RATE * GYRO_DEG_TO_RAD;
 
-	_gyroData.valid = 1;
+	data->valid = 1;
 
 	status = SUCCESS;
 

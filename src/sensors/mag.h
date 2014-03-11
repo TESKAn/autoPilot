@@ -25,7 +25,7 @@ typedef struct
 
 extern MagData _magData;
 
-ErrorStatus mag_initDataStructure();
+ErrorStatus mag_initDataStructure(MagData *data);
 ErrorStatus mag_update(uint16_t rawData_x, uint16_t rawData_y, uint16_t rawData_z, Matrixf * DCM, uint32_t dataTime);
 
 #endif /* MAG_H_ */

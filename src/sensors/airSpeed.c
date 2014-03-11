@@ -19,12 +19,12 @@
 
 airSpeedData _AirSpeed;
 
-ErrorStatus AirSpeed_initDataStructure(void)
+ErrorStatus AirSpeed_initDataStructure(airSpeedData *data)
 {
-	_AirSpeed.valid = 1;
-	_AirSpeed.airSpeed = 0;
-	_AirSpeed.dataTime = getSystemTime();
-	_AirSpeed.deltaTime = 0;
+	data->valid = 1;
+	data->airSpeed = 0;
+	data->dataTime = getSystemTime();
+	data->deltaTime = 0;
 	return SUCCESS;
 }
 

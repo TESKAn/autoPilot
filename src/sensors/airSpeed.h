@@ -19,7 +19,7 @@ typedef struct
 extern airSpeedData _AirSpeed;
 
 // Function declarations
-ErrorStatus AirSpeed_initDataStructure(void);
+ErrorStatus AirSpeed_initDataStructure(airSpeedData *data);
 ErrorStatus AirSpeed_CalculateAirSpeed(uint16_t Pp, float32_t Pb, uint16_t T);
 
 #endif /* AIRSPEED_H_ */
