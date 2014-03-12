@@ -21,9 +21,8 @@ typedef struct
 	float32_t gyroRate;
 }__attribute__((aligned(4),packed)) GyroData;
 
-extern GyroData _gyroData;
 
 ErrorStatus gyro_initDataStructure(GyroData *data);
-ErrorStatus gyro_update(uint16_t rawData_x, uint16_t rawData_y, uint16_t rawData_z, uint32_t dataTime);
+ErrorStatus gyro_update(GyroData *data, int16_t *rawData, uint32_t dataTime);
 
 #endif /* GYRO_H_ */

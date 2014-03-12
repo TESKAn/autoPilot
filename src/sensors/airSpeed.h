@@ -16,10 +16,9 @@ typedef struct
 	uint32_t deltaTime;		// Time that has passed between two samples
 }__attribute__((aligned(4),packed)) airSpeedData;
 
-extern airSpeedData _AirSpeed;
 
 // Function declarations
 ErrorStatus AirSpeed_initDataStructure(airSpeedData *data);
-ErrorStatus AirSpeed_CalculateAirSpeed(uint16_t Pp, float32_t Pb, uint16_t T);
+ErrorStatus AirSpeed_CalculateAirSpeed(airSpeedData *data, uint16_t Pp, float32_t Pb, uint16_t T);
 
 #endif /* AIRSPEED_H_ */

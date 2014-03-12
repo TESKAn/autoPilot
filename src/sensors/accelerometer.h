@@ -25,6 +25,6 @@ typedef struct
 
 
 ErrorStatus acc_initDataStructure(AccelerometerData *data);
-ErrorStatus acc_update(AccelerometerData *data, uint16_t rawData_x, uint16_t rawData_y, uint16_t rawData_z, Matrixf * DCM, uint32_t dataTime);
+ErrorStatus acc_update(AccelerometerData *data, int16_t *rawData, Matrixf *DCM, uint32_t dataTime);
 
 #endif /* ACCELEROMETER_H_ */

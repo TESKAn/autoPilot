@@ -40,7 +40,7 @@ ErrorStatus acc_initDataStructure(AccelerometerData *data)
 }
 
 // Update accelerometer reading
-ErrorStatus acc_update(AccelerometerData *data, uint16_t rawData_x, uint16_t rawData_y, uint16_t rawData_z, Matrixf * DCM, uint32_t dataTime)
+ErrorStatus acc_update(AccelerometerData *data, int16_t *rawData, Matrixf *DCM, uint32_t dataTime)
 {
 	ErrorStatus success = ERROR;
 	float32_t result[3];
@@ -49,17 +49,17 @@ ErrorStatus acc_update(AccelerometerData *data, uint16_t rawData_x, uint16_t raw
 	Vectorf temporaryVector = vectorf_init(0);
 	// Update accelerometer reading
 	// Store raw data
-	data->vectorRaw.x = (float32_t)rawData_x * data->accRate;
-	data->vectorRaw.y = (float32_t)rawData_y * data->accRate;
-	data->vectorRaw.z = (float32_t)rawData_z * data->accRate;
+	data->vectorRaw.x = (float32_t)rawData[0] * data->accRate;
+	data->vectorRaw.y = (float32_t)rawData[1] * data->accRate;
+	data->vectorRaw.z = (float32_t)rawData[2] * data->accRate;
 	// Remove offset
-	rawData_x -= data->offset.x;
-	rawData_y -= data->offset.y;
-	rawData_z -= data->offset.z;
+	rawData[0] -= data->offset.x;
+	rawData[1] -= data->offset.y;
+	rawData[2] -= data->offset.z;
 	// Scale result to get g's
-	result[0] = (float32_t)rawData_x * data->accRate;
-	result[1] = (float32_t)rawData_y * data->accRate;
-	result[2] = (float32_t)rawData_z * data->accRate;
+	result[0] = (float32_t)rawData[0] * data->accRate;
+	result[1] = (float32_t)rawData[1] * data->accRate;
+	result[2] = (float32_t)rawData[2] * data->accRate;
 	// Invert to get - gravity - acceleration
 	// Gravity is in body frame of reference
 	result[0] = -result[0];
@@ -101,7 +101,7 @@ ErrorStatus acc_update(AccelerometerData *data, uint16_t rawData_x, uint16_t raw
 	// First, add speed to fractional accumulator
 	vectorf_add(&temporaryVector, &data->Speed_3D_Frac, &data->Speed_3D_Frac);
 	// If speed values are over 0,001 m/s, add to main speed variable
-	// This is to be able to detect and use accelerations smaller than 0,1 m/s
+	// This is to be able to detect and use accelerations smaller than 0,1 m/s2
 	if(data->Speed_3D_Frac.x > 0.001f)
 	{
 		result[0] = data->Speed_3D_Frac.x * 1000;

@@ -23,9 +23,8 @@ typedef struct
 	float32_t magRate;
 }__attribute__((aligned(4),packed)) MagData;
 
-extern MagData _magData;
 
 ErrorStatus mag_initDataStructure(MagData *data);
-ErrorStatus mag_update(uint16_t rawData_x, uint16_t rawData_y, uint16_t rawData_z, Matrixf * DCM, uint32_t dataTime);
+ErrorStatus mag_update(MagData *data, uint16_t rawData_x, uint16_t rawData_y, uint16_t rawData_z, Matrixf * DCM, uint32_t dataTime);
 
 #endif /* MAG_H_ */

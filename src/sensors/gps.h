@@ -5,8 +5,8 @@
  *      Author: Jure
  */
 
-#ifndef GPS_H_
-#define GPS_H_
+#ifndef GPS_H_1
+#define GPS_H_1
 
 typedef struct
 {

@@ -231,8 +231,8 @@ void closeLog(void)
 
 void write_toLog(void)
 {
-	uint16_t temp1, temp2;
-	uint32_t temp = 0;
+	//uint16_t temp1, temp2;
+	//uint32_t temp = 0;
 	// Make pointer to buffer place
 	uint32_t* BufferPointer = &SD_Buf1Count;
 	// Make pointer to buffer
@@ -310,18 +310,19 @@ void write_toLog(void)
 	*BufferPointer += sprintf (&Buffer[*BufferPointer], "%d;%d;%d;", (int16_t)GYRO_X, (int16_t)GYRO_Y, (int16_t)GYRO_Z);
 	// Store magnetometer X, Y, Z
 	*BufferPointer += sprintf (&Buffer[*BufferPointer], "%d;%d;%d;", (int16_t)MAG_X, (int16_t)MAG_Y, (int16_t)MAG_Z);
+	/*
 	// Store barometer pressure
-	temp1 = (uint16_t)(_altimeterData.pressure / 1000);
-	temp2 = (uint16_t)(_altimeterData.pressure % 1000);
+	temp1 = (uint16_t)(fusionData._altimeter.pressure / 1000);
+	temp2 = (uint16_t)(fusionData._altimeter.pressure % 1000);
 
 	*BufferPointer += sprintf (&Buffer[*BufferPointer], "%d%d", temp1, temp2);
 
-	temp1 = (uint16_t)(_altimeterData.pressure_frac);
+	temp1 = (uint16_t)(fusionData._altimeter.pressure_frac);
 
 	*BufferPointer += sprintf (&Buffer[*BufferPointer], ",%d;", temp1);
 
 	*BufferPointer += sprintf (&Buffer[*BufferPointer], "%d;", AIN3);
-
+*/
 /*
 	// Store power Uin, Iin, mAh used, T1, T2, T3 - always positive 16 bit
 	*BufferPointer = *BufferPointer + storeNumber(VOLTAGE, Buffer, *BufferPointer);
@@ -451,9 +452,9 @@ ErrorStatus int16ToStr(int16_t value, char* text, char* str)
 
 ErrorStatus uint32ToStr(uint32_t value, char* text, char* str)
 {
-	int n = strlen(text);
+	//int n = strlen(text);
 	strcpy (str, text);
-
+	//n += sprintf (str+n, "%d", value);
 	return SUCCESS;
 }
 

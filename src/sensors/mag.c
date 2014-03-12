@@ -15,8 +15,6 @@
 
 #define MAG_DEFAULT_RATE					0.000635075720f			// 1,3/2047 -> gauss
 
-MagData _magData;
-
 // Init data structure
 ErrorStatus mag_initDataStructure(MagData *data)
 {
@@ -42,7 +40,7 @@ ErrorStatus mag_initDataStructure(MagData *data)
 	return success;
 }
 
-ErrorStatus mag_update(uint16_t rawData_x, uint16_t rawData_y, uint16_t rawData_z, Matrixf * DCM, uint32_t dataTime)
+ErrorStatus mag_update(MagData *data, uint16_t rawData_x, uint16_t rawData_y, uint16_t rawData_z, Matrixf * DCM, uint32_t dataTime)
 {
 	ErrorStatus success = ERROR;
 

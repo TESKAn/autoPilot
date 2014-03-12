@@ -59,7 +59,7 @@ USB_OTG_CORE_HANDLE  USB_OTG_dev;
 float32_t t1 = 0;
 float32_t t2 = 0;
 
-FUSION_CORE fusionData;
+
 
 int main(void)
 {

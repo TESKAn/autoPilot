@@ -18,9 +18,8 @@ typedef struct
 	uint32_t deltaTime;
 }__attribute__((aligned(4),packed)) AltimeterData;
 
-extern AltimeterData _altimeterData;
 
 ErrorStatus altimeter_initDataStructure(AltimeterData *data);
-ErrorStatus altimeter_update(uint32_t rawData_P, uint16_t rawData_T, uint32_t dataTime);
+ErrorStatus altimeter_update(AltimeterData *data, uint32_t rawData_P, uint16_t rawData_T, uint32_t dataTime);
 
 #endif /* ALTIMETER_H_ */

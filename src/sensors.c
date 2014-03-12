@@ -16,7 +16,7 @@ volatile uint16_t I2C2_WriteData = 0;
 volatile uint8_t I2C2_DeviceAddress = 0;
 uint8_t I2C2_DMABufTX[DMA_BUF_COUNT];
 uint8_t I2C2_DMABufRX[DMA_BUF_COUNT];
-I2CSensorData I2C2_sensorBufRX;
+FUSION_SENSORDATA I2C2_sensorBufRX;
 volatile int I2C2_DMABufTXCount = 0;
 volatile int I2C2_DMABufRXCount = 0;
 volatile int I2C2_PollTimer = 0;
@@ -257,6 +257,7 @@ void copySensorData(void)
 	// Mark updating sensor data
 	SENSORS_UPDATING = 1;
 
+	// Swap bytes to correct endianesse
 	byte_swap16(I2C2_sensorBufRX.data.accX);
 	byte_swap16(I2C2_sensorBufRX.data.accY);
 	byte_swap16(I2C2_sensorBufRX.data.accZ);
@@ -266,6 +267,10 @@ void copySensorData(void)
 	byte_swap16(I2C2_sensorBufRX.data.magX);
 	byte_swap16(I2C2_sensorBufRX.data.magY);
 	byte_swap16(I2C2_sensorBufRX.data.magZ);
+	// Add data time
+	I2C2_sensorBufRX.data.dataTakenTime = sensorAcquisitionTime;
+	// Call fusion update function
+	fusion_dataUpdate(&fusionData, &I2C2_sensorBufRX);
 
 
 	ACC_X = I2C2_sensorBufRX.data.accX;
@@ -331,7 +336,7 @@ void copySensorData(void)
 	ui16Temp = ((uint16_t)I2C2_DMABufRX[23] << 8);
 	ui16Temp = ui16Temp + ((uint16_t)I2C2_DMABufRX[24]);
 
-	altimeter_update(ui32Temp, ui16Temp, sensorAcquisitionTime);
+	//altimeter_update(ui32Temp, ui16Temp, sensorAcquisitionTime);
 
 
 
