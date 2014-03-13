@@ -25,6 +25,6 @@ typedef struct
 
 
 ErrorStatus mag_initDataStructure(MagData *data);
-ErrorStatus mag_update(MagData *data, uint16_t rawData_x, uint16_t rawData_y, uint16_t rawData_z, Matrixf * DCM, uint32_t dataTime);
+ErrorStatus mag_update(MagData *data, int16_t *rawData, Matrixf * DCM, uint32_t dataTime);
 
 #endif /* MAG_H_ */

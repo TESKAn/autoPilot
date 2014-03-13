@@ -12,18 +12,11 @@
 #include "math/myMath_vec3.h"
 #include "gps.h"
 
-GPSData _GPSData;
-
-ErrorStatus gps_initData()
+ErrorStatus gps_initData(GPSData *data)
 {
-	ErrorStatus status = ERROR;
-
-	_GPSData.valid = 1;
-	_GPSData.speed3D = vectorf_init(0);
-	_GPSData.heading = 0;
-
-	status = SUCCESS;
-
-	return status;
+	data->valid = 1;
+	data->speed3D = vectorf_init(0);
+	data->heading = 0;
+	return SUCCESS;
 
 }

@@ -697,6 +697,21 @@ void USART3_ISR_Handler(void)
 }
 
 /**
+  * @brief  This function handles USART3 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI0_ISR_Handler(void)
+{
+	if(EXTI_GetITStatus(EXTI_Line0) != RESET)
+	{
+
+		/* Clear the EXTI line 0 pending bit */
+		EXTI_ClearITPendingBit(EXTI_Line0);
+	}
+}
+
+/**
   * @brief  This function handles FPU interrupt request.
   * @param  None
   * @retval None

@@ -80,9 +80,11 @@ void sensorInterruptTimer(void)
 // Initialize I2C sensors
 void sensorInit()
 {
+
 	uint8_t retriesCount = 0;
 	ErrorStatus error = SUCCESS;
 	I2C2_INITDONE = 0;
+
 	// Check if MPU is in sleep mode
 	// Read reg 107
 	for(retriesCount = I2C2_ERROR_RETRIESCOUNT; retriesCount > 0; retriesCount --)
@@ -1183,6 +1185,38 @@ ErrorStatus MPU6000_Enable(FunctionalState newState)
 		Delaynus(20000);
 		return  error;
 	}
+
+/*
+	if(error == SUCCESS)
+	{
+		Delaynus(2000);
+		// Configure sensor interrupt
+		// Register 55
+		I2C2_DMABufTX[0] = 55;
+		// Reg 55 = 0001 0000	Interrupt active high, push-pull, 50 us pulse, clear on any read, no fsync, no i2c bypass
+		I2C2_DMABufTX[1] = 0x10;
+		// Reg 56 = 000 0001	Data ready interrupt enable
+		I2C2_DMABufTX[2] = 0x01;
+
+		for(retriesCount = I2C2_ERROR_RETRIESCOUNT; retriesCount > 0; retriesCount --)
+		{
+			error = masterSend(MPU6000_ADDRESS, I2C2_DMABufTX, 3);
+			if(error == SUCCESS)
+			{
+				break;
+			}
+			else
+			{
+				// Handle error
+				I2C2_ResetInterface();
+			}
+		}
+		Delaynus(20000);
+		return  error;
+	}
+*/
+
+
 	else
 	{
 		return ERROR;

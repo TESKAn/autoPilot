@@ -48,6 +48,13 @@ ErrorStatus fusion_init(FUSION_CORE *coreData)
 		return ERROR;
 	}
 
+	if(ERROR == gps_initData(&coreData->_gps))
+	{
+		return ERROR;
+	}
+
+
+
 	// Create identity matrix
 	matrix3_init(1, &coreData->_fusion_DCM);
 
@@ -62,6 +69,8 @@ ErrorStatus fusion_dataUpdate(FUSION_CORE *coreData, FUSION_SENSORDATA *sensorDa
 	acc_update(&coreData->_accelerometer, (int16_t*)&sensorData->arrays.acc, &coreData->_fusion_DCM, sensorData->data.dataTakenTime);
 	// Update gyro
 	gyro_update(&coreData->_gyro, (int16_t*)&sensorData->arrays.gyro, sensorData->data.dataTakenTime);
+	// Update mag
+	mag_update(&coreData->_mag, (int16_t*)&sensorData->arrays.mag, &coreData->_fusion_DCM, sensorData->data.dataTakenTime);
 	return SUCCESS;
 }
 
@@ -105,11 +114,11 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 	float32_t GPSSpeed = 0;
 
 	// Calculate GPS speed
-	GPSSpeed = vectorf_getNorm(&_GPSData.speed3D);
+	GPSSpeed = vectorf_getNorm(&data->_gps.speed3D);
 
 	// Check if we have valid GPS and accelerometer data
 	// We need speed so do not use if below some value
-	if((1 ==_GPSData.valid)&&(1 == data->_accelerometer.valid)&&(param_min_airspeed < GPSSpeed))
+	if((1 ==data->_gps.valid)&&(1 == data->_accelerometer.valid)&&(param_min_airspeed < GPSSpeed))
 	{
 		// Use GPS and accelerometer speed data to calculate DCM error in earth frame
 		// Calculate 1/Dt
@@ -117,7 +126,7 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 		// Calculate average acceleration of accelerometer
 		status = vectorf_scalarProduct(&data->_accelerometer.Speed_3D, fTemp, &temporaryVector);
 		// Calculate [0,0,1] - average acceleration of GPS
-		status = vectorf_scalarProduct(&_GPSData.speed3D, -fTemp, &temporaryVector2);
+		status = vectorf_scalarProduct(&data->_gps.speed3D, -fTemp, &temporaryVector2);
 		temporaryVector2.z = temporaryVector2.z + 1;
 		// Calculate error
 		status = vectorf_crossProduct(&temporaryVector, &temporaryVector2, &error_gps_acc);

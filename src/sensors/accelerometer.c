@@ -88,7 +88,7 @@ ErrorStatus acc_update(AccelerometerData *data, int16_t *rawData, Matrixf *DCM, 
 
 	// We have current accelerometer data, calculate speed in earth coordinates
 	// Transfer acceleration data to earth frame of reference
-	matrix3_vectorMultiply(DCM, &data->vector, &temporaryVector);
+	//matrix3_vectorMultiply(DCM, &data->vector, &temporaryVector);
 	// Next remove gravity from measurement
 	//**********************************************************
 	// !!!Check what to do with Z value to get correct result!!!

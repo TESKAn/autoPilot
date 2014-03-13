@@ -13,11 +13,12 @@ typedef struct
 	uint8_t valid;
 	Vectorf speed3D;
 	float32_t heading;
+	// latitude
+	float32_t latitude;
 
 }__attribute__((aligned(4),packed)) GPSData;
 
-extern GPSData _GPSData;
 
-ErrorStatus gps_initData();
+ErrorStatus gps_initData(GPSData *data);
 
 #endif /* GPS_H_ */

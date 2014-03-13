@@ -848,6 +848,37 @@ void init_USART3(void)
 	//DMA_ITConfig(DMA1_Stream6, DMA_IT_TC, ENABLE);
 }
 
+// External interrupt config
+void init_EXTI()
+{
+	GPIO_InitTypeDef GPIO_InitStructure;
+	EXTI_InitTypeDef EXTI_InitStructure;
+	// Enable SYSCFG clock
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+
+	// Set C5 as input, MPU6000 interrupt
+	// Select C5
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
+	//set output type
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;	// push/pull
+	//set pull-up
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	//set pin mode to alternate function
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+	//set pin speed
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	//write mode to selected pins and selected port
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
+
+
+	EXTI_InitStructure.EXTI_Line = EXTI_Line0;
+	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
+
+	EXTI_Init(&EXTI_InitStructure);
+}
+
 // Only init SPI pins, rest is in FATFS functions
 void init_SPI()
 {
@@ -971,11 +1002,11 @@ void init_GPIO()
 	// Set pin to 0
 	GPIO_WriteBit(GPIOC, GPIO_Pin_4, 0);
 
-	// Set C5 as input, MPU6050 interrupt
+	// Set C5 as input, MPU6000 interrupt
 	// Select C5
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
 	//set output type
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// push/pull
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;	// push/pull
 	//set pull-up
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
 	//set pin mode to alternate function
@@ -984,6 +1015,8 @@ void init_GPIO()
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
+
+	// Set interrupt
 
 	// Set C13 as output, pull to zero
 	// C13 = USB OTG power enable
@@ -1243,6 +1276,14 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
 	NVIC_Init(&NVCInitStructure);
 
+	// Init EXTI interrupt
+	// Enable and set EXTI Line0 Interrupt to the lowest priority
+	NVCInitStructure.NVIC_IRQChannel = EXTI0_IRQn;
+	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 0x15;
+	NVCInitStructure.NVIC_IRQChannelSubPriority = 0x15;
+	NVCInitStructure.NVIC_IRQChannelCmd = newState;
+	NVIC_Init(&NVCInitStructure);
+
 	//init FPU interrupt
 	//set IRQ channel
 	NVCInitStructure.NVIC_IRQChannel = FPU_IRQn;
@@ -1306,6 +1347,8 @@ void System_Config(void)
 	init_USART1();
 	init_USART2();
 	init_USART3();
+	// External interrupt
+	init_EXTI();
 	// SPI config
 	init_SPI();
 	// I2C2 config

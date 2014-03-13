@@ -28,6 +28,7 @@ typedef struct
 	MagData _mag;
 	airSpeedData _airSpeed;
 	AltimeterData _altimeter;
+	GPSData _gps;
 
 	// DCM matrix
 	Matrixf _fusion_DCM;
