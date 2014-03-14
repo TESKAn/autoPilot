@@ -13,13 +13,14 @@
 #include "math/myMath_vec3.h"
 #include "math/myMath_matrix3.h"
 #include "math/myMath_pid.h"
+#include "sensor_typedefs.h"
+#include "sensors_fusion.h"
 #include "gyro.h"
 #include "accelerometer.h"
 #include "mag.h"
 #include "airSpeed.h"
 #include "gps.h"
 #include "altimeter.h"
-#include "sensors_fusion.h"
 
 
 ErrorStatus fusion_init(FUSION_CORE *coreData)
@@ -62,15 +63,15 @@ ErrorStatus fusion_init(FUSION_CORE *coreData)
 	return SUCCESS;
 }
 
-ErrorStatus fusion_dataUpdate(FUSION_CORE *coreData, FUSION_SENSORDATA *sensorData)
+ErrorStatus fusion_dataUpdate(void *data, FUSION_SENSORDATA *sensorData)
 {
 
 	// Update acceleration
-	acc_update(&coreData->_accelerometer, (int16_t*)&sensorData->arrays.acc, &coreData->_fusion_DCM, sensorData->data.dataTakenTime);
+	acc_update((FUSION_CORE *)data, (int16_t*)&sensorData->arrays.acc, sensorData->data.dataTakenTime);
 	// Update gyro
-	gyro_update(&coreData->_gyro, (int16_t*)&sensorData->arrays.gyro, sensorData->data.dataTakenTime);
+	gyro_update((FUSION_CORE *)data, (int16_t*)&sensorData->arrays.gyro, sensorData->data.dataTakenTime);
 	// Update mag
-	mag_update(&coreData->_mag, (int16_t*)&sensorData->arrays.mag, &coreData->_fusion_DCM, sensorData->data.dataTakenTime);
+	mag_update((FUSION_CORE *)data, (int16_t*)&sensorData->arrays.mag, sensorData->data.dataTakenTime);
 	return SUCCESS;
 }
 

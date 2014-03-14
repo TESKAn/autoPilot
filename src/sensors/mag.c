@@ -11,6 +11,7 @@
 #include "math/myMath_typedefs.h"
 #include "math/myMath_vec3.h"
 #include "math/myMath_matrix3.h"
+#include "sensor_typedefs.h"
 #include "mag.h"
 
 #define MAG_DEFAULT_RATE					0.000635075720f			// 1,3/2047 -> gauss
@@ -40,7 +41,7 @@ ErrorStatus mag_initDataStructure(MagData *data)
 	return success;
 }
 
-ErrorStatus mag_update(MagData *data, int16_t *rawData, Matrixf * DCM, uint32_t dataTime)
+ErrorStatus mag_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 {
 	ErrorStatus success = ERROR;
 

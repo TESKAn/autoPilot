@@ -8,6 +8,7 @@
 #include "stm32f4xx.h"
 #include "arm_math.h"
 #include "functions.h"
+#include "sensor_typedefs.h"
 #include "airSpeed.h"
 
 // We need some variables to calculate airspeed

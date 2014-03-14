@@ -1186,7 +1186,7 @@ ErrorStatus MPU6000_Enable(FunctionalState newState)
 		return  error;
 	}
 
-/*
+
 	if(error == SUCCESS)
 	{
 		Delaynus(2000);
@@ -1214,7 +1214,7 @@ ErrorStatus MPU6000_Enable(FunctionalState newState)
 		Delaynus(20000);
 		return  error;
 	}
-*/
+
 
 
 	else

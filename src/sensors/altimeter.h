@@ -8,15 +8,7 @@
 #ifndef ALTIMETER_H_
 #define ALTIMETER_H_
 
-typedef struct
-{
-	uint8_t valid;
-	uint32_t pressure;
-	uint32_t pressure_frac;
-	float32_t temperature;
-	uint32_t dataTime;
-	uint32_t deltaTime;
-}__attribute__((aligned(4),packed)) AltimeterData;
+
 
 
 ErrorStatus altimeter_initDataStructure(AltimeterData *data);

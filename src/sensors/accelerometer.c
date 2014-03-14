@@ -11,6 +11,7 @@
 #include "math/myMath_typedefs.h"
 #include "math/myMath_vec3.h"
 #include "math/myMath_matrix3.h"
+#include "sensor_typedefs.h"
 #include "accelerometer.h"
 
 #define ACC_DEFAULT_RATE					0.000244140625f			// 8/32768 -> g
@@ -40,26 +41,27 @@ ErrorStatus acc_initDataStructure(AccelerometerData *data)
 }
 
 // Update accelerometer reading
-ErrorStatus acc_update(AccelerometerData *data, int16_t *rawData, Matrixf *DCM, uint32_t dataTime)
+ErrorStatus acc_update(FUSION_CORE *coreData, int16_t *rawData, uint32_t dataTime)
 {
 	ErrorStatus success = ERROR;
 	float32_t result[3];
 	int32_t fracCalc = 0;
 	uint32_t deltaTime = 0;
 	Vectorf temporaryVector = vectorf_init(0);
+
 	// Update accelerometer reading
 	// Store raw data
-	data->vectorRaw.x = (float32_t)rawData[0] * data->accRate;
-	data->vectorRaw.y = (float32_t)rawData[1] * data->accRate;
-	data->vectorRaw.z = (float32_t)rawData[2] * data->accRate;
+	coreData->_accelerometer.vectorRaw.x = (float32_t)rawData[0] * coreData->_accelerometer.accRate;
+	coreData->_accelerometer.vectorRaw.y = (float32_t)rawData[1] * coreData->_accelerometer.accRate;
+	coreData->_accelerometer.vectorRaw.z = (float32_t)rawData[2] * coreData->_accelerometer.accRate;
 	// Remove offset
-	rawData[0] -= data->offset.x;
-	rawData[1] -= data->offset.y;
-	rawData[2] -= data->offset.z;
+	rawData[0] -= coreData->_accelerometer.offset.x;
+	rawData[1] -= coreData->_accelerometer.offset.y;
+	rawData[2] -= coreData->_accelerometer.offset.z;
 	// Scale result to get g's
-	result[0] = (float32_t)rawData[0] * data->accRate;
-	result[1] = (float32_t)rawData[1] * data->accRate;
-	result[2] = (float32_t)rawData[2] * data->accRate;
+	result[0] = (float32_t)rawData[0] * coreData->_accelerometer.accRate;
+	result[1] = (float32_t)rawData[1] * coreData->_accelerometer.accRate;
+	result[2] = (float32_t)rawData[2] * coreData->_accelerometer.accRate;
 	// Invert to get - gravity - acceleration
 	// Gravity is in body frame of reference
 	result[0] = -result[0];
@@ -68,27 +70,28 @@ ErrorStatus acc_update(AccelerometerData *data, int16_t *rawData, Matrixf *DCM, 
 
 	// Use scale correction?
 #ifdef ACC_USE_SCALE_CORRECTION
-	result[0] *= data->scale.x;
-	result[1] *= data->scale.y;
-	result[2] *= data->scale.z;
+	result[0] *= coreData->_accelerometer.scale.x;
+	result[1] *= coreData->_accelerometer.scale.y;
+	result[2] *= coreData->_accelerometer.scale.z;
 #endif
 
 
 	// Calculate time difference
-	deltaTime = dataTime - data->dataTime;
+	deltaTime = dataTime - coreData->_accelerometer.dataTime;
 	// Do checks on time passed...
 
 	// And store result if all OK
-	data->vector.x = result[0];
-	data->vector.y = result[1];
-	data->vector.z = result[2];
+	coreData->_accelerometer.vector.x = result[0];
+	coreData->_accelerometer.vector.y = result[1];
+	coreData->_accelerometer.vector.z = result[2];
 	// Store time information
-	data->dataTime = dataTime;
-	data->deltaTime = deltaTime;
+	coreData->_accelerometer.dataTime = dataTime;
+	coreData->_accelerometer.deltaTime = deltaTime;
 
 	// We have current accelerometer data, calculate speed in earth coordinates
 	// Transfer acceleration data to earth frame of reference
-	matrix3_vectorMultiply(DCM, &data->vector, &temporaryVector);
+
+	matrix3_vectorMultiply(&coreData->_fusion_DCM, &coreData->_accelerometer.vector, &temporaryVector);
 	// Next remove gravity from measurement
 	//**********************************************************
 	// !!!Check what to do with Z value to get correct result!!!
@@ -99,37 +102,37 @@ ErrorStatus acc_update(AccelerometerData *data, int16_t *rawData, Matrixf *DCM, 
 	temporaryVector.y = deltaTime * temporaryVector.y;
 	temporaryVector.z = deltaTime * temporaryVector.z;
 	// First, add speed to fractional accumulator
-	vectorf_add(&temporaryVector, &data->Speed_3D_Frac, &data->Speed_3D_Frac);
+	vectorf_add(&temporaryVector, &coreData->_accelerometer.Speed_3D_Frac, &coreData->_accelerometer.Speed_3D_Frac);
 	// If speed values are over 0,001 m/s, add to main speed variable
 	// This is to be able to detect and use accelerations smaller than 0,1 m/s2
-	if(data->Speed_3D_Frac.x > 0.001f)
+	if(coreData->_accelerometer.Speed_3D_Frac.x > 0.001f)
 	{
-		result[0] = data->Speed_3D_Frac.x * 1000;
+		result[0] = coreData->_accelerometer.Speed_3D_Frac.x * 1000;
 		fracCalc = (int32_t) result[0];
 		result[0] = (float32_t)fracCalc;
 		result[0] = result[0] / 1000;
-		data->Speed_3D.x += result[0];
-		data->Speed_3D_Frac.x -= result[0];
+		coreData->_accelerometer.Speed_3D.x += result[0];
+		coreData->_accelerometer.Speed_3D_Frac.x -= result[0];
 	}
 
-	if(data->Speed_3D_Frac.y > 0.001f)
+	if(coreData->_accelerometer.Speed_3D_Frac.y > 0.001f)
 	{
-		result[0] = data->Speed_3D_Frac.y * 1000;
+		result[0] = coreData->_accelerometer.Speed_3D_Frac.y * 1000;
 		fracCalc = (int32_t) result[0];
 		result[0] = (float32_t)fracCalc;
 		result[0] = result[0] / 1000;
-		data->Speed_3D.y += result[0];
-		data->Speed_3D_Frac.y -= result[0];
+		coreData->_accelerometer.Speed_3D.y += result[0];
+		coreData->_accelerometer.Speed_3D_Frac.y -= result[0];
 	}
 
-	if(data->Speed_3D_Frac.z > 0.001f)
+	if(coreData->_accelerometer.Speed_3D_Frac.z > 0.001f)
 	{
-		result[0] = data->Speed_3D_Frac.z * 1000;
+		result[0] = coreData->_accelerometer.Speed_3D_Frac.z * 1000;
 		fracCalc = (int32_t) result[0];
 		result[0] = (float32_t)fracCalc;
 		result[0] = result[0] / 1000;
-		data->Speed_3D.z += result[0];
-		data->Speed_3D_Frac.z -= result[0];
+		coreData->_accelerometer.Speed_3D.z += result[0];
+		coreData->_accelerometer.Speed_3D_Frac.z -= result[0];
 	}
 
 

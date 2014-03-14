@@ -10,6 +10,7 @@
 #include "functions.h"
 #include "math/myMath_typedefs.h"
 #include "math/myMath_vec3.h"
+#include "sensor_typedefs.h"
 #include "gps.h"
 
 ErrorStatus gps_initData(GPSData *data)

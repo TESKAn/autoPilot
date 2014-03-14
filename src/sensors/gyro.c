@@ -10,6 +10,7 @@
 #include "functions.h"
 #include "math/myMath_typedefs.h"
 #include "math/myMath_vec3.h"
+#include "sensor_typedefs.h"
 #include "gyro.h"
 
 #define GYRO_DEFAULT_RATE					0.030517578125f			// 1000/32768 -> deg/sec
@@ -45,43 +46,43 @@ ErrorStatus gyro_initDataStructure(GyroData *data)
 }
 
 // Update gyro reading
-ErrorStatus gyro_update(GyroData *data, int16_t *rawData, uint32_t dataTime)
+ErrorStatus gyro_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 {
 	ErrorStatus success = ERROR;
 	float32_t result[3];
 	uint32_t deltaTime = 0;
 
 	// First store raw reading
-	data->vectorRaw.x = (float32_t)rawData[0] * data->gyroRate;
-	data->vectorRaw.y = (float32_t)rawData[1] * data->gyroRate;
-	data->vectorRaw.z = (float32_t)rawData[2] * data->gyroRate;
+	data->_gyro.vectorRaw.x = (float32_t)rawData[0] * data->_gyro.gyroRate;
+	data->_gyro.vectorRaw.y = (float32_t)rawData[1] * data->_gyro.gyroRate;
+	data->_gyro.vectorRaw.z = (float32_t)rawData[2] * data->_gyro.gyroRate;
 
 	// Remove offset
-	rawData[0] -= data->offset.x;
-	rawData[1] -= data->offset.y;
-	rawData[2] -= data->offset.z;
+	rawData[0] -= data->_gyro.offset.x;
+	rawData[1] -= data->_gyro.offset.y;
+	rawData[2] -= data->_gyro.offset.z;
 
 	// Calculate
-	result[0] = (float32_t)rawData[0] * data->gyroRate;
-	result[1] = (float32_t)rawData[1] * data->gyroRate;
-	result[2] = (float32_t)rawData[2] * data->gyroRate;
+	result[0] = (float32_t)rawData[0] * data->_gyro.gyroRate;
+	result[1] = (float32_t)rawData[1] * data->_gyro.gyroRate;
+	result[2] = (float32_t)rawData[2] * data->_gyro.gyroRate;
 
 	// Remove drift error
 	// Drift error is calculated in different .c/.h file
-	result[0] -= data->driftError.x;
-	result[1] -= data->driftError.y;
-	result[2] -= data->driftError.z;
+	result[0] -= data->_gyro.driftError.x;
+	result[1] -= data->_gyro.driftError.y;
+	result[2] -= data->_gyro.driftError.z;
 
 	// Calculate time difference
-	deltaTime = dataTime - data->dataTime;
+	deltaTime = dataTime - data->_gyro.dataTime;
 	// Do checks on time passed...
 
-	data->vector.x = result[0];
-	data->vector.y = result[1];
-	data->vector.z = result[2];
+	data->_gyro.vector.x = result[0];
+	data->_gyro.vector.y = result[1];
+	data->_gyro.vector.z = result[2];
 
-	data->dataTime = dataTime;
-	data->deltaTime = deltaTime;
+	data->_gyro.dataTime = dataTime;
+	data->_gyro.deltaTime = deltaTime;
 
 	success = SUCCESS;
 
