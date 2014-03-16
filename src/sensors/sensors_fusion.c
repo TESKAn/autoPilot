@@ -72,6 +72,9 @@ ErrorStatus fusion_dataUpdate(void *data, FUSION_SENSORDATA *sensorData)
 	gyro_update((FUSION_CORE *)data, (int16_t*)&sensorData->arrays.gyro, sensorData->data.dataTakenTime);
 	// Update mag
 	mag_update((FUSION_CORE *)data, (int16_t*)&sensorData->arrays.mag, sensorData->data.dataTakenTime);
+	// Update altimeter
+	altimeter_update((FUSION_CORE *)data, sensorData->arrays.pressure.statusPressure, sensorData->arrays.baroTemperatureDegrees, sensorData->arrays.baroTemperatureFrac, sensorData->data.dataTakenTime);
+
 	return SUCCESS;
 }
 

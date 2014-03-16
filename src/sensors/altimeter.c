@@ -17,37 +17,66 @@
 // Init data structure
 ErrorStatus altimeter_initDataStructure(AltimeterData *data)
 {
-	ErrorStatus status = ERROR;
 
 	data->dataTime = getSystemTime();
 	data->deltaTime = 0;
 	data->pressure = 0;
-	data->pressure_frac = 0;
+	data->altitude = 0;
 	data->temperature = 0;
 	data->valid = 1;
 
-	status = SUCCESS;
-
-	return status;
+	return SUCCESS;
 }
 
 // Update altimeter reading
-ErrorStatus altimeter_update(AltimeterData *data, uint32_t rawData_P, uint16_t rawData_T, uint32_t dataTime)
+ErrorStatus altimeter_update(FUSION_CORE *data, uint32_t rawData_P, int8_t temp_deg, uint8_t temp_frac, uint32_t dataTime)
 {
 	ErrorStatus success = ERROR;
-	uint16_t temp = 0;
-	// Update pressure
-	data->pressure_frac = (rawData_P >> 4) & 0x03;
-	data->pressure_frac = data->pressure_frac * 25;	// 2 bits = fractions of Pa
-	data->pressure = (rawData_P >> 6) & 0x3FFFF;	// 18 bits = pressure in Pa
+	uint32_t temp = 0;
+	//int16_t iTemp = 0;
+
+	// Check data valid
+	if(rawData_P & 0x02000000)
+	{
+		data->_altimeter.valid = 250;
+	}
+	else
+	{
+		data->_altimeter.valid = 0;
+	}
+	// Extract pressure data
+
+	// First, fraction
+	temp = rawData_P;
+	temp = temp >> 4;
+	temp = temp & 0x000003;
+	data->_altimeter.pressure = (float32_t) temp * 0.25f;
+	temp = rawData_P >> 6;
+	temp = temp & 0x03FFFF;
+	data->_altimeter.pressure += temp;
+
+	/*
+	// Extract altitude data
+
+	temp = rawData_P;
+	temp = temp >> 4;
+	temp = temp & 0xF;
+	data->_altimeter.altitude = (float32_t)temp / 10;
+
+	temp = (rawData_P >> 8);
+	temp = temp & 0xFFFF;
+	iTemp = (int16_t)temp;
+
+	data->_altimeter.altitude += (float32_t)iTemp;
+*/
 	// Update temperature
-	temp = rawData_T >> 8;
-	data->temperature = (float32_t)((rawData_T >> 4) & 0x0F);
-	data->temperature = data->temperature * 0.0666f;
-	data->temperature += (float32_t) temp;
+	data->_altimeter.temperature = (float32_t)temp_frac;
+	data->_altimeter.temperature = data->_altimeter.temperature / 160;
+	data->_altimeter.temperature = data->_altimeter.temperature + (float32_t)temp_deg;
+
 	// Update delta time and time
-	data->deltaTime = dataTime - data->dataTime;
-	data->dataTime = dataTime;
+	data->_altimeter.deltaTime = dataTime - data->_altimeter.dataTime;
+	data->_altimeter.dataTime = dataTime;
 
 	success = SUCCESS;
 

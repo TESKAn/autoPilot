@@ -53,8 +53,8 @@ typedef struct
 
 typedef struct
 {
-	uint32_t pressure;
-	uint32_t pressure_frac;
+	float32_t pressure;
+	float32_t altitude;
 	float32_t temperature;
 	uint32_t dataTime;
 	uint32_t deltaTime;
@@ -138,7 +138,8 @@ typedef union
 				uint8_t OUT_P_LSB;
 			}parts;
 		}pressure;
-		int16_t baroTemperature;
+		int8_t baroTemperatureDegrees;
+		uint8_t baroTemperatureFrac;
 		uint32_t dataTakenTime;
 		uint8_t padding[2];
 	}data;
@@ -159,7 +160,8 @@ typedef union
 				uint8_t OUT_P_LSB;
 			}parts;
 		}pressure;
-		int16_t baroTemperature;
+		int8_t baroTemperatureDegrees;
+		uint8_t baroTemperatureFrac;
 		uint32_t dataTakenTime;
 		uint8_t padding[2];
 	}arrays;

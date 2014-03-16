@@ -250,9 +250,6 @@ void copySensorData(void)
 {
 
 	uint16_t i = 0;
-	uint32_t ui32Temp = 0;
-	uint32_t ui32Temp1 = 0;
-	uint16_t ui16Temp = 0;
 	float32_t fTemp = 0;
 	//uint16_t uiTemp = 0;
 	// Data is in I2C2_DMABufRX
@@ -263,12 +260,15 @@ void copySensorData(void)
 	byte_swap16(I2C2_sensorBufRX.data.accX);
 	byte_swap16(I2C2_sensorBufRX.data.accY);
 	byte_swap16(I2C2_sensorBufRX.data.accZ);
+	byte_swap16(I2C2_sensorBufRX.data.temperature);
 	byte_swap16(I2C2_sensorBufRX.data.gyroX);
 	byte_swap16(I2C2_sensorBufRX.data.gyroY);
 	byte_swap16(I2C2_sensorBufRX.data.gyroZ);
 	byte_swap16(I2C2_sensorBufRX.data.magX);
 	byte_swap16(I2C2_sensorBufRX.data.magY);
 	byte_swap16(I2C2_sensorBufRX.data.magZ);
+	byte_swap32(I2C2_sensorBufRX.data.pressure.statusPressure);
+
 	// Add data time
 	I2C2_sensorBufRX.data.dataTakenTime = sensorAcquisitionTime;
 	// Call fusion update function
@@ -326,17 +326,6 @@ void copySensorData(void)
 
 	// Update new variables
 */
-
-	// Barometer pressure and temperature
-	ui32Temp = 0;
-	ui32Temp = ((uint32_t)I2C2_DMABufRX[20] << 16);
-	ui32Temp1 = ((uint32_t)I2C2_DMABufRX[21] << 8);
-	ui32Temp = ui32Temp + ui32Temp1;
-	ui32Temp1 = ((uint32_t)I2C2_DMABufRX[22]);
-	ui32Temp = ui32Temp + ui32Temp1;
-	ui16Temp = 0;
-	ui16Temp = ((uint16_t)I2C2_DMABufRX[23] << 8);
-	ui16Temp = ui16Temp + ((uint16_t)I2C2_DMABufRX[24]);
 
 	//altimeter_update(ui32Temp, ui16Temp, sensorAcquisitionTime);
 
