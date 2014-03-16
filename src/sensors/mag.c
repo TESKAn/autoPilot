@@ -23,19 +23,13 @@ ErrorStatus mag_initDataStructure(MagData *data)
 
 	data->dataTime = getSystemTime();
 	data->deltaTime = 0;
-
 	data->hardIron = vectorf_init(0);
-
 	data->magRate = MAG_DEFAULT_RATE;
-
+	data->sensorTemperature = 0;
 	matrix3_init(1, &data->softIron);
-
 	data->vector = vectorf_init(0);
-
 	data->vectorRaw = vectorf_init(0);
-
 	data->valid = 1;
-
 	success = SUCCESS;
 
 	return success;

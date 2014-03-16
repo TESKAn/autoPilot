@@ -59,13 +59,17 @@ ErrorStatus fusion_init(FUSION_CORE *coreData)
 	// Create identity matrix
 	matrix3_init(1, &coreData->_fusion_DCM);
 
+	// Init temperature
+	coreData->MPUTemperature = 0;
+
 
 	return SUCCESS;
 }
 
 ErrorStatus fusion_dataUpdate(void *data, FUSION_SENSORDATA *sensorData)
 {
-
+	// Update temperature
+	fusion_calculateMPUTemperature((FUSION_CORE *)data, sensorData->data.temperature, sensorData->data.dataTakenTime);
 	// Update acceleration
 	acc_update((FUSION_CORE *)data, (int16_t*)&sensorData->arrays.acc, sensorData->data.dataTakenTime);
 	// Update gyro
@@ -75,6 +79,14 @@ ErrorStatus fusion_dataUpdate(void *data, FUSION_SENSORDATA *sensorData)
 	// Update altimeter
 	altimeter_update((FUSION_CORE *)data, sensorData->arrays.pressure.statusPressure, sensorData->arrays.baroTemperatureDegrees, sensorData->arrays.baroTemperatureFrac, sensorData->data.dataTakenTime);
 
+
+
+	return SUCCESS;
+}
+
+ErrorStatus fusion_calculateMPUTemperature(FUSION_CORE *data, int16_t temperatureData, uint32_t dataTime)
+{
+	data->MPUTemperature = ((float32_t) temperatureData / 340)+36.53f;
 	return SUCCESS;
 }
 

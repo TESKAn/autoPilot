@@ -34,6 +34,7 @@ ErrorStatus acc_initDataStructure(AccelerometerData *data)
 	data->Speed_3D_Frac = vectorf_init(0);
 	data->speed_3D_dt = 0;
 	data->accRate = ACC_DEFAULT_RATE;
+	data->sensorTemperature = 0;
 	data->valid = 1;
 	status = SUCCESS;
 
@@ -48,6 +49,9 @@ ErrorStatus acc_update(FUSION_CORE *coreData, int16_t *rawData, uint32_t dataTim
 	int32_t fracCalc = 0;
 	uint32_t deltaTime = 0;
 	Vectorf temporaryVector = vectorf_init(0);
+
+	// Update sensor temperature
+	coreData->_accelerometer.sensorTemperature = coreData->MPUTemperature;
 
 	// Update accelerometer reading
 	// Store raw data

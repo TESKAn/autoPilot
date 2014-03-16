@@ -37,7 +37,7 @@ ErrorStatus gyro_initDataStructure(GyroData *data)
 
 	// gyro rate in radians
 	data->gyroRate = GYRO_DEFAULT_RATE * GYRO_DEG_TO_RAD;
-
+	data->sensorTemperature = 0;
 	data->valid = 1;
 
 	status = SUCCESS;
@@ -51,6 +51,9 @@ ErrorStatus gyro_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 	ErrorStatus success = ERROR;
 	float32_t result[3];
 	uint32_t deltaTime = 0;
+
+	// Update sensor temperature
+	data->_accelerometer.sensorTemperature = data->MPUTemperature;
 
 	// First store raw reading
 	data->_gyro.vectorRaw.x = (float32_t)rawData[0] * data->_gyro.gyroRate;

@@ -22,6 +22,7 @@ typedef struct
 	uint32_t dataTime;
 	uint32_t deltaTime;		// Store time difference between current and previous sample
 	float32_t magRate;
+	float32_t sensorTemperature;
 	uint8_t valid;
 	uint8_t nerabim[3];
 }__attribute__((aligned(4),packed)) MagData, *PMagData;
@@ -36,6 +37,7 @@ typedef struct
 	uint32_t dataTime;
 	uint32_t deltaTime;
 	float32_t gyroRate;
+	float32_t sensorTemperature;
 	uint8_t valid;
 	uint8_t nerabim[3];
 }__attribute__((aligned(4),packed)) GyroData, *PGyroData;
@@ -82,6 +84,7 @@ typedef struct
 	uint32_t dataTime;
 	uint32_t deltaTime;
 	float32_t accRate;
+	float32_t sensorTemperature;
 	Vectorui16 offset;
 	uint8_t valid;
 	uint8_t nerabim;
@@ -100,6 +103,12 @@ typedef struct
 
 	// DCM matrix
 	Matrixf _fusion_DCM;
+
+	// Time
+	uint32_t dataTime;
+	uint32_t deltaTime;
+	// MPU6000 temperature
+	float32_t MPUTemperature;
 
 
 }__attribute__((aligned(4),packed)) FUSION_CORE, *PFUSION_CORE;

@@ -1409,7 +1409,9 @@ ErrorStatus MPL3115A2_Enable(FunctionalState newState)
 		// Mode = enable, altimeter mode
 		//I2C2_DMABufTX[1] = 0x81;
 		// Mode = enable, barometer mode
-		I2C2_DMABufTX[1] = 0x01;
+		//I2C2_DMABufTX[1] = 0x01;
+		// Barometer, oversampling enabled.
+		I2C2_DMABufTX[1] = 0x39;
 	}
 	else
 	{

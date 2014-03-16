@@ -68,11 +68,20 @@ ErrorStatus altimeter_update(FUSION_CORE *data, uint32_t rawData_P, int8_t temp_
 	iTemp = (int16_t)temp;
 
 	data->_altimeter.altitude += (float32_t)iTemp;
-*/
+	 */
 	// Update temperature
 	data->_altimeter.temperature = (float32_t)temp_frac;
 	data->_altimeter.temperature = data->_altimeter.temperature / 160;
 	data->_altimeter.temperature = data->_altimeter.temperature + (float32_t)temp_deg;
+
+	// Calculate altitude
+	float A = data->_altimeter.pressure/101325;
+	float B = 1/5.25588;
+	float C = powf(A,B);
+	C = 1 - C;
+	C = C /0.0000225577;
+
+	data->_altimeter.altitude = C;
 
 	// Update delta time and time
 	data->_altimeter.deltaTime = dataTime - data->_altimeter.dataTime;

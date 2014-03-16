@@ -520,6 +520,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 					PSRequestData();
 				}
 			}
+			/*
 			// Check I2C sensors
 			I2C2_PollTimer++;
 			if(I2C2_PollTimer >= I2C2_POLLTIME)
@@ -546,7 +547,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 						}
 					}
 				}
-			}
+			}*/
 		}
 		// LED counter
 		LED_ToggleCount++;
@@ -703,9 +704,36 @@ void USART3_ISR_Handler(void)
   */
 void EXTI0_ISR_Handler(void)
 {
+	uint8_t retriesCount = 0;
+	ErrorStatus error;
 	if(EXTI_GetITStatus(EXTI_Line0) != RESET)
 	{
+		// Get data from sensors
+		if(!I2C2_WAITINGDATA && I2C2_INITDONE)
+		{
+			I2C2_PollTimer = 0;
+			for(retriesCount = I2C2_ERROR_RETRIESCOUNT; retriesCount > 0; retriesCount --)
+			{
+				// Mark time when data is requested
+				sensorAcquisitionTime = getSystemTime();
+				// Read from MPU, start at reg 59, read 25 bytes
+				//error = masterReceive_beginDMA(MPU6000_ADDRESS, 59, I2C2_DMABufRX, 26);
+				error = masterReceive_beginDMA(MPU6000_ADDRESS, 59, I2C2_sensorBufRX.buf, 26);
+				if(error == SUCCESS)
+				{
+					break;
+				}
+				else
+				{
+					// Handle error
+					I2C2_ResetInterface();
+				}
+			}
+		}
 
+		// Store system time
+		fusionData.deltaTime = systemTime - fusionData.dataTime;
+		fusionData.dataTime = systemTime;
 		/* Clear the EXTI line 0 pending bit */
 		EXTI_ClearITPendingBit(EXTI_Line0);
 	}
