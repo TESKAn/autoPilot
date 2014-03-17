@@ -551,7 +551,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		}
 		// LED counter
 		LED_ToggleCount++;
-		if(LED_ToggleCount >= 100)
+		if(LED_ToggleCount >= 1000)
 		{
 			// Event every second
 			// Write log

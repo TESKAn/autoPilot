@@ -1153,7 +1153,7 @@ ErrorStatus MPU6000_Enable(FunctionalState newState)
 		// Register 26
 		I2C2_DMABufTX[0] = 26;
 		// Reg 26 = 0000 0010	Set low pass filter to 94 Hz
-		I2C2_DMABufTX[1] = 0x02;
+		I2C2_DMABufTX[1] = 0x01;
 		// Reg 27 = 0001 0000	Set gyro maximum rate at 1000 °/sec
 		I2C2_DMABufTX[2] = 0x10;
 		// Reg 28 = 0001 0000	Set accel maximum rate at 8g
