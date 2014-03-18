@@ -11,6 +11,7 @@
 
 Vectorf vectorf_init(float32_t value);
 Vectorui16 vectorui16_init(int16_t value);
+Vectori16 vectori16_init(int16_t value);
 ErrorStatus vectorf_dotProduct(Vectorf * vecA, Vectorf * vecB, float32_t * res);
 ErrorStatus vectorf_crossProduct(Vectorf * vecA, Vectorf * vecB, Vectorf * vecC);
 ErrorStatus vectorf_scalarProduct(Vectorf * vecA, float32_t scalar, Vectorf * vecB);

@@ -27,6 +27,15 @@ typedef struct
 
 typedef struct
 {
+	int16_t x;
+	int16_t y;
+	int16_t z;
+	int16_t ostanek;
+
+}__attribute__((aligned(4),packed)) Vectori16;
+
+typedef struct
+{
 	Vectorf a;
 	Vectorf b;
 	Vectorf c;

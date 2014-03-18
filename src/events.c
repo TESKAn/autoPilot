@@ -520,7 +520,6 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 					PSRequestData();
 				}
 			}
-			/*
 			// Check I2C sensors
 			I2C2_PollTimer++;
 			if(I2C2_PollTimer >= I2C2_POLLTIME)
@@ -546,8 +545,11 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 							I2C2_ResetInterface();
 						}
 					}
+					// Store system time
+					fusionData.deltaTime = systemTime - fusionData.dataTime;
+					fusionData.dataTime = systemTime;
 				}
-			}*/
+			}
 		}
 		// LED counter
 		LED_ToggleCount++;
@@ -708,6 +710,7 @@ void EXTI0_ISR_Handler(void)
 	ErrorStatus error;
 	if(EXTI_GetITStatus(EXTI_Line0) != RESET)
 	{
+		/*
 		// Get data from sensors
 		if(!I2C2_WAITINGDATA && I2C2_INITDONE)
 		{
@@ -734,6 +737,7 @@ void EXTI0_ISR_Handler(void)
 		// Store system time
 		fusionData.deltaTime = systemTime - fusionData.dataTime;
 		fusionData.dataTime = systemTime;
+		*/
 		/* Clear the EXTI line 0 pending bit */
 		EXTI_ClearITPendingBit(EXTI_Line0);
 	}

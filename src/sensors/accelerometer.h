@@ -12,6 +12,7 @@
 
 
 ErrorStatus acc_initDataStructure(AccelerometerData *data);
+ErrorStatus acc_updateSpeedCalculation(FUSION_CORE *coreData, uint32_t dataTime);
 ErrorStatus acc_update(FUSION_CORE *coreData, int16_t *rawData, uint32_t dataTime);
 
 #endif /* ACCELEROMETER_H_ */

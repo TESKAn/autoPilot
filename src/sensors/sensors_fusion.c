@@ -13,6 +13,7 @@
 #include "math/myMath_vec3.h"
 #include "math/myMath_matrix3.h"
 #include "math/myMath_pid.h"
+#include "sensor_macros.h"
 #include "sensor_typedefs.h"
 #include "sensors_fusion.h"
 #include "gyro.h"
@@ -54,14 +55,16 @@ ErrorStatus fusion_init(FUSION_CORE *coreData)
 		return ERROR;
 	}
 
-
-
 	// Create identity matrix
 	matrix3_init(1, &coreData->_fusion_DCM);
 
 	// Init temperature
 	coreData->MPUTemperature = 0;
 
+	// Init system parameters
+	coreData->PARAMETERS.systimeToSeconds = SENSOR_SYSTIME_TO_SECONDS;
+	coreData->PARAMETERS.minRotation = SENSOR_MIN_ROTATION;
+	coreData->PARAMETERS.minRotError = SENSOR_MIN_ROT_ERROR;
 
 	return SUCCESS;
 }
@@ -70,26 +73,33 @@ ErrorStatus fusion_dataUpdate(void *data, FUSION_SENSORDATA *sensorData)
 {
 	// Update temperature
 	fusion_calculateMPUTemperature((FUSION_CORE *)data, sensorData->data.temperature, sensorData->data.dataTakenTime);
-	// Update acceleration
-	acc_update((FUSION_CORE *)data, (int16_t*)&sensorData->arrays.acc, sensorData->data.dataTakenTime);
 	// Update gyro
 	gyro_update((FUSION_CORE *)data, (int16_t*)&sensorData->arrays.gyro, sensorData->data.dataTakenTime);
+	// Update rotation matrix
+	fusion_updateRotationMatrix((FUSION_CORE *)data);
+	// Update acceleration
+	acc_update((FUSION_CORE *)data, (int16_t*)&sensorData->arrays.acc, sensorData->data.dataTakenTime);
+	// Update speed from acceleration
+	acc_updateSpeedCalculation((FUSION_CORE *)data, sensorData->data.dataTakenTime);
 	// Update mag
 	mag_update((FUSION_CORE *)data, (int16_t*)&sensorData->arrays.mag, sensorData->data.dataTakenTime);
 	// Update altimeter
 	altimeter_update((FUSION_CORE *)data, sensorData->arrays.pressure.statusPressure, sensorData->arrays.baroTemperatureDegrees, sensorData->arrays.baroTemperatureFrac, sensorData->data.dataTakenTime);
-
+	// Estimate gyro error
+	fusion_updateGyroError((FUSION_CORE *)data);
 
 
 	return SUCCESS;
 }
 
+// Function calculates temperature from MPU 6000 temperature measurement.
 ErrorStatus fusion_calculateMPUTemperature(FUSION_CORE *data, int16_t temperatureData, uint32_t dataTime)
 {
 	data->MPUTemperature = ((float32_t) temperatureData / 340)+36.53f;
 	return SUCCESS;
 }
 
+// Function generates rotation update matrix.
 ErrorStatus fusion_generateUpdateMatrix(Vectorf * omega, Matrixf * updateMatrix)
 {
 	ErrorStatus status = ERROR;
@@ -110,8 +120,10 @@ ErrorStatus fusion_generateUpdateMatrix(Vectorf * omega, Matrixf * updateMatrix)
 	return status;
 }
 
-ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
+// Function uses sensor data to calculate error in DCM estimation
+ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 {
+
 	ErrorStatus status;
 	status = SUCCESS;
 	Vectorf temporaryVector = vectorf_init(0);
@@ -119,12 +131,7 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 	Vectorf temporaryVector2 = vectorf_init(0);
 	Vectorf error_gps_acc = vectorf_init(0);				// Error from GPS and accelerometer data
 	Vectorf error_acc_gravity = vectorf_init(0);			// Error from acceleration and gravity
-	//Vectorf error_yaw_gps = vectorf_init(0);				// Error calculated from GPS data
-	//Vectorf error_yaw_mag = vectorf_init(0);				// Error calculated from magnetometer data
 	Vectorf error = vectorf_init(0);						// Cumulative error
-	Vectorf omega = vectorf_init(0);						// Rotation value
-	Matrixf updateMatrix;									// Update matrix
-	Matrixf newMatrix;										// Place to store new DCM matrix
 	float32_t fTemp = 0;
 	float32_t dt = 0;
 	float32_t GPSSpeed = 0;
@@ -137,7 +144,7 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 	if((1 ==data->_gps.valid)&&(1 == data->_accelerometer.valid)&&(param_min_airspeed < GPSSpeed))
 	{
 		// Use GPS and accelerometer speed data to calculate DCM error in earth frame
-		// Calculate 1/Dt
+		// Calculate 1/dt
 		fTemp = 1 / data->_accelerometer.speed_3D_dt;
 		// Calculate average acceleration of accelerometer
 		status = vectorf_scalarProduct(&data->_accelerometer.Speed_3D, fTemp, &temporaryVector);
@@ -213,22 +220,35 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 	if(param_min_rot_error < fTemp)
 	{
 		// Calculate delta time in seconds
-		status = math_PID3(&error, dt, &_gyroErrorPID);
+		status = math_PID3(&error, dt, &data->_gyroErrorPID);
 	}
 
-	// Remove error from gyro data
-	// _gyroError is not vector
-	temporaryVector.x = data->_gyro.vector.x - _gyroErrorPID.x.result;
-	temporaryVector.y = data->_gyro.vector.y - _gyroErrorPID.y.result;
-	temporaryVector.z = data->_gyro.vector.z - _gyroErrorPID.z.result;
+	return SUCCESS;
+}
+
+// Function updates rotation matrix from gyro data. At end it renormalizes and reorthogonalizes matrix.
+ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
+{
+	ErrorStatus status;
+	status = SUCCESS;
+
+	Vectorf omega = vectorf_init(0);						// Rotation value
+	Matrixf updateMatrix;									// Update matrix
+	Matrixf newMatrix;										// Place to store new DCM matrix
+	float32_t dt = 0;
+
+
+	// Calculate delta time
+	dt = (float32_t)data->_gyro.deltaTime;
+	dt = dt * data->PARAMETERS.systimeToSeconds;
+
 
 	// Calculate rotation angle
 	// Is gyro value * delta time in seconds
 	status = vectorf_scalarProduct(&data->_gyro.vector, dt, &omega);
 
 	// If rotation angle above limit, update rotation matrix
-	fTemp = vectorf_getNorm(&omega);
-	if(param_min_rotation < fTemp)
+	if(data->PARAMETERS.minRotation < vectorf_getNorm(&omega))
 	{
 		// Generate update matrix
 		status = fusion_generateUpdateMatrix(&omega, &updateMatrix);
@@ -244,18 +264,6 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 			matrix3_copy(&newMatrix, &data->_fusion_DCM);
 		}
 	}
-
-	// Update speed integration
-	// Transform accelerometer data to earth frame
-	status = matrix3_vectorMultiply(&data->_fusion_DCM, &data->_accelerometer.vector, &temporaryVector);
-	// Calculate 3D speed gained, acceleration * time
-	// Do not worry about gravity acceleration, we remove that in GPS error update
-	status = vectorf_scalarProduct(&temporaryVector, dt, &temporaryVector);
-	// Integrate speed and time
-	status = vectorf_add(&temporaryVector, &data->_accelerometer.Speed_3D, &data->_accelerometer.Speed_3D);
-	// Time integration can have problems after 2,77 hours because of 32 bit float representation
-	data->_accelerometer.speed_3D_dt = data->_accelerometer.speed_3D_dt + dt;
-
 	return status;
 }
 

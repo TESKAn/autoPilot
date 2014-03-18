@@ -31,9 +31,8 @@ typedef struct
 {
 	Vectorf vector;
 	Vectorf vectorRaw;
-	Vectorf driftError;
 	Vectorf scale;
-	Vectorui16 offset;
+	Vectori16 offset;
 	uint32_t dataTime;
 	uint32_t deltaTime;
 	float32_t gyroRate;
@@ -85,7 +84,7 @@ typedef struct
 	uint32_t deltaTime;
 	float32_t accRate;
 	float32_t sensorTemperature;
-	Vectorui16 offset;
+	Vectori16 offset;
 	uint8_t valid;
 	uint8_t nerabim;
 }__attribute__((aligned(4),packed)) AccelerometerData, *PAccelerometerData;
@@ -101,8 +100,21 @@ typedef struct
 	AltimeterData _altimeter;
 	GPSData _gps;
 
+	// PIDs
+	myMath_PID3 _gyroErrorPID;
+
 	// DCM matrix
 	Matrixf _fusion_DCM;
+
+	// Fusion parameters
+	struct
+	{
+		// Factor to recalculate systime in seconds
+		float32_t systimeToSeconds;
+		float32_t minRotation;
+		float32_t minRotError;
+
+	}PARAMETERS;
 
 	// Time
 	uint32_t dataTime;
