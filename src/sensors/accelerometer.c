@@ -59,9 +59,12 @@ ErrorStatus acc_updateSpeedCalculation(FUSION_CORE *coreData, uint32_t dataTime)
 	//**********************************************************
 	temporaryVector.z = temporaryVector.z - 1;
 	// Integrate x, y, z acceleration over time to get speed change
+	/*
 	temporaryVector.x = coreData->_accelerometer.deltaTime * temporaryVector.x;
 	temporaryVector.y = coreData->_accelerometer.deltaTime * temporaryVector.y;
 	temporaryVector.z = coreData->_accelerometer.deltaTime * temporaryVector.z;
+	*/
+	vectorf_scalarProduct(&temporaryVector, coreData->_accelerometer.deltaTime, &temporaryVector);
 	// First, add speed to fractional accumulator
 	vectorf_add(&temporaryVector, &coreData->_accelerometer.Speed_3D_Frac, &coreData->_accelerometer.Speed_3D_Frac);
 	// If speed values are over 0,001 m/s, add to main speed variable
@@ -109,7 +112,7 @@ ErrorStatus acc_updateSpeedCalculation(FUSION_CORE *coreData, uint32_t dataTime)
 	// Integrate speed and time
 	vectorf_add(&temporaryVector, &coreData->_accelerometer.Speed_3D, &coreData->_accelerometer.Speed_3D);
 	// Time integration can have problems after 2,77 hours because of 32 bit float representation
-	coreData->_accelerometer.speed_3D_dt = coreData->_accelerometer.speed_3D_dt + coreData->_accelerometer.deltaTime;
+	coreData->_accelerometer.speed_3D_dt = coreData->_accelerometer.speed_3D_dt + (float32_t)coreData->_accelerometer.deltaTime;
 
 
 	return SUCCESS;
