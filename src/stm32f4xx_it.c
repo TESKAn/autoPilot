@@ -315,6 +315,18 @@ void USART3_IRQHandler(void)
 }
 
 /**
+  * @brief  This function handles EXTI0 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI0_IRQHandler(void)
+{
+	EXTI0_ISR_Handler();
+}
+
+
+
+/**
   * @brief  This function handles OTG_FS_WKUP_IRQ Handler.
   * @param  None
   * @retval None

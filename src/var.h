@@ -69,6 +69,8 @@ typedef union
 	} parts;
 } C_Float;
 
+extern FUSION_CORE fusionData;
+
 // STM studio vars
 extern volatile int exportVars[64];
 

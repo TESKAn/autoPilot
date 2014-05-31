@@ -8,10 +8,16 @@
 #ifndef SENSORS_FUSION_H_
 #define SENSORS_FUSION_H_
 
+// Includes
+#include "math/myMath_typedefs.h"
+#include "sensor_typedefs.h"
 
-extern Matrixf _fusion_DCM;
 
+ErrorStatus fusion_init(FUSION_CORE *coreData);
+ErrorStatus fusion_dataUpdate(void *data, FUSION_SENSORDATA *sensorData);
+ErrorStatus fusion_calculateMPUTemperature(FUSION_CORE *data, int16_t temperatureData, uint32_t dataTime);
 ErrorStatus fusion_generateUpdateMatrix(Vectorf * omega, Matrixf * updateMatrix);
-ErrorStatus fusion_updateRotationMatrix();
+ErrorStatus fusion_updateGyroError(FUSION_CORE *data);
+ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data);
 
 #endif /* SENSORS_FUSION_H_ */

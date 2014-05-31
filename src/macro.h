@@ -23,6 +23,10 @@
 
 #define NUM 10
 
+#define byte_swap32(val) asm("rev %[swap], %[swap]" : [swap] "=r" (val) : "0" (val));
+
+#define byte_swap16(val) asm("rev16 %[swap], %[swap]" : [swap] "=r" (val) : "0" (val));
+
 // Define bit macros
 #define _BIT0	0x0001
 #define _BIT1	0x0002
@@ -165,39 +169,39 @@
 
 
 //Timer 1 macros
-#define TIM1_PERIOD		32200
-#define TIM1_PRESCALER	84
-#define TIM1_PULSE		2100
+#define TIM1_PERIOD		19999
+#define TIM1_PRESCALER	167
+#define TIM1_PULSE		1049
 
 // Timer 2 macros
-#define TIM2_PERIOD		32200
-#define TIM2_PRESCALER	42
-#define TIM2_PULSE		2100
+#define TIM2_PERIOD		19999
+#define TIM2_PRESCALER	83
+#define TIM2_PULSE		1049
 
 // Timer 3 macros
-#define TIM3_PERIOD		32200
-#define TIM3_PRESCALER	42
-#define TIM3_PULSE		2100
+#define TIM3_PERIOD		19999
+#define TIM3_PRESCALER	83
+#define TIM3_PULSE		1049
 
 // Timer 4 macros
-#define TIM4_PRESCALER	42
+#define TIM4_PRESCALER	83
 #define TIM4_FILTER		1
 #define TIM4_PERIOD		0xFFFF
 
 // Timer 8 macros
-#define TIM8_PRESCALER	84
+#define TIM8_PRESCALER	167
 #define TIM8_FILTER		1
 #define TIM8_PERIOD		0xFFFF
 
 // Timer 9 macros
 // Set for 0,1 ms/pulse prescaler
-#define TIM9_PRESCALER	8400
+#define TIM9_PRESCALER	16700
 #define TIM9_FILTER		1
 #define TIM9_PERIOD		0xFFFF
 
 // Timer 14 macros
-#define TIM14_PERIOD		1000	//1 ms period = 1000
-#define TIM14_PRESCALER		84		//divide ref clock by 84 to get 1 MHz
+#define TIM14_PERIOD		999	//1 ms period = 1000
+#define TIM14_PRESCALER		83		//divide ref clock by 84 to get 1 MHz
 
 //USART2 macros
 //define data register address - base address + DR offset

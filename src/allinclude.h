@@ -19,6 +19,9 @@
 #include "math.h"
 #include "math_custom.h"
 
+
+#include "sensors/sensors_fusion.h"
+
 // File with macro functions
 #include "macroFunctions.h"
 
@@ -53,5 +56,7 @@
 #include "AudioComm.h"
 
 #include "flight.h"
+
+
 
 #endif /* ALLINCLUDE_H_ */

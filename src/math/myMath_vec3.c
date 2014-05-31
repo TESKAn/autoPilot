@@ -30,6 +30,15 @@ Vectorui16 vectorui16_init(int16_t value)
 	return vec;
 }
 
+Vectori16 vectori16_init(int16_t value)
+{
+	Vectori16 vec;
+	vec.x = value;
+	vec.y = value;
+	vec.z = value;
+	return vec;
+}
+
 ErrorStatus vectorf_dotProduct(Vectorf * vecA, Vectorf * vecB, float32_t * res)
 {
 	ErrorStatus status = ERROR;
@@ -197,9 +206,9 @@ ErrorStatus vectorf_copy(Vectorf * vecA, Vectorf * vecB)
 	// Set FPU exception bit to 0
 	FPU_EXCEPTION = 0;
 
-	vecA->x = vecB->x;
-	vecA->y = vecB->y;
-	vecA->z = vecB->z;
+	vecB->x = vecA->x;
+	vecB->y = vecA->y;
+	vecB->z = vecA->z;
 
 	// Check if FPU result is OK
 	if(!FPU_EXCEPTION)

@@ -533,7 +533,8 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 						// Mark time when data is requested
 						sensorAcquisitionTime = getSystemTime();
 						// Read from MPU, start at reg 59, read 25 bytes
-						error = masterReceive_beginDMA(MPU6000_ADDRESS, 59, I2C2_DMABufRX, 25);
+						//error = masterReceive_beginDMA(MPU6000_ADDRESS, 59, I2C2_DMABufRX, 26);
+						error = masterReceive_beginDMA(MPU6000_ADDRESS, 59, I2C2_sensorBufRX.buf, 26);
 						if(error == SUCCESS)
 						{
 							break;
@@ -544,12 +545,15 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 							I2C2_ResetInterface();
 						}
 					}
+					// Store system time
+					fusionData.deltaTime = systemTime - fusionData.dataTime;
+					fusionData.dataTime = systemTime;
 				}
 			}
 		}
 		// LED counter
 		LED_ToggleCount++;
-		if(LED_ToggleCount >= 100)
+		if(LED_ToggleCount >= 1000)
 		{
 			// Event every second
 			// Write log
@@ -692,6 +696,50 @@ void USART3_ISR_Handler(void)
 	if((USART3->SR & USART_FLAG_TC) != (u16)RESET)	//if transfer complete
 	{
 		USART3->SR = USART3->SR & !USART_FLAG_TC;
+	}
+}
+
+/**
+  * @brief  This function handles USART3 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI0_ISR_Handler(void)
+{
+	uint8_t retriesCount = 0;
+	ErrorStatus error;
+	if(EXTI_GetITStatus(EXTI_Line0) != RESET)
+	{
+		/*
+		// Get data from sensors
+		if(!I2C2_WAITINGDATA && I2C2_INITDONE)
+		{
+			I2C2_PollTimer = 0;
+			for(retriesCount = I2C2_ERROR_RETRIESCOUNT; retriesCount > 0; retriesCount --)
+			{
+				// Mark time when data is requested
+				sensorAcquisitionTime = getSystemTime();
+				// Read from MPU, start at reg 59, read 25 bytes
+				//error = masterReceive_beginDMA(MPU6000_ADDRESS, 59, I2C2_DMABufRX, 26);
+				error = masterReceive_beginDMA(MPU6000_ADDRESS, 59, I2C2_sensorBufRX.buf, 26);
+				if(error == SUCCESS)
+				{
+					break;
+				}
+				else
+				{
+					// Handle error
+					I2C2_ResetInterface();
+				}
+			}
+		}
+
+		// Store system time
+		fusionData.deltaTime = systemTime - fusionData.dataTime;
+		fusionData.dataTime = systemTime;
+		*/
+		/* Clear the EXTI line 0 pending bit */
+		EXTI_ClearITPendingBit(EXTI_Line0);
 	}
 }
 

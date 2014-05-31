@@ -16,6 +16,7 @@ volatile uint16_t I2C2_WriteData = 0;
 volatile uint8_t I2C2_DeviceAddress = 0;
 uint8_t I2C2_DMABufTX[DMA_BUF_COUNT];
 uint8_t I2C2_DMABufRX[DMA_BUF_COUNT];
+FUSION_SENSORDATA I2C2_sensorBufRX;
 volatile int I2C2_DMABufTXCount = 0;
 volatile int I2C2_DMABufRXCount = 0;
 volatile int I2C2_PollTimer = 0;
@@ -28,6 +29,8 @@ uint32_t sensorAcquisitionTime = 0;
 uint8_t gyroOffsetSampleCount = 0;
 uint8_t accOffsetSampleCount = 0;
 uint8_t magOffsetSampleCount = 0;
+
+
 
 // Timeout function
 void sensorTimer(void)
@@ -77,9 +80,11 @@ void sensorInterruptTimer(void)
 // Initialize I2C sensors
 void sensorInit()
 {
+
 	uint8_t retriesCount = 0;
 	ErrorStatus error = SUCCESS;
 	I2C2_INITDONE = 0;
+
 	// Check if MPU is in sleep mode
 	// Read reg 107
 	for(retriesCount = I2C2_ERROR_RETRIESCOUNT; retriesCount > 0; retriesCount --)
@@ -245,14 +250,47 @@ void copySensorData(void)
 {
 
 	uint16_t i = 0;
-	uint32_t ui32Temp = 0;
-	uint32_t ui32Temp1 = 0;
-	uint16_t ui16Temp = 0;
 	float32_t fTemp = 0;
 	//uint16_t uiTemp = 0;
 	// Data is in I2C2_DMABufRX
 	// Mark updating sensor data
 	SENSORS_UPDATING = 1;
+
+	// Swap bytes to correct endianesse
+	byte_swap16(I2C2_sensorBufRX.data.accX);
+	byte_swap16(I2C2_sensorBufRX.data.accY);
+	byte_swap16(I2C2_sensorBufRX.data.accZ);
+	byte_swap16(I2C2_sensorBufRX.data.temperature);
+	byte_swap16(I2C2_sensorBufRX.data.gyroX);
+	byte_swap16(I2C2_sensorBufRX.data.gyroY);
+	byte_swap16(I2C2_sensorBufRX.data.gyroZ);
+	byte_swap16(I2C2_sensorBufRX.data.magX);
+	byte_swap16(I2C2_sensorBufRX.data.magY);
+	byte_swap16(I2C2_sensorBufRX.data.magZ);
+	byte_swap32(I2C2_sensorBufRX.data.pressure.statusPressure);
+
+	// Add data time
+	I2C2_sensorBufRX.data.dataTakenTime = sensorAcquisitionTime;
+	// Call fusion update function
+	fusion_dataUpdate(&fusionData, &I2C2_sensorBufRX);
+
+
+	ACC_X = I2C2_sensorBufRX.data.accX;
+	ACC_Y = I2C2_sensorBufRX.data.accY;
+	ACC_Z = I2C2_sensorBufRX.data.accZ;
+
+	GYRO_X = I2C2_sensorBufRX.data.gyroX;
+	GYRO_Y = I2C2_sensorBufRX.data.gyroY;
+	GYRO_Z = I2C2_sensorBufRX.data.gyroZ;
+
+	MAG_X = I2C2_sensorBufRX.data.magX;
+	MAG_Y = I2C2_sensorBufRX.data.magY;
+	MAG_Z = I2C2_sensorBufRX.data.magZ;
+
+	BARO = (((I2C2_sensorBufRX.data.pressure.statusPressure) & 0x00ffff00) >> 8);
+
+
+/*
 	// Starts with reg 59, accel X high
 	ACC_X = (I2C2_DMABufRX[0] << 8) & 0xff00;
 	ACC_X = ACC_X | (I2C2_DMABufRX[1] & 0x00ff);
@@ -287,20 +325,9 @@ void copySensorData(void)
 	BARO_FRAC = I2C2_DMABufRX[22] >> 4;
 
 	// Update new variables
+*/
 
-
-	// Barometer pressure and temperature
-	ui32Temp = 0;
-	ui32Temp = ((uint32_t)I2C2_DMABufRX[20] << 16);
-	ui32Temp1 = ((uint32_t)I2C2_DMABufRX[21] << 8);
-	ui32Temp = ui32Temp + ui32Temp1;
-	ui32Temp1 = ((uint32_t)I2C2_DMABufRX[22]);
-	ui32Temp = ui32Temp + ui32Temp1;
-	ui16Temp = 0;
-	ui16Temp = ((uint16_t)I2C2_DMABufRX[23] << 8);
-	ui16Temp = ui16Temp + ((uint16_t)I2C2_DMABufRX[24]);
-
-	altimeter_update(ui32Temp, ui16Temp, sensorAcquisitionTime);
+	//altimeter_update(ui32Temp, ui16Temp, sensorAcquisitionTime);
 
 
 
@@ -1125,8 +1152,8 @@ ErrorStatus MPU6000_Enable(FunctionalState newState)
 		// Configure sensors
 		// Register 26
 		I2C2_DMABufTX[0] = 26;
-		// Reg 26 = 0000 0010	Set low pass filter to 94 Hz
-		I2C2_DMABufTX[1] = 0x02;
+		// Reg 26 = 0000 0001	Set low pass filter to 184/188 Hz
+		I2C2_DMABufTX[1] = 0x01;
 		// Reg 27 = 0001 0000	Set gyro maximum rate at 1000 °/sec
 		I2C2_DMABufTX[2] = 0x10;
 		// Reg 28 = 0001 0000	Set accel maximum rate at 8g
@@ -1147,6 +1174,38 @@ ErrorStatus MPU6000_Enable(FunctionalState newState)
 		Delaynus(20000);
 		return  error;
 	}
+
+
+	if(error == SUCCESS)
+	{
+		Delaynus(2000);
+		// Configure sensor interrupt
+		// Register 55
+		I2C2_DMABufTX[0] = 55;
+		// Reg 55 = 0001 0000	Interrupt active high, push-pull, 50 us pulse, clear on any read, no fsync, no i2c bypass
+		I2C2_DMABufTX[1] = 0x10;
+		// Reg 56 = 000 0001	Data ready interrupt enable
+		I2C2_DMABufTX[2] = 0x01;
+
+		for(retriesCount = I2C2_ERROR_RETRIESCOUNT; retriesCount > 0; retriesCount --)
+		{
+			error = masterSend(MPU6000_ADDRESS, I2C2_DMABufTX, 3);
+			if(error == SUCCESS)
+			{
+				break;
+			}
+			else
+			{
+				// Handle error
+				I2C2_ResetInterface();
+			}
+		}
+		Delaynus(20000);
+		return  error;
+	}
+
+
+
 	else
 	{
 		return ERROR;
@@ -1229,9 +1288,9 @@ ErrorStatus MPU6000_ConfigureI2CMaster(void)
 	// 40 - I2C SLV1_ADDR = 1110 0000
 	I2C2_DMABufTX[5] = 0xE0;
 	// 41 = I2C_SLV1_REG - start read at this reg
-	I2C2_DMABufTX[6] = 0x01;
-	// 42 - I2C_SLV1_CTRL = 1000 0101 -> enable, read 5 bytes, pressure + temperature
-	I2C2_DMABufTX[7] = 0x85;
+	I2C2_DMABufTX[6] = 0x00;
+	// 42 - I2C_SLV1_CTRL = 1000 0110 -> enable, read 6 bytes, status + pressure + temperature
+	I2C2_DMABufTX[7] = 0x86;
 	for(retriesCount = I2C2_ERROR_RETRIESCOUNT; retriesCount > 0; retriesCount --)
 	{
 		error = masterSend(MPU6000_ADDRESS, I2C2_DMABufTX, 8);
@@ -1350,7 +1409,9 @@ ErrorStatus MPL3115A2_Enable(FunctionalState newState)
 		// Mode = enable, altimeter mode
 		//I2C2_DMABufTX[1] = 0x81;
 		// Mode = enable, barometer mode
-		I2C2_DMABufTX[1] = 0x01;
+		//I2C2_DMABufTX[1] = 0x01;
+		// Barometer, oversampling enabled.
+		I2C2_DMABufTX[1] = 0x39;
 	}
 	else
 	{

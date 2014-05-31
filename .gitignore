@@ -1,5 +1,6 @@
 *.[oa]
 *~
+Debug/
 Debug/src/
 Debug/Libraries
 Debug/USB

@@ -7,6 +7,8 @@
 
 #include "allinclude.h"
 
+FUSION_CORE fusionData;
+
 // STM studio vars
 volatile int exportVars[64];
 

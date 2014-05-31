@@ -36,12 +36,7 @@
 #include "math/myMath_vec3.h"
 #include "math/myMath_matrix3.h"
 
-#include "sensors/sensors_typedefs.h"
-#include "sensors/accelerometer.h"
-#include "sensors/gyro.h"
-#include "sensors/mag.h"
-#include "sensors/airSpeed.h"
-#include "sensors/altimeter.h"
+#include "sensors/sensors_fusion.h"
 
 
 /* Private macro */
@@ -64,17 +59,16 @@ USB_OTG_CORE_HANDLE  USB_OTG_dev;
 float32_t t1 = 0;
 float32_t t2 = 0;
 
+
+
 int main(void)
 {
 	unsigned int bytesWritten;
 	float32_t temp = 0;
 
 	// Init sensor data structures
-	acc_initDataStructure();
-	gyro_initDataStructure();
-	mag_initDataStructure();
-	AirSpeed_initDataStructure();
-	altimeter_initDataStructure();
+	fusion_init(&fusionData);
+
 
 	// Init vectors
 	// Initialize matrices
@@ -139,7 +133,6 @@ int main(void)
 	PWMEN_OUT_ENABLE = 1;
 
 	// Mount SD card
-
     while (1)
     {
         // Check MODBUS for messages

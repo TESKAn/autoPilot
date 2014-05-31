@@ -22,6 +22,7 @@
 #define OFFSET_SAMPLE_MAX_VALUE	400		// Maximum sample value to be valid
 #define OFFSET_SAMPLE_MIN_VALUE	-400	// Minimum sample value to be valid
 
+
 void sensorTimer(void);
 void sensorInterruptTimer(void);
 void sensorInit();
@@ -51,6 +52,7 @@ extern volatile uint16_t I2C2_WriteData;
 extern volatile uint8_t I2C2_DeviceAddress;
 extern uint8_t I2C2_DMABufTX[DMA_BUF_COUNT];
 extern uint8_t I2C2_DMABufRX[DMA_BUF_COUNT];
+extern FUSION_SENSORDATA I2C2_sensorBufRX;
 extern volatile int I2C2_DMABufTXCount;
 extern volatile int I2C2_DMABufRXCount;
 extern volatile int I2C2_PollTimer;

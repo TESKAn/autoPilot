@@ -10,82 +10,70 @@
 #include "functions.h"
 #include "math/myMath_typedefs.h"
 #include "math/myMath_vec3.h"
+#include "sensor_typedefs.h"
 #include "gyro.h"
 
 #define GYRO_DEFAULT_RATE					0.030517578125f			// 1000/32768 -> deg/sec
 #define GYRO_DEG_TO_RAD						0.017453292519f			// 1 deg/sec is this in rad/sec
 #define GYRO_RAD_TO_DEG						57.295779513082f		// 1 rad/sec is this in deg/sec
 
-GyroData _gyroData;
-
 // Init data structure
-ErrorStatus gyro_initDataStructure()
+ErrorStatus gyro_initDataStructure(GyroData *data)
 {
-	ErrorStatus status = ERROR;
+	data->dataTime = getSystemTime();
+	data->deltaTime = 0;
 
-	_gyroData.dataTime = getSystemTime();
-	_gyroData.deltaTime = 0;
+	data->offset = vectori16_init(0);
 
-	_gyroData.offset = vectorui16_init(0);
+	data->scale = vectorf_init(1);
 
-	_gyroData.scale = vectorf_init(1);
+	data->vector = vectorf_init(0);
 
-	_gyroData.vector = vectorf_init(0);
-
-	_gyroData.vectorRaw = vectorf_init(0);
-
-	_gyroData.driftError = vectorf_init(0);
+	data->vectorRaw = vectorf_init(0);
 
 	// gyro rate in radians
-	_gyroData.gyroRate = GYRO_DEFAULT_RATE * GYRO_DEG_TO_RAD;
+	data->gyroRate = GYRO_DEFAULT_RATE * GYRO_DEG_TO_RAD;
+	data->sensorTemperature = 0;
+	data->valid = 1;
 
-	_gyroData.valid = 1;
-
-	status = SUCCESS;
-
-	return status;
+	return SUCCESS;
 }
 
 // Update gyro reading
-ErrorStatus gyro_update(uint16_t rawData_x, uint16_t rawData_y, uint16_t rawData_z, uint32_t dataTime)
+ErrorStatus gyro_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 {
-	ErrorStatus success = ERROR;
-	float32_t result[3];
 	uint32_t deltaTime = 0;
 
+	// Update sensor temperature
+	data->_accelerometer.sensorTemperature = data->MPUTemperature;
+
 	// First store raw reading
-	_gyroData.vectorRaw.x = (float32_t)rawData_x * _gyroData.gyroRate;
-	_gyroData.vectorRaw.y = (float32_t)rawData_y * _gyroData.gyroRate;
-	_gyroData.vectorRaw.z = (float32_t)rawData_z * _gyroData.gyroRate;
+	data->_gyro.vectorRaw.x = (float32_t)rawData[0] * data->_gyro.gyroRate;
+	data->_gyro.vectorRaw.y = (float32_t)rawData[1] * data->_gyro.gyroRate;
+	data->_gyro.vectorRaw.z = (float32_t)rawData[2] * data->_gyro.gyroRate;
 
 	// Remove offset
-	rawData_x -= _gyroData.offset.x;
-	rawData_y -= _gyroData.offset.y;
-	rawData_z -= _gyroData.offset.z;
+	rawData[0] -= data->_gyro.offset.x;
+	rawData[1] -= data->_gyro.offset.y;
+	rawData[2] -= data->_gyro.offset.z;
 
-	// Calculate
-	result[0] = (float32_t)rawData_x * _gyroData.gyroRate;
-	result[1] = (float32_t)rawData_y * _gyroData.gyroRate;
-	result[2] = (float32_t)rawData_z * _gyroData.gyroRate;
+	// Calculate rate in rad/sec
+	data->_gyro.vector.x = (float32_t)rawData[0] * data->_gyro.gyroRate;
+	data->_gyro.vector.y = (float32_t)rawData[1] * data->_gyro.gyroRate;
+	data->_gyro.vector.z = (float32_t)rawData[2] * data->_gyro.gyroRate;
 
 	// Remove drift error
 	// Drift error is calculated in different .c/.h file
-	result[0] -= _gyroData.driftError.x;
-	result[1] -= _gyroData.driftError.y;
-	result[2] -= _gyroData.driftError.z;
+	data->_gyro.vector.x -= data->_gyroErrorPID.x.result;
+	data->_gyro.vector.y -= data->_gyroErrorPID.y.result;
+	data->_gyro.vector.z -= data->_gyroErrorPID.z.result;
 
 	// Calculate time difference
-	deltaTime = dataTime - _gyroData.dataTime;
+	deltaTime = dataTime - data->_gyro.dataTime;
 	// Do checks on time passed...
 
-	_gyroData.vector.x = result[0];
-	_gyroData.vector.y = result[1];
-	_gyroData.vector.z = result[2];
+	data->_gyro.dataTime = dataTime;
+	data->_gyro.deltaTime = deltaTime;
 
-	_gyroData.dataTime = dataTime;
-	_gyroData.deltaTime = deltaTime;
-
-	success = SUCCESS;
-
-	return success;
+	return SUCCESS;
 }
