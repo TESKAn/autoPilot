@@ -290,47 +290,6 @@ void copySensorData(void)
 	BARO = (((I2C2_sensorBufRX.data.pressure.statusPressure) & 0x00ffff00) >> 8);
 
 
-/*
-	// Starts with reg 59, accel X high
-	ACC_X = (I2C2_DMABufRX[0] << 8) & 0xff00;
-	ACC_X = ACC_X | (I2C2_DMABufRX[1] & 0x00ff);
-
-	ACC_Y = (I2C2_DMABufRX[2] << 8) & 0xff00;
-	ACC_Y = ACC_Y | (I2C2_DMABufRX[3] & 0x00ff);
-
-	ACC_Z = (I2C2_DMABufRX[4] << 8) & 0xff00;
-	ACC_Z = ACC_Z | (I2C2_DMABufRX[5] & 0x00ff);
-
-	// Reg 65,66(6,7) is IC temperature
-	// Reg 67, 72 (8,13)is gyro
-	GYRO_X = (I2C2_DMABufRX[8] << 8) & 0xff00;
-	GYRO_X = GYRO_X | (I2C2_DMABufRX[9] & 0x00ff);
-
-	GYRO_Y = (I2C2_DMABufRX[10] << 8) & 0xff00;
-	GYRO_Y = GYRO_Y | (I2C2_DMABufRX[11] & 0x00ff);
-
-	GYRO_Z = (I2C2_DMABufRX[12] << 8) & 0xff00;
-	GYRO_Z = GYRO_Z | (I2C2_DMABufRX[13] & 0x00ff);
-
-	// Reg 73,78 (14,19) is mag data - Z and Y are exchanged!
-	MAG_X = (I2C2_DMABufRX[14] << 8) & 0xff00;
-	MAG_X = MAG_X | (I2C2_DMABufRX[15] & 0x00ff);
-	MAG_Y = (I2C2_DMABufRX[18] << 8) & 0xff00;
-	MAG_Y = MAG_Y | (I2C2_DMABufRX[19] & 0x00ff);
-	MAG_Z = (I2C2_DMABufRX[16] << 8) & 0xff00;
-	MAG_Z = MAG_Z | (I2C2_DMABufRX[17] & 0x00ff);
-	// Reg 79,80, 81 (20,21,22) is barometer data
-	BARO = (I2C2_DMABufRX[20] << 8) & 0xff00;
-	BARO = BARO | (I2C2_DMABufRX[21] & 0x00ff);
-	BARO_FRAC = I2C2_DMABufRX[22] >> 4;
-
-	// Update new variables
-*/
-
-	//altimeter_update(ui32Temp, ui16Temp, sensorAcquisitionTime);
-
-
-
 	// Mark end of sensor updating
 	SENSORS_UPDATING = 0;
 

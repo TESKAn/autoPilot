@@ -17,6 +17,34 @@ Uporaba DCM matrike za estimacijo pozicije objekta v prostoru.
 
 \clearpage
 
+\section{Proces obdelave podatkov}
+\subsection{Žiroskop}
+Podatke iz žiroskopa skaliramo na rad/s, odštejemo napako in jih integriramo v DCM matriko. 
+\subsubsection{Napaka meritve žiroskopa}
+Netočnost meritve MEMS žiroskopa je posledica mirovne napake (offseta) in lezenja (drifta) izhoda. Za odpravo uporabimo PI integrator, v katerega vnašamo izračun napake meritve, izhod pa se približuje dejanski napaki meritve. Napako računamo s pomočjo drugih senzorjev (pospeškomer, GPS, magnetometer, barometer, ...). Različne načine izračuna napake utežimo glede na naše trenutno zaupanje metodi izračuna in senzorju, ki ga uporabimo za izračun napake.
+
+\subsection{Pospeškomer}
+Podatke iz pospeškomera skaliramo na g in z DCM matriko pretvorimo iz koordinatnega sistema naprave v koordinatni sistem zemlje. Ta pospešek integriramo, da dobimo hitrost in spremembo hitrosti naprave v časovnem intervalu, ki jo kasneje uporabimo za izračun napake žiroskopa.
+
+\subsubsection{Mirovanje}
+Ko naprava miruje, je pospešek enak gravitaciji. Ker gravitacija kaže v znano smer, lahko iz meritve sklepamo na odstopanje DCM matrike od realnosti (napaka v zaznanem položaju naprave). 
+Meritev pospeška normiramo in vektor gravitacije DCM matrike (tretji stolpec) križno množimo z normiranim vektorjem. Rezultat je vektor napake DCM matrike, s katerim posodobimo PI integrator, ki nam podaja napako žiroskopa.
+\subsubsection{Gibanje}
+Med gibanjem ne moremo uporabiti direktno prejšnjega načina izračuna napake, saj imamo poleg gravitacije še prispevke pospeškov naprave. Te pospeške moramo ali odšteti in uporabiti prejšnjo metodo, ali pa uporabiti druge senzorje za izračun napake žiroskopa.
+\subsubsection{Uporaba meritve hitrosti GPSa}
+GPS naprava nam vsako sekundo da trenutno hitrost premikanja in nov set koordinat, kamor smo se premaknili. Iz prejšnjih in novih koordinat lahko izračunamo vektor premika v X-Y smeri, iz prejšnje in nove hitrosti pa lahko izračunamo spremembo hitrosti v X-Y smeri. 
+Hkrati lahko z sprotno integracijo informacije pospeškomera računamo smer in velikost spremembe hitrosti, kot jo zazna pospeškomer. Tako dobimo iz GPSa neodvisno meritev, iz pospeškomera pa (zaradi uporabe DCM matrike za transformacijo meritve pospeškomera v zemeljski koordinatni sistem) od napake žiroskopa odvisno meritev. Križni produkt integracije pospeškomera in meritve GPSa nam tako da napako, ki jo (po transformaciji v koordinatni sistem naprave z inverzno DCM matriko) lahko uporabimo kot vhod v PI integrator.
+
+\subsection{GPS}
+Za določanje položaja in hitrosti uporabljamo GPS.
+
+\subsection{Magnetometer}
+Meritev magnetometra ima napako zaradi zunanjih polj, ki se dodajo k zemeljinemu polju in zaradi magnetnih materialov v bližini, ki izkrivljajo magnetno polje.
+Za odpravo teh napak uporabim metodo, opisano v \cite{Magnetometer Offset Cancellation: Theory and Implementation, revisited}.
+Ideja je, da mora biti magnituda dveh meritev magnetnega polja pri različnih položajih naprave enaka in da je vsakršna razlika posledica offsetov magnetometra.
+
+\clearpage
+
 \section{DCM matrika}
 
 DCM matrika vsebuje vse informacije, ki jih potrebujemo, da opišemo transformacijo vektorja v enem koordinatnem sistemu v drugi koordinatni sistem\\*
@@ -26,7 +54,7 @@ r_{yx} & r_{yy} & r_{yz} \\
 r_{zx} & r_{zy} & r_{zz}
 \end{array} \right]  $\\*\\*
 Množenje z DCM matriko transformira vektor iz koordinat letala v koordinate zemlje\\*
-$ \vec {q_{g}} = R \cdot \vec {q_{p}} $\\*\\*
+$ \vec {q_{g}} = R \cdot \vec {q_{p}} $ \\*\\*
 Za obratno transformacijo množimo vektor, izražen v koordinatnem sistemu zemlje, z transformirano DCM matriko\\*
 $ \vec {q_{p}} = R^{T} \cdot \vec {q_{g}} $\\*\\*
 
@@ -256,5 +284,14 @@ Tako iz surovih podatkov magnetometra dobimo popravljen podatek, ki kaže v smer
 \end{subsection}
 \end{subsection}
 
+\begin{bibliography}{9}
+
+\bibitem{Magnetometer Offset Cancellation: Theory and Implementation, revisited}
+  William Premerlani,
+  \emph{\LaTeX: Magnetometer Offset Cancellation: Theory and Implementation, revisited}.
+  October 14, 2011
+  http://gentlenav.googlecode.com/files/MagnetometerOffsetNullingRevisited.pdf
+
+\end{bibliography}
 
 \end{document}
