@@ -155,6 +155,9 @@ ErrorStatus vectorf_normalize(Vectorf * vectorA)
 	if(scale > 0)
 	{
 		scale = math_fastInverseRoot(scale);
+		vectorA->x = vectorA->x * scale;
+		vectorA->y = vectorA->y * scale;
+		vectorA->z = vectorA->z * scale;
 		status = SUCCESS;
 	}
 	else
@@ -162,9 +165,6 @@ ErrorStatus vectorf_normalize(Vectorf * vectorA)
 		scale = 0;
 		status = ERROR;
 	}
-	vectorA->x = vectorA->x * scale;
-	vectorA->y = vectorA->y * scale;
-	vectorA->z = vectorA->z * scale;
 
 	// Check if FPU result is OK
 	if(!FPU_EXCEPTION)

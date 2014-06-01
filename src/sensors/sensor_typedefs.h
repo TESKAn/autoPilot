@@ -12,17 +12,22 @@
 
 typedef struct
 {
-
 	Vectorf vector;
-	Vectorf vecorPrevious;	// Store previous result for use in offset removal
+	Vectorf vecorPrevious;			// Store previous result for use in offset removal
 	Vectorf vectorRaw;
-	Vectorf offset;			// Computed magnetometer offset
+	Vectorf offset;					// Computed magnetometer offset
+	Vectorf currentMagReading;		// Mag readings with only offset removed
+	Vectorf previousMagReading;
+	float32_t currentMagnitude;
+	float32_t previousMagnitude;
 	Vectorf hardIron;
+	Vectorf calcVector;				// Used for calculations
 	Matrixf softIron;
 	uint32_t dataTime;
-	uint32_t deltaTime;		// Store time difference between current and previous sample
+	uint32_t deltaTime;				// Store time difference between current and previous sample
 	float32_t magRate;
 	float32_t sensorTemperature;
+	float32_t magOffsetNullGain;
 	uint8_t valid;
 	uint8_t nerabim[3];
 }__attribute__((aligned(4),packed)) MagData, *PMagData;

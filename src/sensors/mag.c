@@ -28,7 +28,15 @@ ErrorStatus mag_initDataStructure(MagData *data)
 	data->sensorTemperature = 0;
 	matrix3_init(1, &data->softIron);
 	data->vector = vectorf_init(0);
+	data->vecorPrevious = vectorf_init(0);
+	data->offset = vectorf_init(0);
+	data->currentMagReading = vectorf_init(0);
+	data->previousMagReading = vectorf_init(0);
+	data->currentMagnitude = 0;
+	data->previousMagnitude = 0;
+	data->magOffsetNullGain = 0.5f;
 	data->vectorRaw = vectorf_init(0);
+	data->calcVector = vectorf_init(0);
 	data->valid = 1;
 	success = SUCCESS;
 
@@ -38,8 +46,36 @@ ErrorStatus mag_initDataStructure(MagData *data)
 ErrorStatus mag_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 {
 	ErrorStatus success = ERROR;
+	float32_t temp;
 
-	// Use _fusion_DCM to null offset
+	// Update mag readings
+	// Store mag reading and magnitude to previous
+	vectorf_copy(&data->_mag.currentMagReading, &data->_mag.previousMagReading);
+	data->_mag.previousMagnitude = data->_mag.currentMagnitude;
+	// Update current reading
+	data->_mag.currentMagReading.x = (float32_t)rawData[0] * data->_mag.magRate;
+	data->_mag.currentMagReading.y = (float32_t)rawData[1] * data->_mag.magRate;
+	data->_mag.currentMagReading.z = (float32_t)rawData[2] * data->_mag.magRate;
+	// Remove offset
+	vectorf_substract(&data->_mag.currentMagReading, &data->_mag.offset, &data->_mag.currentMagReading);
+	// Get vector difference
+	vectorf_substract(&data->_mag.currentMagReading, &data->_mag.previousMagReading, &data->_mag.calcVector);
+	// Try to normalize vector
+	if(ERROR != vectorf_normalize(&data->_mag.calcVector))
+	{
+		// Calculate current magnitude
+		data->_mag.currentMagnitude = vectorf_getNorm(&data->_mag.currentMagReading);
+		// Calculate magnitude difference
+		temp = data->_mag.currentMagnitude - data->_mag.previousMagnitude;
+		// Multiply by gain
+		temp = temp * data->_mag.magOffsetNullGain;
+		// Multiply current offset estimate vector
+		vectorf_scalarProduct(&data->_mag.calcVector, temp, &data->_mag.calcVector);
+		// Add to offset calculation
+		vectorf_add(&data->_mag.offset, &data->_mag.calcVector, &data->_mag.offset);
+	}
+
+
 
 	success = SUCCESS;
 
