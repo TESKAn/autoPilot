@@ -179,6 +179,47 @@ ErrorStatus vectorf_normalize(Vectorf * vectorA)
 	return status;
 }
 
+ErrorStatus vectorf_normalizeAToB(Vectorf * vectorA, Vectorf * vectorB)
+{
+	ErrorStatus status = ERROR;
+	// Set FPU exception bit to 0
+	FPU_EXCEPTION = 0;
+
+	float32_t scale = 0;
+	float32_t xx = 0;
+	float32_t yy = 0;
+	float32_t zz = 0;
+	xx = vectorA->x * vectorA->x;
+	yy = vectorA->y * vectorA->y;
+	zz = vectorA->z * vectorA->z;
+	scale = xx + yy + zz;
+	if(scale > 0)
+	{
+		scale = math_fastInverseRoot(scale);
+		vectorB->x = vectorA->x * scale;
+		vectorB->y = vectorA->y * scale;
+		vectorB->z = vectorA->z * scale;
+		status = SUCCESS;
+	}
+	else
+	{
+		scale = 0;
+		status = ERROR;
+	}
+
+	// Check if FPU result is OK
+	if(!FPU_EXCEPTION)
+	{
+		status = SUCCESS;
+	}
+	else
+	{
+		status = ERROR;
+	}
+
+	return status;
+}
+
 float32_t vectorf_getNorm(Vectorf * vector)
 {
 	float32_t result = 0;

@@ -12,7 +12,8 @@
 
 typedef struct
 {
-	Vectorf vector;
+	Vectorf vector;					// Normalized vector in body frame
+	Vectorf vectorEarthFrame;		// Normalized vector in earth frame
 	Vectorf vecorPrevious;			// Store previous result for use in offset removal
 	Vectorf vectorRaw;
 	Vectorf offset;					// Computed magnetometer offset

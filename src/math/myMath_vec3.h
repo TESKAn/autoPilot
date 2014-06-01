@@ -18,6 +18,7 @@ ErrorStatus vectorf_scalarProduct(Vectorf * vecA, float32_t scalar, Vectorf * ve
 ErrorStatus vectorf_substract(Vectorf * vecA, Vectorf * vecB, Vectorf * vecC);
 ErrorStatus vectorf_add(Vectorf * vecA, Vectorf * vecB, Vectorf * vecC);
 ErrorStatus vectorf_normalize(Vectorf * vectorA);
+ErrorStatus vectorf_normalizeAToB(Vectorf * vectorA, Vectorf * vectorB);
 float32_t vectorf_getNorm(Vectorf * vector);
 ErrorStatus vectorf_copy(Vectorf * vecA, Vectorf * vecB);
 

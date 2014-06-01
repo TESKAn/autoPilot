@@ -28,6 +28,7 @@ ErrorStatus mag_initDataStructure(MagData *data)
 	data->sensorTemperature = 0;
 	matrix3_init(1, &data->softIron);
 	data->vector = vectorf_init(0);
+	data->vectorEarthFrame = vectorf_init(0);
 	data->vecorPrevious = vectorf_init(0);
 	data->offset = vectorf_init(0);
 	data->currentMagReading = vectorf_init(0);
@@ -74,7 +75,14 @@ ErrorStatus mag_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 		// Add to offset calculation
 		vectorf_add(&data->_mag.offset, &data->_mag.calcVector, &data->_mag.offset);
 	}
-
+	// Normalize measurement to get mag direction in body frame
+	if(ERROR != vectorf_normalizeAToB(&data->_mag.currentMagReading, &data->_mag.vector))
+	{
+		// Normalization good, continue with calculations
+		// Move to earth reference frame
+		matrix3_vectorMultiply(&data->_fusion_DCM, &data->_mag.vector, &data->_mag.vectorEarthFrame);
+		// Check mag X,Y vector direction with a reference - like GPS reading
+	}
 
 
 	success = SUCCESS;
