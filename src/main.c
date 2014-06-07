@@ -64,7 +64,7 @@ float32_t t2 = 0;
 int main(void)
 {
 	unsigned int bytesWritten;
-	float32_t temp = 0;
+	//float32_t temp = 0;
 
 	// Init sensor data structures
 	fusion_init(&fusionData);
@@ -72,12 +72,12 @@ int main(void)
 
 	// Init vectors
 	// Initialize matrices
-	ahrs_matrix3by3_init(&tempMatrix);
+	//ahrs_matrix3by3_init(&tempMatrix);
 
-	ahrs_matrix3by3_init(&holdMatrix);
-	math_vector3fDataInit(&tempVector, ROW);
-	math_vector3fDataInit(&tempVector1, ROW);
-	math_vector3fDataInit(&tempVector2, ROW);
+	//ahrs_matrix3by3_init(&holdMatrix);
+	//math_vector3fDataInit(&tempVector, ROW);
+	//math_vector3fDataInit(&tempVector1, ROW);
+	//math_vector3fDataInit(&tempVector2, ROW);
 
 	AHRS_FIRSTRUN_PID = 1;
 	AHRS_FIRSTRUN_MATRIX = 1;
@@ -214,15 +214,15 @@ int main(void)
         }
         if(SCR1 & SCR_10)
         {
-        	ahrs_resetPID(&(ahrs_data.PIData));
+        	//ahrs_resetPID(&(ahrs_data.PIData));
         	AHRS_FIRSTRUN_PID = 1;
         	SCR1 = SCR1 & ~SCR_10;
         }
         if(SCR1 & SCR_11)
         {
         	// Reset AHRS matrix
-        	ahrs_resetRotationMatrix();
-        	ahrs_resetQuaternion();
+        	//ahrs_resetRotationMatrix();
+        	//ahrs_resetQuaternion();
         	//AHRS_FIRSTRUN_MATRIX = 1;
         	SCR1 = SCR1 & ~SCR_11;
         }
@@ -238,45 +238,46 @@ int main(void)
         }
         if(SCR1 & SCR_13)
         {
+        	/*
         	temp = ahrs_data.PIData.Kix / 10 + 0.0005f;
         	ahrs_data.PIData.Kix = ahrs_data.PIData.Kix + temp;
         	ahrs_data.PIData.Kiy = ahrs_data.PIData.Kiy + temp;
         	ahrs_data.PIData.Kiz = ahrs_data.PIData.Kiz + temp;
-    		float32ToStr(ahrs_data.PIData.Kix, "Ki=", StringBuffer);
+    		float32ToStr(ahrs_data.PIData.Kix, "Ki=", StringBuffer);*/
     		sendUSBMessage(StringBuffer);
         	SCR1 = SCR1 & ~SCR_13;
         }
         if(SCR1 & SCR_14)
-        {
+        {/*
         	temp = ahrs_data.PIData.Kix / 10 + 0.0005f;
         	ahrs_data.PIData.Kix = ahrs_data.PIData.Kix - temp;
         	ahrs_data.PIData.Kiy = ahrs_data.PIData.Kiy - temp;
         	ahrs_data.PIData.Kiz = ahrs_data.PIData.Kiz - temp;
-    		float32ToStr(ahrs_data.PIData.Kix, "Ki=", StringBuffer);
+    		float32ToStr(ahrs_data.PIData.Kix, "Ki=", StringBuffer);*/
     		sendUSBMessage(StringBuffer);
         	SCR1 = SCR1 & ~SCR_14;
         }
         if(SCR1 & SCR_15)
-        {
+        {/*
         	temp = ahrs_data.PIData.Kpx / 10 + 0.0005f;
         	ahrs_data.PIData.Kpx = ahrs_data.PIData.Kpx + temp;
         	ahrs_data.PIData.Kpy = ahrs_data.PIData.Kpy + temp;
         	ahrs_data.PIData.Kpz = ahrs_data.PIData.Kpz + temp;
         	//globalVar = globalVar + 0.0005f;
     		//float32ToStr(globalVar, "GV=", StringBuffer);
-        	float32ToStr(ahrs_data.PIData.Kpx, "Kp=", StringBuffer);
+        	float32ToStr(ahrs_data.PIData.Kpx, "Kp=", StringBuffer);*/
     		sendUSBMessage(StringBuffer);
         	SCR1 = SCR1 & ~SCR_15;
         }
         if(SCR1 & SCR_16)
-        {
+        {/*
         	temp = ahrs_data.PIData.Kpx / 10 + 0.0005f;
         	ahrs_data.PIData.Kpx = ahrs_data.PIData.Kpx - temp;
         	ahrs_data.PIData.Kpy = ahrs_data.PIData.Kpy - temp;
         	ahrs_data.PIData.Kpz = ahrs_data.PIData.Kpz - temp;
         	//globalVar = globalVar - 0.0005f;
     		//float32ToStr(globalVar, "GV=", StringBuffer);
-        	float32ToStr(ahrs_data.PIData.Kpx, "Kp=", StringBuffer);
+        	float32ToStr(ahrs_data.PIData.Kpx, "Kp=", StringBuffer);*/
     		sendUSBMessage(StringBuffer);
         	SCR1 = SCR1 & ~SCR_16;
         }

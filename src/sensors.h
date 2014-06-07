@@ -41,8 +41,6 @@ ErrorStatus I2C_CheckForError(I2C_TypeDef* I2Cx);
 void I2C2_Configure(FunctionalState NewState);
 void I2C2_ResetInterface(void);
 void I2C2_DMA_ClearErrors(void);
-void nullGyro(AHRSData * data);
-void nullAcc(AHRSData * data);
 
 extern volatile uint16_t I2C2_ProcesState;
 extern volatile Flag I2C2_Flags;

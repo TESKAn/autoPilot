@@ -17,7 +17,6 @@
 #include "syscalls.h"
 #include "arm_math.h"
 #include "math.h"
-#include "math_custom.h"
 
 
 #include "sensors/sensors_fusion.h"
@@ -36,7 +35,6 @@
 #include "ff.h"
 
 #include "unitConversions.h"
-#include "ahrs.h"
 
 #include "stm32f4xx_usart.h"
 #include "stm32f4xx_rcc.h"
@@ -49,9 +47,7 @@
 #include "functions.h"
 #include "modbus.h"
 #include "powerSensor.h"
-#include "gps.h"
 #include "sensors.h"
-#include "compass.h"
 
 #include "AudioComm.h"
 

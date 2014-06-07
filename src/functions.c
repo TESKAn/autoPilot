@@ -9,73 +9,6 @@
 #include <stdlib.h>
 #include "sensors/altimeter.h"
 
-void updateExportVars(void)
-{
-	exportVars[0] = (int)systemTime;
-	exportVars[1] = (int)ACC_X;
-	exportVars[2] = (int)ACC_Y;
-	exportVars[3] = (int)ACC_Z;
-	exportVars[4] = (int)MAG_X;
-	exportVars[5] = (int)MAG_Y;
-	exportVars[6] = (int)MAG_Z;
-	exportVars[7] = (int)GYRO_X;
-	exportVars[8] = (int)GYRO_Y;
-	exportVars[9] = (int)GYRO_Z;
-	exportVars[10] = (int)(ahrs_data.Q.w * 1000000);
-	exportVars[11] = (int)(ahrs_data.Q.x * 1000000);
-	exportVars[12] = (int)(ahrs_data.Q.y * 1000000);
-	exportVars[13] = (int)(ahrs_data.Q.z * 1000000);
-	exportVars[14] = (int)(ahrs_data.AccVector.vector.pData[VECT_X] * 1000000);
-	exportVars[15] = (int)(ahrs_data.AccVector.vector.pData[VECT_Y] * 1000000);
-	exportVars[16] = (int)(ahrs_data.AccVector.vector.pData[VECT_Z] * 1000000);
-
-	exportVars[17] = (int)(ahrs_data.MagVector.vector.pData[VECT_X] * 1000000);
-	exportVars[18] = (int)(ahrs_data.MagVector.vector.pData[VECT_Y] * 1000000);
-	exportVars[19] = (int)(ahrs_data.MagVector.vector.pData[VECT_Z] * 1000000);
-
-	exportVars[20] = (int)(ahrs_data.GyroVector.vector.pData[VECT_X] * 1000000);
-	exportVars[21] = (int)(ahrs_data.GyroVector.vector.pData[VECT_Y] * 1000000);
-	exportVars[22] = (int)(ahrs_data.GyroVector.vector.pData[VECT_Z] * 1000000);
-
-	exportVars[23] = (int)(ahrs_data.GravityVector.vector.pData[VECT_X] * 1000000);
-	exportVars[24] = (int)(ahrs_data.GravityVector.vector.pData[VECT_Y] * 1000000);
-	exportVars[25] = (int)(ahrs_data.GravityVector.vector.pData[VECT_Z] * 1000000);
-
-	exportVars[26] = (int)(ahrs_data.RollPitchCorrection.vector.pData[VECT_X] * 1000000);
-	exportVars[27] = (int)(ahrs_data.RollPitchCorrection.vector.pData[VECT_Y] * 1000000);
-	exportVars[28] = (int)(ahrs_data.RollPitchCorrection.vector.pData[VECT_Z] * 1000000);
-
-	exportVars[29] = (int)(ahrs_data.YawCorrection.vector.pData[VECT_X] * 1000000);
-	exportVars[30] = (int)(ahrs_data.YawCorrection.vector.pData[VECT_Y] * 1000000);
-	exportVars[31] = (int)(ahrs_data.YawCorrection.vector.pData[VECT_Z] * 1000000);
-
-	exportVars[32] = (int)(ahrs_data.totalCorrectionError.vector.pData[VECT_X] * 1000000);
-	exportVars[33] = (int)(ahrs_data.totalCorrectionError.vector.pData[VECT_Y] * 1000000);
-	exportVars[34] = (int)(ahrs_data.totalCorrectionError.vector.pData[VECT_Z] * 1000000);
-
-	exportVars[35] = (int)(ahrs_data.PIData.Ix * 1000000);
-	exportVars[36] = (int)(ahrs_data.PIData.Iy * 1000000);
-	exportVars[37] = (int)(ahrs_data.PIData.Iz * 1000000);
-
-	exportVars[38] = (int)(ahrs_data.PIData.Rx * 1000000);
-	exportVars[39] = (int)(ahrs_data.PIData.Ry * 1000000);
-	exportVars[40] = (int)(ahrs_data.PIData.Rz * 1000000);
-
-	exportVars[41] = (int)(ahrs_data.rotationMatrix.vector.pData[Rxx] * 1000000);
-	exportVars[42] = (int)(ahrs_data.rotationMatrix.vector.pData[Ryx] * 1000000);
-	exportVars[43] = (int)(ahrs_data.rotationMatrix.vector.pData[Rzx] * 1000000);
-
-	exportVars[44] = (int)(ahrs_data.rotationMatrix.vector.pData[Rxy] * 1000000);
-	exportVars[45] = (int)(ahrs_data.rotationMatrix.vector.pData[Ryy] * 1000000);
-	exportVars[46] = (int)(ahrs_data.rotationMatrix.vector.pData[Rzy] * 1000000);
-
-	exportVars[47] = (int)(ahrs_data.rotationMatrix.vector.pData[Rxz] * 1000000);
-	exportVars[48] = (int)(ahrs_data.rotationMatrix.vector.pData[Ryz] * 1000000);
-	exportVars[49] = (int)(ahrs_data.rotationMatrix.vector.pData[Rzz] * 1000000);
-
-
-}
-
 uint32_t getSystemTime(void)
 {
 	uint32_t time = 0;
@@ -123,15 +56,15 @@ void storeAHRSAngles(void)
 	int16_t temp1 = 0;
 
 	// Store angles
-	temp = -asinf(ahrs_data.rotationMatrix.vector.pData[Rzx]) * 1000;
+	//temp = -asinf(ahrs_data.rotationMatrix.vector.pData[Rzx]) * 1000;
 	temp1 = (int16_t)temp;
 	AHRS_PITCH = (uint16_t) temp1;
 
-	temp = atan2f( ahrs_data.rotationMatrix.vector.pData[Rzy],  ahrs_data.rotationMatrix.vector.pData[Rzz]) * 1000;
+	//temp = atan2f( ahrs_data.rotationMatrix.vector.pData[Rzy],  ahrs_data.rotationMatrix.vector.pData[Rzz]) * 1000;
 	temp1 = (int16_t)temp;
 	AHRS_ROLL = (uint16_t) temp1;
 
-	temp = atan2f( ahrs_data.rotationMatrix.vector.pData[Ryx],  ahrs_data.rotationMatrix.vector.pData[Rxx]) * 1000;
+	//temp = atan2f( ahrs_data.rotationMatrix.vector.pData[Ryx],  ahrs_data.rotationMatrix.vector.pData[Rxx]) * 1000;
 	temp1 = (int16_t)temp;
 	AHRS_YAW = (uint16_t) temp1;
 }
@@ -847,7 +780,7 @@ ErrorStatus storeSettings(void)
 	// Store settings
 	// Acc rate
 	// Store number
-	float32ToStr(ahrs_data.accRate, "accRate=", FSBuffer);
+	//float32ToStr(ahrs_data.accRate, "accRate=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
@@ -856,7 +789,7 @@ ErrorStatus storeSettings(void)
 
 	// Gyro rate
 	// Store number
-	float32ToStr(ahrs_data.gyroRate, "gyroRate=", FSBuffer);
+	//float32ToStr(ahrs_data.gyroRate, "gyroRate=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
@@ -865,7 +798,7 @@ ErrorStatus storeSettings(void)
 
 	// Mag rate
 	// Store number
-	float32ToStr(ahrs_data.magRate, "magRate=", FSBuffer);
+	//float32ToStr(ahrs_data.magRate, "magRate=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
@@ -892,7 +825,7 @@ ErrorStatus storeSettings(void)
 
 	// PID threshold
 	// Store number
-	float32ToStr(ahrs_data.PIDErrorThreshold, "PIDThreshold=", FSBuffer);
+	//float32ToStr(ahrs_data.PIDErrorThreshold, "PIDThreshold=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
@@ -901,7 +834,7 @@ ErrorStatus storeSettings(void)
 
 	// Minimal rotation rate that is detected
 	// Store number
-	float32ToStr(ahrs_data.MinRotationRate, "MinRotationRate=", FSBuffer);
+	//float32ToStr(ahrs_data.MinRotationRate, "MinRotationRate=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
@@ -910,7 +843,7 @@ ErrorStatus storeSettings(void)
 
 	// Soft mag matrix
 	// Store number
-	float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Rxx], "softMagRxx=", FSBuffer);
+	//float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Rxx], "softMagRxx=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
@@ -918,56 +851,56 @@ ErrorStatus storeSettings(void)
 	f_puts (FSBuffer, &settingsFile);
 
 	// Store number
-	float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Ryx], "softMagRyx=", FSBuffer);
+	//float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Ryx], "softMagRyx=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
 	f_puts (FSBuffer, &settingsFile);
 
 	// Store number
-	float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Rzx], "softMagRzx=", FSBuffer);
+	//float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Rzx], "softMagRzx=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
 	f_puts (FSBuffer, &settingsFile);
 
 	// Store number
-	float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Rxy], "softMagRxy=", FSBuffer);
+	//float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Rxy], "softMagRxy=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
 	f_puts (FSBuffer, &settingsFile);
 
 	// Store number
-	float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Ryy], "softMagRyy=", FSBuffer);
+	//float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Ryy], "softMagRyy=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
 	f_puts (FSBuffer, &settingsFile);
 
 	// Store number
-	float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Rzy], "softMagRzy=", FSBuffer);
+	//float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Rzy], "softMagRzy=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
 	f_puts (FSBuffer, &settingsFile);
 
 	// Store number
-	float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Rxz], "softMagRxz=", FSBuffer);
+	//float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Rxz], "softMagRxz=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
 	f_puts (FSBuffer, &settingsFile);
 
 	// Store number
-	float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Ryz], "softMagRyz=", FSBuffer);
+	//float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Ryz], "softMagRyz=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
 	f_puts (FSBuffer, &settingsFile);
 
 	// Store number
-	float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Rzz], "softMagRzz=", FSBuffer);
+	//float32ToStr(ahrs_data.magRotationMatrix.vector.pData[Rzz], "softMagRzz=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
@@ -975,7 +908,7 @@ ErrorStatus storeSettings(void)
 
 	// Hard mag vector
 	// Store number
-	float32ToStr(ahrs_data.MagOffsetVector.vector.pData[VECT_X], "hardMagX=", FSBuffer);
+	//float32ToStr(ahrs_data.MagOffsetVector.vector.pData[VECT_X], "hardMagX=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
@@ -983,14 +916,14 @@ ErrorStatus storeSettings(void)
 	f_puts (FSBuffer, &settingsFile);
 
 	// Store number
-	float32ToStr(ahrs_data.MagOffsetVector.vector.pData[VECT_Y], "hardMagY=", FSBuffer);
+	//float32ToStr(ahrs_data.MagOffsetVector.vector.pData[VECT_Y], "hardMagY=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
 	f_puts (FSBuffer, &settingsFile);
 
 	// Store number
-	float32ToStr(ahrs_data.MagOffsetVector.vector.pData[VECT_Z], "hardMagZ=", FSBuffer);
+	//float32ToStr(ahrs_data.MagOffsetVector.vector.pData[VECT_Z], "hardMagZ=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
@@ -1007,7 +940,7 @@ ErrorStatus storeSettings(void)
 
 	// PID parameters
 	// Store number
-	float32ToStr(ahrs_data.PIData.Kix, "Kix=", FSBuffer);
+	//float32ToStr(ahrs_data.PIData.Kix, "Kix=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
@@ -1015,49 +948,49 @@ ErrorStatus storeSettings(void)
 	f_puts (FSBuffer, &settingsFile);
 
 	// Store number
-	float32ToStr(ahrs_data.PIData.Kpx, "Kpx=", FSBuffer);
+	//float32ToStr(ahrs_data.PIData.Kpx, "Kpx=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
 	f_puts (FSBuffer, &settingsFile);
 
 	// Store number
-	float32ToStr(ahrs_data.PIData.eMax, "PID_MaxErr=", FSBuffer);
+	//float32ToStr(ahrs_data.PIData.eMax, "PID_MaxErr=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
 	f_puts (FSBuffer, &settingsFile);
 
 	// Store number
-	float32ToStr(ahrs_data.PIData.eMin, "PID_MinErr=", FSBuffer);
+	//float32ToStr(ahrs_data.PIData.eMin, "PID_MinErr=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
 	f_puts (FSBuffer, &settingsFile);
 
 	// Store number
-	float32ToStr(ahrs_data.PIData.maxIx, "PID_MaxI=", FSBuffer);
+	//float32ToStr(ahrs_data.PIData.maxIx, "PID_MaxI=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
 	f_puts (FSBuffer, &settingsFile);
 
 	// Store number
-	float32ToStr(ahrs_data.PIData.minIx, "PID_MinI=", FSBuffer);
+	//float32ToStr(ahrs_data.PIData.minIx, "PID_MinI=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
 	f_puts (FSBuffer, &settingsFile);
 
 	// Store number
-	float32ToStr(ahrs_data.PIData.rMax, "PID_MaxR=", FSBuffer);
+	//float32ToStr(ahrs_data.PIData.rMax, "PID_MaxR=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
 	f_puts (FSBuffer, &settingsFile);
 
 	// Store number
-	float32ToStr(ahrs_data.PIData.rMin, "PID_MinR=", FSBuffer);
+	//float32ToStr(ahrs_data.PIData.rMin, "PID_MinR=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
@@ -1066,7 +999,7 @@ ErrorStatus storeSettings(void)
 
 	// Roll, pitch, yaw correction factors
 	// Store number
-	float32ToStr(ahrs_data.RollPitchCorrectionScale, "rollPitchCorrectionScale=", FSBuffer);
+	//float32ToStr(ahrs_data.RollPitchCorrectionScale, "rollPitchCorrectionScale=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
@@ -1074,7 +1007,7 @@ ErrorStatus storeSettings(void)
 	f_puts (FSBuffer, &settingsFile);
 
 	// Store number
-	float32ToStr(ahrs_data.YawCorrectionScale, "yawCorrectionScale=", FSBuffer);
+	//float32ToStr(ahrs_data.YawCorrectionScale, "yawCorrectionScale=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
@@ -1082,7 +1015,7 @@ ErrorStatus storeSettings(void)
 
 	// Samples to discard on startup
 	// Store number
-	float32ToStr(ahrs_data.sampleDiscardCount, "discardCount=", FSBuffer);
+	//float32ToStr(ahrs_data.sampleDiscardCount, "discardCount=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
@@ -1091,7 +1024,7 @@ ErrorStatus storeSettings(void)
 
 	// Minimum GPS speed to use GPS for yaw
 	// Store number
-	float32ToStr(ahrs_data.MinGPSSpeed, "useGPSSpeed=", FSBuffer);
+	//float32ToStr(ahrs_data.MinGPSSpeed, "useGPSSpeed=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
@@ -1110,6 +1043,7 @@ ErrorStatus storeSettings(void)
 ErrorStatus loadSettings(void)
 {
 	// Load all settings, one at a time
+	/*
 	// Acceleration rate
 	if(loadSingleSetting("accRate=", &(ahrs_data.accRate)) != SUCCESS)
 	{
@@ -1190,7 +1124,7 @@ ErrorStatus loadSettings(void)
 	sendUSBMessage(StringBuffer);
 #endif
 
-
+*/
 
 #ifdef DEBUG_USB
 	sendUSBMessage("Settings loaded successfully");
@@ -1209,7 +1143,6 @@ void extPeripheralInit(void)
 	sendUSBMessage("Power ON");
 #endif
 	// Init ahrs structure
-	initAHRSStructure(&ahrs_data);
 #ifdef DEBUG_USB
 	sendUSBMessage("AHRS initialized");
 #endif
@@ -1256,8 +1189,7 @@ void extPeripheralInit(void)
 #ifdef DEBUG_USB
 	sendUSBMessage("Reset matrix");
 #endif
-	ahrs_resetRotationMatrix();
-	ahrs_resetQuaternion();
+
 #ifdef DEBUG_USB
 	sendUSBMessage("AutoPilot OnLine");
 	sendUSBMessage("initialization done");
