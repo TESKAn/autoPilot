@@ -40,12 +40,29 @@ typedef struct
 
 typedef struct
 {
-	float32_t i;
-	float32_t kp;
-	float32_t ki;
-	float32_t kd;
-	float32_t e_1;
-	float32_t result;
+	float32_t p;			// P part
+	float32_t i;			// I part
+	float32_t d;			// D part
+
+	float32_t s;			// Sum output, p+i+d
+
+	float32_t im;			// Integral sum of errors, saturated
+
+	float32_t errIMax;		// Integral max sum
+	float32_t errIMin;		// Integral min sum
+
+	float32_t outMax;		// *PID_K_MULTI
+	float32_t outMin;		// *PID_K_MULTI
+
+	float32_t em;			// Previous error
+	float32_t ed;			// Previous derivative
+	float32_t Kp;			// *PID_K_MULTI
+	float32_t Ki;			// *PID_K_MULTI
+	float32_t Kd;			// *PID_K_MULTI
+
+	float32_t errMax;
+	float32_t errMin;
+
 }__attribute__((aligned(4),packed)) myMath_PID;
 
 typedef struct

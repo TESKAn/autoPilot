@@ -18,12 +18,19 @@ myMath_PID3 _gyroErrorPID;
 myMath_PID math_PIDInit(float32_t kp, float32_t ki, float32_t kd)
 {
 	myMath_PID PID;
-	PID.e_1 = 0;
-	PID.i = 0;
-	PID.result = 0;
-	PID.kp = kp;
-	PID.ki = ki;
-	PID.kd = kd;
+	math_PIDReset(&PID);
+	PID.Kp = kp;
+	PID.Ki = ki;
+	PID.Kd = kd;
+
+	PID.errIMax = 100;
+	PID.errIMin = -100;
+
+	PID.errMax = 100;
+	PID.errMin = -100;
+
+	PID.outMax = 100;
+	PID.outMin = -100;
 
 	return PID;
 }
@@ -41,9 +48,13 @@ ErrorStatus math_PIDReset(myMath_PID * PID)
 {
 	ErrorStatus status = ERROR;
 	// Reset PID variables to zero
-	PID->e_1 = 0;
+	PID->p = 0;
 	PID->i = 0;
-	PID->result = 0;
+	PID->d = 0;
+	PID->s = 0;
+	PID->im = 0;
+	PID->em = 0;
+	PID->ed = 0;
 	status = SUCCESS;
 	return status;
 }
@@ -59,28 +70,50 @@ ErrorStatus math_PID3Reset(myMath_PID3 * PID)
 	return status;
 }
 
-ErrorStatus math_PID(float32_t e, float32_t dt, myMath_PID * PID)
+ErrorStatus math_PID(float32_t error, float32_t dt, myMath_PID * data)
 {
 	ErrorStatus status = ERROR;
 	// Set FPU exception bit to 0
 	FPU_EXCEPTION = 0;
 
-	// Set variables
-	float32_t p = 0;
-	float32_t i = 0;
-	float32_t d = 0;
-	// Calculate proportional part
-	p = e * PID->kp;
-	// Calculate integral and integral part
-	i = e * dt;
-	PID->i = PID->i + i;
-	i = PID->i * PID->ki;
-	// Calculate differential part and store current error
-	d = e - PID->e_1;
-	d = d / dt;
-	d = d * PID->kd;
-	// Calculate result
-	PID->result = p + i + d;
+	// Saturate error
+	if(error > data->errMax) error = data->errMax;
+	else if(error < data->errMin) error = data->errMin;
+	// Calculate p
+	data->p = error * data->Kp;
+	// Calculate I
+	// Add error * dt to integral
+	data->im = data->im + (error * dt);
+	// Saturate I
+	if(data->im > data->errIMax) data->im = data->errIMax;
+	else if(data->im < data->errIMin) data->im = data->errIMin;
+	// Calculate I as im*Ki
+	data->i = data->im * data->Ki;
+
+	// Calculate d
+	// First de
+	data->ed = data->em - error;
+	// Then de/dt
+	data->ed = data->ed / dt;
+	// Then d
+	data->d = data->ed * data->Kd;
+
+	// Store error
+	data->em = error;
+
+	// Calculate PID output
+	data->s = data->p + data->i + data->d;
+
+	// Saturate output
+	if(data->s > data->outMax) data->s = data->outMax;
+	else if(data->s < data->outMin) data->s = data->outMin;
+
+
+
+
+
+
+
 
 	// Check if FPU result is OK
 	if(!FPU_EXCEPTION)

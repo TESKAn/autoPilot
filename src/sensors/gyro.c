@@ -64,9 +64,9 @@ ErrorStatus gyro_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 
 	// Remove drift error
 	// Drift error is calculated in different .c/.h file
-	data->_gyro.vector.x -= data->_gyroErrorPID.x.result;
-	data->_gyro.vector.y -= data->_gyroErrorPID.y.result;
-	data->_gyro.vector.z -= data->_gyroErrorPID.z.result;
+	data->_gyro.vector.x -= data->_gyroErrorPID.x.s;
+	data->_gyro.vector.y -= data->_gyroErrorPID.y.s;
+	data->_gyro.vector.z -= data->_gyroErrorPID.z.s;
 
 	// Calculate time difference
 	deltaTime = dataTime - data->_gyro.dataTime;

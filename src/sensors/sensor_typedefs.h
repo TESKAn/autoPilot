@@ -119,7 +119,6 @@ typedef struct
 		float32_t systimeToSeconds;
 		float32_t minRotation;
 		float32_t minRotError;
-
 	}PARAMETERS;
 
 	// Time
