@@ -50,21 +50,21 @@ ErrorStatus FS_Initialize(void)
 	return ERROR;
 }
 
-void storeAHRSAngles(void)
+void storeAHRSAngles(FUSION_CORE *data)
 {
 	float32_t temp = 0;
 	int16_t temp1 = 0;
 
 	// Store angles
-	//temp = -asinf(ahrs_data.rotationMatrix.vector.pData[Rzx]) * 1000;
+	temp = -asinf(data->_fusion_DCM.c.x) * 1000;//    ahrs_data.rotationMatrix.vector.pData[Rzx]) * 1000;
 	temp1 = (int16_t)temp;
 	AHRS_PITCH = (uint16_t) temp1;
 
-	//temp = atan2f( ahrs_data.rotationMatrix.vector.pData[Rzy],  ahrs_data.rotationMatrix.vector.pData[Rzz]) * 1000;
+	temp = atan2f(data->_fusion_DCM.c.y, data->_fusion_DCM.c.z) * 1000; // ahrs_data.rotationMatrix.vector.pData[Rzy],  ahrs_data.rotationMatrix.vector.pData[Rzz]) * 1000;
 	temp1 = (int16_t)temp;
 	AHRS_ROLL = (uint16_t) temp1;
 
-	//temp = atan2f( ahrs_data.rotationMatrix.vector.pData[Ryx],  ahrs_data.rotationMatrix.vector.pData[Rxx]) * 1000;
+	temp = atan2f( data->_fusion_DCM.b.x, data->_fusion_DCM.a.x) * 1000;// ahrs_data.rotationMatrix.vector.pData[Ryx],  ahrs_data.rotationMatrix.vector.pData[Rxx]) * 1000;
 	temp1 = (int16_t)temp;
 	AHRS_YAW = (uint16_t) temp1;
 }
@@ -1150,7 +1150,7 @@ void extPeripheralInit(void)
 	sendUSBMessage("Configuring GPS");
 #endif
 	// Setup GPS
-	GPSSetDataOutput();
+	//GPSSetDataOutput();
 #ifdef DEBUG_USB
 	sendUSBMessage("GPS configured");
 #endif

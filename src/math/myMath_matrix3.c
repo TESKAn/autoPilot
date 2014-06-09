@@ -186,19 +186,20 @@ ErrorStatus matrix3_transpose(Matrixf * matA, Matrixf * matB)
 	return SUCCESS;
 }
 
+// Copy matrix A into matrix B
 ErrorStatus matrix3_copy(Matrixf * matA, Matrixf * matB)
 {
-	matA->a.x = matB->a.x;
-	matA->a.y = matB->a.y;
-	matA->a.z = matB->a.z;
+	matB->a.x = matA->a.x;
+	matB->a.y = matA->a.y;
+	matB->a.z = matA->a.z;
 
-	matA->b.x = matB->b.x;
-	matA->b.y = matB->b.y;
-	matA->b.z = matB->b.z;
+	matB->b.x = matA->b.x;
+	matB->b.y = matA->b.y;
+	matB->b.z = matA->b.z;
 
-	matA->c.x = matB->c.x;
-	matA->c.y = matB->c.y;
-	matA->c.z = matB->c.z;
+	matB->c.x = matA->c.x;
+	matB->c.y = matA->c.y;
+	matB->c.z = matA->c.z;
 
 	return SUCCESS;
 }
@@ -233,20 +234,22 @@ ErrorStatus matrix3_normalizeOrthogonalizeMatrix(Matrixf * rotMatrix, float32_t 
 	error = 3 - error;
 	error = error / 2;
 	// If error is larger than we permit, return ERROR
+	/*
 	if(maxError < error)
 	{
 		return ERROR;
-	}
+	}*/
 	status = vectorf_scalarProduct(&rotMatrix->a, error, &rotMatrix->a);
 	// Normalize b
 	status = vectorf_dotProduct(&rotMatrix->b, &rotMatrix->b, &error);
 	error = 3 - error;
 	error = error / 2;
 	// If error is larger than we permit, return ERROR
+	/*
 	if(maxError < error)
 	{
 		return ERROR;
-	}
+	}*/
 	status = vectorf_scalarProduct(&rotMatrix->b, error, &rotMatrix->b);
 	// Calculate Z as cross product of X and Y
 	status = vectorf_crossProduct(&rotMatrix->a, &rotMatrix->b, &rotMatrix->c);
@@ -255,10 +258,11 @@ ErrorStatus matrix3_normalizeOrthogonalizeMatrix(Matrixf * rotMatrix, float32_t 
 	error = 3 - error;
 	error = error / 2;
 	// If error is larger than we permit, return ERROR
+	/*
 	if(maxError < error)
 	{
 		return ERROR;
-	}
+	}*/
 	status = vectorf_scalarProduct(&rotMatrix->c, error, &rotMatrix->c);
 
 	// Check if FPU result is OK

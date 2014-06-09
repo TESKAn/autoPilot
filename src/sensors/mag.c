@@ -7,12 +7,12 @@
 
 #include "stm32f4xx.h"
 #include "arm_math.h"
-#include "functions.h"
 #include "math/myMath_typedefs.h"
 #include "math/myMath_vec3.h"
 #include "math/myMath_matrix3.h"
 #include "sensor_typedefs.h"
 #include "mag.h"
+#include "functions.h"
 
 #define MAG_DEFAULT_RATE					0.000635075720f			// 1,3/2047 -> gauss
 

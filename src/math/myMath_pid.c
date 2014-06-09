@@ -108,13 +108,6 @@ ErrorStatus math_PID(float32_t error, float32_t dt, myMath_PID * data)
 	if(data->s > data->outMax) data->s = data->outMax;
 	else if(data->s < data->outMin) data->s = data->outMin;
 
-
-
-
-
-
-
-
 	// Check if FPU result is OK
 	if(!FPU_EXCEPTION)
 	{

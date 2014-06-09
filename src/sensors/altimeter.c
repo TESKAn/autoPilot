@@ -7,12 +7,11 @@
 
 #include "stm32f4xx.h"
 #include "arm_math.h"
-#include "functions.h"
 #include "math/myMath_typedefs.h"
 #include "math/myMath_vec3.h"
 #include "sensor_typedefs.h"
 #include "altimeter.h"
-
+#include "functions.h"
 
 // Init data structure
 ErrorStatus altimeter_initDataStructure(AltimeterData *data)

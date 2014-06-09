@@ -7,12 +7,13 @@
 
 #include "stm32f4xx.h"
 #include "arm_math.h"
-#include "functions.h"
+
 #include "math/myMath_typedefs.h"
 #include "math/myMath_vec3.h"
 #include "math/myMath_matrix3.h"
 #include "sensor_typedefs.h"
 #include "accelerometer.h"
+#include "functions.h"
 
 #define ACC_DEFAULT_RATE					0.000244140625f			// 8/32768 -> g
 // Define use scale correction

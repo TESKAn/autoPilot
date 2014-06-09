@@ -7,11 +7,11 @@
 
 #ifndef FUNCTIONS_H_
 #define FUNCTIONS_H_
-\
+
 uint32_t getSystemTime(void);
 float32_t getFTime(void);
 ErrorStatus FS_Initialize(void);
-void storeAHRSAngles(void);
+void storeAHRSAngles(FUSION_CORE *data);
 void openLog(void);
 void closeLog(void);
 void write_toLog(void);

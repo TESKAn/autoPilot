@@ -7,11 +7,11 @@
 
 #include "stm32f4xx.h"
 #include "arm_math.h"
-#include "functions.h"
 #include "math/myMath_typedefs.h"
 #include "math/myMath_vec3.h"
 #include "sensor_typedefs.h"
 #include "gyro.h"
+#include "functions.h"
 
 #define GYRO_DEFAULT_RATE					0.030517578125f			// 1000/32768 -> deg/sec
 #define GYRO_DEG_TO_RAD						0.017453292519f			// 1 deg/sec is this in rad/sec

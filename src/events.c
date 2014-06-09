@@ -471,6 +471,8 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 
 		// Update system time
 		systemTime++;
+		// Update fusion sys time
+
 
 		// Signal strength count
 		signalStrengthCount++;

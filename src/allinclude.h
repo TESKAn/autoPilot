@@ -18,8 +18,10 @@
 #include "arm_math.h"
 #include "math.h"
 
-
+#include "sensors/sensor_typedefs.h"
 #include "sensors/sensors_fusion.h"
+
+#include "functions.h"
 
 // File with macro functions
 #include "macroFunctions.h"
@@ -44,7 +46,7 @@
 #include "macro.h"
 #include "events.h"
 #include "var.h"
-#include "functions.h"
+
 #include "modbus.h"
 #include "powerSensor.h"
 #include "sensors.h"

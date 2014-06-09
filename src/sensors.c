@@ -295,7 +295,7 @@ void copySensorData(void)
 
 
 	// Store angles
-	storeAHRSAngles();
+	storeAHRSAngles(&fusionData);
 
 	// Check if we are sending constantly
 	if(CONSTANT_SERIAL_UPDATE)

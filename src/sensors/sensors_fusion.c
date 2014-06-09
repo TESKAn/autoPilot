@@ -7,7 +7,6 @@
 
 #include "stm32f4xx.h"
 #include "arm_math.h"
-#include "functions.h"
 #include "parameters.h"
 #include "math/myMath_typedefs.h"
 #include "math/myMath_vec3.h"
@@ -22,7 +21,7 @@
 #include "airSpeed.h"
 #include "gps.h"
 #include "altimeter.h"
-
+#include "functions.h"
 
 ErrorStatus fusion_init(FUSION_CORE *coreData)
 {
