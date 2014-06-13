@@ -15,9 +15,30 @@
 #define USE_USB_OTG_HS
 #define USE_EMBEDDED_PHY
 
-void usb_init(void);
+void usb_initVars(void);
 
 #ifdef __cplusplus
 }
 #endif
+
+ // Pointer arrays for transferring data
+ // 64 byte messages
+ extern float64_t* USBFloat64Vars1[7];
+
+ extern float32_t* USBFloat32Vars1[15];
+
+ // Array of int16_t pointers
+ extern int16_t* USBInt16Vars1[30];
+
+ // uint16
+ extern uint16_t* USBUint16Vars1[30];
+
+ // int32
+ extern int32_t* USBInt32Vars1[15];
+
+ // uint32
+ extern uint32_t* USBUint32Vars1[15];
+
+
+
 #endif /* USB_H_ */

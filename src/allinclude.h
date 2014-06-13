@@ -47,7 +47,6 @@
 #include "events.h"
 #include "var.h"
 
-#include "modbus.h"
 #include "powerSensor.h"
 #include "sensors.h"
 
@@ -55,6 +54,6 @@
 
 #include "flight.h"
 
-
+#include "usb.h"
 
 #endif /* ALLINCLUDE_H_ */

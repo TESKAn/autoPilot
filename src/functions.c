@@ -58,15 +58,15 @@ void storeAHRSAngles(FUSION_CORE *data)
 	// Store angles
 	temp = -asinf(data->_fusion_DCM.c.x) * 1000;//    ahrs_data.rotationMatrix.vector.pData[Rzx]) * 1000;
 	temp1 = (int16_t)temp;
-	AHRS_PITCH = (uint16_t) temp1;
+	//AHRS_PITCH = (uint16_t) temp1;
 
 	temp = atan2f(data->_fusion_DCM.c.y, data->_fusion_DCM.c.z) * 1000; // ahrs_data.rotationMatrix.vector.pData[Rzy],  ahrs_data.rotationMatrix.vector.pData[Rzz]) * 1000;
 	temp1 = (int16_t)temp;
-	AHRS_ROLL = (uint16_t) temp1;
+	//AHRS_ROLL = (uint16_t) temp1;
 
 	temp = atan2f( data->_fusion_DCM.b.x, data->_fusion_DCM.a.x) * 1000;// ahrs_data.rotationMatrix.vector.pData[Ryx],  ahrs_data.rotationMatrix.vector.pData[Rxx]) * 1000;
 	temp1 = (int16_t)temp;
-	AHRS_YAW = (uint16_t) temp1;
+	//AHRS_YAW = (uint16_t) temp1;
 }
 
 void openLog(void)
@@ -100,22 +100,22 @@ void openLog(void)
 	FSBuffer[1] = 'L';
 	FSBuffer[2] = 'O';
 	FSBuffer[3] = 'G';
-	FSBuffer[4] = '_';
-	FSBuffer[5] = charFromNumber(GPS_DAY / 10);
+	FSBuffer[4] = '_';/*
+	FSBuffer[5] = charFromNumber(fusionData._gps. / 10);
 	FSBuffer[6] = charFromNumber(GPS_DAY % 10);
 	FSBuffer[7] = charFromNumber(GPS_MONTH / 10);
-	FSBuffer[8] = charFromNumber(GPS_MONTH % 10);
+	FSBuffer[8] = charFromNumber(GPS_MONTH % 10);*/
 	FSBuffer[9] = '2';
 	FSBuffer[10] = '0';
 	FSBuffer[11] = '1';
 	FSBuffer[12] = '2';
-	FSBuffer[13] = '_';
+	FSBuffer[13] = '_';/*
 	FSBuffer[14] = charFromNumber(GPS_HOURS / 10);
 	FSBuffer[15] = charFromNumber(GPS_HOURS % 10);
 	FSBuffer[16] = charFromNumber(GPS_MINUTES / 10);
 	FSBuffer[17] = charFromNumber(GPS_MINUTES % 10);
 	FSBuffer[18] = charFromNumber(GPS_SECONDS / 10);
-	FSBuffer[19] = charFromNumber(GPS_SECONDS % 10);
+	FSBuffer[19] = charFromNumber(GPS_SECONDS % 10);*/
 	FSBuffer[20] = '.';
 	FSBuffer[21] = 'c';
 	FSBuffer[22] = 's';
@@ -136,6 +136,8 @@ void openLog(void)
 #ifdef DEBUG_USB
 	sendUSBMessage("Log opened");
 #endif
+
+	LOG_ISOPEN = 1;
 }
 
 void closeLog(void)
@@ -154,7 +156,7 @@ void closeLog(void)
 	f_write(&logFile, Buffer, BufferCount, &temp);
 
 	// Close.
-	SCR2 = SCR2 & ~SCR2_LOGOPEN;
+	LOG_ISOPEN = 0;
 	SD_WRITE_LOG = 0;
 	f_close(&logFile);
 #ifdef DEBUG_USB
@@ -164,6 +166,7 @@ void closeLog(void)
 
 void write_toLog(void)
 {
+	/*
 	//uint16_t temp1, temp2;
 	//uint32_t temp = 0;
 	// Make pointer to buffer place
@@ -184,7 +187,7 @@ void write_toLog(void)
 		if(SD_WRITING_BUF1) return;
 	}
 	// Store time
-	*BufferPointer += sprintf (&Buffer[*BufferPointer], "%d:%d:%d;", GPS_HOURS, GPS_MINUTES, GPS_SECONDS);
+	//*BufferPointer += sprintf (&Buffer[*BufferPointer], "%d:%d:%d;", GPS_HOURS, GPS_MINUTES, GPS_SECONDS);
 	// Store GPS data
 	// GPS lock
 	if ((GPS_VALID & 32768) != 0)
@@ -265,7 +268,7 @@ void write_toLog(void)
 	*BufferPointer = *BufferPointer + storeNumber(T2, Buffer, *BufferPointer);
 	*BufferPointer = *BufferPointer + storeNumber(T3, Buffer, *BufferPointer);
 */
-
+/*
 	// Write \r\n
 	Buffer[*BufferPointer] = 0x0d;
 	*BufferPointer = *BufferPointer + 1;
@@ -289,7 +292,7 @@ void write_toLog(void)
 			Buffer[*BufferPointer] = 0;
 		}
 
-	}
+	}*/
 }
 
 int storeNumber(uint16_t number, char* buffer, int offset)
@@ -1150,7 +1153,7 @@ void extPeripheralInit(void)
 	sendUSBMessage("Configuring GPS");
 #endif
 	// Setup GPS
-	//GPSSetDataOutput();
+	GPSSetDataOutput();
 #ifdef DEBUG_USB
 	sendUSBMessage("GPS configured");
 #endif

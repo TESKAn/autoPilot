@@ -514,22 +514,34 @@ static uint8_t  USBD_HID_DataOut (void *pdev, uint8_t epnum)
 					i = Buffer[2];
 					if((i & 1)!= 0)
 					{
-						USB_REQUEST_DATA_0 = 1;
+						USB_REQUEST_DATA_F64_1 = 1;
 					}
 					if((i & 2)!= 0)
 					{
-						USB_REQUEST_DATA_1 = 1;
+						USB_REQUEST_DATA_F32_1 = 1;
+					}
+					if((i & 3)!= 0)
+					{
+						USB_REQUEST_DATA_I32_1 = 1;
 					}
 					if((i & 4)!= 0)
 					{
-						USB_REQUEST_DATA_2 = 1;
+						USB_REQUEST_DATA_UI32_1 = 1;
+					}
+					if((i & 5)!= 0)
+					{
+						USB_REQUEST_DATA_I16_1 = 1;
+					}
+					if((i & 6)!= 0)
+					{
+						USB_REQUEST_DATA_UI16_1 = 1;
 					}
 					break;
 				}
 				case 4:
 				{
 					// Write SCR1
-					SCR1 = (Buffer[2] << 8) | Buffer[3];
+					//SCR1 = (Buffer[2] << 8) | Buffer[3];
 					break;
 				}
 				case 5:

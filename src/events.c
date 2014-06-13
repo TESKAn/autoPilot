@@ -24,7 +24,7 @@ void ADC_ISR_Handler(void)
 		// Get conversion result
 		result = ADC_GetConversionValue(ADC1);
 		// Store value
-		AIN0 = result;
+		AIn0 = result;
 		// Clear flag
 		ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
 		// Clear interrupt
@@ -36,7 +36,7 @@ void ADC_ISR_Handler(void)
 		// Get conversion result
 		result = ADC_GetConversionValue(ADC2);
 		// Store value
-		AIN2 = result;
+		AIn2 = result;
 		// Clear flag
 		ADC_ClearFlag(ADC2, ADC_FLAG_EOC);
 		// Clear interrupt
@@ -48,7 +48,7 @@ void ADC_ISR_Handler(void)
 		// Get conversion result
 		result = ADC_GetConversionValue(ADC3);
 		// Store value
-		AIN3 = result;
+		AIn3 = result;
 		// Clear flag
 		ADC_ClearFlag(ADC3, ADC_FLAG_EOC);
 		// Clear interrupt
@@ -129,11 +129,11 @@ void TIM4_ISR_Handler(void)
 		{
 			// Else transition from high to low
 			TIM4_IC1_HighWidth = result;
-			PWMIN_1 = (uint16_t)TIM4_IC1_HighWidth;
+			RCData.PWMIN_1 = (uint16_t)TIM4_IC1_HighWidth;
 			if(PWM_PASSTHROUGH)
 			{
-				TIM_SetCompare4(TIM1, PWMIN_1);
-				PWMOUT_1 = PWMIN_1;
+				TIM_SetCompare4(TIM1, RCData.PWMIN_1);
+				RCData.PWMOUT_1 = RCData.PWMIN_1;
 			}
 		}
 		TIM4_IC1_PreviousValue = dataTemp;
@@ -165,11 +165,11 @@ void TIM4_ISR_Handler(void)
 		{
 			// Else transition from high to low
 			TIM4_IC2_HighWidth = result;
-			PWMIN_2 = (uint16_t)TIM4_IC2_HighWidth;
+			RCData.PWMIN_2 = (uint16_t)TIM4_IC2_HighWidth;
 			if(PWM_PASSTHROUGH)
 			{
-				TIM_SetCompare3(TIM1, PWMIN_2);
-				PWMOUT_2 = PWMIN_2;
+				TIM_SetCompare3(TIM1, RCData.PWMIN_2);
+				RCData.PWMOUT_2 = RCData.PWMIN_2;
 			}
 		}
 		TIM4_IC2_PreviousValue = dataTemp;
@@ -201,11 +201,11 @@ void TIM4_ISR_Handler(void)
 		{
 			// Else transition from high to low
 			TIM4_IC3_HighWidth = result;
-			PWMIN_3 = (uint16_t)TIM4_IC3_HighWidth;
+			RCData.PWMIN_3 = (uint16_t)TIM4_IC3_HighWidth;
 			if(PWM_PASSTHROUGH)
 			{
-				TIM_SetCompare2(TIM1, PWMIN_3);
-				PWMOUT_3 = PWMIN_3;
+				TIM_SetCompare2(TIM1, RCData.PWMIN_3);
+				RCData.PWMOUT_3 = RCData.PWMIN_3;
 			}
 		}
 		TIM4_IC3_PreviousValue = dataTemp;
@@ -237,11 +237,11 @@ void TIM4_ISR_Handler(void)
 		{
 			// Else transition from high to low
 			TIM4_IC4_HighWidth = result;
-			PWMIN_4 = (uint16_t)TIM4_IC4_HighWidth;
+			RCData.PWMIN_4 = (uint16_t)TIM4_IC4_HighWidth;
 			if(PWM_PASSTHROUGH)
 			{
-				TIM_SetCompare1(TIM1, PWMIN_4);
-				PWMOUT_3 = PWMIN_4;
+				TIM_SetCompare1(TIM1, RCData.PWMIN_4);
+				RCData.PWMOUT_3 = RCData.PWMIN_4;
 			}
 		}
 		TIM4_IC4_PreviousValue = dataTemp;
@@ -278,11 +278,11 @@ void TIM8_CC_ISR_Handler(void)
 		{
 			// Else transition from high to low
 			TIM8_IC1_HighWidth = result;
-			PWMIN_5 = (uint16_t)TIM8_IC1_HighWidth;
+			RCData.PWMIN_5 = (uint16_t)TIM8_IC1_HighWidth;
 			if(PWM_PASSTHROUGH)
 			{
-				TIM_SetCompare4(TIM3, PWMIN_5);
-				PWMOUT_5 = PWMIN_5;
+				TIM_SetCompare4(TIM3, RCData.PWMIN_5);
+				RCData.PWMOUT_5 = RCData.PWMIN_5;
 			}
 		}
 		TIM8_IC1_PreviousValue = dataTemp;
@@ -313,11 +313,11 @@ void TIM8_CC_ISR_Handler(void)
 		{
 			// Else transition from high to low
 			TIM8_IC2_HighWidth = result;
-			PWMIN_6 = (uint16_t)TIM8_IC2_HighWidth;
+			RCData.PWMIN_6 = (uint16_t)TIM8_IC2_HighWidth;
 			if(PWM_PASSTHROUGH)
 			{
-				TIM_SetCompare3(TIM3, PWMIN_6);
-				PWMOUT_6 = PWMIN_6;
+				TIM_SetCompare3(TIM3, RCData.PWMIN_6);
+				RCData.PWMOUT_6 = RCData.PWMIN_6;
 			}
 		}
 		TIM8_IC2_PreviousValue = dataTemp;
@@ -349,11 +349,11 @@ void TIM8_CC_ISR_Handler(void)
 		{
 			// Else transition from high to low
 			TIM8_IC3_HighWidth = result;
-			PWMIN_7 = (uint16_t)TIM8_IC3_HighWidth;
+			RCData.PWMIN_7 = (uint16_t)TIM8_IC3_HighWidth;
 			if(PWM_PASSTHROUGH)
 			{
-				TIM_SetCompare2(TIM3, PWMIN_7);
-				PWMOUT_7 = PWMIN_7;
+				TIM_SetCompare2(TIM3, RCData.PWMIN_7);
+				RCData.PWMOUT_7 = RCData.PWMIN_7;
 			}
 		}
 		TIM8_IC3_PreviousValue = dataTemp;
@@ -385,11 +385,11 @@ void TIM8_CC_ISR_Handler(void)
 		{
 			// Else transition from high to low
 			TIM8_IC4_HighWidth = result;
-			PWMIN_8 = (uint16_t)TIM8_IC4_HighWidth;
+			RCData.PWMIN_8 = (uint16_t)TIM8_IC4_HighWidth;
 			if(PWM_PASSTHROUGH)
 			{
-				TIM_SetCompare1(TIM3, PWMIN_8);
-				PWMOUT_8 = PWMIN_8;
+				TIM_SetCompare1(TIM3, RCData.PWMIN_8);
+				RCData.PWMOUT_8 = RCData.PWMIN_8;
 			}
 		}
 		TIM8_IC4_PreviousValue = dataTemp;
@@ -442,7 +442,7 @@ void TIM1_BRK_TIM9_ISR_Handler(void)
 			// Calculate DC
 			strength = TIM9_IC1_LowWidth / strength;
 			strength = strength * 100;
-			RSSI_STRENGTH = (uint16_t)strength;
+			RCData.RSSI = (uint16_t)strength;
 
 		}
 		TIM9_IC1_PreviousValue = dataTemp;
@@ -482,11 +482,11 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			// Check input polarity
 			if(GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_5) != 0)
 			{
-				RSSI_STRENGTH = 0;
+				RCData.RSSI = 0;
 			}
 			else
 			{
-				RSSI_STRENGTH = 100;
+				RCData.RSSI = 100;
 			}
 		}
 		//DEBUG_PIN_TOGGLE;
@@ -568,6 +568,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			LED_ToggleCount = 0;
 			// Toggle LED
 			// Check GPS data valid - MODBUSREG[21] bit 15
+			/*
 			if(MODBUSReg[21] & 32768)
 			{
 				LED_OK_ON;
@@ -575,7 +576,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			else
 			{
 				LED_OK_TOGGLE;
-			}
+			}*/
 		}
 		// Call fatfs timer
 		SD_TimerCount++;
@@ -584,8 +585,6 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			SD_TimerCount = 0;
 			disk_timerproc();
 		}
-		// Call MODBUS timer function
-		MODBUS_Timer();
 		// Call PS timer
 		PS_Timer();
 		// Call sensor timer
@@ -668,7 +667,7 @@ void USART2_ISR_Handler(void)
 	{
 		i = USART_ReceiveData(USART2);
 		// Call MODBUS receive function
-		MODBUS_ProcessData(i);
+		//MODBUS_ProcessData(i);
 
 		//transferDMA(UART2DMAbuffer);
 	}
@@ -692,7 +691,6 @@ void USART3_ISR_Handler(void)
 	{
 		iData = USART_ReceiveData(USART3);
 		GPS_ReceiveProcess((uint8_t)iData);
-		//USART_SendData(USART2, iData);
 	}
 
 	if((USART3->SR & USART_FLAG_TC) != (u16)RESET)	//if transfer complete

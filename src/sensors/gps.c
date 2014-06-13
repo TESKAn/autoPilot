@@ -15,9 +15,15 @@
 
 ErrorStatus gps_initData(GPSData *data)
 {
+	data->altitude = 0;
+	data->latitude = 0;
+	data->longitude = 0;
+	data->speed = 0;
+	data->trackAngle = 0;
+	data->dataTime = 0;
+	data->deltaTime = 0;
 	data->valid = 1;
 	data->speed3D = vectorf_init(0);
-	data->heading = 0;
 	return SUCCESS;
 
 }
@@ -82,7 +88,25 @@ void GPSSetDataOutput(void)
 	int numbytes = 0;
 	int i = 0;
 	uint32_t GPSTime = 0;
+	uint32_t CurrentGPSTime = 0;
 	uint8_t checksum = 0;
+	// Store current time
+	GPSTime = getSystemTime();
+	// If data is transferring
+	if(GPS_SENDING)
+	{
+		// Wait end of transfer
+		//GPSTime = systemTime;
+		while(GPS_SENDING != 0)
+		{
+			// If waiting time is larger than GPS_TIMEOUT, break.
+			CurrentGPSTime = getSystemTime();
+			if(GPS_IMEOUT < (CurrentGPSTime - GPSTime))
+			{
+				break;
+			}
+		}
+	}
 	// Mark GPS is sending data
 	GPS_SENDING = 1;
 	// Fill data
@@ -120,17 +144,6 @@ void GPSSetDataOutput(void)
 
 	// Send to DMA
 	transferDMA_USART3(GPS_DataBuffer, numbytes);
-
-	// Wait end of transfer
-	//GPSTime = systemTime;
-	while(GPS_SENDING != 0)
-	{
-		// If waiting time is larger than GPS_TIMEOUT, break.
-		//if((systemTime - GPSTime)> GPS_IMEOUT)
-		//{
-		//	break;
-		//}
-	}
 }
 
 uint8_t GPS_GetChar(uint8_t data, FlagStatus part)
@@ -181,7 +194,7 @@ uint8_t GPS_CharToByte(uint8_t data)
 void GPS_ReceiveProcess(uint8_t data)
 {
 	uint16_t temp = 0;
-	uint32_t timeCalculation = 0;
+	//uint32_t timeCalculation = 0;
 	// Check that we are not sending data. If we are, do not mess with the buffer
 	if(!GPS_SENDING)
 	{

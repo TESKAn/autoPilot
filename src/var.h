@@ -58,25 +58,69 @@ typedef union
 // Float/char/uint32 typedef
 typedef union
 {
-	float32_t f;
-	unsigned char ch[4];
-	uint32_t ui;
+	float64_t f64;
+	float32_t f32[2];
+	unsigned char ch[8];
+	uint32_t ui32[2];
+	int32_t i32[2];
+	uint16_t ui16[4];
+	int16_t i16[4];
 	struct
 	{
 	    unsigned int mantisa : 23;
 	    unsigned int exponent : 8;
 	    unsigned int sign : 1;
 	} parts;
-} C_Float;
+}__attribute__((aligned(4),packed)) CONVERTNUM;
+
+// RC PWM in typedef
+typedef struct
+{
+	// Input values
+	uint16_t PWMIN_1;
+	uint16_t PWMIN_2;
+	uint16_t PWMIN_3;
+	uint16_t PWMIN_4;
+	uint16_t PWMIN_5;
+	uint16_t PWMIN_6;
+	uint16_t PWMIN_7;
+	uint16_t PWMIN_8;
+
+	// Output values
+	uint16_t PWMOUT_1;
+	uint16_t PWMOUT_2;
+	uint16_t PWMOUT_3;
+	uint16_t PWMOUT_4;
+	uint16_t PWMOUT_5;
+	uint16_t PWMOUT_6;
+	uint16_t PWMOUT_7;
+	uint16_t PWMOUT_8;
+	uint16_t PWMOUT_9;
+	uint16_t PWMOUT_10;
+	uint16_t PWMOUT_11;
+	uint16_t PWMOUT_12;
+
+	uint16_t RSSI;
+
+}__attribute__((aligned(4),packed)) RCDATA, *PRCDATA;;
 
 extern FUSION_CORE fusionData;
-
-// STM studio vars
-extern volatile int exportVars[64];
 
 // Flag variable
 extern volatile Flag flag0;
 extern volatile Flag flag1;
+extern volatile Flag APStatus1;
+extern volatile Flag APStatus2;
+extern volatile Flag USBFlags;
+
+// A/D variables
+extern uint16_t AIn0;
+extern uint16_t AIn1;
+extern uint16_t AIn2;
+extern uint16_t AIn3;
+
+// R/C variable
+extern RCDATA RCData;
 
 extern volatile char* fileBuffer;
 extern volatile float32_t globalFloatTemp;
@@ -175,7 +219,7 @@ extern uint8_t Buffer[64];
 extern char StringBuffer[161];			// Buffer for string manipulation
 extern char FSBuffer[FATFS_BUFF_SIZE];	// Pointer to buffer for file write
 
-extern volatile C_Float floatToUint32;
+extern volatile CONVERTNUM convertNumFormat;
 
 extern volatile uint32_t fastDataSelect;
 

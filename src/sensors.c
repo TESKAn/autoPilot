@@ -274,7 +274,7 @@ void copySensorData(void)
 	// Call fusion update function
 	fusion_dataUpdate(&fusionData, &I2C2_sensorBufRX);
 
-
+/*
 	ACC_X = I2C2_sensorBufRX.data.accX;
 	ACC_Y = I2C2_sensorBufRX.data.accY;
 	ACC_Z = I2C2_sensorBufRX.data.accZ;
@@ -288,7 +288,7 @@ void copySensorData(void)
 	MAG_Z = I2C2_sensorBufRX.data.magZ;
 
 	BARO = (((I2C2_sensorBufRX.data.pressure.statusPressure) & 0x00ffff00) >> 8);
-
+*/
 
 	// Mark end of sensor updating
 	SENSORS_UPDATING = 0;
@@ -296,13 +296,6 @@ void copySensorData(void)
 
 	// Store angles
 	storeAHRSAngles(&fusionData);
-
-	// Check if we are sending constantly
-	if(CONSTANT_SERIAL_UPDATE)
-	{
-		// If yes, send data
-		MODBUS_SendMessage();
-	}
 
 	// Check if we are saving to log
 	if(SD_WRITE_LOG && SCR2_LOGOPEN)

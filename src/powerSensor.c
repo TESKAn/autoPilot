@@ -51,7 +51,7 @@ void PS_Timer(void)
 			PS_WAITINGDATA = 0;
 			PSBUSY = 0;
         	// Mark sensor not OK
-        	SCR2 = SCR2 & ~SCR2_POWEROK;
+        	//SCR2 = SCR2 & ~SCR2_POWEROK;
 		}
 	}
 	if(PS_ReceiveStateVar != PS_IDLE)
@@ -62,7 +62,7 @@ void PS_Timer(void)
 			PS_WAITINGDATA = 0;
 			PSBUSY = 0;
         	// Mark sensor not OK
-        	SCR2 = SCR2 & ~SCR2_POWEROK;
+        	//SCR2 = SCR2 & ~SCR2_POWEROK;
 		}
 	}
 }
@@ -133,14 +133,14 @@ void PSReset(void)
 }
 
 void processPSData(void)
-{
+{/*
 	CURRENT = PS_DATA.data.Current;
 	MAH = PS_DATA.data.mAh;
 	VOLTAGE = PS_DATA.data.Voltage;
 	T1 = PS_DATA.data.T_1;
 	T2 = PS_DATA.data.T_2;
 	T3 = PS_DATA.data.T_3;
-	PS_ReceiveStateVar = PS_IDLE;
+	PS_ReceiveStateVar = PS_IDLE;*/
 }
 
 void PowerSensorCommProcess(uint8_t data)

@@ -61,7 +61,8 @@ typedef union
 
 #define GPS_RECEIVE
 
-#define GPS_IMEOUT		1000
+// How long to wait for GPS send end. Each tick is 0.1 ms
+#define GPS_IMEOUT		100000
 
 #define USE_TIMER
 

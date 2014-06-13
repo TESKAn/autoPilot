@@ -9,12 +9,22 @@
 
 FUSION_CORE fusionData;
 
-// STM studio vars
-volatile int exportVars[64];
-
-// Flag variable
+// Flag variables
 volatile Flag flag0;
 volatile Flag flag1;
+volatile Flag APStatus1;
+volatile Flag APStatus2;
+
+volatile Flag USBFlags;
+
+// A/D variables
+uint16_t AIn0 = 0;
+uint16_t AIn1 = 0;
+uint16_t AIn2 = 0;
+uint16_t AIn3 = 0;
+
+// R/C variable
+RCDATA RCData;
 
 volatile char* fileBuffer;
 volatile float32_t globalFloatTemp = 0;
@@ -114,7 +124,7 @@ uint8_t Buffer[64];
 char StringBuffer[161];			// Buffer for string manipulation
 char FSBuffer[FATFS_BUFF_SIZE];	// Pointer to buffer for file write
 
-volatile C_Float floatToUint32;
+volatile CONVERTNUM convertNumFormat;
 
 volatile uint32_t fastDataSelect = 0;
 

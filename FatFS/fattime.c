@@ -12,6 +12,7 @@ DWORD get_fattime (void)
 	//RTC_t rtc;
 
 	//rtc_gettime( &rtc );
+	/*
 	if((GPS_VALID & _BIT15) != 0)
 	{
 	res =  (((DWORD)GPS_YEAR - 1980) << 25)
@@ -21,7 +22,7 @@ DWORD get_fattime (void)
 			| (WORD)(GPS_MINUTES << 5)
 			| (WORD)(GPS_SECONDS >> 1);
 		return res;
-	}
-	else return 0x20c96ca0;	// return 18.12.2013 13:37:00
+	}*/
+	return 0x20c96ca0;	// return 18.12.2013 13:37:00
 }
 

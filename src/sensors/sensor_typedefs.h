@@ -50,10 +50,15 @@ typedef struct
 
 typedef struct
 {
+	float32_t altitude;
+	// Use double for lat, lon
+	float64_t latitude;
+	float64_t longitude;
+	float32_t speed;
+	float32_t trackAngle;
+	uint32_t dataTime;
+	uint32_t deltaTime;
 	Vectorf speed3D;
-	float32_t heading;
-	// latitude
-	float32_t latitude;
 	uint8_t valid;
 	uint8_t nerabim[3];
 }__attribute__((aligned(4),packed)) GPSData, *PGPSData;

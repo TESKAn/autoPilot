@@ -85,12 +85,14 @@ int main(void)
 
 	//SD_CardInfo cardinfo;
 	int i = 0;
+	int j = 0;
 	int registerCount = 0;
 	// Startup delay - 0,5 sec
 	Delaynus(500000);
 	// Configure hardware
 	System_Config();
 	// Set default PWM out values
+	/*
 	PWMOUT_1 = TIM1_PULSE;
 	PWMOUT_2 = TIM1_PULSE;
 	PWMOUT_3 = TIM1_PULSE;
@@ -103,7 +105,7 @@ int main(void)
 	PWMOUT_10 = TIM1_PULSE;
 	PWMOUT_11 = TIM1_PULSE;
 	PWMOUT_12 = TIM1_PULSE;
-
+*/
 	globalVar = 0.001f;
 
 	// Initialize USB
@@ -118,6 +120,9 @@ int main(void)
 	  &USR_cb);
 	// Peripherals initialized, wait 1 sec
 	Delayms(100);
+
+	// Initialize USB data arrays
+	usb_initVars();
 
 	// Initialize external peripheral
 	extPeripheralInit();
@@ -135,25 +140,55 @@ int main(void)
 	// Mount SD card
     while (1)
     {
-        // Check MODBUS for messages
-        if(MB_HASDATA)
-        {
-        	// Check that we are not updating sensor data, else skip
-        	if(!SENSORS_UPDATING)
+    	// Check USB data requests
+    	if(USB_REQUEST_DATA_F64_1)
+    	{
+    		USB_REQUEST_DATA_F64_1 = 0;
+        	// Set register pointer
+        	registerCount = 0;
+        	// Store data
+        	Buffer[0] = 2;
+        	Buffer[1] = 1;
+        	registerCount = 2;
+        	for(i=0; i<7;i++)
         	{
-				// Execute process data function
-				MODBUS_ExecuteFunction();
-				// Send data
-				// Enable DMA transfer
-				transferDMA_USART2(MODBUSData.bytes.cdata, MODBUSData.bytes.uiDataCount);
-				// Set MODBUS to IDLE
-				MB_SETTOIDLE;
+        		convertNumFormat.f64 = *USBFloat64Vars1[i];
+        		for(j=0;j<8;j++)
+        		{
+        			Buffer[registerCount] = convertNumFormat.ch[j];
+        			registerCount++;
+        		}
         	}
-        }
+        	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
+    	}
+
+    	if(USB_REQUEST_DATA_F32_1)
+    	{
+    		USB_REQUEST_DATA_F32_1 = 0;
+        	// Set register pointer
+        	registerCount = 0;
+        	// Store data
+        	Buffer[0] = 2;
+        	Buffer[1] = 2;
+        	registerCount = 2;
+        	for(i=0; i<15;i++)
+        	{
+        		convertNumFormat.f32[0] = *USBFloat32Vars1[i];
+        		for(j=0;j<4;j++)
+        		{
+        			Buffer[registerCount] = convertNumFormat.ch[j];
+        			registerCount++;
+        		}
+        	}
+        	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
+    	}
+
+        // Check MODBUS for messages
+    	/*
         //check SCR
         if(SCR1 & SCR_01)
         {
-        	GPSSetDataOutput();
+        	//GPSSetDataOutput();
         	SCR1 = SCR1 & ~SCR_01;
         }
         if(SCR1 & SCR_02)
@@ -238,46 +273,45 @@ int main(void)
         }
         if(SCR1 & SCR_13)
         {
-        	/*
         	temp = ahrs_data.PIData.Kix / 10 + 0.0005f;
         	ahrs_data.PIData.Kix = ahrs_data.PIData.Kix + temp;
         	ahrs_data.PIData.Kiy = ahrs_data.PIData.Kiy + temp;
         	ahrs_data.PIData.Kiz = ahrs_data.PIData.Kiz + temp;
-    		float32ToStr(ahrs_data.PIData.Kix, "Ki=", StringBuffer);*/
+    		float32ToStr(ahrs_data.PIData.Kix, "Ki=", StringBuffer);
     		sendUSBMessage(StringBuffer);
         	SCR1 = SCR1 & ~SCR_13;
         }
         if(SCR1 & SCR_14)
-        {/*
+        {
         	temp = ahrs_data.PIData.Kix / 10 + 0.0005f;
         	ahrs_data.PIData.Kix = ahrs_data.PIData.Kix - temp;
         	ahrs_data.PIData.Kiy = ahrs_data.PIData.Kiy - temp;
         	ahrs_data.PIData.Kiz = ahrs_data.PIData.Kiz - temp;
-    		float32ToStr(ahrs_data.PIData.Kix, "Ki=", StringBuffer);*/
+    		float32ToStr(ahrs_data.PIData.Kix, "Ki=", StringBuffer);
     		sendUSBMessage(StringBuffer);
         	SCR1 = SCR1 & ~SCR_14;
         }
         if(SCR1 & SCR_15)
-        {/*
+        {
         	temp = ahrs_data.PIData.Kpx / 10 + 0.0005f;
         	ahrs_data.PIData.Kpx = ahrs_data.PIData.Kpx + temp;
         	ahrs_data.PIData.Kpy = ahrs_data.PIData.Kpy + temp;
         	ahrs_data.PIData.Kpz = ahrs_data.PIData.Kpz + temp;
         	//globalVar = globalVar + 0.0005f;
     		//float32ToStr(globalVar, "GV=", StringBuffer);
-        	float32ToStr(ahrs_data.PIData.Kpx, "Kp=", StringBuffer);*/
+        	float32ToStr(ahrs_data.PIData.Kpx, "Kp=", StringBuffer);
     		sendUSBMessage(StringBuffer);
         	SCR1 = SCR1 & ~SCR_15;
         }
         if(SCR1 & SCR_16)
-        {/*
+        {
         	temp = ahrs_data.PIData.Kpx / 10 + 0.0005f;
         	ahrs_data.PIData.Kpx = ahrs_data.PIData.Kpx - temp;
         	ahrs_data.PIData.Kpy = ahrs_data.PIData.Kpy - temp;
         	ahrs_data.PIData.Kpz = ahrs_data.PIData.Kpz - temp;
         	//globalVar = globalVar - 0.0005f;
     		//float32ToStr(globalVar, "GV=", StringBuffer);
-        	float32ToStr(ahrs_data.PIData.Kpx, "Kp=", StringBuffer);*/
+        	float32ToStr(ahrs_data.PIData.Kpx, "Kp=", StringBuffer);
     		sendUSBMessage(StringBuffer);
         	SCR1 = SCR1 & ~SCR_16;
         }
@@ -363,6 +397,7 @@ int main(void)
         	SCR2 = SCR2 | SCR2_MAGOK;
         	SCR2 = SCR2 | SCR2_BAROK;
         }
+        */
         // Check pin C0
         // If 0, stop SD write
         // If 1, start SD write
