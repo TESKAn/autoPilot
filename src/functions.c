@@ -52,21 +52,12 @@ ErrorStatus FS_Initialize(void)
 
 void storeAHRSAngles(FUSION_CORE *data)
 {
-	float32_t temp = 0;
-	int16_t temp1 = 0;
-
 	// Store angles
-	temp = -asinf(data->_fusion_DCM.c.x) * 1000;//    ahrs_data.rotationMatrix.vector.pData[Rzx]) * 1000;
-	temp1 = (int16_t)temp;
-	//AHRS_PITCH = (uint16_t) temp1;
+	fusionData.ROLLPITCHYAW.roll = atan2f(data->_fusion_DCM.c.y, data->_fusion_DCM.c.z);
 
-	temp = atan2f(data->_fusion_DCM.c.y, data->_fusion_DCM.c.z) * 1000; // ahrs_data.rotationMatrix.vector.pData[Rzy],  ahrs_data.rotationMatrix.vector.pData[Rzz]) * 1000;
-	temp1 = (int16_t)temp;
-	//AHRS_ROLL = (uint16_t) temp1;
+	fusionData.ROLLPITCHYAW.pitch = -asinf(data->_fusion_DCM.c.x);
 
-	temp = atan2f( data->_fusion_DCM.b.x, data->_fusion_DCM.a.x) * 1000;// ahrs_data.rotationMatrix.vector.pData[Ryx],  ahrs_data.rotationMatrix.vector.pData[Rxx]) * 1000;
-	temp1 = (int16_t)temp;
-	//AHRS_YAW = (uint16_t) temp1;
+	fusionData.ROLLPITCHYAW.yaw = atan2f( data->_fusion_DCM.b.x, data->_fusion_DCM.a.x);
 }
 
 void openLog(void)
@@ -1329,7 +1320,7 @@ void sendUSBMessage(char* message)
  			len = 60;
  		}
 		Buffer[0] = 2;
-		Buffer[1] = 3;
+		Buffer[1] = 0;
 		for(i = 0; i < len; i++)
 		{
 			Buffer[i + 2] =  (uint8_t)message[i];

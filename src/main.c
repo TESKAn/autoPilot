@@ -149,7 +149,8 @@ int main(void)
         	// Store data
         	Buffer[0] = 2;
         	Buffer[1] = 1;
-        	registerCount = 2;
+        	Buffer[2] = 1;
+        	registerCount = 3;
         	for(i=0; i<7;i++)
         	{
         		convertNumFormat.f64 = *USBFloat64Vars1[i];
@@ -169,8 +170,9 @@ int main(void)
         	registerCount = 0;
         	// Store data
         	Buffer[0] = 2;
-        	Buffer[1] = 2;
-        	registerCount = 2;
+        	Buffer[1] = 1;
+        	Buffer[2] = 2;
+        	registerCount = 3;
         	for(i=0; i<15;i++)
         	{
         		convertNumFormat.f32[0] = *USBFloat32Vars1[i];
@@ -397,7 +399,7 @@ int main(void)
         	SCR2 = SCR2 | SCR2_MAGOK;
         	SCR2 = SCR2 | SCR2_BAROK;
         }
-        */
+
         // Check pin C0
         // If 0, stop SD write
         // If 1, start SD write
@@ -422,7 +424,7 @@ int main(void)
         		closeLog();
         	}
         }
-
+*/
         // Check log write buffers
         if(SD_WRITING_BUF1)
         {

@@ -41,14 +41,7 @@ void sensorTimer(void)
 		sensoruTimeCounter = 0;
 		// Function is called once every millisecond
 		sensorTimeCounter++;
-		/*
-#ifdef DEBUG_USB
-		if(sensorTimeCounter > 2)
-		{
-			int16ToStr(sensorTimeCounter, "Timer=", StringBuffer);
-			sendUSBMessage(StringBuffer);
-		}
-#endif*/
+
 		if(sensorTimeCounter > 65000)
 		{
 			sensorTimeCounter = 65000;

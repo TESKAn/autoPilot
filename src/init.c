@@ -1345,7 +1345,7 @@ void System_Config(void)
 	init_Timer14();
 	// USART ports
 	init_USART1();
-	//init_USART2();
+	init_USART2();
 	init_USART3();
 	// External interrupt
 	init_EXTI();

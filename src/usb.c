@@ -30,7 +30,6 @@ void usb_initVars(void)
 	USBFloat64Vars1[0] = &fusionData._gps.latitude;
 	USBFloat64Vars1[1] = &fusionData._gps.longitude;
 
-
 	USBFloat32Vars1[0] = &fusionData._gyro.vector.x;
 	USBFloat32Vars1[1] = &fusionData._gyro.vector.y;
 	USBFloat32Vars1[2] = &fusionData._gyro.vector.z;
@@ -45,4 +44,9 @@ void usb_initVars(void)
 
 	USBFloat32Vars1[9] = &fusionData._altimeter.pressure;
 	USBFloat32Vars1[10] = &fusionData._altimeter.altitude;
+
+	USBFloat32Vars1[11] = &fusionData.ROLLPITCHYAW.roll;
+	USBFloat32Vars1[12] = &fusionData.ROLLPITCHYAW.pitch;
+	USBFloat32Vars1[13] = &fusionData.ROLLPITCHYAW.yaw;
+
 }

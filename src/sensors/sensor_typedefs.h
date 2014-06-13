@@ -117,6 +117,14 @@ typedef struct
 	// DCM matrix
 	Matrixf _fusion_DCM;
 
+	// Roll pitch yaw
+	struct
+	{
+		float32_t roll;
+		float32_t pitch;
+		float32_t yaw;
+	}ROLLPITCHYAW;
+
 	// Fusion parameters
 	struct
 	{

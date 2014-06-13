@@ -10,11 +10,11 @@
 #ifdef __cplusplus
  extern "C" {
 #endif
-
+/*
 #define USB_OTG_HS_CORE
 #define USE_USB_OTG_HS
 #define USE_EMBEDDED_PHY
-
+*/
 void usb_initVars(void);
 
 #ifdef __cplusplus
