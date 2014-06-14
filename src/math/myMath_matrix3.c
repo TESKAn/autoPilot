@@ -218,10 +218,11 @@ ErrorStatus matrix3_normalizeOrthogonalizeMatrix(Matrixf * rotMatrix, float32_t 
 	// Calculate error = X.Y
 	status = vectorf_dotProduct(&rotMatrix->a, &rotMatrix->b, &error);
 	// If error is larger than we permit, return ERROR
+	/*
 	if(maxError < error)
 	{
 		return ERROR;
-	}
+	}*/
 	// Add half error to X, half to Y
 	error = error / 2;
 	status = vectorf_scalarProduct(&rotMatrix->a, error, &tempVector);
@@ -229,7 +230,15 @@ ErrorStatus matrix3_normalizeOrthogonalizeMatrix(Matrixf * rotMatrix, float32_t 
 
 	status = vectorf_substract(&rotMatrix->a, &tempVector1, &rotMatrix->a);
 	status = vectorf_substract(&rotMatrix->b, &tempVector, &rotMatrix->b);
-	// Normalize a
+	// Normalize a, b
+	status = vectorf_normalize(&rotMatrix->a);
+	status = vectorf_normalize(&rotMatrix->b);
+	// Calculate Z as cross product of X and Y
+	status = vectorf_crossProduct(&rotMatrix->a, &rotMatrix->b, &rotMatrix->c);
+	// Normalize c
+	status = vectorf_normalize(&rotMatrix->c);
+
+	/*
 	status = vectorf_dotProduct(&rotMatrix->a, &rotMatrix->a, &error);
 	error = 3 - error;
 	error = error / 2;
@@ -238,7 +247,7 @@ ErrorStatus matrix3_normalizeOrthogonalizeMatrix(Matrixf * rotMatrix, float32_t 
 	if(maxError < error)
 	{
 		return ERROR;
-	}*/
+	}*//*
 	status = vectorf_scalarProduct(&rotMatrix->a, error, &rotMatrix->a);
 	// Normalize b
 	status = vectorf_dotProduct(&rotMatrix->b, &rotMatrix->b, &error);
@@ -249,7 +258,7 @@ ErrorStatus matrix3_normalizeOrthogonalizeMatrix(Matrixf * rotMatrix, float32_t 
 	if(maxError < error)
 	{
 		return ERROR;
-	}*/
+	}*//*
 	status = vectorf_scalarProduct(&rotMatrix->b, error, &rotMatrix->b);
 	// Calculate Z as cross product of X and Y
 	status = vectorf_crossProduct(&rotMatrix->a, &rotMatrix->b, &rotMatrix->c);
@@ -262,9 +271,9 @@ ErrorStatus matrix3_normalizeOrthogonalizeMatrix(Matrixf * rotMatrix, float32_t 
 	if(maxError < error)
 	{
 		return ERROR;
-	}*/
+	}*//*
 	status = vectorf_scalarProduct(&rotMatrix->c, error, &rotMatrix->c);
-
+*/
 	// Check if FPU result is OK
 	if(!FPU_EXCEPTION)
 	{

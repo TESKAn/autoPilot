@@ -59,7 +59,8 @@ void ADC_ISR_Handler(void)
 void DMA1_Stream4_ISR_Handler(void)
 {
 	// Clear GPS is sending data
-	GPS_SENDING = 0;
+	GPS_Sending(0);
+	//GPS_SENDING = 0;
 	DMA_ClearITPendingBit(DMA1_Stream4, DMA_IT_TC);
 	DMA_ITConfig(DMA_USART3, DMA_IT_TC, DISABLE);
 }

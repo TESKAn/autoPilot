@@ -31,6 +31,7 @@ typedef struct
 	int16_t ostanek;
 }__attribute__((aligned(4),packed)) Vectori16;
 
+// a,b,c are matrix rows
 typedef struct
 {
 	Vectorf a;

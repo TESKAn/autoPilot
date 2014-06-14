@@ -9,9 +9,16 @@
 #include "arm_math.h"
 #include "math/myMath_typedefs.h"
 #include "math/myMath_vec3.h"
+#include "math/myMath_matrix3.h"
 #include "sensor_typedefs.h"
 #include "gps.h"
 #include "functions.h"
+
+void GPS_Sending(int state)
+{
+	if(0 != state) GPS_SENDING = 1;
+	else GPS_SENDING = 0;
+}
 
 ErrorStatus gps_initData(GPSData *data)
 {
@@ -48,8 +55,6 @@ void GPSStopOutput(void)
 	int numbytes = 0;
 	int i = 0;
 	uint8_t checksum = 0;
-	// Mark GPS is sending data
-	GPS_SENDING = 1;
 	// Fill data
 	GPS_DataBuffer[0] = '$';	// Preamble, $ sign
 	GPS_DataBuffer[1] = 'P';
@@ -194,7 +199,7 @@ uint8_t GPS_CharToByte(uint8_t data)
 void GPS_ReceiveProcess(uint8_t data)
 {
 	uint16_t temp = 0;
-	//uint32_t timeCalculation = 0;
+	uint32_t timeCalculation = 0;
 	// Check that we are not sending data. If we are, do not mess with the buffer
 	if(!GPS_SENDING)
 	{
@@ -210,15 +215,17 @@ void GPS_ReceiveProcess(uint8_t data)
 					GPS_Digits[0] = 0;
 					GPS_Digits[1] = 0;
 					GPS_Digits_Count = 0;
-					//GPSFLAG_CR_RECEIVED = 0;
-					//GPSFLAG_CHECKSUM_RESET = 1;
+					GPSFLAG_CR_RECEIVED = 0;
+					GPSFLAG_CHECKSUM_RESET = 1;
 					// Mark new data time
-					//ahrs_data.GPSData.dataStartTime = getSystemTime();
-					//timeCalculation = ahrs_data.GPSData.dataTime;
-					//ahrs_data.GPSData.dataTime = getSystemTime();
-					//ahrs_data.GPSData.deltaTime = ahrs_data.GPSData.dataTime - timeCalculation;
+					//fusionData._gps.dataTime = getSystemTime();
+					timeCalculation = fusionData._gps.dataTime;
+					fusionData._gps.dataTime = getSystemTime();
+					fusionData._gps.deltaTime = fusionData._gps.dataTime - timeCalculation;
+					// Mark data is being updated
+					fusionData._gps.dataOK = 0;
 					// Store rotation matrix
-					//ahrs_data.GPSReference = ahrs_data.rotationMatrix;
+					matrix3_copy(&fusionData._fusion_DCM, &fusionData._GPS_DCM);
 				}
 				break;
 			}
@@ -236,13 +243,13 @@ void GPS_ReceiveProcess(uint8_t data)
 							GPS_Digits_Count = 0;
 							if((GPS_Digits[2] == 'G') && (GPS_Digits[3] == 'G') && (GPS_Digits[4] == 'A'))
 							{
-								//GPSFLAG_GGA = 1;
-								//GPSFLAG_RMC = 0;
+								GPSFLAG_GGA = 1;
+								GPSFLAG_RMC = 0;
 							}
 							else if((GPS_Digits[2] == 'R') && (GPS_Digits[3] == 'M') && (GPS_Digits[4] == 'C'))
 							{
-								//GPSFLAG_GGA = 0;
-								//GPSFLAG_RMC = 1;
+								GPSFLAG_GGA = 0;
+								GPSFLAG_RMC = 1;
 							}
 							else
 							{
@@ -359,8 +366,6 @@ void GPS_ReceiveProcess(uint8_t data)
 							// Store year
 							GPS_YEAR_T = ((GPS_Digits[4] - 48) * 10) + (GPS_Digits[5] - 48);
 							// Go to next data
-							//GPS_ProcesState = GPS_RECEIVE_NUMBER;
-							//GPS_NextData = GPS_NEXTDATA_MAGVAR;
 
 							GPS_ProcesState = GPS_WAITFOREND;
 							GPS_NextData = GPS_NEXTDATA_VOID;
@@ -513,26 +518,47 @@ void GPS_ReceiveProcess(uint8_t data)
 								//MODBUSReg[temp + 2] = GPS_RECDATA[temp];
 							}
 							// Check if data is valid
-							//if((GPS_VALID & BIT15) != 0)
+							//if((fusionData._gps.valid & 0x8000) != 0)
 							{
-								/*
-								// Store to GPS_Data as floats
-								ahrs_data.GPSData.dataValid = INVALID;
-								ahrs_data.GPSData.altitude = intToFloat(GPS_ALTITUDE, GPS_ALTITUDE_FRAC);
 								// Latitude, longitude in rad = res * (pi/180*180)
-								ahrs_data.GPSData.latitude = intToFloat(GPS_LATITUDE, GPS_LATITUDE_FRAC);
-								ahrs_data.GPSData.latitude = (ahrs_data.GPSData.latitude * PI)/32400;
-								ahrs_data.GPSData.longitude = intToFloat(GPS_LONGITUDE, GPS_LONGITUDE_FRAC);
-								ahrs_data.GPSData.longitude = (ahrs_data.GPSData.longitude * PI)/10800;
+								fusionData._gps.latitude = (float64_t)intToFloat(GPS_LATITUDE_T, GPS_LATITUDE_FRAC_T);
+								fusionData._gps.latitude = (fusionData._gps.latitude * PI)/32400;
+								fusionData._gps.longitude = (float64_t)intToFloat(GPS_LONGITUDE_T, GPS_LONGITUDE_FRAC_T);
+								fusionData._gps.longitude = (fusionData._gps.longitude * PI)/10800;
+
 								// Convert speed from knots to m/2
-								ahrs_data.GPSData.speed = intToFloat(GPS_SPEED, GPS_SPEED_FRAC) * 0.51444f;
-								ahrs_data.GPSData.trackAngle = intToFloat(GPS_TRACKANGLE, GPS_TRACKANGLE_FRAC);
-								ahrs_data.GPSData.dataTime = ahrs_data.GPSData.dataStartTime;
-								ahrs_data.GPSData.dataValid = VALID;
-								// Update rotation matrix
-								//ahrs_updateGPSToGyro();
-								 *
-								 */
+								fusionData._gps.speed = intToFloat(GPS_SPEED_T, GPS_SPEED_FRAC_T) * 0.51444f;
+
+								fusionData._gps.altitude = intToFloat(GPS_ALTITUDE_T, GPS_ALTITUDE_FRAC_T);
+
+								fusionData._gps.trackAngle = intToFloat(GPS_TRACKANGLE_T, GPS_TRACKANGLE_FRAC_T);
+
+								fusionData._gps.hdop = intToFloat(GPS_HDOP_T, GPS_HDOP_FRAC_T);
+
+								fusionData._gps.gg = intToFloat(GPS_GG_T, GPS_GG_FRAC_T);
+
+								fusionData._gps.magvar = intToFloat(GPS_MAGVAR_T,GPS_MAGVAR_FRAC_T);
+
+								fusionData._gps.satStatus = GPS_SATSTATUS_T;
+
+								fusionData._gps.hours = GPS_HOURS_T;
+								fusionData._gps.minutes = GPS_MINUTES_T;
+								fusionData._gps.seconds = GPS_SECONDS_T;
+								fusionData._gps.miliseconds = GPS_MILISECONDS_T;
+								fusionData._gps.ns_ew = GPS_NS_EW_T;
+								fusionData._gps.magvar_ew = GPS_MAGWAR_EW_T;
+								fusionData._gps.valid = GPS_VALID_T;
+
+
+
+								// Store to GPS_Data as floats
+								fusionData._gps.day = (uint8_t)GPS_DAY_T;
+								fusionData._gps.month = (uint8_t)GPS_MONTH_T;
+								fusionData._gps.year = (uint8_t)GPS_YEAR_T;
+
+								// Mark data is OK to use
+								fusionData._gps.dataOK = 1;
+
 							}
 							// Mark GPS OK
 							//SCR2 = SCR2 | SCR2_GPSOK;

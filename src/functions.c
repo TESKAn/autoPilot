@@ -53,6 +53,7 @@ ErrorStatus FS_Initialize(void)
 void storeAHRSAngles(FUSION_CORE *data)
 {
 	// Store angles
+
 	fusionData.ROLLPITCHYAW.roll = atan2f(data->_fusion_DCM.c.y, data->_fusion_DCM.c.z);
 
 	fusionData.ROLLPITCHYAW.pitch = -asinf(data->_fusion_DCM.c.x);
@@ -1260,6 +1261,8 @@ void transferDMA_USART2(uint8_t *data, int length)
 
 void transferDMA_USART3(uint8_t *data, int length)
 {
+	// Mark GPS is sending data
+	GPS_Sending(1);
 	DMA_InitTypeDef DMAInitStructure;
 	// Configure USART3 DMA
 	//deinit DMA channel
@@ -1294,7 +1297,7 @@ void transferDMA_USART3(uint8_t *data, int length)
 	DMA_ITConfig(DMA_USART3, DMA_IT_TC, ENABLE);
 }
 
-float32_t intToFloat(int whole, int frac)
+float32_t intToFloat(uint16_t whole, uint16_t frac)
 {
 	float32_t result = 0;
 	float32_t temp = 0;

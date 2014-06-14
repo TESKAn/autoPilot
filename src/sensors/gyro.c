@@ -53,14 +53,15 @@ ErrorStatus gyro_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 	data->_gyro.vectorRaw.z = (float32_t)rawData[2] * data->_gyro.gyroRate;
 
 	// Remove offset
+	/*
 	rawData[0] -= data->_gyro.offset.x;
 	rawData[1] -= data->_gyro.offset.y;
 	rawData[2] -= data->_gyro.offset.z;
-
+	 */
 	// Calculate rate in rad/sec
-	data->_gyro.vector.x = (float32_t)rawData[0] * data->_gyro.gyroRate;
-	data->_gyro.vector.y = (float32_t)rawData[1] * data->_gyro.gyroRate;
-	data->_gyro.vector.z = (float32_t)rawData[2] * data->_gyro.gyroRate;
+	data->_gyro.vector.x = data->_gyro.vectorRaw.x;
+	data->_gyro.vector.y = data->_gyro.vectorRaw.y;
+	data->_gyro.vector.z = data->_gyro.vectorRaw.z;
 
 	// Remove drift error
 	// Drift error is calculated in different .c/.h file

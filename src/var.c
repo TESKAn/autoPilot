@@ -7,6 +7,10 @@
 
 #include "allinclude.h"
 
+// Variable for main loop state execution machine
+
+volatile uint16_t mainLoopState = 0;
+
 FUSION_CORE fusionData;
 
 // Flag variables

@@ -90,6 +90,7 @@ extern volatile FlagGPS GPSFlag;
 #define GPSFLAG_CHECKSUM_RESET	GPSFlag.bits.BIT6
 #define GPS_SENDING				GPSFlag.bits.BIT7
 
+void GPS_Sending(int state);
 void GPSStopOutput(void);
 void GPSSetDataOutput(void);
 uint8_t GPS_GetChar(uint8_t data, FlagStatus part);

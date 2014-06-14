@@ -104,6 +104,8 @@ typedef struct
 
 }__attribute__((aligned(4),packed)) RCDATA, *PRCDATA;;
 
+extern volatile uint16_t mainLoopState;
+
 extern FUSION_CORE fusionData;
 
 // Flag variable

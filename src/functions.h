@@ -35,7 +35,7 @@ void Delayms(uint32_t ms);
 void Delaynus(vu32 nus);
 void transferDMA_USART2(uint8_t *data, int length);
 void transferDMA_USART3(uint8_t *data, int length);
-float32_t intToFloat(int whole, int frac);
+float32_t intToFloat(uint16_t whole, uint16_t frac);
 void sendUSBMessage(char* message);
 
 #endif /* FUNCTIONS_H_ */

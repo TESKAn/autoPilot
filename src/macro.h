@@ -54,7 +54,7 @@
 #define PS_WAITINGDATA			flag0.bits.BIT2
 #define I2C2_WAITINGDATA		flag0.bits.BIT3
 #define I2C2_INITDONE			flag0.bits.BIT4
-#define GPS_SENDING				flag0.bits.BIT5
+//#define GPS_SENDING				flag0.bits.BIT5
 #define I2C2_REENABLE			flag0.bits.BIT6
 #define PWM_PASSTHROUGH			flag0.bits.BIT7
 #define EXTSENS_INIT_DONE		flag0.bits.BIT8
@@ -100,7 +100,10 @@
 #define USB_REQUEST_DATA_UI32_1		USBFlags.bits.BIT3
 #define USB_REQUEST_DATA_I16_1		USBFlags.bits.BIT4
 #define USB_REQUEST_DATA_UI16_1		USBFlags.bits.BIT5
-
+#define USB_REQUEST_DATA_I8_1		USBFlags.bits.BIT6
+#define USB_REQUEST_DATA_UI8_1		USBFlags.bits.BIT7
+#define USB_REQUEST_DATA_F32_2		USBFlags.bits.BIT8
+#define USB_REQUEST_DATA_F32_3		USBFlags.bits.BIT9
 
 // DMA macros
 //DMA1_Stream0 used by USB

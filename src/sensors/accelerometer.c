@@ -163,6 +163,8 @@ ErrorStatus acc_update(FUSION_CORE *coreData, int16_t *rawData, uint32_t dataTim
 	coreData->_accelerometer.vector.x = result[0];
 	coreData->_accelerometer.vector.y = result[1];
 	coreData->_accelerometer.vector.z = result[2];
+	// Also store normalized vector
+	vectorf_normalizeAToB(&coreData->_accelerometer.vector, &coreData->_accelerometer.vectorNormalized);
 	// Store time information
 	coreData->_accelerometer.dataTime = dataTime;
 	coreData->_accelerometer.deltaTime = deltaTime;

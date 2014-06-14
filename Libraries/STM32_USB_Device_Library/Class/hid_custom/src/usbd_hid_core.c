@@ -511,37 +511,67 @@ static uint8_t  USBD_HID_DataOut (void *pdev, uint8_t epnum)
 				}
 				case 3:		//Data request
 				{
-					i = Buffer[2];
-					if((i & 1)!= 0)
+					switch(Buffer[2])
 					{
-						USB_REQUEST_DATA_F64_1 = 1;
-					}
-					if((i & 2)!= 0)
-					{
-						USB_REQUEST_DATA_F32_1 = 1;
-					}
-					if((i & 3)!= 0)
-					{
-						USB_REQUEST_DATA_I32_1 = 1;
-					}
-					if((i & 4)!= 0)
-					{
-						USB_REQUEST_DATA_UI32_1 = 1;
-					}
-					if((i & 5)!= 0)
-					{
-						USB_REQUEST_DATA_I16_1 = 1;
-					}
-					if((i & 6)!= 0)
-					{
-						USB_REQUEST_DATA_UI16_1 = 1;
+						case 1:
+						{
+							USB_REQUEST_DATA_F64_1 = 1;
+							break;
+						}
+						case 2:
+						{
+							USB_REQUEST_DATA_F32_1 = 1;
+							break;
+						}
+						case 3:
+						{
+							USB_REQUEST_DATA_I32_1 = 1;
+							break;
+						}
+						case 4:
+						{
+							USB_REQUEST_DATA_UI32_1 = 1;
+							break;
+						}
+						case 5:
+						{
+							USB_REQUEST_DATA_I16_1 = 1;
+							break;
+						}
+						case 6:
+						{
+							USB_REQUEST_DATA_UI16_1 = 1;
+							break;
+						}
+						case 7:
+						{
+							USB_REQUEST_DATA_I8_1 = 1;
+							break;
+						}
+						case 8:
+						{
+							USB_REQUEST_DATA_UI8_1 = 1;
+							break;
+						}
+						case 9:
+						{
+							USB_REQUEST_DATA_F32_2 = 1;
+							break;
+						}
+						case 10:
+						{
+							USB_REQUEST_DATA_F32_3 = 1;
+							break;
+						}
 					}
 					break;
 				}
 				case 4:
 				{
-					// Write SCR1
-					//SCR1 = (Buffer[2] << 8) | Buffer[3];
+					// Write mainLoopState
+
+					mainLoopState = (Buffer[2] << 8) | Buffer[3];
+
 					break;
 				}
 				case 5:

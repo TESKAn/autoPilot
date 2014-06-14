@@ -38,6 +38,8 @@ typedef struct
 	Vectorf vector;
 	Vectorf vectorRaw;
 	Vectorf scale;
+	// Error
+	Vectorf gyroError;
 	Vectori16 offset;
 	uint32_t dataTime;
 	uint32_t deltaTime;
@@ -50,18 +52,39 @@ typedef struct
 
 typedef struct
 {
-	float32_t altitude;
 	// Use double for lat, lon
 	float64_t latitude;
 	float64_t longitude;
+
 	float32_t speed;
+	float32_t altitude;
 	float32_t trackAngle;
 	uint32_t dataTime;
 	uint32_t deltaTime;
 	Vectorf speed3D;
-	uint8_t valid;
-	uint8_t nerabim[3];
+	float32_t hdop;
+	float32_t gg;
+	float32_t magvar;
+
+	uint16_t satStatus;
+	uint16_t miliseconds;
+	uint16_t valid;
+	uint16_t ns_ew;
+	uint16_t magvar_ew;
+	uint16_t buf;
+
+	uint8_t hours;
+	uint8_t minutes;
+	uint8_t seconds;
+	uint8_t day;
+
+	uint8_t month;
+	uint8_t year;
+	uint8_t dataOK;
+	uint8_t nerabim;
 }__attribute__((aligned(4),packed)) GPSData, *PGPSData;
+
+
 
 typedef struct
 {
@@ -87,6 +110,7 @@ typedef struct
 {
 	Vectorf vector;
 	Vectorf vectorRaw;
+	Vectorf vectorNormalized;
 	Vectorf scale;
 	Vectorf Speed_3D;
 	Vectorf Speed_3D_Frac;
@@ -113,9 +137,14 @@ typedef struct
 
 	// PIDs
 	myMath_PID3 _gyroErrorPID;
+	// Counter for error PID
+	uint32_t _gyroErrorUpdateCount;
 
 	// DCM matrix
 	Matrixf _fusion_DCM;
+
+	// GPS DCM matrix
+	Matrixf _GPS_DCM;
 
 	// Roll pitch yaw
 	struct
@@ -132,6 +161,8 @@ typedef struct
 		float32_t systimeToSeconds;
 		float32_t minRotation;
 		float32_t minRotError;
+		float32_t minGPSSpeed;
+		uint32_t gyroErrorUpdateInterval;
 	}PARAMETERS;
 
 	// Time
@@ -139,6 +170,7 @@ typedef struct
 	uint32_t deltaTime;
 	// MPU6000 temperature
 	float32_t MPUTemperature;
+
 
 
 }__attribute__((aligned(4),packed)) FUSION_CORE, *PFUSION_CORE;
