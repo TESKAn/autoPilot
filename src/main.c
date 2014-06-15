@@ -69,15 +69,21 @@ int main(void)
 	// Init sensor data structures
 	fusion_init(&fusionData);
 
+	// Setup RC PWM outputs
+	RCData.PWMOUT_1 = 1500;
+	RCData.PWMOUT_2 = 1500;
+	RCData.PWMOUT_3 = 1500;
+	RCData.PWMOUT_4 = 1500;
+	RCData.PWMOUT_5 = 1500;
+	RCData.PWMOUT_6 = 1500;
+	RCData.PWMOUT_7 = 1500;
+	RCData.PWMOUT_8 = 1500;
+	RCData.PWMOUT_9 = 1500;
+	RCData.PWMOUT_10 = 1500;
+	RCData.PWMOUT_11 = 1500;
+	RCData.PWMOUT_12 = 1500;
 
-	// Init vectors
-	// Initialize matrices
-	//ahrs_matrix3by3_init(&tempMatrix);
-
-	//ahrs_matrix3by3_init(&holdMatrix);
-	//math_vector3fDataInit(&tempVector, ROW);
-	//math_vector3fDataInit(&tempVector1, ROW);
-	//math_vector3fDataInit(&tempVector2, ROW);
+	//PWM_PASSTHROUGH = 1;
 
 	AHRS_FIRSTRUN_PID = 1;
 	AHRS_FIRSTRUN_MATRIX = 1;
@@ -92,20 +98,8 @@ int main(void)
 	// Configure hardware
 	System_Config();
 	// Set default PWM out values
-	/*
-	PWMOUT_1 = TIM1_PULSE;
-	PWMOUT_2 = TIM1_PULSE;
-	PWMOUT_3 = TIM1_PULSE;
-	PWMOUT_4 = TIM1_PULSE;
-	PWMOUT_5 = TIM1_PULSE;
-	PWMOUT_6 = TIM1_PULSE;
-	PWMOUT_7 = TIM1_PULSE;
-	PWMOUT_8 = TIM1_PULSE;
-	PWMOUT_9 = TIM1_PULSE;
-	PWMOUT_10 = TIM1_PULSE;
-	PWMOUT_11 = TIM1_PULSE;
-	PWMOUT_12 = TIM1_PULSE;
-*/
+	refreshPWMOutputs();
+
 	globalVar = 0.001f;
 
 	// Initialize USB
@@ -127,6 +121,9 @@ int main(void)
 	// Initialize external peripheral
 	extPeripheralInit();
 
+	// Calibrate I2C sensors
+	calibrateI2CSensors();
+
 	AC_InitBuffers();
 	AC_RDisparity = -1;
 	// Put a message in buffer to test audio communication
@@ -143,6 +140,7 @@ int main(void)
 	fusionData._gyroErrorPID.y.im = 0.01f / fusionData._gyroErrorPID.y.Ki;
 	fusionData._gyroErrorPID.z.im = -0.023f / fusionData._gyroErrorPID.z.Ki;
 
+	MPU_COMM_ENABLED = 1;
 
 	// Mount SD card
     while (1)
@@ -361,6 +359,106 @@ int main(void)
 				fusionData._gyroErrorPID.x.im = 0.023f / fusionData._gyroErrorPID.x.Ki;
 				fusionData._gyroErrorPID.y.im = 0.01f / fusionData._gyroErrorPID.y.Ki;
 				fusionData._gyroErrorPID.z.im = -0.023f / fusionData._gyroErrorPID.z.Ki;
+				break;
+			}
+			case 2:
+			{
+				mainLoopState = 0;
+				// Stop comm
+				MPU_COMM_ENABLED = 0;
+				// Wait if there is transmission in progress
+				while(I2C2_WAITINGDATA ) {}
+				MPU6000_GyroSelfTest(ENABLE);
+				// Enable comm
+				MPU_COMM_ENABLED = 1;
+				#ifdef DEBUG_USB
+					sendUSBMessage("Gyro ST enabled");
+				#endif
+				break;
+			}
+			case 3:
+			{
+				mainLoopState = 0;
+				MPU_COMM_ENABLED = 0;
+				while(I2C2_WAITINGDATA ) {}
+				MPU6000_GyroSelfTest(DISABLE);
+				MPU_COMM_ENABLED = 1;
+				#ifdef DEBUG_USB
+					sendUSBMessage("Gyro ST disabled");
+				#endif
+				break;
+			}
+			case 4:
+			{
+				mainLoopState = 0;
+				MPU_COMM_ENABLED = 0;
+				while(I2C2_WAITINGDATA ) {}
+				MPU6000_AccSelfTest(ENABLE);
+				MPU_COMM_ENABLED = 1;
+				#ifdef DEBUG_USB
+					sendUSBMessage("Acc ST enabled");
+				#endif
+				break;
+			}
+			case 5:
+			{
+				mainLoopState = 0;
+				MPU_COMM_ENABLED = 0;
+				while(I2C2_WAITINGDATA ) {}
+				MPU6000_AccSelfTest(DISABLE);
+				MPU_COMM_ENABLED = 1;
+				#ifdef DEBUG_USB
+					sendUSBMessage("Acc ST disabled");
+				#endif
+				break;
+			}
+			case 6:
+			{
+				mainLoopState = 0;
+				MPU_COMM_ENABLED = 0;
+				while(I2C2_WAITINGDATA ) {}
+				MPU6000_ReadFTValues();
+				MPU_COMM_ENABLED = 1;
+				#ifdef DEBUG_USB
+					sendUSBMessage("FT values read");
+				#endif
+
+				break;
+			}
+			case 7:
+			{
+				mainLoopState = 0;
+				// Acc offsets
+				acc_updateOffsets(&fusionData._accelerometer);
+				break;
+			}
+			case 8:
+			{
+				// All gains
+				acc_updateGains(&fusionData._accelerometer, 0);
+				mainLoopState = 0;
+				break;
+			}
+			case 9:
+			{
+				// X gain
+				acc_updateGains(&fusionData._accelerometer, 1);
+				mainLoopState = 0;
+				break;
+			}
+			case 10:
+			{
+				// Y gain
+				acc_updateGains(&fusionData._accelerometer, 2);
+				mainLoopState = 0;
+				break;
+			}
+			case 11:
+			{
+				// Z gain
+				acc_updateGains(&fusionData._accelerometer, 3);
+				mainLoopState = 0;
+				break;
 			}
     	}
 

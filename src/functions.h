@@ -8,6 +8,8 @@
 #ifndef FUNCTIONS_H_
 #define FUNCTIONS_H_
 
+void calibrateI2CSensors(void);
+void refreshPWMOutputs(void);
 uint32_t getSystemTime(void);
 float32_t getFTime(void);
 ErrorStatus FS_Initialize(void);

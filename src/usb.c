@@ -71,6 +71,27 @@ void usb_initVars(void)
 	USBUint16Vars1[3] = &fusionData._gps.ns_ew;
 	USBUint16Vars1[4] = &fusionData._gps.magvar_ew;
 	USBUint16Vars1[5] = &mainLoopState;
+	USBUint16Vars1[6] = &RCData.PWMIN_1;
+	USBUint16Vars1[7] = &RCData.PWMIN_2;
+	USBUint16Vars1[8] = &RCData.PWMIN_3;
+	USBUint16Vars1[9] = &RCData.PWMIN_4;
+	USBUint16Vars1[10] = &RCData.PWMIN_5;
+	USBUint16Vars1[11] = &RCData.PWMIN_6;
+	USBUint16Vars1[12] = &RCData.PWMIN_7;
+	USBUint16Vars1[13] = &RCData.PWMIN_8;
+	USBUint16Vars1[14] = &RCData.PWMOUT_1;
+	USBUint16Vars1[15] = &RCData.PWMOUT_2;
+	USBUint16Vars1[16] = &RCData.PWMOUT_3;
+	USBUint16Vars1[17] = &RCData.PWMOUT_4;
+	USBUint16Vars1[18] = &RCData.PWMOUT_5;
+	USBUint16Vars1[19] = &RCData.PWMOUT_6;
+	USBUint16Vars1[20] = &RCData.PWMOUT_7;
+	USBUint16Vars1[21] = &RCData.PWMOUT_8;
+	USBUint16Vars1[22] = &RCData.PWMOUT_9;
+	USBUint16Vars1[23] = &RCData.PWMOUT_10;
+	USBUint16Vars1[24] = &RCData.PWMOUT_11;
+	USBUint16Vars1[25] = &RCData.PWMOUT_12;
+
 
 	// USBUint8Vars1
 	USBUint8Vars1[0] = &fusionData._gps.hours;

@@ -12,7 +12,7 @@
 #define SENSOR_MIN_ROT_ERROR					0.0001f
 #define SENSOR_MIN_ROTATION						0.0001f
 #define SENSOR_MIN_GPS_SPEED					2.0f
-#define GYRO_ERROR_UPDATE_INTERVAL				10			// Update PID every n cycles
+#define GYRO_ERROR_UPDATE_INTERVAL				1			// Update PID every n cycles
 
 
 #endif /* SENSOR_MACROS_H_ */

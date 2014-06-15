@@ -576,22 +576,21 @@ static uint8_t  USBD_HID_DataOut (void *pdev, uint8_t epnum)
 				}
 				case 5:
 				{
-					// Write fast data buffer
-					fastDataTemp = (Buffer[2] << 24) | (Buffer[3] << 16) | (Buffer[4] << 8) | Buffer[5];
-					fastDataSelect = fastDataSelect | fastDataTemp;
+					// Set PWM values for out 2,3,4
+					RCData.PWMOUT_2 = (Buffer[2] << 8) | Buffer[3];
+					RCData.PWMOUT_3 = (Buffer[4] << 8) | Buffer[5];
+					RCData.PWMOUT_4 = (Buffer[6] << 8) | Buffer[7];
+					refreshPWMOutputs();
 					break;
 				}
 				case 6:
 				{
-					// Clear fast data buffer
-					fastDataTemp = (Buffer[2] << 24) | (Buffer[3] << 16) | (Buffer[4] << 8) | Buffer[5];
-					fastDataSelect = fastDataSelect & ~fastDataTemp;
+
 					break;
 				}
 				case 7:
 				{
-					// Reset fast data send
-					fastDataSelect = 0;
+
 					break;
 				}
 			  default:

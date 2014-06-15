@@ -9,6 +9,25 @@
 #include <stdlib.h>
 #include "sensors/altimeter.h"
 
+// Calibrate sensors
+void calibrateI2CSensors(void)
+{
+
+}
+
+// Update PWM out values
+void refreshPWMOutputs(void)
+{
+	TIM_SetCompare4(TIM1, RCData.PWMOUT_1);
+	TIM_SetCompare3(TIM1, RCData.PWMOUT_2);
+	TIM_SetCompare2(TIM1, RCData.PWMOUT_3);
+	TIM_SetCompare1(TIM1, RCData.PWMOUT_4);
+	TIM_SetCompare4(TIM3, RCData.PWMOUT_5);
+	TIM_SetCompare3(TIM3, RCData.PWMOUT_6);
+	TIM_SetCompare2(TIM3, RCData.PWMOUT_7);
+	TIM_SetCompare1(TIM3, RCData.PWMOUT_8);
+}
+
 uint32_t getSystemTime(void)
 {
 	uint32_t time = 0;

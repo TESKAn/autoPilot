@@ -54,7 +54,7 @@
 #define PS_WAITINGDATA			flag0.bits.BIT2
 #define I2C2_WAITINGDATA		flag0.bits.BIT3
 #define I2C2_INITDONE			flag0.bits.BIT4
-//#define GPS_SENDING				flag0.bits.BIT5
+#define MPU_COMM_ENABLED		flag0.bits.BIT5
 #define I2C2_REENABLE			flag0.bits.BIT6
 #define PWM_PASSTHROUGH			flag0.bits.BIT7
 #define EXTSENS_INIT_DONE		flag0.bits.BIT8

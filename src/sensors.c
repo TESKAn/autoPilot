@@ -297,6 +297,114 @@ void copySensorData(void)
 	}
 }
 
+ErrorStatus MPU6000_ReadFTValues(void)
+{
+	ErrorStatus error = ERROR;
+	uint8_t retriesCount = 0;
+	// Read reg 27
+	for(retriesCount = I2C2_ERROR_RETRIESCOUNT; retriesCount > 0; retriesCount --)
+	{
+		error = masterReceive(MPU6000_ADDRESS, 13, I2C2_DMABufRX, 5);
+		if(error == SUCCESS)
+		{
+			break;
+		}
+		else
+		{
+			// Handle error
+			I2C2_ResetInterface();
+		}
+	}
+	if(error == SUCCESS)
+	{
+		// Read data
+		fusionData.SelfTestValues[0] = I2C2_DMABufRX[0];
+		fusionData.SelfTestValues[1] = I2C2_DMABufRX[1];
+		fusionData.SelfTestValues[2] = I2C2_DMABufRX[2];
+		fusionData.SelfTestValues[3] = I2C2_DMABufRX[3];
+	}
+	return error;
+}
+
+ErrorStatus MPU6000_AccSelfTest(FunctionalState newState)
+{
+	ErrorStatus error = ERROR;
+	uint8_t retriesCount = 0;
+
+	// Write reg 28 according to newState
+
+	I2C2_DMABufTX[0] = 28;
+	if(newState == ENABLE)
+	{
+		// Set bits 5,6,7 to 1
+		// Set rate to +- 8G
+		// Reg 28 = 1111 0000
+		I2C2_DMABufTX[1] = 0xF0;
+	}
+	else
+	{
+		// Set bits 5,6,7 to 0
+		// Set rate to +- 8G
+		// Reg 28 = 0001 0000
+		I2C2_DMABufTX[1] = 0x10;
+	}
+	// Write to MPU
+	for(retriesCount = I2C2_ERROR_RETRIESCOUNT; retriesCount > 0; retriesCount --)
+	{
+		error = masterSend(MPU6000_ADDRESS, I2C2_DMABufTX, 2);
+		if(error == SUCCESS)
+		{
+			break;
+		}
+		else
+		{
+			// Handle error
+			I2C2_ResetInterface();
+		}
+	}
+	Delaynus(20000);
+	return  error;
+
+}
+
+ErrorStatus MPU6000_GyroSelfTest(FunctionalState newState)
+{
+	ErrorStatus error = ERROR;
+	uint8_t retriesCount = 0;
+
+	// Write reg 27 according to newState
+
+	I2C2_DMABufTX[0] = 27;
+	if(newState == ENABLE)
+	{
+		// Set bits 5,6,7 to 1
+		// Reg 27 = 1110 0000	Set gyro maximum rate at 250 °/sec
+    	I2C2_DMABufTX[1] = 0xE0;
+	}
+	else
+	{
+		// Set bits 5,6,7 to 0
+		// Reg 27 = 0001 0000	Set gyro maximum rate at 1000 °/sec
+		I2C2_DMABufTX[1] = 0x10;
+	}
+	// Write to MPU
+	for(retriesCount = I2C2_ERROR_RETRIESCOUNT; retriesCount > 0; retriesCount --)
+	{
+		error = masterSend(MPU6000_ADDRESS, I2C2_DMABufTX, 2);
+		if(error == SUCCESS)
+		{
+			break;
+		}
+		else
+		{
+			// Handle error
+			I2C2_ResetInterface();
+		}
+	}
+	Delaynus(20000);
+	return  error;
+}
+
 ErrorStatus MPU6000_Enable(FunctionalState newState)
 {
 	ErrorStatus error = ERROR;
@@ -448,7 +556,6 @@ ErrorStatus MPU6000_EnableI2CBypass(FunctionalState newState)
 	{
 		return ERROR;
 	}
-
 }
 
 ErrorStatus MPU6000_ConfigureI2CMaster(void)

@@ -57,6 +57,8 @@ ErrorStatus mag_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 	data->_mag.currentMagReading.x = (float32_t)rawData[0] * data->_mag.magRate;
 	data->_mag.currentMagReading.y = (float32_t)rawData[1] * data->_mag.magRate;
 	data->_mag.currentMagReading.z = (float32_t)rawData[2] * data->_mag.magRate;
+	// Store raw
+	vectorf_copy(&data->_mag.currentMagReading, &data->_mag.vectorRaw);
 	// Remove offset
 	vectorf_substract(&data->_mag.currentMagReading, &data->_mag.offset, &data->_mag.currentMagReading);
 	// Get vector difference
@@ -68,12 +70,17 @@ ErrorStatus mag_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 		data->_mag.currentMagnitude = vectorf_getNorm(&data->_mag.currentMagReading);
 		// Calculate magnitude difference
 		temp = data->_mag.currentMagnitude - data->_mag.previousMagnitude;
-		// Multiply by gain
-		temp = temp * data->_mag.magOffsetNullGain;
-		// Multiply current offset estimate vector
-		vectorf_scalarProduct(&data->_mag.calcVector, temp, &data->_mag.calcVector);
-		// Add to offset calculation
-		vectorf_add(&data->_mag.offset, &data->_mag.calcVector, &data->_mag.offset);
+		// If magnitude difference larger than
+		if(0.005f < temp)
+		{
+			// Multiply by gain
+			temp = temp * data->_mag.magOffsetNullGain;
+			// Multiply current offset estimate vector
+			vectorf_scalarProduct(&data->_mag.calcVector, temp, &data->_mag.calcVector);
+			// Add to offset calculation
+			vectorf_add(&data->_mag.offset, &data->_mag.calcVector, &data->_mag.offset);
+		}
+
 	}
 	// Normalize measurement to get mag direction in body frame
 	if(ERROR != vectorf_normalizeAToB(&data->_mag.currentMagReading, &data->_mag.vector))

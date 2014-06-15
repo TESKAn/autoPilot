@@ -201,18 +201,27 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 
 		}
 		// Check if we have valid gyro and accelerometer data and calculate error
-		// Do only if speed below limit
+		// Do only if speed below limit and acceleration is really low
 		if((data->PARAMETERS.minGPSSpeed > GPSSpeed)&&(1 == data->_accelerometer.valid))
 		{
-			// Store estimated gravity vector
-			temporaryVector.x = data->_fusion_DCM.c.x;
-			temporaryVector.y = data->_fusion_DCM.c.y;
-			temporaryVector.z = data->_fusion_DCM.c.z;
+			// Check that we have only gravity - acc. magnitude is 1 +- 0.05
+			fTemp = vectorf_getNorm(&data->_accelerometer.vector);
+			if((0.95 < fTemp)&&(1.05 > fTemp))
+			{
+				// Store estimated gravity vector
+				temporaryVector.x = data->_fusion_DCM.c.x;
+				temporaryVector.y = data->_fusion_DCM.c.y;
+				temporaryVector.z = data->_fusion_DCM.c.z;
 
-			status = vectorf_crossProduct(&temporaryVector, &data->_accelerometer.vectorNormalized, &error_acc_gravity);
-			// Check if there was calculation error
-			// If yes, set error to 0
-			if(ERROR == status)
+				status = vectorf_crossProduct(&temporaryVector, &data->_accelerometer.vectorNormalized, &error_acc_gravity);
+				// Check if there was calculation error
+				// If yes, set error to 0
+				if(ERROR == status)
+				{
+					error_acc_gravity = vectorf_init(0);
+				}
+			}
+			else
 			{
 				error_acc_gravity = vectorf_init(0);
 			}
@@ -252,7 +261,7 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 	ErrorStatus status;
 	status = SUCCESS;
 
-	Vectorf omega = vectorf_init(0);						// Rotation value
+	//Vectorf omega = vectorf_init(0);						// Rotation value
 	Matrixf updateMatrix;									// Update matrix
 	Matrixf newMatrix;										// Place to store new DCM matrix
 	float32_t dt = 0;
@@ -262,16 +271,20 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 	dt = (float32_t)data->_gyro.deltaTime;
 	dt = dt * data->PARAMETERS.systimeToSeconds;
 
+	data->integrationTime = dt;
+
 
 	// Calculate rotation angle
 	// Is gyro value * delta time in seconds
-	status = vectorf_scalarProduct(&data->_gyro.vector, dt, &omega);
+	status = vectorf_scalarProduct(&data->_gyro.vector, dt, &data->updateRotation);
 
 	// If rotation angle above limit, update rotation matrix
-	if(data->PARAMETERS.minRotation < vectorf_getNorm(&omega))
+	if(data->PARAMETERS.minRotation < vectorf_getNorm(&data->updateRotation))
 	{
+		// Store update vector
+		//vectorf_copy(&omega, &data->updateRotation);
 		// Generate update matrix
-		status = fusion_generateUpdateMatrix(&omega, &updateMatrix);
+		status = fusion_generateUpdateMatrix(&data->updateRotation, &updateMatrix);
 		// Multiply DCM and update matrix
 		status = matrix3_MatrixMultiply(&updateMatrix, &data->_fusion_DCM, &newMatrix);
 

@@ -16,8 +16,8 @@
 #include "functions.h"
 
 #define ACC_DEFAULT_RATE					0.000244140625f			// 8/32768 -> g
-// Define use scale correction
-//#define ACC_USE_SCALE_CORRECTION
+// Use gains correction
+#define ACC_USE_GAIN_CORRECTION
 
 
 // Init accelerometer data structure
@@ -28,7 +28,8 @@ ErrorStatus acc_initDataStructure(AccelerometerData *data)
 	data->dataTime = getSystemTime();
 	data->deltaTime = 0;
 	data->offset = vectori16_init(0);
-	data->scale = vectorf_init(1);
+	data->gains = vectorf_init(1);
+	data->offsets = vectorf_init(0);
 	data->vector = vectorf_init(0);
 	data->vectorRaw = vectorf_init(0);
 	data->Speed_3D = vectorf_init(0);
@@ -39,7 +40,74 @@ ErrorStatus acc_initDataStructure(AccelerometerData *data)
 	data->valid = 1;
 	status = SUCCESS;
 
+	// Init offsets
+	data->offsets.x = 0.047f;
+	data->offsets.y = 0.006f;
+	data->offsets.z = -0.119f;
+
+	// And scale
+	data->gains.x = 0.996f;
+	data->gains.y = 0.996f;
+	data->gains.z = 0.994f;
+
 	return status;
+}
+
+ErrorStatus acc_updateOffsets(AccelerometerData *data)
+{
+	// Remove offsets for axis value << 1
+	data->offsets.x = data->vectorRaw.x;
+	data->offsets.y = data->vectorRaw.y;
+	// Raw Z should be -1
+	data->offsets.z = data->vectorRaw.z + 1;
+
+	return SUCCESS;
+}
+
+ErrorStatus acc_updateGains(AccelerometerData *data, int axis)
+{
+	// Total acceleration should be equal to 1
+	// If not, it is due to acc gain error
+	// If axis = 0, normalize all
+	// Else just one axis
+	float32_t temp = 0;
+	switch(axis)
+	{
+		case 0:
+		{
+			// Calculate vector scale
+			temp = vectorf_getNorm(&data->vector);
+			temp = sqrtf(temp);
+			temp = 1 / temp;
+			data->gains.x *= temp;
+			data->gains.y *= temp;
+			data->gains.z *= temp;
+			break;
+		}
+		case 1:
+		{
+			// X axis
+			temp = 1 / data->vector.x;
+			data->gains.x *= temp;
+			break;
+		}
+		case 2:
+		{
+			// Y axis
+			temp = 1 / data->vector.y;
+			data->gains.y *= temp;
+			break;
+		}
+		case 3:
+		{
+			// Z axis
+			temp = 1 / data->vector.z;
+			data->gains.z *= temp;
+			break;
+		}
+	}
+
+	return SUCCESS;
 }
 
 // Update accelerometer speed integration
@@ -134,24 +202,30 @@ ErrorStatus acc_update(FUSION_CORE *coreData, int16_t *rawData, uint32_t dataTim
 	coreData->_accelerometer.vectorRaw.y = (float32_t)rawData[1] * coreData->_accelerometer.accRate;
 	coreData->_accelerometer.vectorRaw.z = (float32_t)rawData[2] * coreData->_accelerometer.accRate;
 	// Remove offset
+	/*
 	rawData[0] -= coreData->_accelerometer.offset.x;
 	rawData[1] -= coreData->_accelerometer.offset.y;
 	rawData[2] -= coreData->_accelerometer.offset.z;
+	*/
 	// Scale result to get g's
 	result[0] = (float32_t)rawData[0] * coreData->_accelerometer.accRate;
 	result[1] = (float32_t)rawData[1] * coreData->_accelerometer.accRate;
 	result[2] = (float32_t)rawData[2] * coreData->_accelerometer.accRate;
+	// Remove offset
+	result[0] = result[0] - coreData->_accelerometer.offsets.x;
+	result[1] = result[1] - coreData->_accelerometer.offsets.y;
+	result[2] = result[2] - coreData->_accelerometer.offsets.z;
 	// Invert to get - gravity - acceleration
 	// Gravity is in body frame of reference
 	result[0] = -result[0];
 	result[1] = -result[1];
 	result[2] = -result[2];
 
-	// Use scale correction?
-#ifdef ACC_USE_SCALE_CORRECTION
-	result[0] *= coreData->_accelerometer.scale.x;
-	result[1] *= coreData->_accelerometer.scale.y;
-	result[2] *= coreData->_accelerometer.scale.z;
+	// Use gain correction on outputs?
+#ifdef ACC_USE_GAIN_CORRECTION
+	result[0] = result[0] * coreData->_accelerometer.gains.x;
+	result[1] = result[1] * coreData->_accelerometer.gains.y;
+	result[2] = result[2] * coreData->_accelerometer.gains.z;
 #endif
 
 

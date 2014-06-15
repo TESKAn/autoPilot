@@ -242,7 +242,7 @@ void TIM4_ISR_Handler(void)
 			if(PWM_PASSTHROUGH)
 			{
 				TIM_SetCompare1(TIM1, RCData.PWMIN_4);
-				RCData.PWMOUT_3 = RCData.PWMIN_4;
+				RCData.PWMOUT_4 = RCData.PWMIN_4;
 			}
 		}
 		TIM4_IC4_PreviousValue = dataTemp;
@@ -528,7 +528,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			if(I2C2_PollTimer >= I2C2_POLLTIME)
 			{
 				I2C2_PollTimer = I2C2_POLLTIME;
-				if(!I2C2_WAITINGDATA && I2C2_INITDONE)
+				if(!I2C2_WAITINGDATA && I2C2_INITDONE && MPU_COMM_ENABLED)
 				{
 					I2C2_PollTimer = 0;
 					for(retriesCount = I2C2_ERROR_RETRIESCOUNT; retriesCount > 0; retriesCount --)

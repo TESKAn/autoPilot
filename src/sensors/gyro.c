@@ -31,8 +31,11 @@ ErrorStatus gyro_initDataStructure(GyroData *data)
 
 	data->vectorRaw = vectorf_init(0);
 
+	data->offsets.x = 0.02f;
+	data->offsets.y = 0.015f;
+	data->offsets.z = -0.03f;
 	// gyro rate in radians
-	data->gyroRate = GYRO_DEFAULT_RATE * GYRO_DEG_TO_RAD;
+	data->gyroRate = GYRO_DEFAULT_RATE;// * GYRO_DEG_TO_RAD;
 	data->sensorTemperature = 0;
 	data->valid = 1;
 
@@ -59,10 +62,16 @@ ErrorStatus gyro_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 	rawData[2] -= data->_gyro.offset.z;
 	 */
 	// Calculate rate in rad/sec
-	data->_gyro.vector.x = data->_gyro.vectorRaw.x;
-	data->_gyro.vector.y = data->_gyro.vectorRaw.y;
-	data->_gyro.vector.z = data->_gyro.vectorRaw.z;
+	data->_gyro.vector.x = data->_gyro.vectorRaw.x * GYRO_DEG_TO_RAD;
+	data->_gyro.vector.y = data->_gyro.vectorRaw.y * GYRO_DEG_TO_RAD;
+	data->_gyro.vector.z = data->_gyro.vectorRaw.z * GYRO_DEG_TO_RAD;
 
+	// Remove offsets
+	/*
+	data->_gyro.vector.x -= data->_gyro.offsets.x;
+	data->_gyro.vector.y -= data->_gyro.offsets.y;
+	data->_gyro.vector.z -= data->_gyro.offsets.z;
+	 */
 	// Remove drift error
 	// Drift error is calculated in different .c/.h file
 	data->_gyro.vector.x -= data->_gyroErrorPID.x.s;

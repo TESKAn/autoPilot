@@ -41,6 +41,7 @@ typedef struct
 	// Error
 	Vectorf gyroError;
 	Vectori16 offset;
+	Vectorf offsets;
 	uint32_t dataTime;
 	uint32_t deltaTime;
 	float32_t gyroRate;
@@ -111,7 +112,8 @@ typedef struct
 	Vectorf vector;
 	Vectorf vectorRaw;
 	Vectorf vectorNormalized;
-	Vectorf scale;
+	Vectorf gains;
+	Vectorf offsets;
 	Vectorf Speed_3D;
 	Vectorf Speed_3D_Frac;
 	float32_t speed_3D_dt;
@@ -143,6 +145,12 @@ typedef struct
 	// DCM matrix
 	Matrixf _fusion_DCM;
 
+	// Update rotation vector
+	Vectorf updateRotation;
+
+	// Integration time
+	float32_t integrationTime;
+
 	// GPS DCM matrix
 	Matrixf _GPS_DCM;
 
@@ -171,6 +179,7 @@ typedef struct
 	// MPU6000 temperature
 	float32_t MPUTemperature;
 
+	uint8_t SelfTestValues[4];
 
 
 }__attribute__((aligned(4),packed)) FUSION_CORE, *PFUSION_CORE;
