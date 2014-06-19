@@ -277,6 +277,8 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 	// Calculate rotation angle
 	// Is gyro value * delta time in seconds
 	status = vectorf_scalarProduct(&data->_gyro.vector, dt, &data->updateRotation);
+	// Use filtered values
+	//status = vectorf_scalarProduct(&data->_gyro.kFilteredVector, dt, &data->updateRotation);
 
 	// If rotation angle above limit, update rotation matrix
 	if(data->PARAMETERS.minRotation < vectorf_getNorm(&data->updateRotation))

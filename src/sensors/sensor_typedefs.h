@@ -9,6 +9,7 @@
 #define SENSOR_TYPEDEFS_H_
 
 #include "math/myMath_typedefs.h"
+#include "kalman.h"
 
 typedef struct
 {
@@ -38,6 +39,11 @@ typedef struct
 	Vectorf vector;
 	Vectorf vectorRaw;
 	Vectorf scale;
+	// Kalman filter data
+	KALMAN kFilter_x;
+	KALMAN kFilter_y;
+	KALMAN kFilter_z;
+	Vectorf kFilteredVector;
 	// Error
 	Vectorf gyroError;
 	Vectori16 offset;
@@ -180,6 +186,9 @@ typedef struct
 	float32_t MPUTemperature;
 
 	uint8_t SelfTestValues[4];
+
+	uint32_t sensorInterruptTime;
+	uint32_t sensorInterruptDeltaTime;
 
 
 }__attribute__((aligned(4),packed)) FUSION_CORE, *PFUSION_CORE;

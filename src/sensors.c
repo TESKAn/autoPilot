@@ -442,17 +442,21 @@ ErrorStatus MPU6000_Enable(FunctionalState newState)
 	{
 		Delaynus(2000);
 		// Configure sensors
-		// Register 26
-		I2C2_DMABufTX[0] = 26;
+		// Register 25
+		I2C2_DMABufTX[0] = 25;
+		// Reg 25 = sample rate divider = 8000(no filter)/(1+31) = 250 Hz
+		I2C2_DMABufTX[1] = 9;
 		// Reg 26 = 0000 0001	Set low pass filter to 184/188 Hz
-		I2C2_DMABufTX[1] = 0x01;
+		//I2C2_DMABufTX[1] = 0x01;
+		// Try no LP filter
+		I2C2_DMABufTX[2] = 0x00;
 		// Reg 27 = 0001 0000	Set gyro maximum rate at 1000 °/sec
-		I2C2_DMABufTX[2] = 0x10;
-		// Reg 28 = 0001 0000	Set accel maximum rate at 8g
 		I2C2_DMABufTX[3] = 0x10;
+		// Reg 28 = 0001 0000	Set accel maximum rate at 8g
+		I2C2_DMABufTX[4] = 0x10;
 		for(retriesCount = I2C2_ERROR_RETRIESCOUNT; retriesCount > 0; retriesCount --)
 		{
-			error = masterSend(MPU6000_ADDRESS, I2C2_DMABufTX, 4);
+			error = masterSend(MPU6000_ADDRESS, I2C2_DMABufTX, 5);
 			if(error == SUCCESS)
 			{
 				break;
@@ -474,8 +478,8 @@ ErrorStatus MPU6000_Enable(FunctionalState newState)
 		// Configure sensor interrupt
 		// Register 55
 		I2C2_DMABufTX[0] = 55;
-		// Reg 55 = 0001 0000	Interrupt active high, push-pull, 50 us pulse, clear on any read, no fsync, no i2c bypass
-		I2C2_DMABufTX[1] = 0x10;
+		// Reg 55 = 0011 0000	Interrupt active high, push-pull, pulse reset by data read, clear on any read, no fsync, no i2c bypass
+		I2C2_DMABufTX[1] = 0x30;
 		// Reg 56 = 000 0001	Data ready interrupt enable
 		I2C2_DMABufTX[2] = 0x01;
 

@@ -18,6 +18,8 @@
 #include "arm_math.h"
 #include "math.h"
 
+#include "kalman.h"
+
 #include "sensors/sensor_typedefs.h"
 #include "sensors/sensors_fusion.h"
 

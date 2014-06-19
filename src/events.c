@@ -707,10 +707,14 @@ void USART3_ISR_Handler(void)
   */
 void EXTI0_ISR_Handler(void)
 {
-	uint8_t retriesCount = 0;
-	ErrorStatus error;
+	uint32_t dtCalc = 0;
 	if(EXTI_GetITStatus(EXTI_Line0) != RESET)
 	{
+
+		dtCalc = getSystemTime();
+		fusionData.sensorInterruptDeltaTime = dtCalc - fusionData.sensorInterruptTime;
+		fusionData.sensorInterruptTime = dtCalc;
+
 		/*
 		// Get data from sensors
 		if(!I2C2_WAITINGDATA && I2C2_INITDONE)

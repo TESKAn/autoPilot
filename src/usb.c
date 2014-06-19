@@ -62,7 +62,9 @@ void usb_initVars(void)
 
 	// USBUint32Vars1
 	USBUint32Vars1[0] = &fusionData._gps.dataTime;
-	USBUint32Vars1[0] = &fusionData._gps.deltaTime;
+	USBUint32Vars1[1] = &fusionData._gps.deltaTime;
+	USBUint32Vars1[2] = &fusionData.sensorInterruptDeltaTime;
+	USBUint32Vars1[3] = &fusionData.sensorInterruptTime;
 
 	// USBUint16Vars1
 	USBUint16Vars1[0] = &fusionData._gps.satStatus;

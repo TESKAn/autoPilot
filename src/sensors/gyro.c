@@ -10,8 +10,10 @@
 #include "math/myMath_typedefs.h"
 #include "math/myMath_vec3.h"
 #include "sensor_typedefs.h"
+#include "kalman.h"
 #include "gyro.h"
 #include "functions.h"
+
 
 #define GYRO_DEFAULT_RATE					0.030517578125f			// 1000/32768 -> deg/sec
 #define GYRO_DEG_TO_RAD						0.017453292519f			// 1 deg/sec is this in rad/sec
@@ -39,6 +41,11 @@ ErrorStatus gyro_initDataStructure(GyroData *data)
 	data->sensorTemperature = 0;
 	data->valid = 1;
 
+	// Setup kalman filter
+	Kalman_Init(&data->kFilter_x, 0.022f, 0.617f);
+	Kalman_Init(&data->kFilter_y, 0.022f, 0.617f);
+	Kalman_Init(&data->kFilter_z, 0.022f, 0.617f);
+
 	return SUCCESS;
 }
 
@@ -65,6 +72,13 @@ ErrorStatus gyro_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 	data->_gyro.vector.x = data->_gyro.vectorRaw.x * GYRO_DEG_TO_RAD;
 	data->_gyro.vector.y = data->_gyro.vectorRaw.y * GYRO_DEG_TO_RAD;
 	data->_gyro.vector.z = data->_gyro.vectorRaw.z * GYRO_DEG_TO_RAD;
+	// Filter result
+	data->_gyro.vector.x = Kalman_Update(&data->_gyro.kFilter_x, data->_gyro.vector.x);
+	data->_gyro.vector.y = Kalman_Update(&data->_gyro.kFilter_y, data->_gyro.vector.y);
+	data->_gyro.vector.z = Kalman_Update(&data->_gyro.kFilter_z, data->_gyro.vector.z);
+
+	// Copy filtered data
+	vectorf_copy(&data->_gyro.vector, &data->_gyro.kFilteredVector);
 
 	// Remove offsets
 	/*
@@ -78,6 +92,12 @@ ErrorStatus gyro_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 	data->_gyro.vector.y -= data->_gyroErrorPID.y.s;
 	data->_gyro.vector.z -= data->_gyroErrorPID.z.s;
 
+	// Put through kalman filter
+	/*
+	data->_gyro.kFilteredVector.x = Kalman_Update(&data->_gyro.kFilter_x, data->_gyro.vector.x);
+	data->_gyro.kFilteredVector.y = Kalman_Update(&data->_gyro.kFilter_y, data->_gyro.vector.y);
+	data->_gyro.kFilteredVector.z = Kalman_Update(&data->_gyro.kFilter_z, data->_gyro.vector.z);
+*/
 	// Calculate time difference
 	deltaTime = dataTime - data->_gyro.dataTime;
 	// Do checks on time passed...
