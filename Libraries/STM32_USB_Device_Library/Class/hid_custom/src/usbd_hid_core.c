@@ -476,7 +476,8 @@ static uint8_t  USBD_HID_DataOut (void *pdev, uint8_t epnum)
 {
 	uint16_t USB_RecData_Cnt;
 	uint32_t fastDataTemp = 0;
-	int i = 0;
+	int i, j = 0;
+	int registerCount = 0;
 	if (epnum == HID_OUT_EP)
 	{
 		/* Get the received data buffer and update the counter */
@@ -515,52 +516,184 @@ static uint8_t  USBD_HID_DataOut (void *pdev, uint8_t epnum)
 					{
 						case 1:
 						{
-							USB_REQUEST_DATA_F64_1 = 1;
+				        	// Store data
+				        	Buffer[0] = 2;
+				        	Buffer[1] = 1;
+				        	Buffer[2] = 1;
+				        	registerCount = 3;
+				        	for(i=0; i<7;i++)
+				        	{
+				        		convertNumFormat.f64 = *USBFloat64Vars1[i];
+				        		for(j=0;j<8;j++)
+				        		{
+				        			Buffer[registerCount] = convertNumFormat.ch[j];
+				        			registerCount++;
+				        		}
+				        	}
+				        	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
 							break;
 						}
 						case 2:
 						{
-							USB_REQUEST_DATA_F32_1 = 1;
+				        	// Store data
+				        	Buffer[0] = 2;
+				        	Buffer[1] = 1;
+				        	Buffer[2] = 2;
+				        	registerCount = 3;
+				        	for(i=0; i<15;i++)
+				        	{
+				        		convertNumFormat.f32[0] = *USBFloat32Vars1[i];
+				        		for(j=0;j<4;j++)
+				        		{
+				        			Buffer[registerCount] = convertNumFormat.ch[j];
+				        			registerCount++;
+				        		}
+				        	}
+				        	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
 							break;
 						}
 						case 3:
 						{
-							USB_REQUEST_DATA_I32_1 = 1;
+				        	// Store data
+				        	Buffer[0] = 2;
+				        	Buffer[1] = 1;
+				        	Buffer[2] = 3;
+				        	registerCount = 3;
+				        	for(i=0; i<15;i++)
+				        	{
+				        		convertNumFormat.i32[0] = *USBInt32Vars1[i];
+				        		for(j=0;j<4;j++)
+				        		{
+				        			Buffer[registerCount] = convertNumFormat.ch[j];
+				        			registerCount++;
+				        		}
+				        	}
+				        	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
 							break;
 						}
 						case 4:
 						{
-							USB_REQUEST_DATA_UI32_1 = 1;
+				        	// Store data
+				        	Buffer[0] = 2;
+				        	Buffer[1] = 1;
+				        	Buffer[2] = 4;
+				        	registerCount = 3;
+				        	for(i=0; i<15;i++)
+				        	{
+				        		convertNumFormat.ui32[0] = *USBUint32Vars1[i];
+				        		for(j=0;j<4;j++)
+				        		{
+				        			Buffer[registerCount] = convertNumFormat.ch[j];
+				        			registerCount++;
+				        		}
+				        	}
+				        	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
 							break;
 						}
 						case 5:
 						{
-							USB_REQUEST_DATA_I16_1 = 1;
+				        	// Store data
+				        	Buffer[0] = 2;
+				        	Buffer[1] = 1;
+				        	Buffer[2] = 5;
+				        	registerCount = 3;
+				        	for(i=0; i<30;i++)
+				        	{
+				        		convertNumFormat.i16[0] = *USBInt16Vars1[i];
+				        		for(j=0;j<2;j++)
+				        		{
+				        			Buffer[registerCount] = convertNumFormat.ch[j];
+				        			registerCount++;
+				        		}
+				        	}
+				        	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
 							break;
 						}
 						case 6:
 						{
-							USB_REQUEST_DATA_UI16_1 = 1;
+				        	// Store data
+				        	Buffer[0] = 2;
+				        	Buffer[1] = 1;
+				        	Buffer[2] = 6;
+				        	registerCount = 3;
+				        	for(i=0; i<30;i++)
+				        	{
+				        		convertNumFormat.ui16[0] = *USBUint16Vars1[i];
+				        		for(j=0;j<2;j++)
+				        		{
+				        			Buffer[registerCount] = convertNumFormat.ch[j];
+				        			registerCount++;
+				        		}
+				        	}
+				        	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
 							break;
 						}
 						case 7:
 						{
-							USB_REQUEST_DATA_I8_1 = 1;
+				        	// Store data
+				        	Buffer[0] = 2;
+				        	Buffer[1] = 1;
+				        	Buffer[2] = 7;
+				        	registerCount = 3;
+				        	for(i=0; i<60;i++)
+				        	{
+				        		Buffer[registerCount] = *USBInt8Vars1[i];
+				        		registerCount++;
+				        	}
+				        	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
 							break;
 						}
 						case 8:
 						{
-							USB_REQUEST_DATA_UI8_1 = 1;
+				        	// Store data
+				        	Buffer[0] = 2;
+				        	Buffer[1] = 1;
+				        	Buffer[2] = 8;
+				        	registerCount = 3;
+				        	for(i=0; i<60;i++)
+				        	{
+				        		Buffer[registerCount] = *USBUint8Vars1[i];
+				        		registerCount++;
+				        	}
+				        	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
 							break;
 						}
 						case 9:
 						{
-							USB_REQUEST_DATA_F32_2 = 1;
+				        	// Store data
+				        	Buffer[0] = 2;
+				        	Buffer[1] = 1;
+				        	Buffer[2] = 9;
+				        	registerCount = 3;
+				        	for(i=0; i<15;i++)
+				        	{
+				        		convertNumFormat.f32[0] = *USBFloat32Vars2[i];
+				        		for(j=0;j<4;j++)
+				        		{
+				        			Buffer[registerCount] = convertNumFormat.ch[j];
+				        			registerCount++;
+				        		}
+				        	}
+				        	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
 							break;
 						}
 						case 10:
 						{
-							USB_REQUEST_DATA_F32_3 = 1;
+				        	// Store data
+				        	Buffer[0] = 2;
+				        	Buffer[1] = 1;
+				        	Buffer[2] = 10;
+				        	registerCount = 3;
+				        	for(i=0; i<15;i++)
+				        	{
+				        		convertNumFormat.f32[0] = *USBFloat32Vars3[i];
+				        		for(j=0;j<4;j++)
+				        		{
+				        			Buffer[registerCount] = convertNumFormat.ch[j];
+				        			registerCount++;
+				        		}
+				        	}
+				        	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
 							break;
 						}
 					}

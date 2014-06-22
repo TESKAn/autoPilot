@@ -113,7 +113,6 @@ extern volatile Flag flag0;
 extern volatile Flag flag1;
 extern volatile Flag APStatus1;
 extern volatile Flag APStatus2;
-extern volatile Flag USBFlags;
 
 // A/D variables
 extern uint16_t AIn0;

@@ -24,7 +24,7 @@
 ErrorStatus acc_initDataStructure(AccelerometerData *data)
 {
 	ErrorStatus status = ERROR;
-
+	Kalman3_Init(&data->kFilter, 0.022f, 0.617f);
 	data->dataTime = getSystemTime();
 	data->deltaTime = 0;
 	data->offset = vectori16_init(0);
@@ -190,53 +190,40 @@ ErrorStatus acc_updateSpeedCalculation(FUSION_CORE *coreData, uint32_t dataTime)
 // Update accelerometer reading
 ErrorStatus acc_update(FUSION_CORE *coreData, int16_t *rawData, uint32_t dataTime)
 {
-	float32_t result[3];
 	uint32_t deltaTime = 0;
 
 	// Update sensor temperature
 	coreData->_accelerometer.sensorTemperature = coreData->MPUTemperature;
 
 	// Update accelerometer reading
-	// Store raw data
-	coreData->_accelerometer.vectorRaw.x = (float32_t)rawData[0] * coreData->_accelerometer.accRate;
-	coreData->_accelerometer.vectorRaw.y = (float32_t)rawData[1] * coreData->_accelerometer.accRate;
-	coreData->_accelerometer.vectorRaw.z = (float32_t)rawData[2] * coreData->_accelerometer.accRate;
-	// Remove offset
-	/*
-	rawData[0] -= coreData->_accelerometer.offset.x;
-	rawData[1] -= coreData->_accelerometer.offset.y;
-	rawData[2] -= coreData->_accelerometer.offset.z;
-	*/
-	// Scale result to get g's
-	result[0] = (float32_t)rawData[0] * coreData->_accelerometer.accRate;
-	result[1] = (float32_t)rawData[1] * coreData->_accelerometer.accRate;
-	result[2] = (float32_t)rawData[2] * coreData->_accelerometer.accRate;
-	// Remove offset
-	result[0] = result[0] - coreData->_accelerometer.offsets.x;
-	result[1] = result[1] - coreData->_accelerometer.offsets.y;
-	result[2] = result[2] - coreData->_accelerometer.offsets.z;
-	// Invert to get - gravity - acceleration
-	// Gravity is in body frame of reference
-	result[0] = -result[0];
-	result[1] = -result[1];
-	result[2] = -result[2];
+	// Store raw data, multiply with - to get gravity - acceleration
+	coreData->_accelerometer.vectorRaw.x = (float32_t)rawData[0] * -coreData->_accelerometer.accRate;
+	coreData->_accelerometer.vectorRaw.y = (float32_t)rawData[1] * -coreData->_accelerometer.accRate;
+	coreData->_accelerometer.vectorRaw.z = (float32_t)rawData[2] * -coreData->_accelerometer.accRate;
 
+	// Filter
+	coreData->_accelerometer.vectorKFiltered.x = Kalman_Update(&coreData->_accelerometer.kFilter.X, coreData->_accelerometer.vectorRaw.x);
+	coreData->_accelerometer.vectorKFiltered.y = Kalman_Update(&coreData->_accelerometer.kFilter.Y, coreData->_accelerometer.vectorRaw.y);
+	coreData->_accelerometer.vectorKFiltered.z = Kalman_Update(&coreData->_accelerometer.kFilter.Z, coreData->_accelerometer.vectorRaw.z);
+
+	// Remove offset
+	vectorf_add(&coreData->_accelerometer.vectorKFiltered, &coreData->_accelerometer.offsets, &coreData->_accelerometer.vector);
+	/*
+	coreData->_accelerometer.vector.x -= coreData->_accelerometer.offsets.x;
+	coreData->_accelerometer.vector.y -= coreData->_accelerometer.offsets.y;
+	coreData->_accelerometer.vector.z -= coreData->_accelerometer.offsets.z;
+*/
 	// Use gain correction on outputs?
 #ifdef ACC_USE_GAIN_CORRECTION
-	result[0] = result[0] * coreData->_accelerometer.gains.x;
-	result[1] = result[1] * coreData->_accelerometer.gains.y;
-	result[2] = result[2] * coreData->_accelerometer.gains.z;
+	coreData->_accelerometer.vector.x *= coreData->_accelerometer.gains.x;
+	coreData->_accelerometer.vector.y *= coreData->_accelerometer.gains.y;
+	coreData->_accelerometer.vector.z *= coreData->_accelerometer.gains.z;
 #endif
 
 
 	// Calculate time difference
 	deltaTime = dataTime - coreData->_accelerometer.dataTime;
-	// Do checks on time passed...
 
-	// And store result if all OK
-	coreData->_accelerometer.vector.x = result[0];
-	coreData->_accelerometer.vector.y = result[1];
-	coreData->_accelerometer.vector.z = result[2];
 	// Also store normalized vector
 	vectorf_normalizeAToB(&coreData->_accelerometer.vector, &coreData->_accelerometer.vectorNormalized);
 	// Store time information

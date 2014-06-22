@@ -29,22 +29,23 @@ ErrorStatus gyro_initDataStructure(GyroData *data)
 
 	data->scale = vectorf_init(1);
 
+	// How much to scale rotation error
+	data->errorScale = 0.1;
+
 	data->vector = vectorf_init(0);
 
 	data->vectorRaw = vectorf_init(0);
 
-	data->offsets.x = 0.02f;
-	data->offsets.y = 0.015f;
-	data->offsets.z = -0.03f;
+	data->offsets.x = 0.01805281f;
+	data->offsets.y = 0.016643153f;
+	data->offsets.z = -0.034478845f;
 	// gyro rate in radians
 	data->gyroRate = GYRO_DEFAULT_RATE;// * GYRO_DEG_TO_RAD;
 	data->sensorTemperature = 0;
 	data->valid = 1;
 
 	// Setup kalman filter
-	Kalman_Init(&data->kFilter_x, 0.022f, 0.617f);
-	Kalman_Init(&data->kFilter_y, 0.022f, 0.617f);
-	Kalman_Init(&data->kFilter_z, 0.022f, 0.617f);
+	Kalman3_Init(&data->kFilter, 0.022f, 0.617f);
 
 	return SUCCESS;
 }
@@ -58,52 +59,46 @@ ErrorStatus gyro_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 	data->_accelerometer.sensorTemperature = data->MPUTemperature;
 
 	// First store raw reading
-	data->_gyro.vectorRaw.x = (float32_t)rawData[0] * data->_gyro.gyroRate;
-	data->_gyro.vectorRaw.y = (float32_t)rawData[1] * data->_gyro.gyroRate;
-	data->_gyro.vectorRaw.z = (float32_t)rawData[2] * data->_gyro.gyroRate;
+	data->_gyro.vectorRaw.x = (float32_t)rawData[0] * data->_gyro.gyroRate * GYRO_DEG_TO_RAD;
+	data->_gyro.vectorRaw.y = (float32_t)rawData[1] * data->_gyro.gyroRate * GYRO_DEG_TO_RAD;
+	data->_gyro.vectorRaw.z = (float32_t)rawData[2] * data->_gyro.gyroRate * GYRO_DEG_TO_RAD;
 
-	// Remove offset
-	/*
-	rawData[0] -= data->_gyro.offset.x;
-	rawData[1] -= data->_gyro.offset.y;
-	rawData[2] -= data->_gyro.offset.z;
-	 */
-	// Calculate rate in rad/sec
-	data->_gyro.vector.x = data->_gyro.vectorRaw.x * GYRO_DEG_TO_RAD;
-	data->_gyro.vector.y = data->_gyro.vectorRaw.y * GYRO_DEG_TO_RAD;
-	data->_gyro.vector.z = data->_gyro.vectorRaw.z * GYRO_DEG_TO_RAD;
 	// Filter result
-	data->_gyro.vector.x = Kalman_Update(&data->_gyro.kFilter_x, data->_gyro.vector.x);
-	data->_gyro.vector.y = Kalman_Update(&data->_gyro.kFilter_y, data->_gyro.vector.y);
-	data->_gyro.vector.z = Kalman_Update(&data->_gyro.kFilter_z, data->_gyro.vector.z);
+	data->_gyro.vectorKFiltered.x = Kalman_Update(&data->_gyro.kFilter.X, data->_gyro.vectorRaw.x);
+	data->_gyro.vectorKFiltered.y = Kalman_Update(&data->_gyro.kFilter.Y, data->_gyro.vectorRaw.y);
+	data->_gyro.vectorKFiltered.z = Kalman_Update(&data->_gyro.kFilter.Z, data->_gyro.vectorRaw.z);
 
-	// Copy filtered data
-	vectorf_copy(&data->_gyro.vector, &data->_gyro.kFilteredVector);
+	// Copy filtered data for further
+	vectorf_copy(&data->_gyro.vectorKFiltered, &data->_gyro.vector);
 
+
+	// Set gyros to 0 - perfect sensors
+/*
+	data->_gyro.vector.x = 0;
+	data->_gyro.vector.y = 0;
+	data->_gyro.vector.z = 0;
+*/
 	// Remove offsets
-	/*
+/*
 	data->_gyro.vector.x -= data->_gyro.offsets.x;
 	data->_gyro.vector.y -= data->_gyro.offsets.y;
 	data->_gyro.vector.z -= data->_gyro.offsets.z;
-	 */
+*/
 	// Remove drift error
 	// Drift error is calculated in different .c/.h file
+
 	data->_gyro.vector.x -= data->_gyroErrorPID.x.s;
 	data->_gyro.vector.y -= data->_gyroErrorPID.y.s;
 	data->_gyro.vector.z -= data->_gyroErrorPID.z.s;
 
-	// Put through kalman filter
-	/*
-	data->_gyro.kFilteredVector.x = Kalman_Update(&data->_gyro.kFilter_x, data->_gyro.vector.x);
-	data->_gyro.kFilteredVector.y = Kalman_Update(&data->_gyro.kFilter_y, data->_gyro.vector.y);
-	data->_gyro.kFilteredVector.z = Kalman_Update(&data->_gyro.kFilter_z, data->_gyro.vector.z);
-*/
 	// Calculate time difference
 	deltaTime = dataTime - data->_gyro.dataTime;
 	// Do checks on time passed...
 
 	data->_gyro.dataTime = dataTime;
 	data->_gyro.deltaTime = deltaTime;
+
+	data->_gyro.fDeltaTime = (float32_t)data->_gyro.deltaTime * data->PARAMETERS.systimeToSeconds;
 
 	return SUCCESS;
 }

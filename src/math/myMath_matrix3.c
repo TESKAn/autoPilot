@@ -48,28 +48,31 @@ ErrorStatus matrix3_vectorMultiply(Matrixf * mat, Vectorf * vecIn, Vectorf * vec
 	float32_t a = 0;
 	float32_t b = 0;
 	float32_t c = 0;
+	// Use temporary vector to store data
+	Vectorf result;
 
 	// Calculate vector by multiplying given vector with given matrix
 	a = mat->a.x * vecIn->x;
 	b = mat->a.y * vecIn->y;
 	c = mat->a.z * vecIn->z;
-	vecOut->x = a + b + c;
+	result.x = a + b + c;
 
 	a = mat->b.x * vecIn->x;
 	b = mat->b.y * vecIn->y;
 	c = mat->b.z * vecIn->z;
-	vecOut->y = a + b + c;
+	result.y = a + b + c;
 
 	a = mat->c.x * vecIn->x;
 	b = mat->c.y * vecIn->y;
 	c = mat->c.z * vecIn->z;
 
-	vecOut->z = a + b + c;
+	result.z = a + b + c;
 
 	// Check if FPU result is OK
 	if(!FPU_EXCEPTION)
 	{
 		status = SUCCESS;
+		vectorf_copy(&result, vecOut);
 	}
 
 	return status;
@@ -84,25 +87,28 @@ ErrorStatus matrix3_transposeVectorMultiply(Matrixf * mat, Vectorf * vecIn, Vect
 	float32_t a = 0;
 	float32_t b = 0;
 	float32_t c = 0;
+	// Use temporary vector to store data
+	Vectorf result;
 
 	// Calculate vector by multiplying given vector with given matrix transpose
 	a = mat->a.x * vecIn->x;
 	b = mat->b.x * vecIn->y;
 	c = mat->c.x * vecIn->z;
-	vecOut->x = a + b + c;
+	result.x = a + b + c;
 	a = mat->a.y * vecIn->x;
 	b = mat->b.y * vecIn->y;
 	c = mat->c.y * vecIn->z;
-	vecOut->y = a + b + c;
+	result.y = a + b + c;
 	a = mat->a.z * vecIn->x;
 	b = mat->b.z * vecIn->y;
 	c = mat->c.z * vecIn->z;
-	vecOut->z = a + b + c;
+	result.z = a + b + c;
 
 	// Check if FPU result is OK
 	if(!FPU_EXCEPTION)
 	{
 		status = SUCCESS;
+		vectorf_copy(&result, vecOut);
 	}
 
 	return status;

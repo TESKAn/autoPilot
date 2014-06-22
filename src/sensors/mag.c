@@ -20,7 +20,8 @@
 ErrorStatus mag_initDataStructure(MagData *data)
 {
 	ErrorStatus success = ERROR;
-
+	Kalman3_Init(&data->kFilter, 0.022f, 0.617f);
+	data->heading = 0.0f;
 	data->dataTime = getSystemTime();
 	data->deltaTime = 0;
 	data->hardIron = vectorf_init(0);
@@ -48,19 +49,27 @@ ErrorStatus mag_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 {
 	ErrorStatus success = ERROR;
 	float32_t temp;
+	Vectorf calcVector = vectorf_init(0);
 
 	// Update mag readings
 	// Store mag reading and magnitude to previous
 	vectorf_copy(&data->_mag.currentMagReading, &data->_mag.previousMagReading);
 	data->_mag.previousMagnitude = data->_mag.currentMagnitude;
 	// Update current reading
-	data->_mag.currentMagReading.x = (float32_t)rawData[0] * data->_mag.magRate;
-	data->_mag.currentMagReading.y = (float32_t)rawData[1] * data->_mag.magRate;
-	data->_mag.currentMagReading.z = (float32_t)rawData[2] * data->_mag.magRate;
+	data->_mag.vectorRaw.x = (float32_t)rawData[0] * data->_mag.magRate;
+	data->_mag.vectorRaw.y = (float32_t)rawData[1] * data->_mag.magRate;
+	data->_mag.vectorRaw.z = (float32_t)rawData[2] * data->_mag.magRate;
 	// Store raw
-	vectorf_copy(&data->_mag.currentMagReading, &data->_mag.vectorRaw);
+	//vectorf_copy(&data->_mag.currentMagReading, &data->_mag.vectorRaw);
+
+	//Filter
+	data->_mag.vectorKFiltered.x = Kalman_Update(&data->_mag.kFilter.X, data->_mag.vectorRaw.x);
+	data->_mag.vectorKFiltered.y = Kalman_Update(&data->_mag.kFilter.Y, data->_mag.vectorRaw.y);
+	data->_mag.vectorKFiltered.z = Kalman_Update(&data->_mag.kFilter.Z, data->_mag.vectorRaw.z);
+
+
 	// Remove offset
-	vectorf_substract(&data->_mag.currentMagReading, &data->_mag.offset, &data->_mag.currentMagReading);
+	vectorf_substract(&data->_mag.vectorKFiltered, &data->_mag.offset, &data->_mag.currentMagReading);
 	// Get vector difference
 	vectorf_substract(&data->_mag.currentMagReading, &data->_mag.previousMagReading, &data->_mag.calcVector);
 	// Try to normalize vector
@@ -88,6 +97,11 @@ ErrorStatus mag_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 		// Normalization good, continue with calculations
 		// Move to earth reference frame
 		matrix3_vectorMultiply(&data->_fusion_DCM, &data->_mag.vector, &data->_mag.vectorEarthFrame);
+		// Calculate heading from X,Y
+		vectorf_copy(&data->_mag.vectorEarthFrame, &calcVector);
+		calcVector.z = 0;
+		vectorf_normalize(&calcVector);
+		data->_mag.heading = atan2f(calcVector.x, calcVector.y);
 		// Check mag X,Y vector direction with a reference - like GPS reading
 	}
 

@@ -22,8 +22,8 @@ ErrorStatus math_PIDInit(myMath_PID* PID, float32_t kp, float32_t ki, float32_t 
 	PID->Ki = ki;
 	PID->Kd = kd;
 
-	PID->errIMax = 100;
-	PID->errIMin = -100;
+	PID->errIMax = 1000;
+	PID->errIMin = -1000;
 
 	PID->errMax = 100;
 	PID->errMin = -100;

@@ -14,9 +14,12 @@
 typedef struct
 {
 	Vectorf vector;					// Normalized vector in body frame
+	Vectorf vectorRaw;
+	Vectorf vectorKFiltered;
 	Vectorf vectorEarthFrame;		// Normalized vector in earth frame
 	Vectorf vecorPrevious;			// Store previous result for use in offset removal
-	Vectorf vectorRaw;
+	KALMAN3 kFilter;				// Kalman filter data
+	float32_t heading;				// Heading calculated from mag in earth frame
 	Vectorf offset;					// Computed magnetometer offset
 	Vectorf currentMagReading;		// Mag readings with only offset removed
 	Vectorf previousMagReading;
@@ -38,12 +41,13 @@ typedef struct
 {
 	Vectorf vector;
 	Vectorf vectorRaw;
+	Vectorf vectorKFiltered;
 	Vectorf scale;
+	float32_t fDeltaTime;
+	float32_t fReceiveTime;
+	float32_t errorScale;
 	// Kalman filter data
-	KALMAN kFilter_x;
-	KALMAN kFilter_y;
-	KALMAN kFilter_z;
-	Vectorf kFilteredVector;
+	KALMAN3 kFilter;
 	// Error
 	Vectorf gyroError;
 	Vectori16 offset;
@@ -117,7 +121,9 @@ typedef struct
 {
 	Vectorf vector;
 	Vectorf vectorRaw;
+	Vectorf vectorKFiltered;
 	Vectorf vectorNormalized;
+	KALMAN3 kFilter;				// Kalman filter data
 	Vectorf gains;
 	Vectorf offsets;
 	Vectorf Speed_3D;
@@ -142,6 +148,9 @@ typedef struct
 	airSpeedData _airSpeed;
 	AltimeterData _altimeter;
 	GPSData _gps;
+
+	// Maximum gyro amplitude when updating gyro error
+	float32_t maxGyroErrorAmplitude;
 
 	// PIDs
 	myMath_PID3 _gyroErrorPID;

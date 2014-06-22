@@ -59,6 +59,8 @@ void usb_initVars(void)
 	USBFloat32Vars1[11] = &fusionData.ROLLPITCHYAW.roll;
 	USBFloat32Vars1[12] = &fusionData.ROLLPITCHYAW.pitch;
 	USBFloat32Vars1[13] = &fusionData.ROLLPITCHYAW.yaw;
+	USBFloat32Vars1[14] = &fusionData._gyro.fDeltaTime;
+
 
 	// USBUint32Vars1
 	USBUint32Vars1[0] = &fusionData._gps.dataTime;
@@ -114,11 +116,9 @@ void usb_initVars(void)
 	USBFloat32Vars2[6] = &fusionData._gps.speed3D.x;
 	USBFloat32Vars2[7] = &fusionData._gps.speed3D.y;
 	USBFloat32Vars2[8] = &fusionData._gps.speed3D.z;
-	/*
-	USBFloat32Vars2[9] = &fusionData._gps.speed3D.z;
-	USBFloat32Vars2[10] = &fusionData._gps.speed3D.z;
-	USBFloat32Vars2[11] = &fusionData._gps.speed3D.z;
-*/
+	USBFloat32Vars2[9] = &fusionData._mag.heading;
+
+
 	// USBFloat32Vars3
 	USBFloat32Vars3[0] = &fusionData._fusion_DCM.a.x;
 	USBFloat32Vars3[1] = &fusionData._fusion_DCM.a.y;

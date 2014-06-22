@@ -61,6 +61,7 @@
 #define SYSTEM_INTERRUPTS_ON	flag0.bits.BIT9
 #define LED_BLINK				flag0.bits.BIT10
 #define ADC_ENABLED				flag0.bits.BIT11
+#define SENSOR_TEST_STEP		flag0.bits.BIT12
 
 
 
@@ -92,18 +93,6 @@
 
 // Clear flag1 FPU exceptions
 #define CLEAR_FPU_EXCEPTIONS	flag1.flag.flag = flag1.flag.flag & 0xFFFFFFC3
-
-// USB Flag macros
-#define USB_REQUEST_DATA_F64_1		USBFlags.bits.BIT0
-#define USB_REQUEST_DATA_F32_1		USBFlags.bits.BIT1
-#define USB_REQUEST_DATA_I32_1		USBFlags.bits.BIT2
-#define USB_REQUEST_DATA_UI32_1		USBFlags.bits.BIT3
-#define USB_REQUEST_DATA_I16_1		USBFlags.bits.BIT4
-#define USB_REQUEST_DATA_UI16_1		USBFlags.bits.BIT5
-#define USB_REQUEST_DATA_I8_1		USBFlags.bits.BIT6
-#define USB_REQUEST_DATA_UI8_1		USBFlags.bits.BIT7
-#define USB_REQUEST_DATA_F32_2		USBFlags.bits.BIT8
-#define USB_REQUEST_DATA_F32_3		USBFlags.bits.BIT9
 
 // DMA macros
 //DMA1_Stream0 used by USB

@@ -90,9 +90,10 @@ int main(void)
 	TIMEOUT_USEINTERRUPT = 1;
 
 	//SD_CardInfo cardinfo;
+	/*
 	int i = 0;
 	int j = 0;
-	int registerCount = 0;
+	int registerCount = 0;*/
 	// Startup delay - 0,5 sec
 	Delaynus(500000);
 	// Configure hardware
@@ -136,208 +137,16 @@ int main(void)
 
 	// Set PID for first run
 	// x * Ki = gyro offset, x = gyro offset / Ki
+/*
 	fusionData._gyroErrorPID.x.im = 0.023f / fusionData._gyroErrorPID.x.Ki;
 	fusionData._gyroErrorPID.y.im = 0.01f / fusionData._gyroErrorPID.y.Ki;
 	fusionData._gyroErrorPID.z.im = -0.023f / fusionData._gyroErrorPID.z.Ki;
-
+*/
 	MPU_COMM_ENABLED = 1;
 
 	// Mount SD card
     while (1)
     {
-    	// Check USB data requests
-    	if(USB_REQUEST_DATA_F64_1)
-    	{
-    		USB_REQUEST_DATA_F64_1 = 0;
-        	// Store data
-        	Buffer[0] = 2;
-        	Buffer[1] = 1;
-        	Buffer[2] = 1;
-        	registerCount = 3;
-        	for(i=0; i<7;i++)
-        	{
-        		convertNumFormat.f64 = *USBFloat64Vars1[i];
-        		for(j=0;j<8;j++)
-        		{
-        			Buffer[registerCount] = convertNumFormat.ch[j];
-        			registerCount++;
-        		}
-        	}
-        	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
-    	}
-
-    	if(USB_REQUEST_DATA_F32_1)
-    	{
-    		USB_REQUEST_DATA_F32_1 = 0;
-        	// Store data
-        	Buffer[0] = 2;
-        	Buffer[1] = 1;
-        	Buffer[2] = 2;
-        	registerCount = 3;
-        	for(i=0; i<15;i++)
-        	{
-        		convertNumFormat.f32[0] = *USBFloat32Vars1[i];
-        		for(j=0;j<4;j++)
-        		{
-        			Buffer[registerCount] = convertNumFormat.ch[j];
-        			registerCount++;
-        		}
-        	}
-        	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
-    	}
-
-    	if(USB_REQUEST_DATA_I32_1)
-    	{
-    		USB_REQUEST_DATA_I32_1 = 0;
-        	// Store data
-        	Buffer[0] = 2;
-        	Buffer[1] = 1;
-        	Buffer[2] = 3;
-        	registerCount = 3;
-        	for(i=0; i<15;i++)
-        	{
-        		convertNumFormat.i32[0] = *USBInt32Vars1[i];
-        		for(j=0;j<4;j++)
-        		{
-        			Buffer[registerCount] = convertNumFormat.ch[j];
-        			registerCount++;
-        		}
-        	}
-        	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
-    	}
-
-    	if(USB_REQUEST_DATA_UI32_1)
-    	{
-    		USB_REQUEST_DATA_UI32_1 = 0;
-        	// Store data
-        	Buffer[0] = 2;
-        	Buffer[1] = 1;
-        	Buffer[2] = 4;
-        	registerCount = 3;
-        	for(i=0; i<15;i++)
-        	{
-        		convertNumFormat.ui32[0] = *USBUint32Vars1[i];
-        		for(j=0;j<4;j++)
-        		{
-        			Buffer[registerCount] = convertNumFormat.ch[j];
-        			registerCount++;
-        		}
-        	}
-        	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
-    	}
-
-    	if(USB_REQUEST_DATA_I16_1)
-    	{
-    		USB_REQUEST_DATA_I16_1 = 0;
-        	// Store data
-        	Buffer[0] = 2;
-        	Buffer[1] = 1;
-        	Buffer[2] = 5;
-        	registerCount = 3;
-        	for(i=0; i<30;i++)
-        	{
-        		convertNumFormat.i16[0] = *USBInt16Vars1[i];
-        		for(j=0;j<2;j++)
-        		{
-        			Buffer[registerCount] = convertNumFormat.ch[j];
-        			registerCount++;
-        		}
-        	}
-        	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
-    	}
-
-    	if(USB_REQUEST_DATA_UI16_1)
-    	{
-    		USB_REQUEST_DATA_UI16_1 = 0;
-        	// Store data
-        	Buffer[0] = 2;
-        	Buffer[1] = 1;
-        	Buffer[2] = 6;
-        	registerCount = 3;
-        	for(i=0; i<30;i++)
-        	{
-        		convertNumFormat.ui16[0] = *USBUint16Vars1[i];
-        		for(j=0;j<2;j++)
-        		{
-        			Buffer[registerCount] = convertNumFormat.ch[j];
-        			registerCount++;
-        		}
-        	}
-        	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
-    	}
-
-    	if(USB_REQUEST_DATA_I8_1)
-    	{
-    		USB_REQUEST_DATA_I8_1 = 0;
-        	// Store data
-        	Buffer[0] = 2;
-        	Buffer[1] = 1;
-        	Buffer[2] = 7;
-        	registerCount = 3;
-        	for(i=0; i<60;i++)
-        	{
-        		Buffer[registerCount] = *USBInt8Vars1[i];
-        		registerCount++;
-        	}
-        	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
-    	}
-
-    	if(USB_REQUEST_DATA_UI8_1)
-    	{
-    		USB_REQUEST_DATA_UI8_1 = 0;
-        	// Store data
-        	Buffer[0] = 2;
-        	Buffer[1] = 1;
-        	Buffer[2] = 8;
-        	registerCount = 3;
-        	for(i=0; i<60;i++)
-        	{
-        		Buffer[registerCount] = *USBUint8Vars1[i];
-        		registerCount++;
-        	}
-        	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
-    	}
-
-    	if(USB_REQUEST_DATA_F32_2)
-    	{
-    		USB_REQUEST_DATA_F32_2 = 0;
-        	// Store data
-        	Buffer[0] = 2;
-        	Buffer[1] = 1;
-        	Buffer[2] = 9;
-        	registerCount = 3;
-        	for(i=0; i<15;i++)
-        	{
-        		convertNumFormat.f32[0] = *USBFloat32Vars2[i];
-        		for(j=0;j<4;j++)
-        		{
-        			Buffer[registerCount] = convertNumFormat.ch[j];
-        			registerCount++;
-        		}
-        	}
-        	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
-    	}
-
-    	if(USB_REQUEST_DATA_F32_3)
-    	{
-    		USB_REQUEST_DATA_F32_3 = 0;
-        	// Store data
-        	Buffer[0] = 2;
-        	Buffer[1] = 1;
-        	Buffer[2] = 10;
-        	registerCount = 3;
-        	for(i=0; i<15;i++)
-        	{
-        		convertNumFormat.f32[0] = *USBFloat32Vars3[i];
-        		for(j=0;j<4;j++)
-        		{
-        			Buffer[registerCount] = convertNumFormat.ch[j];
-        			registerCount++;
-        		}
-        	}
-        	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
-    	}
-
     	// Main loop switch
     	switch(mainLoopState)
     	{
@@ -356,9 +165,11 @@ int main(void)
 				math_PID3Reset(&fusionData._gyroErrorPID);
 				// Set initial value
 				// x * Ki = gyro offset, x = gyro offset / Ki
+/*
 				fusionData._gyroErrorPID.x.im = 0.023f / fusionData._gyroErrorPID.x.Ki;
 				fusionData._gyroErrorPID.y.im = 0.01f / fusionData._gyroErrorPID.y.Ki;
 				fusionData._gyroErrorPID.z.im = -0.023f / fusionData._gyroErrorPID.z.Ki;
+*/
 				break;
 			}
 			case 2:
@@ -457,6 +268,17 @@ int main(void)
 			{
 				// Z gain
 				acc_updateGains(&fusionData._accelerometer, 3);
+				mainLoopState = 0;
+				break;
+			}
+			case 12:
+			{
+				SENSOR_TEST_STEP = 1;
+				mainLoopState = 0;
+				break;
+			}
+			default:
+			{
 				mainLoopState = 0;
 				break;
 			}

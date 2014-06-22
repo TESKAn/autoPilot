@@ -16,17 +16,24 @@ void Kalman_Init(KALMAN* data, float32_t Q, float32_t R)
 	data->x_est_last = 0;
 }
 
+void Kalman3_Init(KALMAN3* data, float32_t Q, float32_t R)
+{
+	Kalman_Init(&data->X, Q, R);
+	Kalman_Init(&data->Y, Q, R);
+	Kalman_Init(&data->Z, Q, R);
+}
+
 float32_t Kalman_Update(KALMAN* data, float32_t newMeasurement)
 {
 	// Do prediction
 	//do a prediction
-	data->x_temp_est = data->x_est_last;
+	//data->x_temp_est = data->x_est_last;
 	data->P_temp = data->P_last + data->Q;
 	//calculate the Kalman gain
 	data->K = data->P_temp * (1.0f/(data->P_temp + data->R));
 
 	// Correct
-	data->x_est = data->x_temp_est + data->K * (newMeasurement - data->x_temp_est);
+	data->x_est = data->x_est_last + data->K * (newMeasurement - data->x_est_last);
 	data->P = (1- data->K) * data->P_temp;
 
 	// Update

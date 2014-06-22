@@ -19,7 +19,6 @@ volatile Flag flag1;
 volatile Flag APStatus1;
 volatile Flag APStatus2;
 
-volatile Flag USBFlags;
 
 // A/D variables
 uint16_t AIn0 = 0;

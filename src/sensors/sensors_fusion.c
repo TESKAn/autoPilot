@@ -54,10 +54,13 @@ ErrorStatus fusion_init(FUSION_CORE *coreData)
 		return ERROR;
 	}
 
+	// Init maximum gyro amplitude when updating error
+	coreData->maxGyroErrorAmplitude = GYRO_MAX_ERROR_AMPLITUDE;
+
 	// Init PIDs
-	math_PIDInit(&coreData->_gyroErrorPID.x, 0.5f, 0.2f, 0);
-	math_PIDInit(&coreData->_gyroErrorPID.y, 0.5f, 0.2f, 0);
-	math_PIDInit(&coreData->_gyroErrorPID.z, 0.5f, 0.2f, 0);
+	math_PIDInit(&coreData->_gyroErrorPID.x, 10.0f, 0.1f, 0);
+	math_PIDInit(&coreData->_gyroErrorPID.y, 10.0f, 0.1f, 0);
+	math_PIDInit(&coreData->_gyroErrorPID.z, 10.0f, 0.1f, 0);
 
 	// Create identity matrix
 	matrix3_init(1, &coreData->_fusion_DCM);
@@ -144,6 +147,7 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 		Vectorf temporaryVector2 = vectorf_init(0);
 		Vectorf error_gps_acc = vectorf_init(0);				// Error from GPS and accelerometer data
 		Vectorf error_acc_gravity = vectorf_init(0);			// Error from acceleration and gravity
+		Vectorf error_mag = vectorf_init(0);					// Error from compass
 		Vectorf error = vectorf_init(0);						// Cumulative error
 		float32_t fTemp = 0;
 		float32_t dt = 0;
@@ -154,6 +158,7 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 
 		// Check if we have valid GPS and accelerometer data
 		// We need speed so do not use if below some value
+		/*
 		if((1 ==data->_gps.valid)&&(1 == data->_accelerometer.valid)&&(data->PARAMETERS.minGPSSpeed < GPSSpeed))
 		{
 			// Use GPS and accelerometer speed data to calculate DCM error in earth frame
@@ -199,7 +204,7 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 				error_gps_acc = vectorf_init(0);
 			}
 
-		}
+		}*/
 		// Check if we have valid gyro and accelerometer data and calculate error
 		// Do only if speed below limit and acceleration is really low
 		if((data->PARAMETERS.minGPSSpeed > GPSSpeed)&&(1 == data->_accelerometer.valid))
@@ -208,17 +213,23 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 			fTemp = vectorf_getNorm(&data->_accelerometer.vector);
 			if((0.95 < fTemp)&&(1.05 > fTemp))
 			{
-				// Store estimated gravity vector
-				temporaryVector.x = data->_fusion_DCM.c.x;
-				temporaryVector.y = data->_fusion_DCM.c.y;
-				temporaryVector.z = data->_fusion_DCM.c.z;
-
-				status = vectorf_crossProduct(&temporaryVector, &data->_accelerometer.vectorNormalized, &error_acc_gravity);
-				// Check if there was calculation error
-				// If yes, set error to 0
-				if(ERROR == status)
+				// Check that gyro amplitude is less than set limit for updating gyro error
+				//fTemp = vectorf_getNorm(&data->_gyro.vector);
+				//if(fTemp < data->maxGyroErrorAmplitude)
 				{
-					error_acc_gravity = vectorf_init(0);
+					// Store estimated gravity vector
+					/*
+					temporaryVector.x = data->_fusion_DCM.c.x;
+					temporaryVector.y = data->_fusion_DCM.c.y;
+					temporaryVector.z = data->_fusion_DCM.c.z;
+					*/
+					status = vectorf_crossProduct(&data->_fusion_DCM.c, &data->_accelerometer.vectorNormalized, &error_acc_gravity);
+					// Check if there was calculation error
+					// If yes, set error to 0
+					if(ERROR == status)
+					{
+						error_acc_gravity = vectorf_init(0);
+					}
 				}
 			}
 			else
@@ -226,16 +237,30 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 				error_acc_gravity = vectorf_init(0);
 			}
 		}
-
+/*
 		// Check if we have valid magnetometer data and calculate error
+		if(data->_mag.valid)
+		{
+			// Calculate heading error from mag
+			// Yaw error is mag in earth frame, normalized, take y as yaw error
+			error_mag.x = 0;
+			error_mag.y = 0;
+			error_mag.z = data->_mag.vectorEarthFrame.y;
 
+			// Errors calculated in earth frame, transform to body frame
+			matrix3_transposeVectorMultiply(&data->_fusion_DCM, &error_mag, &error_mag);
+		}
+*/
 		// Check if we have valid GPS data and calculate yaw error
 
 
-		//error_yaw_gps
-
 		// Sum up all errors
 		status = vectorf_add(&error_acc_gravity, &error_gps_acc, &error);
+
+		status = vectorf_add(&error_mag, &error, &error);
+
+		// Scale error
+		vectorf_scalarProduct(&error, data->_gyro.errorScale, &error);
 
 		// Store errors
 		vectorf_copy(&error, &data->_gyro.gyroError);
@@ -245,12 +270,12 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 		dt = dt * data->PARAMETERS.systimeToSeconds;
 
 		// If error above limit, update PID
-		fTemp = vectorf_getNorm(&error);
-		if(fTemp > data->PARAMETERS.minRotError)
-		{
+		//fTemp = vectorf_getNorm(&error);
+		//if(fTemp > data->PARAMETERS.minRotError)
+		//{
 			// Calculate delta time in seconds
 			status = math_PID3(&error, dt, &data->_gyroErrorPID);
-		}
+		//}
 	}
 	return SUCCESS;
 }

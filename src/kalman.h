@@ -21,10 +21,18 @@ typedef struct
 	float32_t x_temp_est;
 	float32_t x_est;
 
-
 }__attribute__((aligned(4),packed)) KALMAN, *PKALMAN;
 
+typedef struct
+{
+	KALMAN X;
+	KALMAN Y;
+	KALMAN Z;
+
+}__attribute__((aligned(4),packed)) KALMAN3, *PKALMAN3;
+
 void Kalman_Init(KALMAN* data, float32_t Q, float32_t R);
+void Kalman3_Init(KALMAN3* data, float32_t Q, float32_t R);
 float32_t Kalman_Update(KALMAN* data, float32_t newMeasurement);
 
 #endif /* KALMAN_H_ */

@@ -241,9 +241,11 @@ void sensorInit()
 // Copies sensor data from I2C to variables
 void copySensorData(void)
 {
+	uint32_t receiveTime = getSystemTime();
 
-	uint16_t i = 0;
-	float32_t fTemp = 0;
+	// Store time it took to get data
+	receiveTime = receiveTime - sensorAcquisitionTime;
+	fusionData._gyro.fReceiveTime = (float32_t)receiveTime * fusionData.PARAMETERS.systimeToSeconds;
 	//uint16_t uiTemp = 0;
 	// Data is in I2C2_DMABufRX
 	// Mark updating sensor data
@@ -266,22 +268,6 @@ void copySensorData(void)
 	I2C2_sensorBufRX.data.dataTakenTime = sensorAcquisitionTime;
 	// Call fusion update function
 	fusion_dataUpdate(&fusionData, &I2C2_sensorBufRX);
-
-/*
-	ACC_X = I2C2_sensorBufRX.data.accX;
-	ACC_Y = I2C2_sensorBufRX.data.accY;
-	ACC_Z = I2C2_sensorBufRX.data.accZ;
-
-	GYRO_X = I2C2_sensorBufRX.data.gyroX;
-	GYRO_Y = I2C2_sensorBufRX.data.gyroY;
-	GYRO_Z = I2C2_sensorBufRX.data.gyroZ;
-
-	MAG_X = I2C2_sensorBufRX.data.magX;
-	MAG_Y = I2C2_sensorBufRX.data.magY;
-	MAG_Z = I2C2_sensorBufRX.data.magZ;
-
-	BARO = (((I2C2_sensorBufRX.data.pressure.statusPressure) & 0x00ffff00) >> 8);
-*/
 
 	// Mark end of sensor updating
 	SENSORS_UPDATING = 0;
@@ -1562,7 +1548,7 @@ void I2C2_Configure(FunctionalState NewState)
 	// I2C2 config
 	// Configure I2C 2 for sensor communication
 	// Set clock to 400 kHz
-	I2CInitStruct.I2C_ClockSpeed = 400000;
+	I2CInitStruct.I2C_ClockSpeed = 200000;
 	I2CInitStruct.I2C_Mode = I2C_Mode_I2C;
 	I2CInitStruct.I2C_DutyCycle = I2C_DutyCycle_2;
 	I2CInitStruct.I2C_OwnAddress1 = 0x00;
