@@ -12,9 +12,10 @@
 #define SENSOR_MIN_ROT_ERROR					0.000f
 #define SENSOR_MIN_ROTATION						0.000f
 #define SENSOR_MIN_GPS_SPEED					2.0f
-#define GYRO_ERROR_UPDATE_INTERVAL				10			// Update PID every n cycles
-#define GYRO_I_UPDATE_INTERVAL					10			// When to update error integral
+#define ERROR_IS_SMALL							0.01f
+#define GYRO_ERROR_UPDATE_INTERVAL				0			// Update PID every n cycles
+#define GYRO_I_UPDATE_INTERVAL					100			// When to update error integral
 #define GYRO_MAX_ERROR_AMPLITUDE				0.5f		// Maximum gyro amplitude when updating error PID
-
+#define GYRO_MAX_ERROR_UPDATE_RATE				0.1f
 
 #endif /* SENSOR_MACROS_H_ */

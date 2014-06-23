@@ -63,7 +63,6 @@ typedef struct
 
 	float32_t errMax;
 	float32_t errMin;
-
 }__attribute__((aligned(4),packed)) myMath_PID;
 
 typedef struct

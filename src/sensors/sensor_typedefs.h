@@ -152,10 +152,14 @@ typedef struct
 	// Maximum gyro amplitude when updating gyro error
 	float32_t maxGyroErrorAmplitude;
 
+	// Maximum allowed rotation when updating PID error
+	float32_t maxGyroErrorUpdateRate;
+
 	// PIDs
 	myMath_PID3 _gyroErrorPID;
 	// Counter for error PID
 	uint32_t _gyroErrorUpdateCount;
+	uint32_t _gyroIErrorUpdateCount;
 
 	// DCM matrix
 	Matrixf _fusion_DCM;
@@ -186,6 +190,7 @@ typedef struct
 		float32_t minRotError;
 		float32_t minGPSSpeed;
 		uint32_t gyroErrorUpdateInterval;
+		uint32_t gyroIErrorUpdateInterval;
 	}PARAMETERS;
 
 	// Time
@@ -198,8 +203,6 @@ typedef struct
 
 	uint32_t sensorInterruptTime;
 	uint32_t sensorInterruptDeltaTime;
-
-
 }__attribute__((aligned(4),packed)) FUSION_CORE, *PFUSION_CORE;
 
 // Structure for sensor data read from sensors.

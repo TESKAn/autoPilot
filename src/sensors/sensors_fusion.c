@@ -76,6 +76,8 @@ ErrorStatus fusion_init(FUSION_CORE *coreData)
 	coreData->PARAMETERS.minRotError = SENSOR_MIN_ROT_ERROR;
 	coreData->PARAMETERS.minGPSSpeed = SENSOR_MIN_GPS_SPEED;
 	coreData->PARAMETERS.gyroErrorUpdateInterval = GYRO_ERROR_UPDATE_INTERVAL;
+	coreData->PARAMETERS.gyroIErrorUpdateInterval = GYRO_I_UPDATE_INTERVAL;
+	coreData->maxGyroErrorUpdateRate = GYRO_MAX_ERROR_UPDATE_RATE;
 
 	return SUCCESS;
 }
@@ -135,11 +137,6 @@ ErrorStatus fusion_generateUpdateMatrix(Vectorf * omega, Matrixf * updateMatrix)
 // Function uses sensor data to calculate error in DCM estimation
 ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 {
-	// Check update interval
-	data->_gyroErrorUpdateCount ++;
-	if(data->_gyroErrorUpdateCount > data->PARAMETERS.gyroErrorUpdateInterval)
-	{
-		data->_gyroErrorUpdateCount = 0;
 		ErrorStatus status;
 		status = SUCCESS;
 		Vectorf temporaryVector = vectorf_init(0);
@@ -269,14 +266,54 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 		dt = (float32_t)data->_gyro.deltaTime;
 		dt = dt * data->PARAMETERS.systimeToSeconds;
 
-		// If error above limit, update PID
-		//fTemp = vectorf_getNorm(&error);
-		//if(fTemp > data->PARAMETERS.minRotError)
-		//{
-			// Calculate delta time in seconds
+		// Check rotation magnitude. If too large, do not calculate error, but set P part to 0 - update PID with zeroes.
+		fTemp = vectorf_getNorm(&data->_gyro.vector);
+
+		if(fTemp < data->maxGyroErrorUpdateRate)
+		{
+			// Check update interval
+			data->_gyroErrorUpdateCount ++;
+			if(data->_gyroErrorUpdateCount > data->PARAMETERS.gyroErrorUpdateInterval)
+			{
+				data->_gyroErrorUpdateCount = 0;
+				// Check when to update I error
+				data->_gyroIErrorUpdateCount ++;
+				if(data->_gyroIErrorUpdateCount > data->PARAMETERS.gyroIErrorUpdateInterval)
+				{
+					data->_gyroIErrorUpdateCount = 0;
+				}
+				else
+				{
+					// If dt is 0, so is I error update
+					dt = 0;
+				}
+				// Calculate delta time in seconds
+				status = math_PID3(&error, dt, &data->_gyroErrorPID);
+			}
+			else
+			{
+				// If error ~= 0, update PID with 0
+				fTemp = vectorf_getNorm(&error);
+				if(ERROR_IS_SMALL > fTemp)
+				{
+					// Else update PID with error = 0
+					error.x = 0;
+					error.y = 0;
+					error.z = 0;
+					status = math_PID3(&error, dt, &data->_gyroErrorPID);
+				}
+			}
+		}
+		else
+		{
+			// Else update PID with error = 0
+			error.x = 0;
+			error.y = 0;
+			error.z = 0;
 			status = math_PID3(&error, dt, &data->_gyroErrorPID);
-		//}
-	}
+		}
+
+
 	return SUCCESS;
 }
 
