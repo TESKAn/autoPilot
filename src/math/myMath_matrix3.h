@@ -9,6 +9,7 @@
 #define MYMATH_MATRIX3_H_
 
 ErrorStatus matrix3_init(int identity, Matrixf * matrix);
+ErrorStatus matrix3_sumAB(Matrixf * matA, Matrixf * matB, Matrixf * matC);
 ErrorStatus matrix3_vectorMultiply(Matrixf * mat, Vectorf * vecIn, Vectorf * vecOut);
 ErrorStatus matrix3_transposeVectorMultiply(Matrixf * mat, Vectorf * vecIn, Vectorf * vecOut);
 ErrorStatus matrix3_MatrixMultiply(Matrixf * matA, Matrixf * matB, Matrixf * matC);

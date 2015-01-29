@@ -39,6 +39,24 @@ ErrorStatus matrix3_init(int identity, Matrixf * mat)
 	return SUCCESS;
 }
 
+ErrorStatus matrix3_sumAB(Matrixf * matA, Matrixf * matB, Matrixf * matC)
+{
+	ErrorStatus status = ERROR;
+	matC->a.x = matA->a.x + matB->a.x;
+	matC->a.y = matA->a.y + matB->a.y;
+	matC->a.z = matA->a.z + matB->a.z;
+
+	matC->b.x = matA->b.x + matB->b.x;
+	matC->b.y = matA->b.y + matB->b.y;
+	matC->b.z = matA->b.z + matB->b.z;
+
+	matC->c.x = matA->c.x + matB->c.x;
+	matC->c.y = matA->c.y + matB->c.y;
+	matC->c.z = matA->c.z + matB->c.z;
+
+	return status;
+}
+
 ErrorStatus matrix3_vectorMultiply(Matrixf * mat, Vectorf * vecIn, Vectorf * vecOut)
 {
 	ErrorStatus status = ERROR;

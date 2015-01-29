@@ -123,6 +123,7 @@ int main(void)
 	extPeripheralInit();
 
 	// Calibrate I2C sensors
+	// Function has no function...
 	calibrateI2CSensors();
 
 	AC_InitBuffers();
@@ -135,12 +136,6 @@ int main(void)
 
 	PWMEN_OUT_ENABLE = 1;
 
-	// Set PID for first run
-	// x * Ki = gyro offset, x = gyro offset / Ki
-
-	fusionData._gyroErrorPID.x.im = 0.023f / fusionData._gyroErrorPID.x.Ki;
-	fusionData._gyroErrorPID.y.im = 0.01f / fusionData._gyroErrorPID.y.Ki;
-	fusionData._gyroErrorPID.z.im = -0.023f / fusionData._gyroErrorPID.z.Ki;
 
 	MPU_COMM_ENABLED = 1;
 
@@ -164,11 +159,8 @@ int main(void)
 				// Reset PIDs
 				math_PID3Reset(&fusionData._gyroErrorPID);
 				// Set initial value
-				// x * Ki = gyro offset, x = gyro offset / Ki
-
-				fusionData._gyroErrorPID.x.im = 0.023f / fusionData._gyroErrorPID.x.Ki;
-				fusionData._gyroErrorPID.y.im = 0.01f / fusionData._gyroErrorPID.y.Ki;
-				fusionData._gyroErrorPID.z.im = -0.023f / fusionData._gyroErrorPID.z.Ki;
+				fusion_initGyroDriftPID(&fusionData);
+				fusion_initGyroGainPID(&fusionData);
 
 				break;
 			}

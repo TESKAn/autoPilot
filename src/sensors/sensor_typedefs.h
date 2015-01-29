@@ -11,6 +11,51 @@
 #include "math/myMath_typedefs.h"
 #include "kalman.h"
 
+// Flag register typedef
+typedef union
+{
+	struct
+	{
+		volatile uint32_t flag;
+	}flag;
+
+	 struct
+	 {
+		volatile uint8_t BIT0:1;
+		volatile uint8_t BIT1:1;
+		volatile uint8_t BIT2:1;
+		volatile uint8_t BIT3:1;
+		volatile uint8_t BIT4:1;
+		volatile uint8_t BIT5:1;
+		volatile uint8_t BIT6:1;
+		volatile uint8_t BIT7:1;
+		volatile uint8_t BIT8:1;
+		volatile uint8_t BIT9:1;
+		volatile uint8_t BIT10:1;
+		volatile uint8_t BIT11:1;
+		volatile uint8_t BIT12:1;
+		volatile uint8_t BIT13:1;
+		volatile uint8_t BIT14:1;
+		volatile uint8_t BIT15:1;
+		volatile uint8_t BIT16:1;
+		volatile uint8_t BIT17:1;
+		volatile uint8_t BIT18:1;
+		volatile uint8_t BIT19:1;
+		volatile uint8_t BIT20:1;
+		volatile uint8_t BIT21:1;
+		volatile uint8_t BIT22:1;
+		volatile uint8_t BIT23:1;
+		volatile uint8_t BIT24:1;
+		volatile uint8_t BIT25:1;
+		volatile uint8_t BIT26:1;
+		volatile uint8_t BIT27:1;
+		volatile uint8_t BIT28:1;
+		volatile uint8_t BIT29:1;
+		volatile uint8_t BIT30:1;
+		volatile uint8_t BIT31:1;
+	 }bits;
+}__attribute__((aligned(4),packed)) SensorFlag, *PSensorFlag;
+
 typedef struct
 {
 	Vectorf vector;					// Normalized vector in body frame
@@ -20,6 +65,7 @@ typedef struct
 	Vectorf vecorPrevious;			// Store previous result for use in offset removal
 	KALMAN3 kFilter;				// Kalman filter data
 	float32_t heading;				// Heading calculated from mag in earth frame
+	Vectorf earthYAxis;				// Earth's Y axis, as seen by magnetometer, in body frame
 	Vectorf offset;					// Computed magnetometer offset
 	Vectorf currentMagReading;		// Mag readings with only offset removed
 	Vectorf previousMagReading;
@@ -149,14 +195,22 @@ typedef struct
 	AltimeterData _altimeter;
 	GPSData _gps;
 
-	// Maximum gyro amplitude when updating gyro error
+	// Maximum gyro amplitude when updating gyro error PID
 	float32_t maxGyroErrorAmplitude;
 
 	// Maximum allowed rotation when updating PID error
 	float32_t maxGyroErrorUpdateRate;
 
+	// When do we consider gyro to be rotating fast
+	float32_t gyroFastRotation;
+
+	// Update gain error when gyro rate above this value
+	float32_t gyroGainUpdateRate;
+
 	// PIDs
 	myMath_PID3 _gyroErrorPID;
+
+	myMath_PID3 _gyroGainPID;
 	// Counter for error PID
 	uint32_t _gyroErrorUpdateCount;
 	uint32_t _gyroIErrorUpdateCount;
@@ -203,6 +257,10 @@ typedef struct
 
 	uint32_t sensorInterruptTime;
 	uint32_t sensorInterruptDeltaTime;
+
+	// Flag structure
+	SensorFlag sFlag;
+
 }__attribute__((aligned(4),packed)) FUSION_CORE, *PFUSION_CORE;
 
 // Structure for sensor data read from sensors.

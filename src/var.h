@@ -50,8 +50,6 @@ typedef union
 		volatile uint8_t BIT29:1;
 		volatile uint8_t BIT30:1;
 		volatile uint8_t BIT31:1;
-		volatile uint8_t BIT32:1;
-
 	 }bits;
 }Flag;
 
@@ -219,6 +217,10 @@ extern volatile uint16_t LED_ToggleCount;
 extern uint8_t Buffer[64];
 extern char StringBuffer[161];			// Buffer for string manipulation
 extern char FSBuffer[FATFS_BUFF_SIZE];	// Pointer to buffer for file write
+
+// UART2 buffer
+extern uint8_t UART2Buffer[64];
+extern uint8_t UART2VarsSelect;
 
 extern volatile CONVERTNUM convertNumFormat;
 

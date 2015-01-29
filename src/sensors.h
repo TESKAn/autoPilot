@@ -72,6 +72,7 @@ extern uint8_t accOffsetSampleCount;
 extern volatile int16_t magOffsets[3];
 extern uint8_t magOffsetSampleCount;
 
+// Time interval in ms between sensor updates
 #define I2C2_POLLTIME		10
 
 // I2C2 process states

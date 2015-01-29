@@ -14,7 +14,11 @@
 #include "mag.h"
 #include "functions.h"
 
-#define MAG_DEFAULT_RATE					0.000635075720f			// 1,3/2047 -> gauss
+//#define MAG_DEFAULT_RATE					0.000635075720f			// 1,3/2047 -> gauss, result is in gauss	0,00917431192660550458715596330275
+#define MAG_DEFAULT_RATE					0.000917431192660550458715596330275f			// 1,3/2047 -> gauss, result is in gauss	0,00917431192660550458715596330275
+#define MAG_DEF_OFFSET_X					0.06422015f
+#define MAG_DEF_OFFSET_Y					-0.1655963f
+#define MAG_DEF_OFFSET_Z					0.07706425f
 
 // Init data structure
 ErrorStatus mag_initDataStructure(MagData *data)
@@ -36,10 +40,17 @@ ErrorStatus mag_initDataStructure(MagData *data)
 	data->previousMagReading = vectorf_init(0);
 	data->currentMagnitude = 0;
 	data->previousMagnitude = 0;
-	data->magOffsetNullGain = 0.5f;
+	data->magOffsetNullGain = 0.01f;
 	data->vectorRaw = vectorf_init(0);
 	data->calcVector = vectorf_init(0);
 	data->valid = 1;
+
+	// Set default offsets
+	data->offset.x = MAG_DEF_OFFSET_X;
+	data->offset.y = MAG_DEF_OFFSET_Y;
+	data->offset.z = MAG_DEF_OFFSET_Z;
+
+
 	success = SUCCESS;
 
 	return success;
@@ -57,8 +68,8 @@ ErrorStatus mag_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 	data->_mag.previousMagnitude = data->_mag.currentMagnitude;
 	// Update current reading
 	data->_mag.vectorRaw.x = (float32_t)rawData[0] * data->_mag.magRate;
-	data->_mag.vectorRaw.y = (float32_t)rawData[1] * data->_mag.magRate;
-	data->_mag.vectorRaw.z = (float32_t)rawData[2] * data->_mag.magRate;
+	data->_mag.vectorRaw.y = (float32_t)rawData[2] * data->_mag.magRate;
+	data->_mag.vectorRaw.z = (float32_t)rawData[1] * data->_mag.magRate;
 	// Store raw
 	//vectorf_copy(&data->_mag.currentMagReading, &data->_mag.vectorRaw);
 

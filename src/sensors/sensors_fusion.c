@@ -56,11 +56,63 @@ ErrorStatus fusion_init(FUSION_CORE *coreData)
 
 	// Init maximum gyro amplitude when updating error
 	coreData->maxGyroErrorAmplitude = GYRO_MAX_ERROR_AMPLITUDE;
+	coreData->gyroFastRotation = GYRO_FAST_ROTATION;
+	coreData->maxGyroErrorUpdateRate = GYRO_MAX_ERROR_UPDATE_RATE;
 
 	// Init PIDs
-	math_PIDInit(&coreData->_gyroErrorPID.x, 10.0f, 0.1f, 0);
-	math_PIDInit(&coreData->_gyroErrorPID.y, 10.0f, 0.1f, 0);
-	math_PIDInit(&coreData->_gyroErrorPID.z, 10.0f, 0.1f, 0);
+	// Gyro drift
+	math_PIDInit(&coreData->_gyroErrorPID.x, GYRO_PID_DRIFT_KP, GYRO_PID_DRIFT_KI, GYRO_PID_DRIFT_KD);
+	math_PIDInit(&coreData->_gyroErrorPID.y, GYRO_PID_DRIFT_KP, GYRO_PID_DRIFT_KI, GYRO_PID_DRIFT_KD);
+	math_PIDInit(&coreData->_gyroErrorPID.z, GYRO_PID_DRIFT_KP, GYRO_PID_DRIFT_KI, GYRO_PID_DRIFT_KD);
+
+	coreData->_gyroErrorPID.x.errIMax = GYRO_PID_DRIFT_IMAX;
+	coreData->_gyroErrorPID.x.errIMin = GYRO_PID_DRIFT_IMIN;
+	coreData->_gyroErrorPID.x.outMax = GYRO_PID_DRIFT_SMAX;
+	coreData->_gyroErrorPID.x.outMin = GYRO_PID_DRIFT_SMIN;
+	coreData->_gyroErrorPID.x.errMax = GYRO_PID_DRIFT_EMAX;
+	coreData->_gyroErrorPID.x.errMin = GYRO_PID_DRIFT_EMIN;
+
+	coreData->_gyroErrorPID.y.errIMax = GYRO_PID_DRIFT_IMAX;
+	coreData->_gyroErrorPID.y.errIMin = GYRO_PID_DRIFT_IMIN;
+	coreData->_gyroErrorPID.y.outMax = GYRO_PID_DRIFT_SMAX;
+	coreData->_gyroErrorPID.y.outMin = GYRO_PID_DRIFT_SMIN;
+	coreData->_gyroErrorPID.y.errMax = GYRO_PID_DRIFT_EMAX;
+	coreData->_gyroErrorPID.y.errMin = GYRO_PID_DRIFT_EMIN;
+
+	coreData->_gyroErrorPID.z.errIMax = GYRO_PID_DRIFT_IMAX;
+	coreData->_gyroErrorPID.z.errIMin = GYRO_PID_DRIFT_IMIN;
+	coreData->_gyroErrorPID.z.outMax = GYRO_PID_DRIFT_SMAX;
+	coreData->_gyroErrorPID.z.outMin = GYRO_PID_DRIFT_SMIN;
+	coreData->_gyroErrorPID.z.errMax = GYRO_PID_DRIFT_EMAX;
+	coreData->_gyroErrorPID.z.errMin = GYRO_PID_DRIFT_EMIN;
+
+
+
+	// Gyro gain
+	math_PIDInit(&coreData->_gyroGainPID.x, GYRO_PID_GAIN_KP, GYRO_PID_GAIN_KI, GYRO_PID_GAIN_KD);
+	math_PIDInit(&coreData->_gyroGainPID.y, GYRO_PID_GAIN_KP, GYRO_PID_GAIN_KI, GYRO_PID_GAIN_KD);
+	math_PIDInit(&coreData->_gyroGainPID.z, GYRO_PID_GAIN_KP, GYRO_PID_GAIN_KI, GYRO_PID_GAIN_KD);
+
+	coreData->_gyroGainPID.x.errIMax = GYRO_PID_GAIN_IMAX;
+	coreData->_gyroGainPID.x.errIMin = GYRO_PID_GAIN_IMIN;
+	coreData->_gyroGainPID.x.outMax = GYRO_PID_GAIN_SMAX;
+	coreData->_gyroGainPID.x.outMin = GYRO_PID_GAIN_SMIN;
+	coreData->_gyroGainPID.x.errMax = GYRO_PID_GAIN_EMAX;
+	coreData->_gyroGainPID.x.errMin = GYRO_PID_GAIN_EMIN;
+
+	coreData->_gyroGainPID.y.errIMax = GYRO_PID_GAIN_IMAX;
+	coreData->_gyroGainPID.y.errIMin = GYRO_PID_GAIN_IMIN;
+	coreData->_gyroGainPID.y.outMax = GYRO_PID_GAIN_SMAX;
+	coreData->_gyroGainPID.y.outMin = GYRO_PID_GAIN_SMIN;
+	coreData->_gyroGainPID.y.errMax = GYRO_PID_GAIN_EMAX;
+	coreData->_gyroGainPID.y.errMin = GYRO_PID_GAIN_EMIN;
+
+	coreData->_gyroGainPID.z.errIMax = GYRO_PID_GAIN_IMAX;
+	coreData->_gyroGainPID.z.errIMin = GYRO_PID_GAIN_IMIN;
+	coreData->_gyroGainPID.z.outMax = GYRO_PID_GAIN_SMAX;
+	coreData->_gyroGainPID.z.outMin = GYRO_PID_GAIN_SMIN;
+	coreData->_gyroGainPID.z.errMax = GYRO_PID_GAIN_EMAX;
+	coreData->_gyroGainPID.z.errMin = GYRO_PID_GAIN_EMIN;
 
 	// Create identity matrix
 	matrix3_init(1, &coreData->_fusion_DCM);
@@ -77,7 +129,39 @@ ErrorStatus fusion_init(FUSION_CORE *coreData)
 	coreData->PARAMETERS.minGPSSpeed = SENSOR_MIN_GPS_SPEED;
 	coreData->PARAMETERS.gyroErrorUpdateInterval = GYRO_ERROR_UPDATE_INTERVAL;
 	coreData->PARAMETERS.gyroIErrorUpdateInterval = GYRO_I_UPDATE_INTERVAL;
-	coreData->maxGyroErrorUpdateRate = GYRO_MAX_ERROR_UPDATE_RATE;
+
+
+	// Set PID for first run
+	fusion_initGyroDriftPID(&fusionData);
+	fusion_initGyroGainPID(&fusionData);
+
+	return SUCCESS;
+}
+
+ErrorStatus fusion_initGyroDriftPID(FUSION_CORE *data)
+{
+	data->_gyroErrorPID.x.im = 0.023f / data->_gyroErrorPID.x.Ki;
+	data->_gyroErrorPID.y.im = 0.01f / data->_gyroErrorPID.y.Ki;
+	data->_gyroErrorPID.z.im = -0.023f / data->_gyroErrorPID.z.Ki;
+
+	// And default output
+	data->_gyroErrorPID.x.s = 0.023;
+	data->_gyroErrorPID.y.s = 0.01;
+	data->_gyroErrorPID.z.s = -0.023;
+	return SUCCESS;
+}
+
+ErrorStatus fusion_initGyroGainPID(FUSION_CORE *data)
+{
+	// Init default I value
+	data->_gyroGainPID.x.im = 0.030517578125f / data->_gyroGainPID.x.Ki;
+	data->_gyroGainPID.y.im = 0.030517578125f / data->_gyroGainPID.y.Ki;
+	data->_gyroGainPID.z.im = 0.030517578125f / data->_gyroGainPID.z.Ki;
+
+	// And default output
+	data->_gyroGainPID.x.s = 0.030517578125f;
+	data->_gyroGainPID.y.s = 0.030517578125f;
+	data->_gyroGainPID.z.s = 0.030517578125f;
 
 	return SUCCESS;
 }
@@ -235,17 +319,41 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 			}
 		}
 /*
-		// Check if we have valid magnetometer data and calculate error
+		// Check if we have valid magnetometer data and calculate yaw error
 		if(data->_mag.valid)
 		{
-			// Calculate heading error from mag
-			// Yaw error is mag in earth frame, normalized, take y as yaw error
-			error_mag.x = 0;
-			error_mag.y = 0;
-			error_mag.z = data->_mag.vectorEarthFrame.y;
+			/*
+			// Calculate heading error in body frame
+			// Use gravity from accelerometer
+			// grav X raw mag = earth Y axis
+			// earth Y axis X DCM line b is yaw error in body frame
+			// temporaryVector - normalized mag with subtracted offsets
+			status = vectorf_normalizeAToB(&data->_mag.vector, &temporaryVector);
+			// Get where earth's Y axis is supposed to be
 
-			// Errors calculated in earth frame, transform to body frame
-			matrix3_transposeVectorMultiply(&data->_fusion_DCM, &error_mag, &error_mag);
+
+			status = vectorf_crossProduct(&temporaryVector, &data->_accelerometer.vectorNormalized, &data->_mag.earthYAxis);
+			// Get error - rotate DCM B axis to our calculated Y axis
+			status = vectorf_crossProduct(&data->_fusion_DCM.b, &data->_mag.earthYAxis, &error_mag);
+			// Scale error
+			vectorf_scalarProduct(&error_mag, 0.1f, &error_mag);
+*//*
+
+			// Check roll/pitch error
+			fTemp = vectorf_getNorm(&error_acc_gravity);
+			if(fTemp < 0.1)
+			{
+				// Calculate heading error from mag
+				// Yaw error is mag in earth frame, normalized, take -y as yaw error
+				// Scale
+				// Because cross product of [x,y,0] with [1,0,0] is [0,0,-y]
+				error_mag.x = 0;
+				error_mag.y = 0;
+				error_mag.z = data->_mag.vectorEarthFrame.y * -0.1f;
+
+				// Errors calculated in earth frame, transform to body frame
+				matrix3_transposeVectorMultiply(&data->_fusion_DCM, &error_mag, &error_mag);
+			}
 		}
 */
 		// Check if we have valid GPS data and calculate yaw error
@@ -271,6 +379,13 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 
 		if(fTemp < data->maxGyroErrorUpdateRate)
 		{
+			// Check if we update gains
+			if(data->sFlag.bits.FLAG_FAST_ROTATION)
+			{
+				data->sFlag.bits.FLAG_FAST_ROTATION = 0;
+				// Update gyro gains
+				status = math_PID3(&error, dt, &data->_gyroGainPID);
+			}
 			// Check update interval
 			data->_gyroErrorUpdateCount ++;
 			if(data->_gyroErrorUpdateCount > data->PARAMETERS.gyroErrorUpdateInterval)
@@ -280,6 +395,7 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 				data->_gyroIErrorUpdateCount ++;
 				if(data->_gyroIErrorUpdateCount > data->PARAMETERS.gyroIErrorUpdateInterval)
 				{
+					// Update gyro I drift error
 					data->_gyroIErrorUpdateCount = 0;
 				}
 				else
@@ -287,7 +403,7 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 					// If dt is 0, so is I error update
 					dt = 0;
 				}
-				// Calculate delta time in seconds
+				// Update PID
 				status = math_PID3(&error, dt, &data->_gyroErrorPID);
 			}
 			else
@@ -296,17 +412,22 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 				fTemp = vectorf_getNorm(&error);
 				if(ERROR_IS_SMALL > fTemp)
 				{
-					// Else update PID with error = 0
+					// Update PID with error = 0
 					error.x = 0;
 					error.y = 0;
 					error.z = 0;
-					status = math_PID3(&error, dt, &data->_gyroErrorPID);
+					status = math_PID3(&error, 0, &data->_gyroErrorPID);
 				}
 			}
 		}
 		else
 		{
-			// Else update PID with error = 0
+			// If rotating fast, mark update gyro gains
+			if(fTemp > data->gyroFastRotation)
+			{
+				data->sFlag.bits.FLAG_FAST_ROTATION = 1;
+			}
+			// Update drift PID with error = 0
 			error.x = 0;
 			error.y = 0;
 			error.z = 0;
@@ -350,15 +471,18 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 		// Generate update matrix
 		status = fusion_generateUpdateMatrix(&data->updateRotation, &updateMatrix);
 		// Multiply DCM and update matrix
-		status = matrix3_MatrixMultiply(&updateMatrix, &data->_fusion_DCM, &newMatrix);
+		//status = matrix3_MatrixMultiply(&updateMatrix, &data->_fusion_DCM, &newMatrix);
+		status = matrix3_MatrixMultiply(&updateMatrix, &data->_fusion_DCM, &updateMatrix);
+		// Add to current DCM matrix
+		//status = matrix3_sumAB(&newMatrix, &data->_fusion_DCM, &updateMatrix);
 
 		// Renormalize and orthogonalize DCM matrix
-		status = matrix3_normalizeOrthogonalizeMatrix(&newMatrix, param_dcm_max_orth_error);
+		status = matrix3_normalizeOrthogonalizeMatrix(&updateMatrix, param_dcm_max_orth_error);
 
 		// Check if matrix is OK and copy data
 		if(SUCCESS == status)
 		{
-			matrix3_copy(&newMatrix, &data->_fusion_DCM);
+			matrix3_copy(&updateMatrix, &data->_fusion_DCM);
 		}
 	}
 	return status;

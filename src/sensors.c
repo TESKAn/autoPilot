@@ -430,12 +430,12 @@ ErrorStatus MPU6000_Enable(FunctionalState newState)
 		// Configure sensors
 		// Register 25
 		I2C2_DMABufTX[0] = 25;
-		// Reg 25 = sample rate divider = 8000(no filter)/(1+31) = 250 Hz
-		I2C2_DMABufTX[1] = 9;
-		// Reg 26 = 0000 0001	Set low pass filter to 184/188 Hz
-		//I2C2_DMABufTX[1] = 0x01;
+		// Reg 25 = sample rate divider = 1000(filter)/(1+0) = 1000 Hz
+		I2C2_DMABufTX[1] = 0;
+		// Reg 26 = 0000 0001	Set low pass filter to 94/98 Hz
+		I2C2_DMABufTX[1] = 0x02;
 		// Try no LP filter
-		I2C2_DMABufTX[2] = 0x00;
+		//I2C2_DMABufTX[2] = 0x00;
 		// Reg 27 = 0001 0000	Set gyro maximum rate at 1000 °/sec
 		I2C2_DMABufTX[3] = 0x10;
 		// Reg 28 = 0001 0000	Set accel maximum rate at 8g
@@ -648,9 +648,11 @@ ErrorStatus HMC5883_Enable(FunctionalState newState)
 	uint8_t retriesCount = 0;
 	// Start at reg 0
 	I2C2_DMABufTX[0] = 0;
-	// CRA = 8 samples, 75 Hz, normal
-	I2C2_DMABufTX[1] = 0x78;
+	// CRA = 2 samples averaged, 75 Hz, normal
+	// 0011 1000
+	I2C2_DMABufTX[1] = 0x38;
 	// CRB = +- 1,3 Gauss
+	// 0010 0000
 	I2C2_DMABufTX[2] = 0x20;
 	if(newState == ENABLE)
 	{

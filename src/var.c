@@ -127,6 +127,10 @@ uint8_t Buffer[64];
 char StringBuffer[161];			// Buffer for string manipulation
 char FSBuffer[FATFS_BUFF_SIZE];	// Pointer to buffer for file write
 
+// UART2 buffer
+uint8_t UART2Buffer[64];
+uint8_t UART2VarsSelect = 0;
+
 volatile CONVERTNUM convertNumFormat;
 
 volatile uint32_t fastDataSelect = 0;

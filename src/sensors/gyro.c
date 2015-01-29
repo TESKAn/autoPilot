@@ -59,9 +59,15 @@ ErrorStatus gyro_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 	data->_accelerometer.sensorTemperature = data->MPUTemperature;
 
 	// First store raw reading
+/*
 	data->_gyro.vectorRaw.x = (float32_t)rawData[0] * data->_gyro.gyroRate * GYRO_DEG_TO_RAD;
 	data->_gyro.vectorRaw.y = (float32_t)rawData[1] * data->_gyro.gyroRate * GYRO_DEG_TO_RAD;
 	data->_gyro.vectorRaw.z = (float32_t)rawData[2] * data->_gyro.gyroRate * GYRO_DEG_TO_RAD;
+	 */
+	// Use gain PID result
+	data->_gyro.vectorRaw.x = (float32_t)rawData[0] * data->_gyroGainPID.x.s * GYRO_DEG_TO_RAD;
+	data->_gyro.vectorRaw.y = (float32_t)rawData[1] * data->_gyroGainPID.y.s * GYRO_DEG_TO_RAD;
+	data->_gyro.vectorRaw.z = (float32_t)rawData[2] * data->_gyroGainPID.z.s * GYRO_DEG_TO_RAD;
 
 	// Filter result
 	data->_gyro.vectorKFiltered.x = Kalman_Update(&data->_gyro.kFilter.X, data->_gyro.vectorRaw.x);

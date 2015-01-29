@@ -117,6 +117,9 @@ void usb_initVars(void)
 	USBFloat32Vars2[7] = &fusionData._gps.speed3D.y;
 	USBFloat32Vars2[8] = &fusionData._gps.speed3D.z;
 	USBFloat32Vars2[9] = &fusionData._mag.heading;
+	USBFloat32Vars2[10] = &fusionData._mag.vectorRaw.x;
+	USBFloat32Vars2[11] = &fusionData._mag.vectorRaw.y;
+	USBFloat32Vars2[12] = &fusionData._mag.vectorRaw.z;
 
 
 	// USBFloat32Vars3

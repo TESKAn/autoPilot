@@ -463,6 +463,8 @@ void TIM1_BRK_TIM9_ISR_Handler(void)
 void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 {
 	//Check trigger event
+	uint8_t ui8Temp = 0;
+	int i,j;
 	uint8_t retriesCount = 0;
 	ErrorStatus error = SUCCESS;
 	if((TIM14->SR & TIM_FLAG_Update) != (u16)RESET)
@@ -497,7 +499,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		}
 
 
-		AC_Serializer();
+		//AC_Serializer();
 
 		if(ADC_ENABLED)
 		{
@@ -556,9 +558,63 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		}
 		// LED counter
 		LED_ToggleCount++;
-		if(LED_ToggleCount >= 1000)
+		if(LED_ToggleCount >= 100)
 		{
 			// Event every second
+			// Send UART data
+			// Setup
+			switch(UART2VarsSelect)
+			{
+				case 0:
+				{
+					UART2VarsSelect = 1;
+					break;
+				}
+				case 1:
+				{
+					UART2Buffer[0] = 2;
+					UART2Buffer[1] = 1;
+					UART2Buffer[2] = 1;
+					ui8Temp = 3;
+		        	for(i=0; i<7;i++)
+		        	{
+		        		convertNumFormat.f64 = *USBFloat64Vars1[i];
+		        		for(j=0;j<8;j++)
+		        		{
+		        			UART2Buffer[ui8Temp] = convertNumFormat.ch[j];
+		        			ui8Temp++;
+		        		}
+		        	}
+					UART2VarsSelect = 2;
+					break;
+				}
+				case 2:
+				{
+		        	// Store data
+					UART2Buffer[0] = 2;
+		        	UART2Buffer[1] = 1;
+		        	UART2Buffer[2] = 2;
+		        	ui8Temp = 3;
+		        	for(i=0; i<15;i++)
+		        	{
+		        		convertNumFormat.f32[0] = *USBFloat32Vars1[i];
+		        		for(j=0;j<4;j++)
+		        		{
+		        			UART2Buffer[ui8Temp] = convertNumFormat.ch[j];
+		        			ui8Temp++;
+		        		}
+		        	}
+					UART2VarsSelect = 1;
+					break;
+				}
+				default:
+				{
+					UART2VarsSelect = 1;
+					break;
+				}
+			}
+
+			transferDMA_USART2(UART2Buffer, 64);
 			// Write log
 			/*
 			if(SD_WRITE_LOG && SCR2_LOGOPEN)

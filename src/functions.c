@@ -198,7 +198,7 @@ void write_toLog(void)
 		if(SD_WRITING_BUF1) return;
 	}
 	// Store time
-	//*BufferPointer += sprintf (&Buffer[*BufferPointer], "%d:%d:%d;", GPS_HOURS, GPS_MINUTES, GPS_SECONDS);
+	//BufferPointer += sprintf (&Buffer[*BufferPointer], "%d:%d:%d;", GPS_HOURS, GPS_MINUTES, GPS_SECONDS);
 	// Store GPS data
 	// GPS lock
 	if ((GPS_VALID & 32768) != 0)
