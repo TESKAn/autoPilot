@@ -20,11 +20,11 @@
 #define GYRO_I_UPDATE_INTERVAL					100			// When to update error integral
 #define GYRO_MAX_ERROR_AMPLITUDE				0.5f		// Not sure if useful
 #define GYRO_FAST_ROTATION						1.0f		// When do we consider gyro to be rotating fast
-#define GYRO_MAX_ERROR_UPDATE_RATE				0.5f		// Maximum gyro amplitude when updating error PID
+#define GYRO_MAX_ERROR_UPDATE_RATE				0.1f		// Maximum gyro amplitude when updating error PID
 
 // PID macros
 // Drift compensation
-#define GYRO_PID_DRIFT_KP						10.0f
+#define GYRO_PID_DRIFT_KP						1.0f
 #define GYRO_PID_DRIFT_KI						0.1f
 #define GYRO_PID_DRIFT_KD						0.0f
 #define GYRO_PID_DRIFT_IMAX						100.0f

@@ -15,7 +15,7 @@
 #include "functions.h"
 
 
-#define GYRO_DEFAULT_RATE					0.030517578125f			// 1000/32768 -> deg/sec
+#define GYRO_DEFAULT_RATE					0.031017578125f//0.030517578125f			// 1000/32768 -> deg/sec
 #define GYRO_DEG_TO_RAD						0.017453292519f			// 1 deg/sec is this in rad/sec
 #define GYRO_RAD_TO_DEG						57.295779513082f		// 1 rad/sec is this in deg/sec
 
@@ -40,7 +40,13 @@ ErrorStatus gyro_initDataStructure(GyroData *data)
 	data->offsets.y = 0.016643153f;
 	data->offsets.z = -0.034478845f;
 	// gyro rate in radians
-	data->gyroRate = GYRO_DEFAULT_RATE;// * GYRO_DEG_TO_RAD;
+	data->gyroRate = GYRO_DEFAULT_RATE;
+	data->gyroRateXP = GYRO_DEFAULT_RATE;
+	data->gyroRateXN = GYRO_DEFAULT_RATE;
+	data->gyroRateYP = GYRO_DEFAULT_RATE;
+	data->gyroRateYN = GYRO_DEFAULT_RATE;
+	data->gyroRateZP = GYRO_DEFAULT_RATE;
+	data->gyroRateZN = GYRO_DEFAULT_RATE;
 	data->sensorTemperature = 0;
 	data->valid = 1;
 
@@ -65,9 +71,41 @@ ErrorStatus gyro_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 	data->_gyro.vectorRaw.z = (float32_t)rawData[2] * data->_gyro.gyroRate * GYRO_DEG_TO_RAD;
 	 */
 	// Use gain PID result
+	/*
 	data->_gyro.vectorRaw.x = (float32_t)rawData[0] * data->_gyroGainPID.x.s * GYRO_DEG_TO_RAD;
 	data->_gyro.vectorRaw.y = (float32_t)rawData[1] * data->_gyroGainPID.y.s * GYRO_DEG_TO_RAD;
 	data->_gyro.vectorRaw.z = (float32_t)rawData[2] * data->_gyroGainPID.z.s * GYRO_DEG_TO_RAD;
+	*/
+	// Use different rates depending on direction of rotation
+	// X
+	if(0 < rawData[0])
+	{
+		data->_gyro.vectorRaw.x = (float32_t)rawData[0] * data->_gyro.gyroRateXP * GYRO_DEG_TO_RAD;
+	}
+	else
+	{
+		data->_gyro.vectorRaw.x = (float32_t)rawData[0] * data->_gyro.gyroRateXN * GYRO_DEG_TO_RAD;
+	}
+	// Y
+	if(0 < rawData[1])
+	{
+		data->_gyro.vectorRaw.y = (float32_t)rawData[1] * data->_gyro.gyroRateYP * GYRO_DEG_TO_RAD;
+	}
+	else
+	{
+		data->_gyro.vectorRaw.y = (float32_t)rawData[1] * data->_gyro.gyroRateYN * GYRO_DEG_TO_RAD;
+	}
+	// Z
+	if(0 < rawData[2])
+	{
+		data->_gyro.vectorRaw.z = (float32_t)rawData[2] * data->_gyro.gyroRateZP * GYRO_DEG_TO_RAD;
+	}
+	else
+	{
+		data->_gyro.vectorRaw.z = (float32_t)rawData[2] * data->_gyro.gyroRateZN * GYRO_DEG_TO_RAD;
+	}
+
+
 
 	// Filter result
 	data->_gyro.vectorKFiltered.x = Kalman_Update(&data->_gyro.kFilter.X, data->_gyro.vectorRaw.x);
@@ -92,11 +130,14 @@ ErrorStatus gyro_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 */
 	// Remove drift error
 	// Drift error is calculated in different .c/.h file
-
+/*
 	data->_gyro.vector.x -= data->_gyroErrorPID.x.s;
 	data->_gyro.vector.y -= data->_gyroErrorPID.y.s;
 	data->_gyro.vector.z -= data->_gyroErrorPID.z.s;
-
+*/
+	data->_gyro.vector.x -= data->_gyroErrorPID.x.s;
+	data->_gyro.vector.y -= data->_gyroErrorPID.y.s;
+	data->_gyro.vector.z -= data->_gyroErrorPID.z.s;
 	// Calculate time difference
 	deltaTime = dataTime - data->_gyro.dataTime;
 	// Do checks on time passed...

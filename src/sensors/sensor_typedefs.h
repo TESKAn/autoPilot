@@ -101,6 +101,12 @@ typedef struct
 	uint32_t dataTime;
 	uint32_t deltaTime;
 	float32_t gyroRate;
+	float32_t gyroRateXP;
+	float32_t gyroRateXN;
+	float32_t gyroRateYP;
+	float32_t gyroRateYN;
+	float32_t gyroRateZP;
+	float32_t gyroRateZN;
 	float32_t sensorTemperature;
 	uint8_t valid;
 	uint8_t nerabim[3];

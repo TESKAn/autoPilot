@@ -384,7 +384,14 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 			{
 				data->sFlag.bits.FLAG_FAST_ROTATION = 0;
 				// Update gyro gains
-				status = math_PID3(&error, dt, &data->_gyroGainPID);
+				// Check X axis
+
+
+
+
+
+
+				//status = math_PID3(&error, dt, &data->_gyroGainPID);
 			}
 			// Check update interval
 			data->_gyroErrorUpdateCount ++;
@@ -471,18 +478,15 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 		// Generate update matrix
 		status = fusion_generateUpdateMatrix(&data->updateRotation, &updateMatrix);
 		// Multiply DCM and update matrix
-		//status = matrix3_MatrixMultiply(&updateMatrix, &data->_fusion_DCM, &newMatrix);
-		status = matrix3_MatrixMultiply(&updateMatrix, &data->_fusion_DCM, &updateMatrix);
-		// Add to current DCM matrix
-		//status = matrix3_sumAB(&newMatrix, &data->_fusion_DCM, &updateMatrix);
+		status = matrix3_MatrixMultiply(&data->_fusion_DCM, &updateMatrix, &newMatrix);
 
 		// Renormalize and orthogonalize DCM matrix
-		status = matrix3_normalizeOrthogonalizeMatrix(&updateMatrix, param_dcm_max_orth_error);
+		status = matrix3_normalizeOrthogonalizeMatrix(&newMatrix, param_dcm_max_orth_error);
 
 		// Check if matrix is OK and copy data
 		if(SUCCESS == status)
 		{
-			matrix3_copy(&updateMatrix, &data->_fusion_DCM);
+			matrix3_copy(&newMatrix, &data->_fusion_DCM);
 		}
 	}
 	return status;
