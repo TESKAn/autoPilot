@@ -96,6 +96,7 @@ typedef struct
 	KALMAN3 kFilter;
 	// Error
 	Vectorf gyroError;
+	Vectorf gyroGainError;
 	Vectori16 offset;
 	Vectorf offsets;
 	uint32_t dataTime;

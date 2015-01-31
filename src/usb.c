@@ -48,10 +48,14 @@ void usb_initVars(void)
 	USBFloat32Vars1[3] = &fusionData._accelerometer.vector.x;
 	USBFloat32Vars1[4] = &fusionData._accelerometer.vector.y;
 	USBFloat32Vars1[5] = &fusionData._accelerometer.vector.z;
-
+/*
 	USBFloat32Vars1[6] = &fusionData._mag.vector.x;
 	USBFloat32Vars1[7] = &fusionData._mag.vector.y;
 	USBFloat32Vars1[8] = &fusionData._mag.vector.z;
+*/
+	USBFloat32Vars1[6] = &fusionData._mag.vectorEarthFrame.x;
+	USBFloat32Vars1[7] = &fusionData._mag.vectorEarthFrame.y;
+	USBFloat32Vars1[8] = &fusionData._mag.vectorEarthFrame.z;
 
 	USBFloat32Vars1[9] = &fusionData._altimeter.pressure;
 	USBFloat32Vars1[10] = &fusionData._altimeter.altitude;
@@ -59,7 +63,8 @@ void usb_initVars(void)
 	USBFloat32Vars1[11] = &fusionData.ROLLPITCHYAW.roll;
 	USBFloat32Vars1[12] = &fusionData.ROLLPITCHYAW.pitch;
 	USBFloat32Vars1[13] = &fusionData.ROLLPITCHYAW.yaw;
-	USBFloat32Vars1[14] = &fusionData._gyro.fDeltaTime;
+	USBFloat32Vars1[14] = &fusionData._gyro.gyroGainError.z;
+	//USBFloat32Vars1[14] = &fusionData._gyro.fDeltaTime;
 
 
 	// USBUint32Vars1
@@ -120,6 +125,10 @@ void usb_initVars(void)
 	USBFloat32Vars2[10] = &fusionData._mag.vectorRaw.x;
 	USBFloat32Vars2[11] = &fusionData._mag.vectorRaw.y;
 	USBFloat32Vars2[12] = &fusionData._mag.vectorRaw.z;
+	USBFloat32Vars2[13] = &fusionData._gyro.gyroGainError.x;
+	USBFloat32Vars2[14] = &fusionData._gyro.gyroGainError.y;
+
+
 
 
 	// USBFloat32Vars3
@@ -134,5 +143,14 @@ void usb_initVars(void)
 	USBFloat32Vars3[6] = &fusionData._fusion_DCM.c.x;
 	USBFloat32Vars3[7] = &fusionData._fusion_DCM.c.y;
 	USBFloat32Vars3[8] = &fusionData._fusion_DCM.c.z;
+
+	USBFloat32Vars3[9] = &fusionData._gyro.gyroRateXP;
+	USBFloat32Vars3[10] = &fusionData._gyro.gyroRateXN;
+	USBFloat32Vars3[11] = &fusionData._gyro.gyroRateYP;
+	USBFloat32Vars3[12] = &fusionData._gyro.gyroRateYN;
+	USBFloat32Vars3[13] = &fusionData._gyro.gyroRateZP;
+	USBFloat32Vars3[14] = &fusionData._gyro.gyroRateZN;
+
+
 
 }

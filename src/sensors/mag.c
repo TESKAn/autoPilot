@@ -62,6 +62,10 @@ ErrorStatus mag_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 	float32_t temp;
 	Vectorf calcVector = vectorf_init(0);
 
+	float32_t cos_pitch_sq = 0.0f;
+	float32_t headY = 0.0f;
+	float32_t headX = 0.0f;
+
 	// Update mag readings
 	// Store mag reading and magnitude to previous
 	vectorf_copy(&data->_mag.currentMagReading, &data->_mag.previousMagReading);
@@ -102,12 +106,34 @@ ErrorStatus mag_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 		}
 
 	}
+
+	vectorf_normalizeAToB(&data->_mag.currentMagReading, &data->_mag.vector);
+
+	cos_pitch_sq = 1.0f-(data->_fusion_DCM.c.x * data->_fusion_DCM.c.x);
+	headY = data->_mag.vector.y * data->_fusion_DCM.c.z - data->_mag.vector.z * data->_fusion_DCM.c.y;
+	headX = data->_mag.vector.x * cos_pitch_sq - data->_fusion_DCM.c.x * (data->_mag.vector.y * data->_fusion_DCM.c.y + data->_mag.vector.z * data->_fusion_DCM.c.z);
+	data->_mag.heading = atan2f(-headY, headX);
+	if(3.15f < data->_mag.heading) data->_mag.heading = 3.15f;
+	if(-3.15f > data->_mag.heading) data->_mag.heading = -3.15f;
+
+
+	/*
+
+	// Tilt compensated magnetic field Y component:
+
+	// Tilt compensated magnetic field X component:
+
+	// magnetic heading
+	// 6/4/11 - added constrain to keep bad values from ruining DCM Yaw - Jason S.
+	float heading = constrain_float(atan2f(-headY,headX), -3.15f, 3.15f);
+	*/
+	/*
 	// Normalize measurement to get mag direction in body frame
 	if(ERROR != vectorf_normalizeAToB(&data->_mag.currentMagReading, &data->_mag.vector))
 	{
 		// Normalization good, continue with calculations
 		// Move to earth reference frame
-		matrix3_vectorMultiply(&data->_fusion_DCM, &data->_mag.vector, &data->_mag.vectorEarthFrame);
+		matrix3_transposeVectorMultiply(&data->_fusion_DCM, &data->_mag.vector, &data->_mag.vectorEarthFrame);
 		// Calculate heading from X,Y
 		vectorf_copy(&data->_mag.vectorEarthFrame, &calcVector);
 		calcVector.z = 0;
@@ -115,7 +141,7 @@ ErrorStatus mag_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 		data->_mag.heading = atan2f(calcVector.x, calcVector.y);
 		// Check mag X,Y vector direction with a reference - like GPS reading
 	}
-
+*/
 
 	success = SUCCESS;
 

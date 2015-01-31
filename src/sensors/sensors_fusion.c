@@ -318,11 +318,30 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 				error_acc_gravity = vectorf_init(0);
 			}
 		}
-/*
+		// Yaw error from mag heading
+		/*
+		if (data->_mag.valid)
+		{
+			// Use euler yaw angle - fusionData.ROLLPITCHYAW.yaw
+			fTemp = data->_mag.heading - data->ROLLPITCHYAW.yaw;
+			// fTemp is yaw error z in earth frame
+			// Convert to body frame
+			error_mag.x = 0;
+			error_mag.y = 0;
+			error_mag.z = fTemp * -0.1f;
+
+			// Errors calculated in earth frame, transform to body frame
+			matrix3_transposeVectorMultiply(&data->_fusion_DCM, &error_mag, &error_mag);
+
+
+
+		}
+*/
+
 		// Check if we have valid magnetometer data and calculate yaw error
 		if(data->_mag.valid)
 		{
-			/*
+
 			// Calculate heading error in body frame
 			// Use gravity from accelerometer
 			// grav X raw mag = earth Y axis
@@ -333,12 +352,14 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 
 
 			status = vectorf_crossProduct(&temporaryVector, &data->_accelerometer.vectorNormalized, &data->_mag.earthYAxis);
+			// Normalize
+			vectorf_normalize(&data->_mag.earthYAxis);
 			// Get error - rotate DCM B axis to our calculated Y axis
-			status = vectorf_crossProduct(&data->_fusion_DCM.b, &data->_mag.earthYAxis, &error_mag);
+			status = vectorf_crossProduct(&data->_mag.earthYAxis, &data->_fusion_DCM.b, &error_mag);
 			// Scale error
-			vectorf_scalarProduct(&error_mag, 0.1f, &error_mag);
-*//*
+			//vectorf_scalarProduct(&error_mag, 0.5f, &error_mag);
 
+/*
 			// Check roll/pitch error
 			fTemp = vectorf_getNorm(&error_acc_gravity);
 			if(fTemp < 0.1)
@@ -353,9 +374,13 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 
 				// Errors calculated in earth frame, transform to body frame
 				matrix3_transposeVectorMultiply(&data->_fusion_DCM, &error_mag, &error_mag);
-			}
+			}*/
 		}
-*/
+
+
+		data->_mag.vectorEarthFrame.x = error_mag.x;
+		data->_mag.vectorEarthFrame.y = error_mag.y;
+		data->_mag.vectorEarthFrame.z = error_mag.z;
 		// Check if we have valid GPS data and calculate yaw error
 
 
@@ -384,12 +409,43 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 			{
 				data->sFlag.bits.FLAG_FAST_ROTATION = 0;
 				// Update gyro gains
+				// Store error used
+				data->_gyro.gyroGainError.x = error.x;
+				data->_gyro.gyroGainError.y = error.y;
+				data->_gyro.gyroGainError.z = error.z;
+				// Use calculated error to determine if gain is off
+
 				// Check X axis
-
-
-
-
-
+				if(data->sFlag.bits.SFLAG_X_ROTATION_DIRECTION)
+				{
+					// X rotation was positive
+					// Update data->_gyro.gyroRateXP
+					data->_gyro.gyroRateXP -= error.x * GYRO_GAIN_ADJUSTMENT_FACTOR;
+				}
+				else
+				{
+					data->_gyro.gyroRateXN += error.x * GYRO_GAIN_ADJUSTMENT_FACTOR;
+				}
+				// Check Y axis
+				if(data->sFlag.bits.SFLAG_Y_ROTATION_DIRECTION)
+				{
+					// Y rotation was positive
+					data->_gyro.gyroRateYP -= error.y * GYRO_GAIN_ADJUSTMENT_FACTOR;
+				}
+				else
+				{
+					data->_gyro.gyroRateYN += error.y * GYRO_GAIN_ADJUSTMENT_FACTOR;
+				}
+				// Check Z axis
+				if(data->sFlag.bits.SFLAG_Z_ROTATION_DIRECTION)
+				{
+					// Z rotation was positive
+					data->_gyro.gyroRateZP -= error.z * GYRO_GAIN_ADJUSTMENT_FACTOR;
+				}
+				else
+				{
+					data->_gyro.gyroRateZN += error.z * GYRO_GAIN_ADJUSTMENT_FACTOR;
+				}
 
 				//status = math_PID3(&error, dt, &data->_gyroGainPID);
 			}
@@ -433,6 +489,32 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 			if(fTemp > data->gyroFastRotation)
 			{
 				data->sFlag.bits.FLAG_FAST_ROTATION = 1;
+				// Mark rotation directions
+				if(0 < data->_gyro.vector.x)
+				{
+					data->sFlag.bits.SFLAG_X_ROTATION_DIRECTION = 1;
+				}
+				else
+				{
+					data->sFlag.bits.SFLAG_X_ROTATION_DIRECTION = 0;
+				}
+				if(0 < data->_gyro.vector.y)
+				{
+					data->sFlag.bits.SFLAG_Y_ROTATION_DIRECTION = 1;
+				}
+				else
+				{
+					data->sFlag.bits.SFLAG_Y_ROTATION_DIRECTION = 0;
+				}
+				if(0 < data->_gyro.vector.z)
+				{
+					data->sFlag.bits.SFLAG_Z_ROTATION_DIRECTION = 1;
+				}
+				else
+				{
+					data->sFlag.bits.SFLAG_Z_ROTATION_DIRECTION = 0;
+				}
+
 			}
 			// Update drift PID with error = 0
 			error.x = 0;
@@ -471,7 +553,7 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 	//status = vectorf_scalarProduct(&data->_gyro.kFilteredVector, dt, &data->updateRotation);
 
 	// If rotation angle above limit, update rotation matrix
-	if(data->PARAMETERS.minRotation < vectorf_getNorm(&data->updateRotation))
+	//if(data->PARAMETERS.minRotation < vectorf_getNorm(&data->updateRotation))
 	{
 		// Store update vector
 		//vectorf_copy(&omega, &data->updateRotation);

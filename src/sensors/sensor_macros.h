@@ -10,6 +10,9 @@
 
 // Sensor flag definitions
 #define FLAG_FAST_ROTATION						BIT0
+#define SFLAG_X_ROTATION_DIRECTION				BIT1
+#define SFLAG_Y_ROTATION_DIRECTION				BIT2
+#define SFLAG_Z_ROTATION_DIRECTION				BIT3
 
 #define SENSOR_SYSTIME_TO_SECONDS				0.00001f	// Convert systemTime to seconds, 1 ms timer, time is stored as 1/100 ms, so divide by 100000.
 #define SENSOR_MIN_ROT_ERROR					0.000f
@@ -19,8 +22,11 @@
 #define GYRO_ERROR_UPDATE_INTERVAL				0			// Update PID every n cycles
 #define GYRO_I_UPDATE_INTERVAL					100			// When to update error integral
 #define GYRO_MAX_ERROR_AMPLITUDE				0.5f		// Not sure if useful
-#define GYRO_FAST_ROTATION						1.0f		// When do we consider gyro to be rotating fast
+#define GYRO_FAST_ROTATION						0.5f		// When do we consider gyro to be rotating fast
 #define GYRO_MAX_ERROR_UPDATE_RATE				0.1f		// Maximum gyro amplitude when updating error PID
+
+// Multiply rotation error with this to get gain adjustment
+#define GYRO_GAIN_ADJUSTMENT_FACTOR				0.01f
 
 // PID macros
 // Drift compensation
