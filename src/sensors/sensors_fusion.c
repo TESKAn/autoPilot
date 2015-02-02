@@ -414,39 +414,52 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 				data->_gyro.gyroGainError.y = error.y;
 				data->_gyro.gyroGainError.z = error.z;
 				// Use calculated error to determine if gain is off
-
-				// Check X axis
-				if(data->sFlag.bits.SFLAG_X_ROTATION_DIRECTION)
+				// X axis was rotating fast?
+				if(data->sFlag.bits.SFLAG_X_FAST_ROTATING)
 				{
-					// X rotation was positive
-					// Update data->_gyro.gyroRateXP
-					data->_gyro.gyroRateXP -= error.x * GYRO_GAIN_ADJUSTMENT_FACTOR;
-				}
-				else
-				{
-					data->_gyro.gyroRateXN += error.x * GYRO_GAIN_ADJUSTMENT_FACTOR;
+					data->sFlag.bits.SFLAG_X_FAST_ROTATING = 0;
+					// Check X axis
+					if(data->sFlag.bits.SFLAG_X_ROTATION_DIRECTION)
+					{
+						// X rotation was positive
+						// Update data->_gyro.gyroRateXP
+						data->_gyro.gyroRateXP -= error.x * GYRO_GAIN_ADJUSTMENT_FACTOR;
+					}
+					else
+					{
+						data->_gyro.gyroRateXN += error.x * GYRO_GAIN_ADJUSTMENT_FACTOR;
+					}
 				}
 				// Check Y axis
-				if(data->sFlag.bits.SFLAG_Y_ROTATION_DIRECTION)
+				// X axis was rotating fast?
+				if(data->sFlag.bits.SFLAG_Y_FAST_ROTATING)
 				{
-					// Y rotation was positive
-					data->_gyro.gyroRateYP -= error.y * GYRO_GAIN_ADJUSTMENT_FACTOR;
-				}
-				else
-				{
-					data->_gyro.gyroRateYN += error.y * GYRO_GAIN_ADJUSTMENT_FACTOR;
+					data->sFlag.bits.SFLAG_Y_FAST_ROTATING = 0;
+					if(data->sFlag.bits.SFLAG_Y_ROTATION_DIRECTION)
+					{
+						// Y rotation was positive
+						data->_gyro.gyroRateYP -= error.y * GYRO_GAIN_ADJUSTMENT_FACTOR;
+					}
+					else
+					{
+						data->_gyro.gyroRateYN += error.y * GYRO_GAIN_ADJUSTMENT_FACTOR;
+					}
 				}
 				// Check Z axis
-				if(data->sFlag.bits.SFLAG_Z_ROTATION_DIRECTION)
+				// X axis was rotating fast?
+				if(data->sFlag.bits.SFLAG_Z_FAST_ROTATING)
 				{
-					// Z rotation was positive
-					data->_gyro.gyroRateZP -= error.z * GYRO_GAIN_ADJUSTMENT_FACTOR;
+					data->sFlag.bits.SFLAG_Z_FAST_ROTATING = 0;
+					if(data->sFlag.bits.SFLAG_Z_ROTATION_DIRECTION)
+					{
+						// Z rotation was positive
+						data->_gyro.gyroRateZP -= error.z * GYRO_GAIN_ADJUSTMENT_FACTOR;
+					}
+					else
+					{
+						data->_gyro.gyroRateZN += error.z * GYRO_GAIN_ADJUSTMENT_FACTOR;
+					}
 				}
-				else
-				{
-					data->_gyro.gyroRateZN += error.z * GYRO_GAIN_ADJUSTMENT_FACTOR;
-				}
-
 				//status = math_PID3(&error, dt, &data->_gyroGainPID);
 			}
 			// Check update interval
@@ -493,26 +506,56 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 				if(0 < data->_gyro.vector.x)
 				{
 					data->sFlag.bits.SFLAG_X_ROTATION_DIRECTION = 1;
+					// Rotating fast?
+					if(GYRO_FAST_ROTATION < data->_gyro.vector.x)
+					{
+						data->sFlag.bits.SFLAG_X_FAST_ROTATING = 1;
+					}
 				}
 				else
 				{
 					data->sFlag.bits.SFLAG_X_ROTATION_DIRECTION = 0;
+					// Rotating fast?
+					if(-GYRO_FAST_ROTATION > data->_gyro.vector.x)
+					{
+						data->sFlag.bits.SFLAG_X_FAST_ROTATING = 1;
+					}
 				}
 				if(0 < data->_gyro.vector.y)
 				{
 					data->sFlag.bits.SFLAG_Y_ROTATION_DIRECTION = 1;
+					// Rotating fast?
+					if(GYRO_FAST_ROTATION < data->_gyro.vector.y)
+					{
+						data->sFlag.bits.SFLAG_Y_FAST_ROTATING = 1;
+					}
 				}
 				else
 				{
 					data->sFlag.bits.SFLAG_Y_ROTATION_DIRECTION = 0;
+					// Rotating fast?
+					if(-GYRO_FAST_ROTATION > data->_gyro.vector.y)
+					{
+						data->sFlag.bits.SFLAG_Y_FAST_ROTATING = 1;
+					}
 				}
 				if(0 < data->_gyro.vector.z)
 				{
 					data->sFlag.bits.SFLAG_Z_ROTATION_DIRECTION = 1;
+					// Rotating fast?
+					if(GYRO_FAST_ROTATION < data->_gyro.vector.z)
+					{
+						data->sFlag.bits.SFLAG_Z_FAST_ROTATING = 1;
+					}
 				}
 				else
 				{
 					data->sFlag.bits.SFLAG_Z_ROTATION_DIRECTION = 0;
+					// Rotating fast?
+					if(-GYRO_FAST_ROTATION > data->_gyro.vector.z)
+					{
+						data->sFlag.bits.SFLAG_Z_FAST_ROTATING = 1;
+					}
 				}
 
 			}

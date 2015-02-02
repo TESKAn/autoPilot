@@ -13,6 +13,9 @@
 #define SFLAG_X_ROTATION_DIRECTION				BIT1
 #define SFLAG_Y_ROTATION_DIRECTION				BIT2
 #define SFLAG_Z_ROTATION_DIRECTION				BIT3
+#define SFLAG_X_FAST_ROTATING					BIT4
+#define SFLAG_Y_FAST_ROTATING					BIT5
+#define SFLAG_Z_FAST_ROTATING					BIT6
 
 #define SENSOR_SYSTIME_TO_SECONDS				0.00001f	// Convert systemTime to seconds, 1 ms timer, time is stored as 1/100 ms, so divide by 100000.
 #define SENSOR_MIN_ROT_ERROR					0.000f
