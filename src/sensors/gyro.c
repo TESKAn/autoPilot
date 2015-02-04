@@ -15,7 +15,7 @@
 #include "functions.h"
 
 
-#define GYRO_DEFAULT_RATE					0.031517578125f//0.030517578125f			// 1000/32768 -> deg/sec
+#define GYRO_DEFAULT_RATE					0.0152587890625f//0.030517578125f			// 500/32768 -> deg/sec
 #define GYRO_DEG_TO_RAD						0.017453292519f			// 1 deg/sec is this in rad/sec
 #define GYRO_RAD_TO_DEG						57.295779513082f		// 1 rad/sec is this in deg/sec
 

@@ -580,6 +580,7 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 	Matrixf updateMatrix;									// Update matrix
 	Matrixf newMatrix;										// Place to store new DCM matrix
 	float32_t dt = 0;
+	float32_t f32Temp = 0.0f;
 
 
 	// Calculate delta time
@@ -592,28 +593,32 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 	// Calculate rotation angle
 	// Is gyro value * delta time in seconds
 	status = vectorf_scalarProduct(&data->_gyro.vector, dt, &data->updateRotation);
-	// Use filtered values
-	//status = vectorf_scalarProduct(&data->_gyro.kFilteredVector, dt, &data->updateRotation);
 
-	// If rotation angle above limit, update rotation matrix
-	//if(data->PARAMETERS.minRotation < vectorf_getNorm(&data->updateRotation))
+	// Calculate vector squared sum
+	status = vectorf_dotProduct(&data->updateRotation, &data->updateRotation, &f32Temp);
+	// Divide by 3, add one
+
+	f32Temp = f32Temp / 3;
+	f32Temp = f32Temp + 1.0f;
+	// Multiply theta by this gain
+	status = vectorf_scalarProduct(&data->updateRotation, f32Temp, &data->updateRotation);
+
+
+
+	// Generate update matrix
+	status = fusion_generateUpdateMatrix(&data->updateRotation, &updateMatrix);
+	// Multiply DCM and update matrix
+	status = matrix3_MatrixMultiply(&data->_fusion_DCM, &updateMatrix, &newMatrix);
+
+	// Renormalize and orthogonalize DCM matrix
+	status = matrix3_normalizeOrthogonalizeMatrix(&newMatrix, param_dcm_max_orth_error);
+
+	// Check if matrix is OK and copy data
+	if(SUCCESS == status)
 	{
-		// Store update vector
-		//vectorf_copy(&omega, &data->updateRotation);
-		// Generate update matrix
-		status = fusion_generateUpdateMatrix(&data->updateRotation, &updateMatrix);
-		// Multiply DCM and update matrix
-		status = matrix3_MatrixMultiply(&data->_fusion_DCM, &updateMatrix, &newMatrix);
-
-		// Renormalize and orthogonalize DCM matrix
-		status = matrix3_normalizeOrthogonalizeMatrix(&newMatrix, param_dcm_max_orth_error);
-
-		// Check if matrix is OK and copy data
-		if(SUCCESS == status)
-		{
-			matrix3_copy(&newMatrix, &data->_fusion_DCM);
-		}
+		matrix3_copy(&newMatrix, &data->_fusion_DCM);
 	}
+
 	return status;
 }
 

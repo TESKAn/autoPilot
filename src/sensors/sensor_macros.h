@@ -29,7 +29,7 @@
 #define GYRO_MAX_ERROR_UPDATE_RATE				0.1f		// Maximum gyro amplitude when updating error PID
 
 // Multiply rotation error with this to get gain adjustment
-#define GYRO_GAIN_ADJUSTMENT_FACTOR				0.01f
+#define GYRO_GAIN_ADJUSTMENT_FACTOR				0.005f
 
 // PID macros
 // Drift compensation

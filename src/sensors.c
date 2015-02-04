@@ -436,8 +436,8 @@ ErrorStatus MPU6000_Enable(FunctionalState newState)
 		I2C2_DMABufTX[1] = 0x02;
 		// Try no LP filter
 		//I2C2_DMABufTX[2] = 0x00;
-		// Reg 27 = 0001 0000	Set gyro maximum rate at 1000 °/sec
-		I2C2_DMABufTX[3] = 0x10;
+		// Reg 27 = 0000 1000	Set gyro maximum rate at 500 °/sec
+		I2C2_DMABufTX[3] = 0x08;
 		// Reg 28 = 0001 0000	Set accel maximum rate at 8g
 		I2C2_DMABufTX[4] = 0x10;
 		for(retriesCount = I2C2_ERROR_RETRIESCOUNT; retriesCount > 0; retriesCount --)
