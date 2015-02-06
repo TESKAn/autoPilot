@@ -257,6 +257,7 @@ typedef struct
 	// Time
 	uint32_t dataTime;
 	uint32_t deltaTime;
+	uint32_t ui32SensorInitTime;
 	// MPU6000 temperature
 	float32_t MPUTemperature;
 

@@ -135,6 +135,11 @@ ErrorStatus fusion_init(FUSION_CORE *coreData)
 	fusion_initGyroDriftPID(&fusionData);
 	fusion_initGyroGainPID(&fusionData);
 
+	// Mark wait for valid sensor signals
+	coreData->sFlag.bits.SFLAG_DO_DCM_UPDATE = 0;
+	// Store initial time
+	coreData->ui32SensorInitTime = getSystemTime();
+
 	return SUCCESS;
 }
 
@@ -166,14 +171,30 @@ ErrorStatus fusion_initGyroGainPID(FUSION_CORE *data)
 	return SUCCESS;
 }
 
-ErrorStatus fusion_dataUpdate(void *data, FUSION_SENSORDATA *sensorData)
+ErrorStatus fusion_dataUpdate(FUSION_CORE *data, FUSION_SENSORDATA *sensorData)
 {
 	// Update temperature
-	fusion_calculateMPUTemperature((FUSION_CORE *)data, sensorData->data.temperature, sensorData->data.dataTakenTime);
+	fusion_calculateMPUTemperature(&data, sensorData->data.temperature, sensorData->data.dataTakenTime);
 	// Update gyro
 	gyro_update((FUSION_CORE *)data, (int16_t*)&sensorData->arrays.gyro, sensorData->data.dataTakenTime);
-	// Update rotation matrix
-	fusion_updateRotationMatrix((FUSION_CORE *)data);
+	if(data->sFlag.bits.SFLAG_DO_DCM_UPDATE)
+	{
+		// Update rotation matrix
+		fusion_updateRotationMatrix((FUSION_CORE *)data);
+	}
+	else
+	{
+		// Check time
+		if(SENSOR_INVALID_TIME < (getSystemTime() - data->ui32SensorInitTime))
+		{
+			// If 1 second has passed since power up,try to init DCM matrix to initial value
+			if(SUCCESS == fusion_generateDCM(&data))
+			{
+				// And if successful do matrix update
+				data->sFlag.bits.SFLAG_DO_DCM_UPDATE = 1;
+			}
+		}
+	}
 	// Update acceleration
 	acc_update((FUSION_CORE *)data, (int16_t*)&sensorData->arrays.acc, sensorData->data.dataTakenTime);
 	// Update speed from acceleration
@@ -195,6 +216,55 @@ ErrorStatus fusion_calculateMPUTemperature(FUSION_CORE *data, int16_t temperatur
 {
 	data->MPUTemperature = ((float32_t) temperatureData / 340)+36.53f;
 	return SUCCESS;
+}
+
+// Function that generates DCM matrix from sensors
+ErrorStatus fusion_generateDCM(FUSION_CORE *data)
+{
+	/*
+	 * Generate initial DCM matrix from known vectors.
+
+	A row - earth X axis
+
+	B row - earth Y axis
+
+	C row - earth Z axis
+
+		use gravity vector to get C row of DCM
+
+		use magnetometer reading, cross product of mag reading and C row of DCM gives direction of B row of DCM
+
+		A row is cross product of B row with C row
+
+	Renormalize vectors between calculations.
+
+	Additionally GPS heading can be used instead of magnetometer to get B row. Heading is aligned with body frame X axis so it would have to be converted somehow...
+	 */
+	float32_t f32Temp = 0.0f;
+	ErrorStatus status = ERROR;
+	// Check that gravity has length ~1
+	f32Temp = vectorf_getNorm(&data->_accelerometer.vector);
+	if(((1.0f + DCMGEN_GRAVITY_ACCURACY) > f32Temp) && ((1.0f - DCMGEN_GRAVITY_ACCURACY) < f32Temp))
+	{
+		// C is gravity
+		// Copy
+		status = vectorf_copy(&data->_accelerometer.vector, &data->_fusion_DCM.c);
+		// Normalize vector
+		status = vectorf_normalize(&data->_fusion_DCM.c);
+		// Get B as cross product of C row and magnetometer vector
+		status = vectorf_crossProduct(&data->_fusion_DCM.c, &data->_mag.vector, &data->_fusion_DCM.b);
+		// Normalize vector
+		status = vectorf_normalize(&data->_fusion_DCM.b);
+		// Get A as cross product of B with C
+		status = vectorf_crossProduct(&data->_fusion_DCM.c, &data->_fusion_DCM.b, &data->_fusion_DCM.a);
+		// Normalize vector
+		status = vectorf_normalize(&data->_fusion_DCM.a);
+		status = SUCCESS;
+	}
+
+
+
+	return status;
 }
 
 // Function generates rotation update matrix.
