@@ -174,13 +174,13 @@ ErrorStatus fusion_initGyroGainPID(FUSION_CORE *data)
 ErrorStatus fusion_dataUpdate(FUSION_CORE *data, FUSION_SENSORDATA *sensorData)
 {
 	// Update temperature
-	fusion_calculateMPUTemperature(&data, sensorData->data.temperature, sensorData->data.dataTakenTime);
+	fusion_calculateMPUTemperature(data, sensorData->data.temperature, sensorData->data.dataTakenTime);
 	// Update gyro
-	gyro_update((FUSION_CORE *)data, (int16_t*)&sensorData->arrays.gyro, sensorData->data.dataTakenTime);
+	gyro_update(data, (int16_t*)&sensorData->arrays.gyro, sensorData->data.dataTakenTime);
 	if(data->sFlag.bits.SFLAG_DO_DCM_UPDATE)
 	{
 		// Update rotation matrix
-		fusion_updateRotationMatrix((FUSION_CORE *)data);
+		fusion_updateRotationMatrix(data);
 	}
 	else
 	{
@@ -188,7 +188,7 @@ ErrorStatus fusion_dataUpdate(FUSION_CORE *data, FUSION_SENSORDATA *sensorData)
 		if(SENSOR_INVALID_TIME < (getSystemTime() - data->ui32SensorInitTime))
 		{
 			// If 1 second has passed since power up,try to init DCM matrix to initial value
-			if(SUCCESS == fusion_generateDCM(&data))
+			if(SUCCESS == fusion_generateDCM(data))
 			{
 				// And if successful do matrix update
 				data->sFlag.bits.SFLAG_DO_DCM_UPDATE = 1;
@@ -196,16 +196,16 @@ ErrorStatus fusion_dataUpdate(FUSION_CORE *data, FUSION_SENSORDATA *sensorData)
 		}
 	}
 	// Update acceleration
-	acc_update((FUSION_CORE *)data, (int16_t*)&sensorData->arrays.acc, sensorData->data.dataTakenTime);
+	acc_update(data, (int16_t*)&sensorData->arrays.acc, sensorData->data.dataTakenTime);
 	// Update speed from acceleration
-	acc_updateSpeedCalculation((FUSION_CORE *)data, sensorData->data.dataTakenTime);
+	acc_updateSpeedCalculation(data, sensorData->data.dataTakenTime);
 	// Update mag
-	mag_update((FUSION_CORE *)data, (int16_t*)&sensorData->arrays.mag, sensorData->data.dataTakenTime);
+	mag_update(data, (int16_t*)&sensorData->arrays.mag, sensorData->data.dataTakenTime);
 	// Update altimeter
-	altimeter_update((FUSION_CORE *)data, sensorData->arrays.pressure.statusPressure, sensorData->arrays.baroTemperatureDegrees, sensorData->arrays.baroTemperatureFrac, sensorData->data.dataTakenTime);
+	altimeter_update(data, sensorData->arrays.pressure.statusPressure, sensorData->arrays.baroTemperatureDegrees, sensorData->arrays.baroTemperatureFrac, sensorData->data.dataTakenTime);
 
 	// Estimate gyro error
-	fusion_updateGyroError((FUSION_CORE *)data);
+	fusion_updateGyroError(data);
 
 
 	return SUCCESS;
@@ -256,7 +256,7 @@ ErrorStatus fusion_generateDCM(FUSION_CORE *data)
 		// Normalize vector
 		status = vectorf_normalize(&data->_fusion_DCM.b);
 		// Get A as cross product of B with C
-		status = vectorf_crossProduct(&data->_fusion_DCM.c, &data->_fusion_DCM.b, &data->_fusion_DCM.a);
+		status = vectorf_crossProduct(&data->_fusion_DCM.b, &data->_fusion_DCM.c, &data->_fusion_DCM.a);
 		// Normalize vector
 		status = vectorf_normalize(&data->_fusion_DCM.a);
 		status = SUCCESS;
@@ -268,12 +268,12 @@ ErrorStatus fusion_generateDCM(FUSION_CORE *data)
 }
 
 // Function generates rotation update matrix.
-ErrorStatus fusion_generateUpdateMatrix(Vectorf * omega, Matrixf * updateMatrix)
+ErrorStatus fusion_generateUpdateMatrix(Vectorf * omega, Matrixf * updateMatrix, int isIdentity)
 {
 	ErrorStatus status = ERROR;
 
 	// First create identity matrix
-	matrix3_init(1, updateMatrix);
+	matrix3_init(isIdentity, updateMatrix);
 	// Populate elements of matrix
 	updateMatrix->a.y = -omega->z;
 	updateMatrix->a.z = omega->y;
@@ -426,8 +426,7 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 			vectorf_normalize(&data->_mag.earthYAxis);
 			// Get error - rotate DCM B axis to our calculated Y axis
 			status = vectorf_crossProduct(&data->_mag.earthYAxis, &data->_fusion_DCM.b, &error_mag);
-			// Scale error
-			//vectorf_scalarProduct(&error_mag, 0.5f, &error_mag);
+
 
 /*
 			// Check roll/pitch error
@@ -651,6 +650,9 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 	Matrixf newMatrix;										// Place to store new DCM matrix
 	float32_t dt = 0;
 	float32_t f32Temp = 0.0f;
+	int matm0 = 0;;
+	int matm1 = 0;
+	int matm2 = 0;
 
 
 	// Calculate delta time
@@ -659,24 +661,55 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 
 	data->integrationTime = dt;
 
-
+/*
 	// Calculate rotation angle
+	// Part 1
 	// Is gyro value * delta time in seconds
 	status = vectorf_scalarProduct(&data->_gyro.vector, dt, &data->updateRotation);
+	// Part 2
+	// Depends on previous rotations
+	status = vectorf_crossProduct(&data->updateRotation, &data->_gyro.vector, &data->_gyro.vectorW_m);
+	status = vectorf_scalarProduct(&data->_gyro.vectorW_m, (dt * 0.5f), &data->_gyro.vectorW_m);
 
-	// Calculate vector squared sum
-	status = vectorf_dotProduct(&data->updateRotation, &data->updateRotation, &f32Temp);
-	// Divide by 3, add one
-
-	f32Temp = f32Temp / 3;
-	f32Temp = f32Temp + 1.0f;
-	// Multiply theta by this gain
-	status = vectorf_scalarProduct(&data->updateRotation, f32Temp, &data->updateRotation);
-
-
+	status = vectorf_add(&data->_gyro.vectorW_m, &data->updateRotation, &data->updateRotation);
 
 	// Generate update matrix
-	status = fusion_generateUpdateMatrix(&data->updateRotation, &updateMatrix);
+	status = fusion_generateUpdateMatrix(&data->updateRotation, &updateMatrix, 1);
+	*/
+	// Calculate rotation angle
+	// Part 1
+	// Is gyro value * delta time in seconds
+	status = vectorf_scalarProduct(&data->_gyro.vector, dt, &data->updateRotation);
+	// Update matrices
+	data->ROTATIONS.Phi0Index++;
+	// Get index where to store fresh matrix
+	if(2 < data->ROTATIONS.Phi0Index) data->ROTATIONS.Phi0Index = 0;
+	matm0 = data->ROTATIONS.Phi0Index;
+	matm1 = data->ROTATIONS.Phi0Index - 1;
+	if(matm1 < 0) matm1 += 3;
+	matm2 = data->ROTATIONS.Phi0Index - 2;
+	if(matm2 < 0) matm2 += 3;
+
+
+	// Store matrix
+	status = fusion_generateUpdateMatrix(&data->updateRotation, &data->ROTATIONS.Phi[matm0], 0);
+	// Calculate
+	status = matrix3_init(1, &updateMatrix);
+
+	status = matrix3_sumAB(&data->ROTATIONS.Phi[matm0], &updateMatrix, &updateMatrix);
+
+	status = matrix3_MatrixMultiply(&data->ROTATIONS.Phi[matm1], &data->ROTATIONS.Phi[matm2], &newMatrix);
+	status = matrix3_scalarMultiply(&newMatrix, 5.0f, &newMatrix);
+	status = matrix3_sumAB(&newMatrix, &updateMatrix, &updateMatrix);
+
+	status = matrix3_MatrixMultiply(&data->ROTATIONS.Phi[matm0], &data->ROTATIONS.Phi[matm0], &newMatrix);
+	status = matrix3_scalarMultiply(&newMatrix, -1.5f, &newMatrix);
+	status = matrix3_sumAB(&newMatrix, &updateMatrix, &updateMatrix);
+
+	status = matrix3_MatrixMultiply(&data->ROTATIONS.Phi[matm2], &data->ROTATIONS.Phi[matm2], &newMatrix);
+	status = matrix3_scalarMultiply(&newMatrix, -1.5f, &newMatrix);
+	status = matrix3_sumAB(&newMatrix, &updateMatrix, &updateMatrix);
+
 	// Multiply DCM and update matrix
 	status = matrix3_MatrixMultiply(&data->_fusion_DCM, &updateMatrix, &newMatrix);
 

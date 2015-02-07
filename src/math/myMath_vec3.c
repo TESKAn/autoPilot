@@ -259,3 +259,22 @@ ErrorStatus vectorf_copy(Vectorf * vecA, Vectorf * vecB)
 
 	return status;
 }
+
+ErrorStatus vectorf_negate(Vectorf * vecA)
+{
+	ErrorStatus status = ERROR;
+	// Set FPU exception bit to 0
+	FPU_EXCEPTION = 0;
+
+	vecA->x = -vecA->x;
+	vecA->y = -vecA->y;
+	vecA->z = -vecA->z;
+
+	// Check if FPU result is OK
+	if(!FPU_EXCEPTION)
+	{
+		status = SUCCESS;
+	}
+
+	return status;
+}

@@ -21,5 +21,6 @@ ErrorStatus vectorf_normalize(Vectorf * vectorA);
 ErrorStatus vectorf_normalizeAToB(Vectorf * vectorA, Vectorf * vectorB);
 float32_t vectorf_getNorm(Vectorf * vector);
 ErrorStatus vectorf_copy(Vectorf * vecA, Vectorf * vecB);
+ErrorStatus vectorf_negate(Vectorf * vecA);
 
 #endif /* MYMATH_VEC3_H_ */

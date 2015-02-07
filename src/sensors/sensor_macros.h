@@ -41,7 +41,7 @@
 
 // PID macros
 // Drift compensation
-#define GYRO_PID_DRIFT_KP						1.0f
+#define GYRO_PID_DRIFT_KP						2.0f
 #define GYRO_PID_DRIFT_KI						0.1f
 #define GYRO_PID_DRIFT_KD						0.0f
 #define GYRO_PID_DRIFT_IMAX						100.0f

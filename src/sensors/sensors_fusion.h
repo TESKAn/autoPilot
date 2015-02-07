@@ -19,7 +19,7 @@ ErrorStatus fusion_initGyroGainPID(FUSION_CORE *data);
 ErrorStatus fusion_dataUpdate(FUSION_CORE *data, FUSION_SENSORDATA *sensorData);
 ErrorStatus fusion_calculateMPUTemperature(FUSION_CORE *data, int16_t temperatureData, uint32_t dataTime);
 ErrorStatus fusion_generateDCM(FUSION_CORE *data);
-ErrorStatus fusion_generateUpdateMatrix(Vectorf * omega, Matrixf * updateMatrix);
+ErrorStatus fusion_generateUpdateMatrix(Vectorf * omega, Matrixf * updateMatrix, int isIdentity);
 ErrorStatus fusion_updateGyroError(FUSION_CORE *data);
 ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data);
 

@@ -132,6 +132,29 @@ ErrorStatus matrix3_transposeVectorMultiply(Matrixf * mat, Vectorf * vecIn, Vect
 	return status;
 }
 
+// Multiply matrix A with scalar S into matrix B
+ErrorStatus matrix3_scalarMultiply(Matrixf * A, float32_t S, Matrixf * B)
+{
+	ErrorStatus status = ERROR;
+	B->a.x = A->a.x * S;
+	B->a.y = A->a.y * S;
+	B->a.z = A->a.z * S;
+	B->b.x = A->b.x * S;
+	B->b.y = A->b.y * S;
+	B->b.z = A->b.z * S;
+	B->c.x = A->c.x * S;
+	B->c.y = A->c.y * S;
+	B->c.z = A->c.z * S;
+
+	// Check if FPU result is OK
+	if(!FPU_EXCEPTION)
+	{
+		status = SUCCESS;
+	}
+
+	return status;
+}
+
 // Multiply matrices A and B into matrix C
 ErrorStatus matrix3_MatrixMultiply(Matrixf * matA, Matrixf * matB, Matrixf * matC)
 {
