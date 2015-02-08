@@ -397,7 +397,7 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 					// Normalize
 					vectorf_normalize(&data->_mag.earthYAxis);
 					// Get error - rotate DCM B axis to our calculated Y axis
-					status = vectorf_crossProduct(&data->_mag.earthYAxis, &data->_fusion_DCM.b, &error_mag);
+					status = vectorf_crossProduct(&data->_fusion_DCM.b, &data->_mag.earthYAxis, &error_mag);
 				}
 				else
 				{
