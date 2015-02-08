@@ -92,10 +92,6 @@ typedef struct
 	float32_t fDeltaTime;
 	float32_t fReceiveTime;
 	float32_t errorScale;
-	// Previous rotation
-	Vectorf vectorW_m;
-	//
-	Vectorf vectorW_p;
 	// Kalman filter data
 	KALMAN3 kFilter;
 	// Error
@@ -261,11 +257,8 @@ typedef struct
 	// Stored data from previous rotation updates
 	struct
 	{
-		Matrixf Phi[3];
-		/*
-		Matrixf Phi1;
-		Matrixf Phi2;
-		*/
+		// Last three rotations
+		Vectorf Wi[3];
 		uint32_t Phi0Index;
 	}ROTATIONS;
 

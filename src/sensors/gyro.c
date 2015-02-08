@@ -108,10 +108,11 @@ ErrorStatus gyro_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 
 
 	// Filter result
+	/*
 	data->_gyro.vectorKFiltered.x = Kalman_Update(&data->_gyro.kFilter.X, data->_gyro.vectorRaw.x);
 	data->_gyro.vectorKFiltered.y = Kalman_Update(&data->_gyro.kFilter.Y, data->_gyro.vectorRaw.y);
 	data->_gyro.vectorKFiltered.z = Kalman_Update(&data->_gyro.kFilter.Z, data->_gyro.vectorRaw.z);
-
+*/
 	// Copy filtered data for further
 	vectorf_copy(&data->_gyro.vectorRaw, &data->_gyro.vector);
 

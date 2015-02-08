@@ -48,15 +48,15 @@ void usb_initVars(void)
 	USBFloat32Vars1[3] = &fusionData._accelerometer.vector.x;
 	USBFloat32Vars1[4] = &fusionData._accelerometer.vector.y;
 	USBFloat32Vars1[5] = &fusionData._accelerometer.vector.z;
-/*
+
 	USBFloat32Vars1[6] = &fusionData._mag.vector.x;
 	USBFloat32Vars1[7] = &fusionData._mag.vector.y;
 	USBFloat32Vars1[8] = &fusionData._mag.vector.z;
-*/
+/*
 	USBFloat32Vars1[6] = &fusionData._mag.vectorEarthFrame.x;
 	USBFloat32Vars1[7] = &fusionData._mag.vectorEarthFrame.y;
 	USBFloat32Vars1[8] = &fusionData._mag.vectorEarthFrame.z;
-
+*/
 	USBFloat32Vars1[9] = &fusionData._altimeter.pressure;
 	USBFloat32Vars1[10] = &fusionData._altimeter.altitude;
 

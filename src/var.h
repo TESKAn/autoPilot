@@ -106,6 +106,9 @@ extern volatile uint16_t mainLoopState;
 
 extern FUSION_CORE fusionData;
 
+// Flight data
+extern FLIGHT_CORE FCFlightData;
+
 // Flag variable
 extern volatile Flag flag0;
 extern volatile Flag flag1;

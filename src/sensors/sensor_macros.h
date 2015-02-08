@@ -33,7 +33,7 @@
 #define DCMGEN_GRAVITY_ACCURACY					0.05f		// Absolute value of accelerometer reading must be within this tolerance
 
 // Multiply rotation error with this to get gain adjustment
-#define GYRO_GAIN_ADJUSTMENT_FACTOR				0.005f
+#define GYRO_GAIN_ADJUSTMENT_FACTOR				0.00001f
 
 // Time to wait before sensor data is considered OK
 // 1 tick is 10 usec, wait for 1 sec, 100000 ticks is 1 sec
@@ -41,13 +41,13 @@
 
 // PID macros
 // Drift compensation
-#define GYRO_PID_DRIFT_KP						2.0f
-#define GYRO_PID_DRIFT_KI						0.1f
+#define GYRO_PID_DRIFT_KP						100.0f	// Kp compensates orientation errors. Larger value gets faster correction.
+#define GYRO_PID_DRIFT_KI						0.05f	// Ki compensates gyro drift errors. Can be small as drift is small.
 #define GYRO_PID_DRIFT_KD						0.0f
-#define GYRO_PID_DRIFT_IMAX						100.0f
-#define GYRO_PID_DRIFT_IMIN						-100.0f
-#define GYRO_PID_DRIFT_SMAX						100.0f
-#define GYRO_PID_DRIFT_SMIN						-100.0f
+#define GYRO_PID_DRIFT_IMAX						2.0f
+#define GYRO_PID_DRIFT_IMIN						-2.0f
+#define GYRO_PID_DRIFT_SMAX						1.0f
+#define GYRO_PID_DRIFT_SMIN						-1.0f
 #define GYRO_PID_DRIFT_EMAX						1.0f
 #define GYRO_PID_DRIFT_EMIN						-1.0f
 

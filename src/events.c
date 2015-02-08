@@ -558,213 +558,217 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		}
 		// LED counter
 		LED_ToggleCount++;
-		if(LED_ToggleCount >= 100)
+		if(LED_ToggleCount >= 75)
 		{
 			// Event every second
-			// Send UART data
-			// Setup
-			switch(UART2VarsSelect)
+			// Check if DMA transfer was complete
+			//if(SET == DMA_GetFlagStatus(DMA1_Stream6, DMA_FLAG_TCIF6))
 			{
-				case 0:
+				// Send UART data
+				// Setup
+				switch(UART2VarsSelect)
 				{
-					UART2VarsSelect = 1;
-					break;
-				}
-				case 1:
-				{
-					UART2Buffer[0] = 2;
-					UART2Buffer[1] = 1;
-					UART2Buffer[2] = 1;
-					ui8Temp = 3;
-		        	for(i=0; i<7;i++)
-		        	{
-		        		convertNumFormat.f64 = *USBFloat64Vars1[i];
-		        		for(j=0;j<8;j++)
-		        		{
-		        			UART2Buffer[ui8Temp] = convertNumFormat.ch[j];
-		        			ui8Temp++;
-		        		}
-		        	}
-					UART2VarsSelect = 2;
-					break;
-				}
-				case 2:
-				{
-		        	// Store data
-					UART2Buffer[0] = 2;
-		        	UART2Buffer[1] = 1;
-		        	UART2Buffer[2] = 2;
-		        	ui8Temp = 3;
-		        	for(i=0; i<15;i++)
-		        	{
-		        		convertNumFormat.f32[0] = *USBFloat32Vars1[i];
-		        		for(j=0;j<4;j++)
-		        		{
-		        			UART2Buffer[ui8Temp] = convertNumFormat.ch[j];
-		        			ui8Temp++;
-		        		}
-		        	}
-					UART2VarsSelect = 6;
-					break;
-				}
-				case 3:
-				{
-		        	// Store data
-					UART2Buffer[0] = 2;
-					UART2Buffer[1] = 1;
-					UART2Buffer[2] = 3;
-					ui8Temp = 3;
-		        	for(i=0; i<15;i++)
-		        	{
-		        		convertNumFormat.i32[0] = *USBInt32Vars1[i];
-		        		for(j=0;j<4;j++)
-		        		{
-		        			UART2Buffer[ui8Temp] = convertNumFormat.ch[j];
-		        			ui8Temp++;
-		        		}
-		        	}
-		        	USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
-		        	UART2VarsSelect = 4;
-					break;
-				}
-				case 4:
-				{
-		        	// Store data
-					UART2Buffer[0] = 2;
-					UART2Buffer[1] = 1;
-					UART2Buffer[2] = 4;
-					ui8Temp = 3;
-		        	for(i=0; i<15;i++)
-		        	{
-		        		convertNumFormat.ui32[0] = *USBUint32Vars1[i];
-		        		for(j=0;j<4;j++)
-		        		{
-		        			UART2Buffer[ui8Temp] = convertNumFormat.ch[j];
-		        			ui8Temp++;
-		        		}
-		        	}
-		        	UART2VarsSelect = 5;
-					break;
-				}
-				case 5:
-				{
-		        	// Store data
-					UART2Buffer[0] = 2;
-					UART2Buffer[1] = 1;
-		        	UART2Buffer[2] = 5;
-		        	ui8Temp = 3;
-		        	for(i=0; i<30;i++)
-		        	{
-		        		convertNumFormat.i16[0] = *USBInt16Vars1[i];
-		        		for(j=0;j<2;j++)
-		        		{
-		        			UART2Buffer[ui8Temp] = convertNumFormat.ch[j];
-		        			ui8Temp++;
-		        		}
-		        	}
-		        	UART2VarsSelect = 6;
-					break;
-				}
-				case 6:
-				{
-		        	// Store data
-					UART2Buffer[0] = 2;
-					UART2Buffer[1] = 1;
-					UART2Buffer[2] = 6;
-					ui8Temp = 3;
-		        	for(i=0; i<30;i++)
-		        	{
-		        		convertNumFormat.ui16[0] = *USBUint16Vars1[i];
-		        		for(j=0;j<2;j++)
-		        		{
-		        			UART2Buffer[ui8Temp] = convertNumFormat.ch[j];
-		        			ui8Temp++;
-		        		}
-		        	}
-		        	UART2VarsSelect = 8;
-					break;
-				}
-				case 7:
-				{
-		        	// Store data
-					UART2Buffer[0] = 2;
-					UART2Buffer[1] = 1;
-					UART2Buffer[2] = 7;
-					ui8Temp = 3;
-		        	for(i=0; i<60;i++)
-		        	{
-		        		UART2Buffer[ui8Temp] = *USBInt8Vars1[i];
-		        		ui8Temp++;
-		        	}
-		        	UART2VarsSelect = 8;
-					break;
-				}
-				case 8:
-				{
-		        	// Store data
-					UART2Buffer[0] = 2;
-					UART2Buffer[1] = 1;
-		        	UART2Buffer[2] = 8;
-		        	ui8Temp = 3;
-		        	for(i=0; i<60;i++)
-		        	{
-		        		UART2Buffer[ui8Temp] = *USBUint8Vars1[i];
-		        		ui8Temp++;
-		        	}
-		        	UART2VarsSelect = 9;
-					break;
+					case 0:
+					{
+						UART2VarsSelect = 1;
+						break;
+					}
+					case 1:
+					{
+						UART2Buffer[0] = 2;
+						UART2Buffer[1] = 1;
+						UART2Buffer[2] = 1;
+						ui8Temp = 3;
+						for(i=0; i<7;i++)
+						{
+							convertNumFormat.f64 = *USBFloat64Vars1[i];
+							for(j=0;j<8;j++)
+							{
+								UART2Buffer[ui8Temp] = convertNumFormat.ch[j];
+								ui8Temp++;
+							}
+						}
+						UART2VarsSelect = 2;
+						break;
+					}
+					case 2:
+					{
+						// Store data
+						UART2Buffer[0] = 2;
+						UART2Buffer[1] = 1;
+						UART2Buffer[2] = 2;
+						ui8Temp = 3;
+						for(i=0; i<15;i++)
+						{
+							convertNumFormat.f32[0] = *USBFloat32Vars1[i];
+							for(j=0;j<4;j++)
+							{
+								UART2Buffer[ui8Temp] = convertNumFormat.ch[j];
+								ui8Temp++;
+							}
+						}
+						UART2VarsSelect = 6;
+						break;
+					}
+					case 3:
+					{
+						// Store data
+						UART2Buffer[0] = 2;
+						UART2Buffer[1] = 1;
+						UART2Buffer[2] = 3;
+						ui8Temp = 3;
+						for(i=0; i<15;i++)
+						{
+							convertNumFormat.i32[0] = *USBInt32Vars1[i];
+							for(j=0;j<4;j++)
+							{
+								UART2Buffer[ui8Temp] = convertNumFormat.ch[j];
+								ui8Temp++;
+							}
+						}
+						USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
+						UART2VarsSelect = 4;
+						break;
+					}
+					case 4:
+					{
+						// Store data
+						UART2Buffer[0] = 2;
+						UART2Buffer[1] = 1;
+						UART2Buffer[2] = 4;
+						ui8Temp = 3;
+						for(i=0; i<15;i++)
+						{
+							convertNumFormat.ui32[0] = *USBUint32Vars1[i];
+							for(j=0;j<4;j++)
+							{
+								UART2Buffer[ui8Temp] = convertNumFormat.ch[j];
+								ui8Temp++;
+							}
+						}
+						UART2VarsSelect = 5;
+						break;
+					}
+					case 5:
+					{
+						// Store data
+						UART2Buffer[0] = 2;
+						UART2Buffer[1] = 1;
+						UART2Buffer[2] = 5;
+						ui8Temp = 3;
+						for(i=0; i<30;i++)
+						{
+							convertNumFormat.i16[0] = *USBInt16Vars1[i];
+							for(j=0;j<2;j++)
+							{
+								UART2Buffer[ui8Temp] = convertNumFormat.ch[j];
+								ui8Temp++;
+							}
+						}
+						UART2VarsSelect = 6;
+						break;
+					}
+					case 6:
+					{
+						// Store data
+						UART2Buffer[0] = 2;
+						UART2Buffer[1] = 1;
+						UART2Buffer[2] = 6;
+						ui8Temp = 3;
+						for(i=0; i<30;i++)
+						{
+							convertNumFormat.ui16[0] = *USBUint16Vars1[i];
+							for(j=0;j<2;j++)
+							{
+								UART2Buffer[ui8Temp] = convertNumFormat.ch[j];
+								ui8Temp++;
+							}
+						}
+						UART2VarsSelect = 8;
+						break;
+					}
+					case 7:
+					{
+						// Store data
+						UART2Buffer[0] = 2;
+						UART2Buffer[1] = 1;
+						UART2Buffer[2] = 7;
+						ui8Temp = 3;
+						for(i=0; i<60;i++)
+						{
+							UART2Buffer[ui8Temp] = *USBInt8Vars1[i];
+							ui8Temp++;
+						}
+						UART2VarsSelect = 8;
+						break;
+					}
+					case 8:
+					{
+						// Store data
+						UART2Buffer[0] = 2;
+						UART2Buffer[1] = 1;
+						UART2Buffer[2] = 8;
+						ui8Temp = 3;
+						for(i=0; i<60;i++)
+						{
+							UART2Buffer[ui8Temp] = *USBUint8Vars1[i];
+							ui8Temp++;
+						}
+						UART2VarsSelect = 9;
+						break;
+					}
+
+					case 9:
+					{
+						// Store data
+						UART2Buffer[0] = 2;
+						UART2Buffer[1] = 1;
+						UART2Buffer[2] = 9;
+						ui8Temp = 3;
+						for(i=0; i<15;i++)
+						{
+							convertNumFormat.f32[0] = *USBFloat32Vars2[i];
+							for(j=0;j<4;j++)
+							{
+								UART2Buffer[ui8Temp] = convertNumFormat.ch[j];
+								ui8Temp++;
+							}
+						}
+						UART2VarsSelect = 10;
+						break;
+
+					}
+
+					case 10:
+					{
+						// Store data
+						UART2Buffer[0] = 2;
+						UART2Buffer[1] = 1;
+						UART2Buffer[2] = 10;
+						ui8Temp = 3;
+						for(i=0; i<15;i++)
+						{
+							convertNumFormat.f32[0] = *USBFloat32Vars3[i];
+							for(j=0;j<4;j++)
+							{
+								UART2Buffer[ui8Temp] = convertNumFormat.ch[j];
+								ui8Temp++;
+							}
+						}
+						UART2VarsSelect = 1;
+						break;
+					}
+
+
+					default:
+					{
+						UART2VarsSelect = 1;
+						break;
+					}
 				}
 
-				case 9:
-				{
-					// Store data
-					UART2Buffer[0] = 2;
-					UART2Buffer[1] = 1;
-					UART2Buffer[2] = 9;
-					ui8Temp = 3;
-		        	for(i=0; i<15;i++)
-		        	{
-		        		convertNumFormat.f32[0] = *USBFloat32Vars2[i];
-		        		for(j=0;j<4;j++)
-		        		{
-		        			UART2Buffer[ui8Temp] = convertNumFormat.ch[j];
-		        			ui8Temp++;
-		        		}
-		        	}
-		        	UART2VarsSelect = 10;
-		        	break;
-
-				}
-
-				case 10:
-				{
-		        	// Store data
-					UART2Buffer[0] = 2;
-					UART2Buffer[1] = 1;
-					UART2Buffer[2] = 10;
-					ui8Temp = 3;
-		        	for(i=0; i<15;i++)
-		        	{
-		        		convertNumFormat.f32[0] = *USBFloat32Vars3[i];
-		        		for(j=0;j<4;j++)
-		        		{
-		        			UART2Buffer[ui8Temp] = convertNumFormat.ch[j];
-		        			ui8Temp++;
-		        		}
-		        	}
-		        	UART2VarsSelect = 1;
-					break;
-				}
-
-
-				default:
-				{
-					UART2VarsSelect = 1;
-					break;
-				}
+				transferDMA_USART2(UART2Buffer, 64);
 			}
-
-			transferDMA_USART2(UART2Buffer, 64);
 			// Write log
 			/*
 			if(SD_WRITE_LOG && SCR2_LOGOPEN)

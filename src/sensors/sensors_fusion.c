@@ -382,68 +382,33 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 						error_acc_gravity = vectorf_init(0);
 					}
 				}
+				// Check if we have valid magnetometer data and calculate yaw error
+				// Do only if we have valid accelerometer data, as we are using that to calculate error
+				if(data->_mag.valid)
+				{
+					// Calculate heading error in body frame
+					// Use gravity from accelerometer
+					// grav X raw mag = earth Y axis
+					// earth Y axis X DCM line b is yaw error in body frame
+					// temporaryVector - normalized mag with subtracted offsets
+					status = vectorf_normalizeAToB(&data->_mag.vector, &temporaryVector);
+					// Get where earth's Y axis is supposed to be
+					status = vectorf_crossProduct(&temporaryVector, &data->_accelerometer.vectorNormalized, &data->_mag.earthYAxis);
+					// Normalize
+					vectorf_normalize(&data->_mag.earthYAxis);
+					// Get error - rotate DCM B axis to our calculated Y axis
+					status = vectorf_crossProduct(&data->_mag.earthYAxis, &data->_fusion_DCM.b, &error_mag);
+				}
+				else
+				{
+					error_mag = vectorf_init(0);
+				}
 			}
 			else
 			{
 				error_acc_gravity = vectorf_init(0);
+				error_mag = vectorf_init(0);
 			}
-		}
-		// Yaw error from mag heading
-		/*
-		if (data->_mag.valid)
-		{
-			// Use euler yaw angle - fusionData.ROLLPITCHYAW.yaw
-			fTemp = data->_mag.heading - data->ROLLPITCHYAW.yaw;
-			// fTemp is yaw error z in earth frame
-			// Convert to body frame
-			error_mag.x = 0;
-			error_mag.y = 0;
-			error_mag.z = fTemp * -0.1f;
-
-			// Errors calculated in earth frame, transform to body frame
-			matrix3_transposeVectorMultiply(&data->_fusion_DCM, &error_mag, &error_mag);
-
-
-
-		}
-*/
-
-		// Check if we have valid magnetometer data and calculate yaw error
-		if(data->_mag.valid)
-		{
-
-			// Calculate heading error in body frame
-			// Use gravity from accelerometer
-			// grav X raw mag = earth Y axis
-			// earth Y axis X DCM line b is yaw error in body frame
-			// temporaryVector - normalized mag with subtracted offsets
-			status = vectorf_normalizeAToB(&data->_mag.vector, &temporaryVector);
-			// Get where earth's Y axis is supposed to be
-
-
-			status = vectorf_crossProduct(&temporaryVector, &data->_accelerometer.vectorNormalized, &data->_mag.earthYAxis);
-			// Normalize
-			vectorf_normalize(&data->_mag.earthYAxis);
-			// Get error - rotate DCM B axis to our calculated Y axis
-			status = vectorf_crossProduct(&data->_mag.earthYAxis, &data->_fusion_DCM.b, &error_mag);
-
-
-/*
-			// Check roll/pitch error
-			fTemp = vectorf_getNorm(&error_acc_gravity);
-			if(fTemp < 0.1)
-			{
-				// Calculate heading error from mag
-				// Yaw error is mag in earth frame, normalized, take -y as yaw error
-				// Scale
-				// Because cross product of [x,y,0] with [1,0,0] is [0,0,-y]
-				error_mag.x = 0;
-				error_mag.y = 0;
-				error_mag.z = data->_mag.vectorEarthFrame.y * -0.1f;
-
-				// Errors calculated in earth frame, transform to body frame
-				matrix3_transposeVectorMultiply(&data->_fusion_DCM, &error_mag, &error_mag);
-			}*/
 		}
 
 
@@ -451,7 +416,6 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 		data->_mag.vectorEarthFrame.y = error_mag.y;
 		data->_mag.vectorEarthFrame.z = error_mag.z;
 		// Check if we have valid GPS data and calculate yaw error
-
 
 		// Sum up all errors
 		status = vectorf_add(&error_acc_gravity, &error_gps_acc, &error);
@@ -500,7 +464,7 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 					}
 				}
 				// Check Y axis
-				// X axis was rotating fast?
+				// Y axis was rotating fast?
 				if(data->sFlag.bits.SFLAG_Y_FAST_ROTATING)
 				{
 					data->sFlag.bits.SFLAG_Y_FAST_ROTATING = 0;
@@ -515,18 +479,18 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 					}
 				}
 				// Check Z axis
-				// X axis was rotating fast?
+				// Z axis was rotating fast?
 				if(data->sFlag.bits.SFLAG_Z_FAST_ROTATING)
 				{
 					data->sFlag.bits.SFLAG_Z_FAST_ROTATING = 0;
 					if(data->sFlag.bits.SFLAG_Z_ROTATION_DIRECTION)
 					{
 						// Z rotation was positive
-						data->_gyro.gyroRateZP -= error.z * GYRO_GAIN_ADJUSTMENT_FACTOR;
+						data->_gyro.gyroRateZP += error.z * GYRO_GAIN_ADJUSTMENT_FACTOR;
 					}
 					else
 					{
-						data->_gyro.gyroRateZN += error.z * GYRO_GAIN_ADJUSTMENT_FACTOR;
+						data->_gyro.gyroRateZN -= error.z * GYRO_GAIN_ADJUSTMENT_FACTOR;
 					}
 				}
 				//status = math_PID3(&error, dt, &data->_gyroGainPID);
@@ -554,8 +518,8 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 			else
 			{
 				// If error ~= 0, update PID with 0
-				fTemp = vectorf_getNorm(&error);
-				if(ERROR_IS_SMALL > fTemp)
+				//fTemp = vectorf_getNorm(&error);
+				//if(ERROR_IS_SMALL > fTemp)
 				{
 					// Update PID with error = 0
 					error.x = 0;
@@ -567,8 +531,8 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 		}
 		else
 		{
-			// If rotating fast, mark update gyro gains
-			if(fTemp > data->gyroFastRotation)
+			// If rotating fast, and flag is not set, mark update gyro gains and set hysteresis
+			if((fTemp > data->gyroFastRotation)&&(!data->sFlag.bits.FLAG_FAST_ROTATION))
 			{
 				data->sFlag.bits.FLAG_FAST_ROTATION = 1;
 				// Mark rotation directions
@@ -650,10 +614,12 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 	Matrixf newMatrix;										// Place to store new DCM matrix
 	float32_t dt = 0;
 	float32_t f32Temp = 0.0f;
-	int matm0 = 0;;
-	int matm1 = 0;
-	int matm2 = 0;
-
+	Vectorf coning = vectorf_init(0);
+	Vectorf rotation = vectorf_init(0);
+	Vectorf rotationCorrection = vectorf_init(0);
+	int vecm0 = 0;;
+	int vecm1 = 0;
+	int vecm2 = 0;
 
 	// Calculate delta time
 	dt = (float32_t)data->_gyro.deltaTime;
@@ -661,54 +627,62 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 
 	data->integrationTime = dt;
 
-/*
-	// Calculate rotation angle
+	// Calculate current rotation angle
 	// Part 1
 	// Is gyro value * delta time in seconds
-	status = vectorf_scalarProduct(&data->_gyro.vector, dt, &data->updateRotation);
-	// Part 2
-	// Depends on previous rotations
-	status = vectorf_crossProduct(&data->updateRotation, &data->_gyro.vector, &data->_gyro.vectorW_m);
-	status = vectorf_scalarProduct(&data->_gyro.vectorW_m, (dt * 0.5f), &data->_gyro.vectorW_m);
+	//status = vectorf_scalarProduct(&data->_gyro.vector, dt, &data->updateRotation);
 
-	status = vectorf_add(&data->_gyro.vectorW_m, &data->updateRotation, &data->updateRotation);
-
-	// Generate update matrix
-	status = fusion_generateUpdateMatrix(&data->updateRotation, &updateMatrix, 1);
-	*/
-	// Calculate rotation angle
-	// Part 1
-	// Is gyro value * delta time in seconds
-	status = vectorf_scalarProduct(&data->_gyro.vector, dt, &data->updateRotation);
-	// Update matrices
+	// Update vector
 	data->ROTATIONS.Phi0Index++;
 	// Get index where to store fresh matrix
 	if(2 < data->ROTATIONS.Phi0Index) data->ROTATIONS.Phi0Index = 0;
-	matm0 = data->ROTATIONS.Phi0Index;
-	matm1 = data->ROTATIONS.Phi0Index - 1;
-	if(matm1 < 0) matm1 += 3;
-	matm2 = data->ROTATIONS.Phi0Index - 2;
-	if(matm2 < 0) matm2 += 3;
+	vecm0 = data->ROTATIONS.Phi0Index;
+	vecm1 = data->ROTATIONS.Phi0Index - 1;
+	if(vecm1 < 0) vecm1 += 3;
+	vecm2 = data->ROTATIONS.Phi0Index - 2;
+	if(vecm2 < 0) vecm2 += 3;
+
+	// Get vector
+	// Just rotation, no position correction (I term without P term)
+	rotation.x = data->_gyro.vectorRaw.x - data->_gyroErrorPID.x.i;
+	rotation.y = data->_gyro.vectorRaw.y - data->_gyroErrorPID.y.i;
+	rotation.z = data->_gyro.vectorRaw.z - data->_gyroErrorPID.z.i;
+
+	// 1. rotation update from raw vector - PID I term, offset
+	status = vectorf_scalarProduct(&rotation, dt, &data->updateRotation);
+
+	// Store current vector
+	status = vectorf_copy(&rotation, &data->ROTATIONS.Wi[vecm0]);
+
+	/*
+	// 2.rotation update as result of coning
+	// Calculate coning
+	// Cross product of current update rotation and previous rotation
+	status = vectorf_crossProduct(&data->updateRotation, &data->ROTATIONS.Wi[vecm1], &coning);
+	status = vectorf_scalarProduct(&coning, 0.5f, &coning);
+
+	// Sum
+	status = vectorf_add(&data->updateRotation, &coning, &data->updateRotation);
+*/
+	// Add P term correction - orientation
+	// Calculate rotation update from PID P term
+	rotation.x = -data->_gyroErrorPID.x.p;
+	rotation.y = -data->_gyroErrorPID.y.p;
+	rotation.z = -data->_gyroErrorPID.z.p;
+
+	status = vectorf_scalarProduct(&rotation, dt, &rotationCorrection);
+
+	/*
+	data->updateRotation.x = data->updateRotation.x - data->_gyroErrorPID.x.p;
+	data->updateRotation.y = data->updateRotation.y - data->_gyroErrorPID.y.p;
+	data->updateRotation.z = data->updateRotation.z - data->_gyroErrorPID.z.p;
+*/
+	// Add orientation correction term to update rotation
+	status = vectorf_add(&data->updateRotation, &rotationCorrection, &data->updateRotation);
 
 
-	// Store matrix
-	status = fusion_generateUpdateMatrix(&data->updateRotation, &data->ROTATIONS.Phi[matm0], 0);
-	// Calculate
-	status = matrix3_init(1, &updateMatrix);
-
-	status = matrix3_sumAB(&data->ROTATIONS.Phi[matm0], &updateMatrix, &updateMatrix);
-
-	status = matrix3_MatrixMultiply(&data->ROTATIONS.Phi[matm1], &data->ROTATIONS.Phi[matm2], &newMatrix);
-	status = matrix3_scalarMultiply(&newMatrix, 5.0f, &newMatrix);
-	status = matrix3_sumAB(&newMatrix, &updateMatrix, &updateMatrix);
-
-	status = matrix3_MatrixMultiply(&data->ROTATIONS.Phi[matm0], &data->ROTATIONS.Phi[matm0], &newMatrix);
-	status = matrix3_scalarMultiply(&newMatrix, -1.5f, &newMatrix);
-	status = matrix3_sumAB(&newMatrix, &updateMatrix, &updateMatrix);
-
-	status = matrix3_MatrixMultiply(&data->ROTATIONS.Phi[matm2], &data->ROTATIONS.Phi[matm2], &newMatrix);
-	status = matrix3_scalarMultiply(&newMatrix, -1.5f, &newMatrix);
-	status = matrix3_sumAB(&newMatrix, &updateMatrix, &updateMatrix);
+	// Generate update matrix
+	status = fusion_generateUpdateMatrix(&data->updateRotation, &updateMatrix, 1);
 
 	// Multiply DCM and update matrix
 	status = matrix3_MatrixMultiply(&data->_fusion_DCM, &updateMatrix, &newMatrix);

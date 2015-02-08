@@ -11,7 +11,11 @@
 
 volatile uint16_t mainLoopState = 0;
 
+// Fusion data
 FUSION_CORE fusionData;
+
+// Flight data
+FLIGHT_CORE FCFlightData;
 
 // Flag variables
 volatile Flag flag0;

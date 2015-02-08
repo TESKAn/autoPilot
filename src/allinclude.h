@@ -47,6 +47,9 @@
 #include "init.h"
 #include "macro.h"
 #include "events.h"
+#include "flight.h"
+
+
 #include "var.h"
 
 #include "powerSensor.h"
@@ -54,7 +57,7 @@
 
 #include "AudioComm.h"
 
-#include "flight.h"
+
 
 #include "usb.h"
 
