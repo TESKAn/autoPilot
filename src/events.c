@@ -735,6 +735,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 							}
 						}
 						UART2VarsSelect = 10;
+						//UART2VarsSelect = 9;
 						break;
 
 					}

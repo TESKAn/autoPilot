@@ -50,6 +50,23 @@ ErrorStatus mag_initDataStructure(MagData *data)
 	data->offset.y = MAG_DEF_OFFSET_Y;
 	data->offset.z = MAG_DEF_OFFSET_Z;
 
+	// Setup offset and soft iron matrix
+
+	data->offset.x = 0.204285f;
+	data->offset.y = -0.338368f;
+	data->offset.z = 0.327841f;
+
+
+	data->softIron.a.x = 1.022889f;
+	data->softIron.a.y = -0.006248f;
+	data->softIron.a.z = -0.005899f;
+	data->softIron.b.x = -0.006248f;
+	data->softIron.b.y = 1.000230f;
+	data->softIron.b.z = -0.005560f;
+	data->softIron.c.x = -0.005899f;
+	data->softIron.c.y = -0.005560f;
+	data->softIron.c.z = 1.133341f;
+
 
 	success = SUCCESS;
 
@@ -82,9 +99,18 @@ ErrorStatus mag_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 	data->_mag.vectorKFiltered.y = Kalman_Update(&data->_mag.kFilter.Y, data->_mag.vectorRaw.y);
 	data->_mag.vectorKFiltered.z = Kalman_Update(&data->_mag.kFilter.Z, data->_mag.vectorRaw.z);
 
-
+	// Use soft iron matrix to correct mag reading
 	// Remove offset
 	vectorf_substract(&data->_mag.vectorKFiltered, &data->_mag.offset, &data->_mag.currentMagReading);
+	// Multiply with soft iron matrix to correct distortions
+	matrix3_vectorMultiply(&data->_mag.softIron, &data->_mag.currentMagReading, &data->_mag.vector);
+	// Normalize mag vector
+
+
+/*
+	// Remove offset
+	vectorf_substract(&data->_mag.vectorKFiltered, &data->_mag.offset, &data->_mag.currentMagReading);
+
 	// Get vector difference
 	vectorf_substract(&data->_mag.currentMagReading, &data->_mag.previousMagReading, &data->_mag.calcVector);
 	// Try to normalize vector
@@ -108,6 +134,7 @@ ErrorStatus mag_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 	}
 
 	vectorf_normalizeAToB(&data->_mag.currentMagReading, &data->_mag.vector);
+*/
 
 	cos_pitch_sq = 1.0f-(data->_fusion_DCM.c.x * data->_fusion_DCM.c.x);
 	headY = data->_mag.vector.y * data->_fusion_DCM.c.z - data->_mag.vector.z * data->_fusion_DCM.c.y;
@@ -116,32 +143,6 @@ ErrorStatus mag_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 	if(3.15f < data->_mag.heading) data->_mag.heading = 3.15f;
 	if(-3.15f > data->_mag.heading) data->_mag.heading = -3.15f;
 
-
-	/*
-
-	// Tilt compensated magnetic field Y component:
-
-	// Tilt compensated magnetic field X component:
-
-	// magnetic heading
-	// 6/4/11 - added constrain to keep bad values from ruining DCM Yaw - Jason S.
-	float heading = constrain_float(atan2f(-headY,headX), -3.15f, 3.15f);
-	*/
-	/*
-	// Normalize measurement to get mag direction in body frame
-	if(ERROR != vectorf_normalizeAToB(&data->_mag.currentMagReading, &data->_mag.vector))
-	{
-		// Normalization good, continue with calculations
-		// Move to earth reference frame
-		matrix3_transposeVectorMultiply(&data->_fusion_DCM, &data->_mag.vector, &data->_mag.vectorEarthFrame);
-		// Calculate heading from X,Y
-		vectorf_copy(&data->_mag.vectorEarthFrame, &calcVector);
-		calcVector.z = 0;
-		vectorf_normalize(&calcVector);
-		data->_mag.heading = atan2f(calcVector.x, calcVector.y);
-		// Check mag X,Y vector direction with a reference - like GPS reading
-	}
-*/
 
 	success = SUCCESS;
 
