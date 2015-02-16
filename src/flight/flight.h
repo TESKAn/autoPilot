@@ -20,6 +20,8 @@ void flight_init(FLIGHT_CORE *data);
 #define FLIGHT_IDLE					0
 #define FLIGHT_STABILIZE			1
 
+// Flight variables
+extern RCFlag RC_Flags;
 
 
 #endif /* FLIGHT_H_ */

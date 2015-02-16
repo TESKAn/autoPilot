@@ -71,36 +71,7 @@ typedef union
 	} parts;
 }__attribute__((aligned(4),packed)) CONVERTNUM;
 
-// RC PWM in typedef
-typedef struct
-{
-	// Input values
-	uint16_t PWMIN_1;
-	uint16_t PWMIN_2;
-	uint16_t PWMIN_3;
-	uint16_t PWMIN_4;
-	uint16_t PWMIN_5;
-	uint16_t PWMIN_6;
-	uint16_t PWMIN_7;
-	uint16_t PWMIN_8;
 
-	// Output values
-	uint16_t PWMOUT_1;
-	uint16_t PWMOUT_2;
-	uint16_t PWMOUT_3;
-	uint16_t PWMOUT_4;
-	uint16_t PWMOUT_5;
-	uint16_t PWMOUT_6;
-	uint16_t PWMOUT_7;
-	uint16_t PWMOUT_8;
-	uint16_t PWMOUT_9;
-	uint16_t PWMOUT_10;
-	uint16_t PWMOUT_11;
-	uint16_t PWMOUT_12;
-
-	uint16_t RSSI;
-
-}__attribute__((aligned(4),packed)) RCDATA, *PRCDATA;;
 
 extern volatile uint16_t mainLoopState;
 
@@ -108,6 +79,10 @@ extern FUSION_CORE fusionData;
 
 // Flight data
 extern FLIGHT_CORE FCFlightData;
+// R/C variable
+extern RCDATA RCData;
+
+
 
 // Flag variable
 extern volatile Flag flag0;
@@ -121,8 +96,6 @@ extern uint16_t AIn1;
 extern uint16_t AIn2;
 extern uint16_t AIn3;
 
-// R/C variable
-extern RCDATA RCData;
 
 extern volatile char* fileBuffer;
 extern volatile float32_t globalFloatTemp;

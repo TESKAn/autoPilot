@@ -16,6 +16,8 @@ FUSION_CORE fusionData;
 
 // Flight data
 FLIGHT_CORE FCFlightData;
+// R/C variable
+RCDATA RCData;
 
 // Flag variables
 volatile Flag flag0;
@@ -30,8 +32,7 @@ uint16_t AIn1 = 0;
 uint16_t AIn2 = 0;
 uint16_t AIn3 = 0;
 
-// R/C variable
-RCDATA RCData;
+
 
 volatile char* fileBuffer;
 volatile float32_t globalFloatTemp = 0;

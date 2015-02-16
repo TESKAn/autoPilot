@@ -21,3 +21,9 @@ float32_t math_fastInverseRoot(float32_t num)
 	return result;
 }
 
+// Calculate float absolute value
+float32_t math_absF(float32_t val)
+{
+	if(0 < val) return val;
+	else return -val;
+}
