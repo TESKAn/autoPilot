@@ -18,6 +18,8 @@
 #define RC_DEFAULT_TILT_SPEED			0.1f;
 // Nacelle tilt in deg
 #define RC_DEFAULT_NACELLE_TILT			90.0f;
+// Default transition tilt in deg
+#define RC_NACELLE_TRANSITION_TILT		45.0f;
 
 // Macros that encode PWM inputs to specific channels
 #define RC_AILERON		PWMIN_1_Zero
@@ -133,7 +135,10 @@ typedef struct
 	// Variables
 	// Minimal plane speed to be considered as flying
 	float32_t f32MinPlaneSpeed;
+	// Nacelle transition angle, keep them at this until we reach transition speed
+	float32_t f32NacelleTransitionTilt;
 	// Engine nacelles tilt angle
+	float32_t f32NacelleCommonTilt;
 	float32_t f32NacelleTilt_FL;
 	float32_t f32NacelleTilt_FR;
 	float32_t f32NacelleTilt_BM;
