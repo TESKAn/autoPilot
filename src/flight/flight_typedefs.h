@@ -11,6 +11,14 @@
 #include "math/myMath_typedefs.h"
 //#include "myMath_typedefs.h"
 
+// Default values
+// Min plane speed in m/sec
+#define RC_DEFAULT_PLANE_MIN_SPEED		10.0f
+// Nacelle tilt speed in deg/iteration
+#define RC_DEFAULT_TILT_SPEED			0.1f;
+// Nacelle tilt in deg
+#define RC_DEFAULT_NACELLE_TILT			90.0f;
+
 // Macros that encode PWM inputs to specific channels
 #define RC_AILERON		PWMIN_1_Zero
 #define RC_ELEVATOR		PWMIN_2_Zero
@@ -19,9 +27,20 @@
 #define RC_GEAR_GYRO	PWMIN_5_Zero
 #define RC_FLAPS_PITCH	PWMIN_6_Zero
 
+// Macros that encode PWM outputs for different servos
+#define RC_NACELLE_FL	PWMOUT_Val_1
+#define RC_NACELLE_FR	PWMOUT_Val_1
+#define RC_NACELLE_BM	PWMOUT_Val_1
+
+
 // Input values macros
+// Default midpoint
+#define RC_IN_DEFAULT_MIDPOINT		1500.0f
 // We are counting in microseconds
-#define RC_IN_ZERO_VAL_OFFSET	10.0f
+#define RC_IN_ZERO_VAL_OFFSET		10.0f
+// Macros for switches
+// Macro that defines midpoint for gear/gyro switch
+#define RC_IN_GEAR_GYRO_MIDPOINT	1500.0f
 
 // Flag register typedef
 typedef union
@@ -34,8 +53,8 @@ typedef union
 	 struct
 	 {
 		volatile uint8_t HOVER:1;
-		volatile uint8_t BIT1:1;
-		volatile uint8_t BIT2:1;
+		volatile uint8_t PLANE:1;
+		volatile uint8_t TRANSITION:1;
 		volatile uint8_t BIT3:1;
 		volatile uint8_t BIT4:1;
 		volatile uint8_t BIT5:1;
@@ -76,13 +95,14 @@ typedef struct
 	myMath_PID3 OrientationPIDs;
 
 	// Input data
-	// Plane orientation
+	// Current vehicle orientation
 	struct
 	{
 		float32_t f32Roll;
 		float32_t f32Pitch;
 		float32_t f32Yaw;
 		float32_t f32Altitude;
+		float32_t f32Speed;
 	}ORIENTATION;
 	// Required orientation - plane
 	struct
@@ -99,6 +119,7 @@ typedef struct
 		float32_t f32Pitch;
 		float32_t f32Yaw;
 		float32_t f32AltitudeChange;
+		float32_t f32Speed;
 	}ORIENTATION_REQUIRED_Q;
 
 	// Output data
@@ -108,6 +129,17 @@ typedef struct
 		float32_t f32Pitch;
 		float32_t f32Yaw;
 	}ORIENTATION_ADJUST;
+
+	// Variables
+	// Minimal plane speed to be considered as flying
+	float32_t f32MinPlaneSpeed;
+	// Engine nacelles tilt angle
+	float32_t f32NacelleTilt_FL;
+	float32_t f32NacelleTilt_FR;
+	float32_t f32NacelleTilt_BM;
+	// Engine nacelles tilt angle change for each iteration
+	float32_t f32NacelleTiltSpeed;
+
 
 
 }__attribute__((aligned(4),packed)) FLIGHT_CORE;
