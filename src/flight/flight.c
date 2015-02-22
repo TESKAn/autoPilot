@@ -29,8 +29,11 @@ void flight_init(FLIGHT_CORE *data, RCDATA * RCInputs)
 	// Set initial state
 	data->ui32FlightStateMachine = FLIGHT_IDLE;
 	data->f32MinPlaneSpeed = RC_DEFAULT_PLANE_MIN_SPEED;
+	data->f32MaxHoverSpeed = RC_DEFAULT_HOVER_MAX_SPEED;
 	data->f32NacelleTiltSpeed = RC_DEFAULT_TILT_SPEED;
-	data->f32NacelleTransitionTilt = RC_NACELLE_TRANSITION_TILT;
+	data->f32NacellePlaneTransitionTilt = RC_NACELLE_TRANSITION_TILT;
+	data->f32NacelleHoverTransitionTilt = RC_NACELLE_HOVERTRANSITION_TILT;
+
 	// Set nacelle tilt state
 	data->f32NacelleCommonTilt = RC_DEFAULT_NACELLE_TILT;
 	data->f32NacelleTilt_FL = RC_DEFAULT_NACELLE_TILT;
@@ -84,25 +87,25 @@ void flight_checkRCInputs(RCDATA * RCInputs, FLIGHT_CORE * FCFlightData)
 		// Throttle -> pitch forward/backward
 		if(RC_IN_ZERO_VAL_OFFSET < math_absF(RCInputs->RC_THROTTLE))
 		{
-			FCFlightData->ORIENTATION_REQUIRED_Q.f32Pitch = RCInputs->RC_THROTTLE;
+			FCFlightData->ORIENTATION_REQUIRED_H.f32PitchChange = RCInputs->RC_THROTTLE;
 		}
 		// Check elevator input
 		// Elevator -> go up/down
 		if(RC_IN_ZERO_VAL_OFFSET < math_absF(RCInputs->RC_ELEVATOR))
 		{
-			FCFlightData->ORIENTATION_REQUIRED_Q.f32AltitudeChange = RCInputs->RC_ELEVATOR;
+			FCFlightData->ORIENTATION_REQUIRED_H.f32AltitudeChange = RCInputs->RC_ELEVATOR;
 		}
 		// Check aileron input
 		// Aileron -> roll left/right
 		if(RC_IN_ZERO_VAL_OFFSET < math_absF(RCInputs->RC_AILERON))
 		{
-			FCFlightData->ORIENTATION_REQUIRED_Q.f32Roll = RCInputs->RC_AILERON;
+			FCFlightData->ORIENTATION_REQUIRED_H.f32RollChange = RCInputs->RC_AILERON;
 		}
 		// Check rudder input
 		// Rudder - yaw left/right
 		if(RC_IN_ZERO_VAL_OFFSET < math_absF(RCInputs->RC_RUDDER))
 		{
-			FCFlightData->ORIENTATION_REQUIRED_Q.f32Yaw = RCInputs->RC_RUDDER;
+			FCFlightData->ORIENTATION_REQUIRED_H.f32YawChange = RCInputs->RC_RUDDER;
 		}
 		// Check gear/gyro
 		// Vehicle mode select
@@ -143,7 +146,6 @@ void flight_checkRCInputs(RCDATA * RCInputs, FLIGHT_CORE * FCFlightData)
 // Main flight state machine
 void flight_checkStates(FLIGHT_CORE *data)
 {
-	float32_t fTemp = 0.0f;
 	switch(data->ui32FlightStateMachine)
 	{
 		case FLIGHT_IDLE:
@@ -157,6 +159,7 @@ void flight_checkStates(FLIGHT_CORE *data)
 			{
 				data->ui32FlightStateMachine = FLIGHT_STABILIZE_TRANSITION;
 			}
+			// Run stabilising algorithm
 
 			break;
 		}
@@ -172,130 +175,336 @@ void flight_checkStates(FLIGHT_CORE *data)
 		}
 		case FLIGHT_STABILIZE_TRANSITION:
 		{
-			if(RC_Flags.bits.HOVER)
+			// Tilt state machine
+			switch(data->ui32FlightTransitionState)
 			{
-				// We are hovering, go to plane mode, add negative nacelle tilt
-				fTemp = -data->f32NacelleTiltSpeed;
-			}
-			else if(RC_Flags.bits.PLANE)
-			{
-				// We are in plane mode, go to hover, add positive tilt to bring nacelles to 90 deg
-				fTemp = data->f32NacelleTiltSpeed;
-			}
+				case FLIGHT_TILT_START:
+				{
+					// Decide for next step
+					if(RC_Flags.bits.HOVER)
+					{
+						// Go to plane mode
+						data->ui32FlightTransitionState = FLIGHT_TILT_P;
+					}
+					else if(RC_Flags.bits.PLANE)
+					{
+						// Go to hover mode
+						data->ui32FlightTransitionState = FLIGHT_TILT_H;
+					}
+					break;
+				}
+				case FLIGHT_TILT_P:
+				{
+					// Still in transition?
+					if(RC_Flags.bits.TRANSITION)
+					{
+						// Yes
+						// Tilt nacelles to transition tilt - from 90 deg to transition tilt
+						data->f32NacelleCommonTilt -= data->f32NacelleTiltSpeed;
+						// Is difference small enough?
+						if(math_absF(data->f32NacelleCommonTilt - data->f32NacellePlaneTransitionTilt) < data->f32NacelleTiltSpeed)
+						{
+							// Yes it is, go to next step
+							data->ui32FlightTransitionState = FLIGHT_TILT_TILTED_P;
+						}
+						data->f32NacelleTilt_FL -= data->f32NacelleTiltSpeed;
+						data->f32NacelleTilt_FR -= data->f32NacelleTiltSpeed;
+						data->f32NacelleTilt_BM -= data->f32NacelleTiltSpeed;
+					}
+					else
+					{
+						// Transition aborted
+						data->ui32FlightTransitionState = FLIGHT_TILT_ABORT_SPEED_OK_P;
+					}
 
-			if(RC_Flags.bits.TRANSITION)
-			{
-				// Transition from one mode to other mode
-				// Do we have transition tilt?
-				if(data->f32NacelleCommonTilt != data->f32NacelleTransitionTilt)
+					break;
+				}
+				case FLIGHT_TILT_H:
 				{
-					// Not yet, this is same for both modes
-					- Check if we are over transition tilt
-					data->f32NacelleCommonTilt += fTemp;
-					// Is difference small enough?
-					if(math_absF(data->f32NacelleCommonTilt - data->f32NacelleTransitionTilt) < data->f32NacelleTiltSpeed)
+					// Still in transition?
+					if(RC_Flags.bits.TRANSITION)
 					{
-						// Yes it is
-						data->f32NacelleCommonTilt = data->f32NacelleTransitionTilt;
+						// Yes
+						// Tilt nacelles to transition tilt - from 0 deg to transition tilt
+						data->f32NacelleCommonTilt += data->f32NacelleTiltSpeed;
+						// Is difference small enough?
+						if(math_absF(data->f32NacelleCommonTilt - data->f32NacelleHoverTransitionTilt) < data->f32NacelleTiltSpeed)
+						{
+							// Yes it is, go to next step
+							data->ui32FlightTransitionState = FLIGHT_TILT_TILTED_H;
+						}
+						data->f32NacelleTilt_FL += data->f32NacelleTiltSpeed;
+						data->f32NacelleTilt_FR += data->f32NacelleTiltSpeed;
+						data->f32NacelleTilt_BM += data->f32NacelleTiltSpeed;
 					}
-					data->f32NacelleTilt_FL += fTemp;
-					data->f32NacelleTilt_FR += fTemp;
-					data->f32NacelleTilt_BM += fTemp;
-				}
-				else if((data->ORIENTATION.f32Speed > data->f32MinPlaneSpeed)&&(data->f32NacelleCommonTilt > 0.0f)&&(RC_Flags.bits.HOVER))
-				{
-					// Yes, speed is also good so finish transition from hover to plane
-					data->f32NacelleCommonTilt += fTemp;
-					data->f32NacelleTilt_FL += fTemp;
-					data->f32NacelleTilt_FR += fTemp;
-					data->f32NacelleTilt_BM += fTemp;
-				}
-				else if((data->ORIENTATION.f32Speed < data->f32MinPlaneSpeed)&&(data->f32NacelleCommonTilt < 90.0f)&&(RC_Flags.bits.PLANE))
-				{
-					// Yes, speed is also good so finish transition from plane to hover
-					data->f32NacelleCommonTilt += fTemp;
-					data->f32NacelleTilt_FL += fTemp;
-					data->f32NacelleTilt_FR += fTemp;
-					data->f32NacelleTilt_BM += fTemp;
-				}
-				else if((data->f32NacelleCommonTilt <= 0.0f)&&(RC_Flags.bits.HOVER))
-				{
-					// Transition is finished for plane
-					data->f32NacelleCommonTilt = 0.0f;
-					// Switch to plane mode
-					RC_Flags.bits.TRANSITION = 0;
-					RC_Flags.bits.PLANE = 1;
-					RC_Flags.bits.HOVER = 0;
-					data->ui32FlightStateMachine = FLIGHT_STABILIZE_PLANE;
-				}
-				else if((data->f32NacelleCommonTilt >= 90.0f)&&(RC_Flags.bits.PLANE))
-				{
-					// Transition is finished for hover
-					data->f32NacelleCommonTilt = 90.0f;
-					// Switch to plane mode
-					RC_Flags.bits.TRANSITION = 0;
-					RC_Flags.bits.HOVER = 1;
-					RC_Flags.bits.PLANE = 0;
-					data->ui32FlightStateMachine = FLIGHT_STABILIZE_HOVER;
-				}
-			} // end if
-			else
-			{
-				// We started transition, but aborted before it was finished
-				// So return to original status
-				// Invert tilt speed
-				fTemp = -fTemp;
-				// Do we have transition tilt?
-				if(data->f32NacelleCommonTilt != data->f32NacelleTransitionTilt)
-				{
-					// Not yet, this is same for both modes
-					- Check if we are over transition tilt
-					data->f32NacelleCommonTilt += fTemp;
-					// Is difference small enough?
-					if(math_absF(data->f32NacelleCommonTilt - data->f32NacelleTransitionTilt) < data->f32NacelleTiltSpeed)
+					else
 					{
-						// Yes it is
-						data->f32NacelleCommonTilt = data->f32NacelleTransitionTilt;
+						// Transition aborted
+						data->ui32FlightTransitionState = FLIGHT_TILT_ABORT_SPEED_OK_H;
 					}
-					data->f32NacelleTilt_FL += fTemp;
-					data->f32NacelleTilt_FR += fTemp;
-					data->f32NacelleTilt_BM += fTemp;
+					break;
 				}
-				else if((data->ORIENTATION.f32Speed > data->f32MinPlaneSpeed)&&(data->f32NacelleCommonTilt > 0.0f)&&(RC_Flags.bits.PLANE))
+				case FLIGHT_TILT_TILTED_P:
 				{
-					// Yes, speed is also good so finish transition from hover to plane
-					data->f32NacelleCommonTilt += fTemp;
-					data->f32NacelleTilt_FL += fTemp;
-					data->f32NacelleTilt_FR += fTemp;
-					data->f32NacelleTilt_BM += fTemp;
+					// Still in transition?
+					if(RC_Flags.bits.TRANSITION)
+					{
+						// Wait for speed to be over transition speed
+						if(data->ORIENTATION.f32Speed >= data->f32MinPlaneSpeed)
+						{
+							// Next step - tilt nacelles to 0 deg
+							data->ui32FlightTransitionState = FLIGHT_TILT_SPEED_OK_P;
+						}
+					}
+					else
+					{
+						// Transition aborted
+						data->ui32FlightTransitionState = FLIGHT_TILT_ABORT_SPEED_OK_P;
+					}
+					break;
 				}
-				else if((data->ORIENTATION.f32Speed < data->f32MinPlaneSpeed)&&(data->f32NacelleCommonTilt < 90.0f)&&(RC_Flags.bits.HOVER))
+				case FLIGHT_TILT_TILTED_H:
 				{
-					// Yes, speed is also good so finish transition from plane to hover
-					data->f32NacelleCommonTilt += fTemp;
-					data->f32NacelleTilt_FL += fTemp;
-					data->f32NacelleTilt_FR += fTemp;
-					data->f32NacelleTilt_BM += fTemp;
+					// Still in transition?
+					if(RC_Flags.bits.TRANSITION)
+					{
+						// Wait for speed to be under transition speed
+						if(data->ORIENTATION.f32Speed <= data->f32MaxHoverSpeed)
+						{
+							// Next step - tilt nacelles to 0 deg
+							data->ui32FlightTransitionState = FLIGHT_TILT_SPEED_OK_H;
+						}
+					}
+					else
+					{
+						// Transition aborted
+						data->ui32FlightTransitionState = FLIGHT_TILT_ABORT_SPEED_OK_H;
+					}
+					break;
 				}
-				else if((data->f32NacelleCommonTilt <= 0.0f)&&(RC_Flags.bits.PLANE))
+				case FLIGHT_TILT_SPEED_OK_P:
 				{
-					// Transition is finished for plane
-					data->f32NacelleCommonTilt = 0.0f;
-					// Switch to plane mode
-					RC_Flags.bits.TRANSITION = 0;
-					RC_Flags.bits.PLANE = 1;
-					RC_Flags.bits.HOVER = 0;
+					// Still in transition?
+					if(RC_Flags.bits.TRANSITION)
+					{
+						// Tilt nacelles to 0 deg for flight
+						data->f32NacelleCommonTilt -= data->f32NacelleTiltSpeed;
+						// Is difference small enough?
+						if(math_absF(data->f32NacelleCommonTilt) < data->f32NacelleTiltSpeed)
+						{
+							// Yes it is, go to end
+							data->ui32FlightTransitionState = FLIGHT_TILT_END_P;
+						}
+						data->f32NacelleTilt_FL -= data->f32NacelleTiltSpeed;
+						data->f32NacelleTilt_FR -= data->f32NacelleTiltSpeed;
+						data->f32NacelleTilt_BM -= data->f32NacelleTiltSpeed;
+					}
+					else
+					{
+						// Transition aborted
+						data->ui32FlightTransitionState = FLIGHT_TILT_ABORT_TILT_P;
+					}
+					break;
+				}
+				case FLIGHT_TILT_SPEED_OK_H:
+				{
+					// Still in transition?
+					if(RC_Flags.bits.TRANSITION)
+					{
+						// Tilt nacelles to 90 deg for hover
+						data->f32NacelleCommonTilt += data->f32NacelleTiltSpeed;
+						// Is difference small enough?
+						if(math_absF(data->f32NacelleCommonTilt - 90.0f) < data->f32NacelleTiltSpeed)
+						{
+							// Yes it is, go to end
+							data->ui32FlightTransitionState = FLIGHT_TILT_END_H;
+						}
+						data->f32NacelleTilt_FL += data->f32NacelleTiltSpeed;
+						data->f32NacelleTilt_FR += data->f32NacelleTiltSpeed;
+						data->f32NacelleTilt_BM += data->f32NacelleTiltSpeed;
+					}
+					else
+					{
+						// Transition aborted
+						data->ui32FlightTransitionState = FLIGHT_TILT_ABORT_TILT_H;
+					}
+					break;
+				}
+				case FLIGHT_TILT_END_P:
+				{
+					// All done, end transition
+					// Reset tilt state
+					data->ui32FlightTransitionState = FLIGHT_TILT_START;
+					// Set state machine to flight
 					data->ui32FlightStateMachine = FLIGHT_STABILIZE_PLANE;
-				}
-				else if((data->f32NacelleCommonTilt >= 90.0f)&&(RC_Flags.bits.HOVER))
-				{
-					// Transition is finished for hover
-					data->f32NacelleCommonTilt = 90.0f;
-					// Switch to plane mode
+					// End transition
 					RC_Flags.bits.TRANSITION = 0;
-					RC_Flags.bits.HOVER = 1;
-					RC_Flags.bits.PLANE = 0;
+					// Go to plane mode
+					RC_Flags.bits.PLANE = 1;
+					// Go out of hover mode
+					RC_Flags.bits.HOVER = 0;
+					break;
+				}
+				case FLIGHT_TILT_END_H:
+				{
+					// All done, end transition
+					// Reset tilt state
+					data->ui32FlightTransitionState = FLIGHT_TILT_START;
+					// Set state machine to flight
 					data->ui32FlightStateMachine = FLIGHT_STABILIZE_HOVER;
+					// End transition
+					RC_Flags.bits.TRANSITION = 0;
+					// Go to plane mode
+					RC_Flags.bits.PLANE = 0;
+					// Go out of hover mode
+					RC_Flags.bits.HOVER = 1;
+					break;
+				}
+				case FLIGHT_TILT_ABORT_TILT_P:
+				{
+					if(RC_Flags.bits.TRANSITION)
+					{
+						// go back to transition
+						data->ui32FlightTransitionState = FLIGHT_TILT_SPEED_OK_P;
+					}
+					else
+					{
+						// Tilt back
+						// Tilt nacelles to hover transition tilt
+						data->f32NacelleCommonTilt += data->f32NacelleTiltSpeed;
+						// Is difference small enough?
+						if(math_absF(data->f32NacelleCommonTilt - data->f32NacelleHoverTransitionTilt) < data->f32NacelleTiltSpeed)
+						{
+							// Yes it is, go to next step
+							data->ui32FlightTransitionState = FLIGHT_TILT_ABORT_TILTED_P;
+						}
+						data->f32NacelleTilt_FL += data->f32NacelleTiltSpeed;
+						data->f32NacelleTilt_FR += data->f32NacelleTiltSpeed;
+						data->f32NacelleTilt_BM += data->f32NacelleTiltSpeed;
+					}
+					break;
+				}
+				case FLIGHT_TILT_ABORT_TILT_H:
+				{
+					if(RC_Flags.bits.TRANSITION)
+					{
+						// go back to transition
+						data->ui32FlightTransitionState = FLIGHT_TILT_SPEED_OK_H;
+					}
+					else
+					{
+						// Tilt back
+						// Tilt nacelles to plane transition tilt
+						data->f32NacelleCommonTilt -= data->f32NacelleTiltSpeed;
+						// Is difference small enough?
+						if(math_absF(data->f32NacelleCommonTilt - data->f32NacellePlaneTransitionTilt) < data->f32NacelleTiltSpeed)
+						{
+							// Yes it is, go to next step
+							data->ui32FlightTransitionState = FLIGHT_TILT_ABORT_TILTED_H;
+						}
+						data->f32NacelleTilt_FL -= data->f32NacelleTiltSpeed;
+						data->f32NacelleTilt_FR -= data->f32NacelleTiltSpeed;
+						data->f32NacelleTilt_BM -= data->f32NacelleTiltSpeed;
+					}
+					break;
+				}
+				case FLIGHT_TILT_ABORT_TILTED_P:
+				{
+					if(RC_Flags.bits.TRANSITION)
+					{
+						// Go back to transition
+					}
+					else
+					{
+						// Wait for speed to drop below level
+						if(data->ORIENTATION.f32Speed < data->f32MaxHoverSpeed)
+						{
+							// Next step - tilt nacelles to 90 deg
+							data->ui32FlightTransitionState = FLIGHT_TILT_ABORT_SPEED_OK_P;
+						}
+					}
+					break;
+				}
+				case FLIGHT_TILT_ABORT_TILTED_H:
+				{
+					if(RC_Flags.bits.TRANSITION)
+					{
+						// Go back to transition
+					}
+					else
+					{
+						// Wait for speed to go above plane level
+						if(data->ORIENTATION.f32Speed > data->f32MinPlaneSpeed)
+						{
+							// Next step - tilt nacelles to 0 deg
+							data->ui32FlightTransitionState = FLIGHT_TILT_ABORT_SPEED_OK_H;
+						}
+					}
+					break;
+				}
+				case FLIGHT_TILT_ABORT_SPEED_OK_P:
+				{
+					// Tilt nacelles to 90 deg
+					data->f32NacelleCommonTilt += data->f32NacelleTiltSpeed;
+					// Is difference small enough?
+					if(math_absF(data->f32NacelleCommonTilt - 90.0f) < data->f32NacelleTiltSpeed)
+					{
+						// Yes it is, go to next step
+						data->ui32FlightTransitionState = FLIGHT_TILT_ABORT_END_P;
+					}
+					data->f32NacelleTilt_FL += data->f32NacelleTiltSpeed;
+					data->f32NacelleTilt_FR += data->f32NacelleTiltSpeed;
+					data->f32NacelleTilt_BM += data->f32NacelleTiltSpeed;
+					break;
+				}
+				case FLIGHT_TILT_ABORT_SPEED_OK_H:
+				{
+					// Tilt nacelles to 0 deg
+					data->f32NacelleCommonTilt -= data->f32NacelleTiltSpeed;
+					// Is difference small enough?
+					if(math_absF(data->f32NacelleCommonTilt) < data->f32NacelleTiltSpeed)
+					{
+						// Yes it is, go to next step
+						data->ui32FlightTransitionState = FLIGHT_TILT_ABORT_END_H;
+					}
+					data->f32NacelleTilt_FL -= data->f32NacelleTiltSpeed;
+					data->f32NacelleTilt_FR -= data->f32NacelleTiltSpeed;
+					data->f32NacelleTilt_BM -= data->f32NacelleTiltSpeed;
+					break;
+				}
+				case FLIGHT_TILT_ABORT_END_P:
+				{
+					// All done, end transition
+					// Reset tilt state
+					data->ui32FlightTransitionState = FLIGHT_TILT_START;
+					// Set state machine to flight
+					data->ui32FlightStateMachine = FLIGHT_STABILIZE_HOVER;
+					// End transition
+					RC_Flags.bits.TRANSITION = 0;
+					// Go to plane mode
+					RC_Flags.bits.PLANE = 0;
+					// Go out of hover mode
+					RC_Flags.bits.HOVER = 1;
+					break;
+				}
+				case FLIGHT_TILT_ABORT_END_H:
+				{
+					// All done, end transition
+					// Reset tilt state
+					data->ui32FlightTransitionState = FLIGHT_TILT_START;
+					// Set state machine to flight
+					data->ui32FlightStateMachine = FLIGHT_STABILIZE_HOVER;
+					// End transition
+					RC_Flags.bits.TRANSITION = 0;
+					// Go to plane mode
+					RC_Flags.bits.PLANE = 1;
+					// Go out of hover mode
+					RC_Flags.bits.HOVER = 0;
+					break;
+				}
+				default:
+				{
+					data->ui32FlightTransitionState = FLIGHT_TILT_START;
 				}
 			}
 			break;

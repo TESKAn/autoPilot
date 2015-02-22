@@ -11,38 +11,7 @@
 #include "math/myMath_typedefs.h"
 //#include "myMath_typedefs.h"
 
-// Default values
-// Min plane speed in m/sec
-#define RC_DEFAULT_PLANE_MIN_SPEED		10.0f
-// Nacelle tilt speed in deg/iteration
-#define RC_DEFAULT_TILT_SPEED			0.1f;
-// Nacelle tilt in deg
-#define RC_DEFAULT_NACELLE_TILT			90.0f;
-// Default transition tilt in deg
-#define RC_NACELLE_TRANSITION_TILT		45.0f;
 
-// Macros that encode PWM inputs to specific channels
-#define RC_AILERON		PWMIN_1_Zero
-#define RC_ELEVATOR		PWMIN_2_Zero
-#define RC_THROTTLE		PWMIN_3_Zero
-#define RC_RUDDER		PWMIN_4_Zero
-#define RC_GEAR_GYRO	PWMIN_5_Zero
-#define RC_FLAPS_PITCH	PWMIN_6_Zero
-
-// Macros that encode PWM outputs for different servos
-#define RC_NACELLE_FL	PWMOUT_Val_1
-#define RC_NACELLE_FR	PWMOUT_Val_1
-#define RC_NACELLE_BM	PWMOUT_Val_1
-
-
-// Input values macros
-// Default midpoint
-#define RC_IN_DEFAULT_MIDPOINT		1500.0f
-// We are counting in microseconds
-#define RC_IN_ZERO_VAL_OFFSET		10.0f
-// Macros for switches
-// Macro that defines midpoint for gear/gyro switch
-#define RC_IN_GEAR_GYRO_MIDPOINT	1500.0f
 
 // Flag register typedef
 typedef union
@@ -92,6 +61,7 @@ typedef union
 typedef struct
 {
 	uint32_t ui32FlightStateMachine;
+	uint32_t ui32FlightTransitionState;
 
 	// PIDs
 	myMath_PID3 OrientationPIDs;
@@ -109,20 +79,20 @@ typedef struct
 	// Required orientation - plane
 	struct
 	{
-		float32_t f32Roll;
-		float32_t f32Pitch;
-		float32_t f32Yaw;
+		float32_t f32RollChange;
+		float32_t f32PitchChange;
+		float32_t f32YawChange;
 		float32_t f32Power;
 	}ORIENTATION_REQUIRED_P;
-	// Required orientation - copter
+	// Required orientation - hover
 	struct
 	{
-		float32_t f32Roll;
-		float32_t f32Pitch;
-		float32_t f32Yaw;
+		float32_t f32RollChange;
+		float32_t f32PitchChange;
+		float32_t f32YawChange;
 		float32_t f32AltitudeChange;
-		float32_t f32Speed;
-	}ORIENTATION_REQUIRED_Q;
+		float32_t f32SpeedChange;
+	}ORIENTATION_REQUIRED_H;
 
 	// Output data
 	struct
@@ -135,8 +105,12 @@ typedef struct
 	// Variables
 	// Minimal plane speed to be considered as flying
 	float32_t f32MinPlaneSpeed;
+	// Maximum speed for hover transition
+	float32_t f32MaxHoverSpeed;
 	// Nacelle transition angle, keep them at this until we reach transition speed
-	float32_t f32NacelleTransitionTilt;
+	float32_t f32NacellePlaneTransitionTilt;
+	// Transition angle for plane -> hover
+	float32_t f32NacelleHoverTransitionTilt;
 	// Engine nacelles tilt angle
 	float32_t f32NacelleCommonTilt;
 	float32_t f32NacelleTilt_FL;
