@@ -15,6 +15,7 @@
 void flight_init(FLIGHT_CORE *data, RCDATA * RCInputs);
 void flight_checkRCInputs(RCDATA * RCInputs, FLIGHT_CORE * FCFlightData);
 void flight_checkStates(FLIGHT_CORE *data);
+void flight_stabilizeHover(FLIGHT_CORE * FCFlightData);
 
 // Default values
 // Min plane speed in m/sec
@@ -50,6 +51,12 @@ void flight_checkStates(FLIGHT_CORE *data);
 // Macros for switches
 // Macro that defines midpoint for gear/gyro switch
 #define RC_IN_GEAR_GYRO_MIDPOINT	1500.0f
+
+// Default scales for RC inputs
+#define RC_IN_DEFAULT_SCALE_AILERON		1.0f
+#define RC_IN_DEFAULT_SCALE_ELEVATOR	1.0f
+#define RC_IN_DEFAULT_SCALE_THROTTLE	1.0f
+#define RC_IN_DEFAULT_SCALE_RUDDER		1.0f
 
 
 // Macros

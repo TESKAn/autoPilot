@@ -61,6 +61,11 @@ void flight_init(FLIGHT_CORE *data, RCDATA * RCInputs)
 	RCInputs->PWMOUT_Offset_10 = RC_IN_DEFAULT_MIDPOINT;
 	RCInputs->PWMOUT_Offset_11 = RC_IN_DEFAULT_MIDPOINT;
 	RCInputs->PWMOUT_Offset_12 = RC_IN_DEFAULT_MIDPOINT;
+
+	RCInputs->SCALES.f32AileronScale = RC_IN_DEFAULT_SCALE_AILERON;
+	RCInputs->SCALES.f32ElevatorScale = RC_IN_DEFAULT_SCALE_ELEVATOR;
+	RCInputs->SCALES.f32RudderScale = RC_IN_DEFAULT_SCALE_RUDDER;
+	RCInputs->SCALES.f32ThrottleScale = RC_IN_DEFAULT_SCALE_THROTTLE;
 }
 
 // Decode what RC commands want
@@ -87,25 +92,25 @@ void flight_checkRCInputs(RCDATA * RCInputs, FLIGHT_CORE * FCFlightData)
 		// Throttle -> pitch forward/backward
 		if(RC_IN_ZERO_VAL_OFFSET < math_absF(RCInputs->RC_THROTTLE))
 		{
-			FCFlightData->ORIENTATION_REQUIRED_H.f32PitchChange = RCInputs->RC_THROTTLE;
+			FCFlightData->ORIENTATION_REQUIRED_H.f32Pitch += RCInputs->RC_THROTTLE * RCInputs->SCALES.f32ThrottleScale;
 		}
 		// Check elevator input
 		// Elevator -> go up/down
 		if(RC_IN_ZERO_VAL_OFFSET < math_absF(RCInputs->RC_ELEVATOR))
 		{
-			FCFlightData->ORIENTATION_REQUIRED_H.f32AltitudeChange = RCInputs->RC_ELEVATOR;
+			FCFlightData->ORIENTATION_REQUIRED_H.f32Altitude += RCInputs->RC_ELEVATOR * RCInputs->SCALES.f32ElevatorScale;
 		}
 		// Check aileron input
 		// Aileron -> roll left/right
 		if(RC_IN_ZERO_VAL_OFFSET < math_absF(RCInputs->RC_AILERON))
 		{
-			FCFlightData->ORIENTATION_REQUIRED_H.f32RollChange = RCInputs->RC_AILERON;
+			FCFlightData->ORIENTATION_REQUIRED_H.f32Roll += RCInputs->RC_AILERON * RCInputs->SCALES.f32AileronScale;
 		}
 		// Check rudder input
 		// Rudder - yaw left/right
 		if(RC_IN_ZERO_VAL_OFFSET < math_absF(RCInputs->RC_RUDDER))
 		{
-			FCFlightData->ORIENTATION_REQUIRED_H.f32YawChange = RCInputs->RC_RUDDER;
+			FCFlightData->ORIENTATION_REQUIRED_H.f32Yaw += RCInputs->RC_RUDDER * RCInputs->SCALES.f32RudderScale;
 		}
 		// Check gear/gyro
 		// Vehicle mode select
@@ -120,6 +125,18 @@ void flight_checkRCInputs(RCDATA * RCInputs, FLIGHT_CORE * FCFlightData)
 			RC_Flags.bits.TRANSITION = 0;
 		}
 
+		// Check RC_FLAPS_PITCH
+		// Arm unit
+		if(0 < RCInputs->RC_FLAPS_PITCH)
+		{
+			// Go to plane mode
+			RC_Flags.bits.ARMED = 1;
+		}
+		else
+		{
+			// Transition not finished, abort
+			RC_Flags.bits.ARMED = 0;
+		}
 
 
 	}// end if
@@ -160,7 +177,7 @@ void flight_checkStates(FLIGHT_CORE *data)
 				data->ui32FlightStateMachine = FLIGHT_STABILIZE_TRANSITION;
 			}
 			// Run stabilising algorithm
-
+			flight_stabilizeHover(data);
 			break;
 		}
 		case FLIGHT_STABILIZE_PLANE:
@@ -517,6 +534,26 @@ void flight_checkStates(FLIGHT_CORE *data)
 			break;
 		}
 	}
+}
 
+// Stabilize hover according to data
+void flight_stabilizeHover(FLIGHT_CORE * FCFlightData)
+{
+//	float32_t f32Temp = 0;
+	float32_t f32Error = 0.0f;
+	// Use PID regulator to stabilize vehicle
+	// Stabilize pitch - calculate error
+	f32Error = FCFlightData->ORIENTATION_REQUIRED_H.f32Pitch - FCFlightData->ORIENTATION.f32Pitch;
+	// Run PID
+	math_PID(f32Error, 0.01f, &FCFlightData->PIDPitch);
 
+	// Stabilize roll - calculate error
+	f32Error = FCFlightData->ORIENTATION_REQUIRED_H.f32Roll - FCFlightData->ORIENTATION.f32Roll;
+	// Run PID
+	math_PID(f32Error, 0.01f, &FCFlightData->PIDRoll);
+
+	// Stabilize yaw - calculate error
+	f32Error = FCFlightData->ORIENTATION_REQUIRED_H.f32Yaw - FCFlightData->ORIENTATION.f32Yaw;
+	// Run PID
+	math_PID(f32Error, 0.01f, &FCFlightData->PIDYaw);
 }

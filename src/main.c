@@ -119,6 +119,9 @@ int main(void)
 	// Initialize USB data arrays
 	usb_initVars();
 
+	// Initialize flight data
+	flight_init(&FCFlightData, &RCData);
+
 	// Initialize external peripheral
 	extPeripheralInit();
 

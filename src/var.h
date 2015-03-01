@@ -81,7 +81,9 @@ extern FUSION_CORE fusionData;
 extern FLIGHT_CORE FCFlightData;
 // R/C variable
 extern RCDATA RCData;
-
+// Flight check interval
+extern uint32_t ui32FlightCheckCounter;
+extern uint32_t ui32FlightCheckInterval;
 
 
 // Flag variable

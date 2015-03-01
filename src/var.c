@@ -18,6 +18,9 @@ FUSION_CORE fusionData;
 FLIGHT_CORE FCFlightData;
 // R/C variable
 RCDATA RCData;
+// Flight check interval
+uint32_t ui32FlightCheckCounter = 0;
+uint32_t ui32FlightCheckInterval = 20;
 
 // Flag variables
 volatile Flag flag0;

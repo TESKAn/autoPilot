@@ -26,7 +26,7 @@ typedef union
 		volatile uint8_t HOVER:1;
 		volatile uint8_t PLANE:1;
 		volatile uint8_t TRANSITION:1;
-		volatile uint8_t BIT3:1;
+		volatile uint8_t ARMED:1;
 		volatile uint8_t BIT4:1;
 		volatile uint8_t BIT5:1;
 		volatile uint8_t BIT6:1;
@@ -64,7 +64,9 @@ typedef struct
 	uint32_t ui32FlightTransitionState;
 
 	// PIDs
-	myMath_PID3 OrientationPIDs;
+	myMath_PID PIDPitch;
+	myMath_PID PIDRoll;
+	myMath_PID PIDYaw;
 
 	// Input data
 	// Current vehicle orientation
@@ -79,19 +81,19 @@ typedef struct
 	// Required orientation - plane
 	struct
 	{
-		float32_t f32RollChange;
-		float32_t f32PitchChange;
-		float32_t f32YawChange;
+		float32_t f32Roll;
+		float32_t f32Pitch;
+		float32_t f32Yaw;
 		float32_t f32Power;
 	}ORIENTATION_REQUIRED_P;
 	// Required orientation - hover
 	struct
 	{
-		float32_t f32RollChange;
-		float32_t f32PitchChange;
-		float32_t f32YawChange;
-		float32_t f32AltitudeChange;
-		float32_t f32SpeedChange;
+		float32_t f32Roll;
+		float32_t f32Pitch;
+		float32_t f32Yaw;
+		float32_t f32Altitude;
+		float32_t f32Speed;
 	}ORIENTATION_REQUIRED_H;
 
 	// Output data
@@ -127,6 +129,15 @@ typedef struct
 // RC PWM in typedef
 typedef struct
 {
+	// Scales from R/C input to whatever we need
+	struct
+	{
+		float32_t f32AileronScale;
+		float32_t f32ElevatorScale;
+		float32_t f32ThrottleScale;
+		float32_t f32RudderScale;
+	}SCALES;
+
 	// Input raw values
 	uint16_t PWMIN_1;
 	uint16_t PWMIN_2;

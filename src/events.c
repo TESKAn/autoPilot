@@ -556,6 +556,16 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 				}
 			}
 		}
+		ui32FlightCheckCounter++;
+		if(ui32FlightCheckCounter > ui32FlightCheckInterval)
+		{
+			ui32FlightCheckCounter = 0;
+			// Run flight check algorithms
+			flight_checkRCInputs(&RCData, &FCFlightData);
+			flight_checkStates(&FCFlightData);
+		}
+
+
 		// LED counter
 		LED_ToggleCount++;
 		if(LED_ToggleCount >= 75)
