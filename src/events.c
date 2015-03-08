@@ -562,7 +562,10 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			ui32FlightCheckCounter = 0;
 			// Run flight check algorithms
 			flight_checkRCInputs(&RCData, &FCFlightData);
+			// Check flight states
 			flight_checkStates(&FCFlightData);
+			// Get new servo values
+			flight_decodeServos(&RCData, &FCFlightData);
 		}
 
 

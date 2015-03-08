@@ -67,6 +67,7 @@ typedef struct
 	myMath_PID PIDPitch;
 	myMath_PID PIDRoll;
 	myMath_PID PIDYaw;
+	myMath_PID PIDAltitude;
 
 	// Input data
 	// Current vehicle orientation

@@ -16,6 +16,7 @@ void flight_init(FLIGHT_CORE *data, RCDATA * RCInputs);
 void flight_checkRCInputs(RCDATA * RCInputs, FLIGHT_CORE * FCFlightData);
 void flight_checkStates(FLIGHT_CORE *data);
 void flight_stabilizeHover(FLIGHT_CORE * FCFlightData);
+void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 
 // Default values
 // Min plane speed in m/sec
@@ -38,10 +39,27 @@ void flight_stabilizeHover(FLIGHT_CORE * FCFlightData);
 #define RC_FLAPS_PITCH	PWMIN_6_Zero
 
 // Macros that encode PWM outputs for different servos
-#define RC_NACELLE_FL	PWMOUT_Val_1
-#define RC_NACELLE_FR	PWMOUT_Val_1
-#define RC_NACELLE_BM	PWMOUT_Val_1
+#define RC_AILERON_L	PWMOUT_Val_1
+#define RC_AILERON_R	PWMOUT_Val_2
 
+#define RC_MOTOR_FL		PWMOUT_Val_3
+#define RC_MOTOR_FR		PWMOUT_Val_4
+#define RC_MOTOR_BM		PWMOUT_Val_5
+
+#define RC_NACELLE_FL	PWMOUT_Val_9
+#define RC_NACELLE_FR	PWMOUT_Val_10
+#define RC_NACELLE_BM	PWMOUT_Val_11
+#define RC_NACELLE_BR	PWMOUT_Val_12
+
+
+#define RC_AILERON_L_MID	PWMOUT_Offset_1
+#define RC_AILERON_R_MID	PWMOUT_Offset_2
+
+
+#define RC_NACELLE_FL_MID	PWMOUT_Offset_9
+#define RC_NACELLE_FR_MID	PWMOUT_Offset_10
+#define RC_NACELLE_BM_MID	PWMOUT_Offset_11
+#define RC_NACELLE_BR_MID	PWMOUT_Offset_12
 
 // Input values macros
 // Default midpoint

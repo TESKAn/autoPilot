@@ -542,18 +542,54 @@ void flight_stabilizeHover(FLIGHT_CORE * FCFlightData)
 //	float32_t f32Temp = 0;
 	float32_t f32Error = 0.0f;
 	// Use PID regulator to stabilize vehicle
-	// Stabilize pitch - calculate error
-	f32Error = FCFlightData->ORIENTATION_REQUIRED_H.f32Pitch - FCFlightData->ORIENTATION.f32Pitch;
-	// Run PID
-	math_PID(f32Error, 0.01f, &FCFlightData->PIDPitch);
-
 	// Stabilize roll - calculate error
 	f32Error = FCFlightData->ORIENTATION_REQUIRED_H.f32Roll - FCFlightData->ORIENTATION.f32Roll;
 	// Run PID
 	math_PID(f32Error, 0.01f, &FCFlightData->PIDRoll);
 
+	// Stabilize pitch - calculate error
+	f32Error = FCFlightData->ORIENTATION_REQUIRED_H.f32Pitch - FCFlightData->ORIENTATION.f32Pitch;
+	// Run PID
+	math_PID(f32Error, 0.01f, &FCFlightData->PIDPitch);
+
 	// Stabilize yaw - calculate error
 	f32Error = FCFlightData->ORIENTATION_REQUIRED_H.f32Yaw - FCFlightData->ORIENTATION.f32Yaw;
 	// Run PID
 	math_PID(f32Error, 0.01f, &FCFlightData->PIDYaw);
+
+	// Run altitude PID
+	f32Error = FCFlightData->ORIENTATION_REQUIRED_H.f32Altitude - FCFlightData->ORIENTATION.f32Altitude;
+	math_PID(f32Error, 0.01f, &FCFlightData->PIDAltitude);
 }
+
+// Hardware specific function - decode flight commands to servo commands
+void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
+{
+	// Next depends on current mode
+	if(RC_Flags.bits.PLANE)
+	{
+
+	}
+	else if(RC_Flags.bits.HOVER)
+	{
+		// We are in hover mode, all maneuvering is done with motors, flaps/ailerons to middle
+		RCValues->RC_AILERON_L = RCValues->RC_AILERON_L_MID;
+		RCValues->RC_AILERON_R = RCValues->RC_AILERON_R_MID;
+
+		RCValues->RC_MOTOR_FL = FCFlightData->PIDPitch.s + FCFlightData->PIDRoll.s + FCFlightData->PIDAltitude.s;
+
+		RCValues->RC_MOTOR_FR = FCFlightData->PIDPitch.s - FCFlightData->PIDRoll.s + FCFlightData->PIDAltitude.s;
+
+		RCValues->RC_MOTOR_BM = -FCFlightData->PIDPitch.s + FCFlightData->PIDAltitude.s;
+
+		// Controll yaw with nacelle roll
+		RCValues->RC_NACELLE_BR = FCFlightData->PIDYaw.s;
+
+	}
+	else
+	{
+
+	}
+}
+
+
