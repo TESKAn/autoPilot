@@ -242,6 +242,11 @@ int main(void)
 				mainLoopState = 0;
 				break;
 			}
+			case 13:
+			{
+				UART_QueueMessagef(GYRO_X, fusionData._gyro.vector.x);
+				break;
+			}
 			default:
 			{
 				mainLoopState = 0;

@@ -215,6 +215,25 @@ int32_t UART_QueueMessagei32(int16_t var, int32_t data)
 
 int32_t UART_QueueMessagef(int16_t var, float data)
 {
-
+	int i = 0;
+	uint8_t messageBuffer[7];
+	UART_Conversion.i16[0] = var;
+	messageBuffer[0] = UART_Conversion.ch[0];
+	messageBuffer[1] = UART_Conversion.ch[1];
+	UART_Conversion.f32[0] = data;
+	messageBuffer[2] = UART_Conversion.ch[0];
+	messageBuffer[3] = UART_Conversion.ch[1];
+	messageBuffer[4] = UART_Conversion.ch[2];
+	messageBuffer[5] = UART_Conversion.ch[3];
+	messageBuffer[6] = UART_BufCRC(messageBuffer, 7);
+	for(i = 0; i < 7; i++)
+	{
+		RB_push(&UARTBuffer, messageBuffer[i]);
+	}
+	// If UART is not busy, send data
+	if(!UART2_Transferring)
+	{
+		UART_SendBuffer();
+	}
 	return 0;
 }

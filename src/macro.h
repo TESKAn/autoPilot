@@ -265,7 +265,9 @@
 #define REPORT_ADC				0x100000
 
 // UART2 comm macros
-#define MAIN_LOOP_STATE					3
+#define GYRO_X							2
+#define MAIN_LOOP_STATE					11
+
 
 
 #endif /* MACRO_H_ */

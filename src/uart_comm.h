@@ -17,5 +17,6 @@ int32_t UART_SendBuffer();
 int32_t UART_BufCount();
 int UART_CopyToTransmitBuf();
 int32_t UART_QueueMessagei16(int16_t var, int16_t data);
+int32_t UART_QueueMessagef(int16_t var, float data);
 
 #endif /* UART_COMM_H_ */
