@@ -34,7 +34,7 @@ uint8_t UART2_Transferring = 0;
 volatile uint8_t UART_CRC;
 uint8_t UART2_RcvdBytes = 0;
 uint16_t UART2_TimeoutCounter = 0;
-uint16_t UART2_TimeoutTime = 1000;
+uint16_t UART2_TimeoutTime = 65500;
 // Var ID that we are receiving
 uint16_t UART2_RcvingVar = 0;
 
@@ -61,6 +61,9 @@ uint8_t UART_BufCRC(uint8_t *data, int16_t bytes)
 void UART_Init()
 {
 	RB_Init(&UARTBuffer, UART2_transmittBuffer, 1024);
+	UART2_RcvdBytes = 0;
+	UART2_RcvingVar = 0;
+	UART_CRC = 0xff;
 }
 
 void UART_Timeout()
@@ -89,7 +92,9 @@ int32_t UART_RcvData(uint8_t data)
 	if(UART2_RcvdBytes == 2)
 	{
 		// We have var ID. Store it.
-		UART2_RcvingVar = (UART2_RecBuffer[0] << 8) & UART2_RecBuffer[1];
+		UART_Conversion.ch[0] = UART2_RecBuffer[0];
+		UART_Conversion.ch[1] = UART2_RecBuffer[1];
+		UART2_RcvingVar = UART_Conversion.i16[0];
 	}
 	else if(UART2_RcvdBytes > 2)
 	{
@@ -113,7 +118,9 @@ int32_t UART_RcvData(uint8_t data)
 					if(0 == UART_CRC)
 					{
 						// Store var
-						mainLoopState = (UART2_RecBuffer[2] << 8) & UART2_RecBuffer[3];
+						UART_Conversion.ch[0] = UART2_RecBuffer[2];
+						UART_Conversion.ch[1] = UART2_RecBuffer[3];
+						mainLoopState = UART_Conversion.i16[0];
 					}
 					UART2_RcvdBytes = 0;
 					UART2_RcvingVar = 0;
@@ -169,6 +176,7 @@ int UART_CopyToTransmitBuf()
 	while(0 != UARTBuffer.count)
 	{
 		UART2Buffer[numBytes] = RB_pop(&UARTBuffer);
+		numBytes++;
 	}
 	return numBytes;
 }
@@ -225,7 +233,7 @@ int32_t UART_QueueMessagef(int16_t var, float data)
 	messageBuffer[3] = UART_Conversion.ch[1];
 	messageBuffer[4] = UART_Conversion.ch[2];
 	messageBuffer[5] = UART_Conversion.ch[3];
-	messageBuffer[6] = UART_BufCRC(messageBuffer, 7);
+	messageBuffer[6] = UART_BufCRC(messageBuffer, 6);
 	for(i = 0; i < 7; i++)
 	{
 		RB_push(&UARTBuffer, messageBuffer[i]);
