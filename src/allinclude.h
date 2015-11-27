@@ -50,8 +50,6 @@
 #include "powerSensor.h"
 #include "sensors.h"
 
-#include "AudioComm.h"
-
 #include "RS485/RS485comm.h"
 
 #endif /* ALLINCLUDE_H_ */

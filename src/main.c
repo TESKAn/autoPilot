@@ -30,8 +30,6 @@
 
 #include "allinclude.h"
 
-#include "AudioComm.h"
-
 #include "math/myMath_typedefs.h"
 #include "math/myMath_vec3.h"
 #include "math/myMath_matrix3.h"
@@ -115,14 +113,6 @@ int main(void)
 	// Calibrate I2C sensors
 	// Function has no function...
 	calibrateI2CSensors();
-
-	AC_InitBuffers();
-	AC_RDisparity = -1;
-	// Put a message in buffer to test audio communication
-	AC_MESSAGE_IN_BUFFER = 1;
-	ACMessage[0] = 0xaa;
-	ACMessage[1] = 0x55;
-	ACMessageLength = 2;
 
 	PWMEN_OUT_ENABLE = 1;
 

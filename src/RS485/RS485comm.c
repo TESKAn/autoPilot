@@ -40,7 +40,6 @@ UInt16 RS485_MasterInitData(void)
 	return 0;
 }
 
-#pragma interrupt called
 UInt16 RS485_MasterWriteByte(void)
 {
 	/*
@@ -122,7 +121,6 @@ UInt16 RS485_MasterWriteByte(void)
 }
 
 
-#pragma interrupt called
 UInt16 RS485_States_Master(void)
 {
 	Int16 i = 0;
@@ -384,7 +382,6 @@ UInt16 RS485_States_Master(void)
 	return 0;
 }
 
-#pragma interrupt called
 UInt16 RS485_MasterecodeMessage(UInt8 data)
 {
 	Int16 i = 0;
@@ -531,9 +528,9 @@ UInt16 RS485_initData(void)
 	// Set states
 	RS485Data.ui8RcvState = RS485_IDLE;
 	RS485Data.ui8TxState = RS485_TX_IDLE;
+	return 0;
 }
 
-#pragma interrupt called
 UInt16 RS485_writeByte(void)
 {
 	switch(RS485Data.ui8TxState)
@@ -612,7 +609,6 @@ UInt16 RS485_writeByte(void)
 	return 0;
 }
 
-#pragma interrupt called
 UInt16 RS485_States_slave(UInt8 data)
 {
 	switch(RS485Data.ui8RcvState)
@@ -731,7 +727,6 @@ UInt16 RS485_States_slave(UInt8 data)
 	return 0;
 }
 
-#pragma interrupt called
 UInt16 RS485_decodeMessage(void)
 {
 	UInt8 ui8Temp = 0;
