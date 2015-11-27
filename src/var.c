@@ -131,7 +131,6 @@ uint8_t FatFS_FlushBuffer = 0;
 volatile uint16_t LED_ToggleCount = 0;
 
 // Buffer for data from PC to uC for USB
-uint8_t Buffer[64];
 char StringBuffer[161];			// Buffer for string manipulation
 char FSBuffer[FATFS_BUFF_SIZE];	// Pointer to buffer for file write
 

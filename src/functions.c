@@ -1153,29 +1153,13 @@ void extPeripheralInit(void)
 	SENSOR_POWER_ON;
 	// Initialize SD card
 	FS_Initialize();
-#ifdef DEBUG_USB
-	sendUSBMessage("Power ON");
-#endif
-	// Init ahrs structure
-#ifdef DEBUG_USB
-	sendUSBMessage("AHRS initialized");
-#endif
-#ifdef DEBUG_USB
-	sendUSBMessage("Configuring GPS");
-#endif
+
 	// Setup GPS
 	GPSSetDataOutput();
-#ifdef DEBUG_USB
-	sendUSBMessage("GPS configured");
-#endif
+
 	Delayms(100);
 	// Setup sensors
-#ifdef DEBUG_USB
-	sendUSBMessage("Configuring sensors");
-#endif
-#ifdef DEBUG_USB
-	sendUSBMessage("Set Power sensor");
-#endif
+
 	// set PS busy
 	PSBUSY = 1;
 	// Short delay
@@ -1184,30 +1168,17 @@ void extPeripheralInit(void)
 	PSReset();
 	Delayms(100);
 	PSBUSY = 0;
-#ifdef DEBUG_USB
-	sendUSBMessage("Configure I2C sensors");
-#endif
+
 	sensorInit();
-#ifdef DEBUG_USB
-	sendUSBMessage("Enable ADC");
-#endif
+
 	ADC_ENABLED = 1;
 	// Mark sensors initiated
 	EXTSENS_INIT_DONE = 1;
 	// Mark null sensor
 	//EXTSENS_NULLING_GYRO = 1;
-#ifdef DEBUG_USB
-	sendUSBMessage("Sensors configured");
-#endif
-	Delayms(100);
-#ifdef DEBUG_USB
-	sendUSBMessage("Reset matrix");
-#endif
 
-#ifdef DEBUG_USB
-	sendUSBMessage("AutoPilot OnLine");
-	sendUSBMessage("initialization done");
-#endif
+	Delayms(100);
+
 }
 
 void Delayms(uint32_t ms)
@@ -1329,25 +1300,3 @@ float32_t intToFloat(uint16_t whole, uint16_t frac)
 	return result;
 }
 
-void sendUSBMessage(char* message)
-{
-	int len = strlen(message);
-	int i = 0;
-	// Check USB is connected
- 	if(USB_OTG_dev.dev.device_status == USB_OTG_CONFIGURED)
- 	{
-		// Check length
- 		if(len > 60)
- 		{
- 			len = 60;
- 		}
-		Buffer[0] = 2;
-		Buffer[1] = 0;
-		for(i = 0; i < len; i++)
-		{
-			Buffer[i + 2] =  (uint8_t)message[i];
-		}
-		Buffer[i + 2] = 0;
-		USBD_HID_SendReport (&USB_OTG_dev, Buffer, 64);
- 	}
-}

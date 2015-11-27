@@ -52,8 +52,6 @@
  * ===========================================================================
  */
 
-// USB related
-USB_OTG_CORE_HANDLE  USB_OTG_dev;
 
 // AHRS
 float32_t t1 = 0;
@@ -103,21 +101,10 @@ int main(void)
 
 	globalVar = 0.001f;
 
-	// Initialize USB
-	  USBD_Init(&USB_OTG_dev,
-	#ifdef USE_USB_OTG_HS
-	  USB_OTG_HS_CORE_ID,
-	#else
-	  USB_OTG_FS_CORE_ID,
-	#endif
-	  &USR_desc,
-	  &USBD_HID_cb,
-	  &USR_cb);
+
 	// Peripherals initialized, wait 1 sec
 	Delayms(100);
 
-	// Initialize USB data arrays
-	usb_initVars();
 
 	// Initialize flight data
 	flight_init(&FCFlightData, &RCData);
@@ -177,9 +164,7 @@ int main(void)
 				MPU6000_GyroSelfTest(ENABLE);
 				// Enable comm
 				MPU_COMM_ENABLED = 1;
-				#ifdef DEBUG_USB
-					sendUSBMessage("Gyro ST enabled");
-				#endif
+
 				break;
 			}
 			case 3:
@@ -189,9 +174,7 @@ int main(void)
 				while(I2C2_WAITINGDATA ) {}
 				MPU6000_GyroSelfTest(DISABLE);
 				MPU_COMM_ENABLED = 1;
-				#ifdef DEBUG_USB
-					sendUSBMessage("Gyro ST disabled");
-				#endif
+
 				break;
 			}
 			case 4:
@@ -201,9 +184,7 @@ int main(void)
 				while(I2C2_WAITINGDATA ) {}
 				MPU6000_AccSelfTest(ENABLE);
 				MPU_COMM_ENABLED = 1;
-				#ifdef DEBUG_USB
-					sendUSBMessage("Acc ST enabled");
-				#endif
+
 				break;
 			}
 			case 5:
@@ -213,9 +194,7 @@ int main(void)
 				while(I2C2_WAITINGDATA ) {}
 				MPU6000_AccSelfTest(DISABLE);
 				MPU_COMM_ENABLED = 1;
-				#ifdef DEBUG_USB
-					sendUSBMessage("Acc ST disabled");
-				#endif
+
 				break;
 			}
 			case 6:
@@ -225,9 +204,7 @@ int main(void)
 				while(I2C2_WAITINGDATA ) {}
 				MPU6000_ReadFTValues();
 				MPU_COMM_ENABLED = 1;
-				#ifdef DEBUG_USB
-					sendUSBMessage("FT values read");
-				#endif
+
 
 				break;
 			}

@@ -28,11 +28,6 @@
 // File with macro functions
 #include "macroFunctions.h"
 
-// USB defines
-#include "usbd_hid_core.h"
-#include "usbd_usr.h"
-#include "usbd_desc.h"
-
 // SD card
 //#include "spi_sd.h"
 #include "diskio.h"
@@ -58,7 +53,5 @@
 #include "AudioComm.h"
 
 #include "RS485/RS485comm.h"
-
-#include "usb.h"
 
 #endif /* ALLINCLUDE_H_ */

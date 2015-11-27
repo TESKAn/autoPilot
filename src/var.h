@@ -162,9 +162,6 @@ extern volatile uint16_t GPS_Speed;
 extern volatile uint16_t GPS_TrackAngle;
 extern volatile uint16_t GPS_SattelitesStatus;
 
-// USB
-extern USB_OTG_CORE_HANDLE  USB_OTG_dev;
-
 // ADC trigger timer
 extern volatile uint32_t ADC_TriggerTimer;
 

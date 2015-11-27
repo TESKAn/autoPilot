@@ -46,12 +46,6 @@ void sensorTimer(void)
 		{
 			sensorTimeCounter = 65000;
 		}
-#ifdef DEBUG_USB
-		if(sensorTimeCounter > I2C2_ERRORTIMEOUT)
-		{
-			sendUSBMessage("I2C timeout");
-		}
-#endif
 	}
 	Delaynus(2);
 }
