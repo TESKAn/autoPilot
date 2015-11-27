@@ -104,9 +104,6 @@ volatile uint32_t TIM9_IC1_HighWidth = 0;
 // ADC trigger timer
 volatile uint32_t ADC_TriggerTimer = 0;
 
-//DMA variables
-volatile uint8_t UART2DMAbuffer[20];
-
 // DAC variables
 volatile uint32_t DAC1_TIM6reloadValue = 0xFF;
 const uint16_t Sine12bit[32] = {
@@ -135,8 +132,8 @@ char StringBuffer[161];			// Buffer for string manipulation
 char FSBuffer[FATFS_BUFF_SIZE];	// Pointer to buffer for file write
 
 // UART2 buffer
-uint8_t UART2Buffer[64];
-uint8_t UART2VarsSelect = 0;
+uint8_t UART2Buffer[1024];
+
 
 volatile CONVERTNUM convertNumFormat;
 

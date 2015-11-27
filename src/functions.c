@@ -1247,6 +1247,8 @@ void transferDMA_USART2(uint8_t *data, int length)
 	DMA_Cmd(DMA_USART2, ENABLE);
 	//configure to use DMA
 	USART_DMACmd(USART2, USART_DMAReq_Tx, ENABLE);
+	// Configure end of transfer interrupt
+	DMA_ITConfig(DMA_USART2, DMA_IT_TC, ENABLE);
 }
 
 void transferDMA_USART3(uint8_t *data, int length)
@@ -1298,5 +1300,64 @@ float32_t intToFloat(uint16_t whole, uint16_t frac)
 	}
 	result = (float32_t)whole + temp;
 	return result;
+}
+
+// Ring buffer functions
+
+int16_t RB_full(RING_BUFFER* rb)
+{
+    if(rb->count == rb->size) return 0;
+    else return -1;
+}
+
+int16_t RB_Init(RING_BUFFER* rb, uint8_t *buf, int16_t size)
+{
+	rb->buffer = buf;
+
+    rb->buffer_end = rb->buffer + size;
+    rb->size = size;
+    rb->data_start = rb->buffer;
+    rb->data_end = rb->buffer;
+    rb->count = 0;
+
+	return 0;
+}
+
+int16_t RB_push(RING_BUFFER* rb, uint8_t data)
+{
+    *rb->data_end = data;
+    rb->data_end++;
+    if (rb->data_end == rb->buffer_end)
+        rb->data_end = rb->buffer;
+
+    if (0 == RB_full(rb))
+    {
+        if ((rb->data_start + 1) == rb->buffer_end)
+        {
+            rb->data_start = rb->buffer;
+        }
+        else
+        {
+            rb->data_start++;
+        }
+    }
+    else
+    {
+        rb->count++;
+    }
+	return 0;
+}
+
+uint8_t RB_pop(RING_BUFFER* rb)
+{
+    uint8_t data = *rb->data_start;
+    rb->data_start++;
+    if (rb->data_start == rb->buffer_end)
+    {
+        rb->data_start = rb->buffer;
+    }
+    rb->count--;
+
+    return data;
 }
 

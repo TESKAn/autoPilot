@@ -99,6 +99,9 @@ int main(void)
 
 	globalVar = 0.001f;
 
+	// Set UART buffer
+	UART_Init();
+
 
 	// Peripherals initialized, wait 1 sec
 	Delayms(100);

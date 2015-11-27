@@ -72,7 +72,6 @@ typedef union
 }__attribute__((aligned(4),packed)) CONVERTNUM;
 
 
-
 extern volatile uint16_t mainLoopState;
 
 extern FUSION_CORE fusionData;
@@ -165,9 +164,6 @@ extern volatile uint16_t GPS_SattelitesStatus;
 // ADC trigger timer
 extern volatile uint32_t ADC_TriggerTimer;
 
-//DMA variables
-extern volatile uint8_t UART2DMAbuffer[20];
-
 // DAC variables
 extern volatile uint32_t DAC1_TIM6reloadValue;
 extern const uint16_t Sine12bit[32];
@@ -194,8 +190,7 @@ extern char StringBuffer[161];			// Buffer for string manipulation
 extern char FSBuffer[FATFS_BUFF_SIZE];	// Pointer to buffer for file write
 
 // UART2 buffer
-extern uint8_t UART2Buffer[64];
-extern uint8_t UART2VarsSelect;
+extern uint8_t UART2Buffer[1024];
 
 extern volatile CONVERTNUM convertNumFormat;
 

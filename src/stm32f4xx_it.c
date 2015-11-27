@@ -245,7 +245,8 @@ void TIM1_BRK_TIM9_IRQHandler(void)
   */
 void DMA1_Stream6_IRQHandler(void)
 {
-	DMA_ClearITPendingBit(DMA1_Stream6, DMA_IT_TC);
+	//DMA_ClearITPendingBit(DMA1_Stream6, DMA_IT_TC);
+	DMA1_Stream6_ISR_Handler();
 }
 
 /**

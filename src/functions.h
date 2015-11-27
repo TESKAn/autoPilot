@@ -8,6 +8,17 @@
 #ifndef FUNCTIONS_H_
 #define FUNCTIONS_H_
 
+typedef struct
+{
+     uint8_t* buffer;
+     uint8_t* buffer_end;
+     uint8_t* data_start;
+     uint8_t* data_end;
+     volatile int32_t count;
+     int32_t size;
+ }__attribute__((aligned(4),packed))  RING_BUFFER;
+
+
 void calibrateI2CSensors(void);
 void refreshPWMOutputs(void);
 uint32_t getSystemTime(void);
@@ -39,5 +50,10 @@ void transferDMA_USART2(uint8_t *data, int length);
 void transferDMA_USART3(uint8_t *data, int length);
 float32_t intToFloat(uint16_t whole, uint16_t frac);
 void sendUSBMessage(char* message);
+
+int16_t RB_full(RING_BUFFER* rb);
+int16_t RB_Init(RING_BUFFER* rb, uint8_t *buf, int16_t size);
+int16_t RB_push(RING_BUFFER* rb, uint8_t data);
+uint8_t RB_pop(RING_BUFFER* rb);
 
 #endif /* FUNCTIONS_H_ */

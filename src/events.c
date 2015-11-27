@@ -54,6 +54,29 @@ void ADC_ISR_Handler(void)
 	}
 }
 
+/**
+  * @brief  This function handles DMA1 stream6 event interrupt request, UART2.
+  * @param  None
+  * @retval None
+  * @services DMA1 stream 6
+  */
+
+void DMA1_Stream6_ISR_Handler(void)
+{
+	DMA_ClearITPendingBit(DMA1_Stream6, DMA_IT_TC);
+	DMA_ITConfig(DMA_USART2, DMA_IT_TC, DISABLE);
+	UART2_Transferring = 0;
+	// Check to send data
+	UART_SendBuffer();
+}
+
+/**
+  * @brief  This function handles DMA1 stream4 event interrupt request.
+  * @param  None
+  * @retval None
+  * @services DMA1 stream 4
+  */
+
 void DMA1_Stream4_ISR_Handler(void)
 {
 	// Clear GPS is sending data
@@ -92,6 +115,7 @@ void DMA1_Stream3_ISR_Handler(void)
 	// Clear receive in progress
 	I2C2_WAITINGDATA = 0;
 }
+
 
 
 /**
@@ -472,8 +496,8 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 
 		// Update system time
 		systemTime++;
-		// Update fusion sys time
-
+		// UART2 timeout
+		UART_Timeout();
 
 		// Signal strength count
 		signalStrengthCount++;
@@ -572,18 +596,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		if(LED_ToggleCount >= 75)
 		{
 			// Event every second
-			// Check if DMA transfer was complete
-			//if(SET == DMA_GetFlagStatus(DMA1_Stream6, DMA_FLAG_TCIF6))
-			{
-				// Send UART data
-				// Setup
-				switch(UART2VarsSelect)
-				{
 
-				}
-
-				transferDMA_USART2(UART2Buffer, 64);
-			}
 			// Write log
 			/*
 			if(SD_WRITE_LOG && SCR2_LOGOPEN)
@@ -688,14 +701,9 @@ void USART1_ISR_Handler(void)
   */
 void USART2_ISR_Handler(void)
 {
-	unsigned int i = 0;
 	if ((USART2->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
 	{
-		i = USART_ReceiveData(USART2);
-		// Call MODBUS receive function
-		//MODBUS_ProcessData(i);
-
-		//transferDMA(UART2DMAbuffer);
+		UART_RcvData((uint8_t)(USART2->DR & (uint16_t)0x01FF));
 	}
 
 	if((USART2->SR & USART_FLAG_TC) != (u16)RESET)	//if transfer complete

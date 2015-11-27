@@ -10,6 +10,8 @@
 
 /* Includes */
 
+#include "macro.h"
+
 #include "stm32f4xx.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,12 +20,16 @@
 #include "arm_math.h"
 #include "math.h"
 
+#include "uart_comm.h"
+
 #include "kalman.h"
 
 #include "sensors/sensor_typedefs.h"
 #include "sensors/sensors_fusion.h"
 
 #include "functions.h"
+
+
 
 // File with macro functions
 #include "macroFunctions.h"
@@ -40,7 +46,7 @@
 #include "stm32f4xx_gpio.h"
 //#include "misc.h"
 #include "init.h"
-#include "macro.h"
+
 #include "events.h"
 #include "flight.h"
 
@@ -51,5 +57,7 @@
 #include "sensors.h"
 
 #include "RS485/RS485comm.h"
+
+
 
 #endif /* ALLINCLUDE_H_ */
