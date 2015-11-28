@@ -520,6 +520,26 @@ void init_Timer14()
 	// End of timer 14
 }
 
+void init_DMA()
+{
+	// Configure USART2 DMA
+	//enable peripheral clock
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);
+
+	//configure USART1 DMA channel
+	//deinit DMA channel
+	DMA_DeInit(DMA_USART1);
+
+	//configure USART2 DMA channel
+	//deinit DMA channel
+	DMA_DeInit(DMA_USART2);
+
+	// Configure USART3 DMA
+	//deinit DMA channel
+	DMA_DeInit(DMA_USART3);
+}
+
 void init_ADC()
 {
 	//make structure for configuring pins
@@ -665,6 +685,23 @@ void init_USART1()
 	//make structure for configuring USART
 	USART_InitTypeDef USART_InitStructure;
 
+	// Config GPIO
+	//GPIO A
+	// A5 - RS485 dir
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
+	//set output type
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// push/pull
+	//set pull-up
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
+	//set pin mode to alternate function
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	//set pin speed
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	//write mode to selected pins and selected port
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+	GPIO_WriteBit(GPIOA, GPIO_Pin_5, 0);
+
 	// Init GPIO
 	//connect pins B6 and B7 to USART
 	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_USART1);
@@ -713,7 +750,6 @@ void init_USART2()
 	//make structure for configuring USART
 	USART_InitTypeDef USART_InitStructure;
 
-	// Config GPIO
 	//connect pins D5 and D6 to USART2
 	GPIO_PinAFConfig(GPIOD, GPIO_PinSource5, GPIO_AF_USART2);
 	GPIO_PinAFConfig(GPIOD, GPIO_PinSource6, GPIO_AF_USART2);
@@ -757,19 +793,9 @@ void init_USART2()
 
 	//enable module 2
 	USART_Cmd(USART2, ENABLE);
-
-	// Configure USART2 DMA
-	//enable peripheral clock
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);
-	//configure USART2 DMA channel
-	//deinit DMA channel
-	DMA_DeInit(DMA_USART2);
-	//enable interrupts if needed
-	//DMA_IT_TC - transfer complete interrupt
-	//DMA_ITConfig(DMA1_Stream6, DMA_IT_TC, ENABLE);
 }
 
-void init_USART3(void)
+void init_USART3()
 {
 	//make structure for configuring USART
 	USART_InitTypeDef USART_InitStructure;
@@ -835,17 +861,6 @@ void init_USART3(void)
 
 	//enable module 3
 	USART_Cmd(USART3, ENABLE);
-
-	// Configure USART3 DMA
-	//enable peripheral clock
-	// Already enabled for USART2
-	//RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);
-	//configure USART3 DMA channel
-	//deinit DMA channel
-	DMA_DeInit(DMA_USART3);
-	//enable interrupts if needed
-	//DMA_IT_TC - transfer complete interrupt
-	//DMA_ITConfig(DMA1_Stream6, DMA_IT_TC, ENABLE);
 }
 
 // External interrupt config
@@ -1356,7 +1371,7 @@ void System_Config(void)
 	// ADC config
 	init_ADC();
 	// DAC config
-	init_DAC();
+	//init_DAC();
 	// Enable interrupts - don't forget to enable specific interrupts
 	NVIC_EnableInterrupts(ENABLE);
 	// Init ADC0 as GPIO with pull - down

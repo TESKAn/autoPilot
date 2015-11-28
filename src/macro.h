@@ -102,6 +102,9 @@
 #define DMA_USART2				DMA1_Stream6
 #define DMA_I2C2_TX				DMA1_Stream7
 
+#define DMA_USART1				DMA2_Stream5
+#define DMA_USART1_CH			DMA_Channel_4
+
 #define DMA_I2C2_RX_TCIF 		DMA_FLAG_TCIF3
 #define DMA_I2C2_RX_HTIF 		DMA_FLAG_HTIF3
 #define DMA_I2C2_RX_TEIF 		DMA_FLAG_TEIF3
@@ -220,6 +223,10 @@
 #define DEBUG_PIN_OFF		GPIO_WriteBit(GPIOE, GPIO_Pin_5, 0)
 #define DEBUG_PIN_TOGGLE	GPIO_ToggleBits(GPIOE, GPIO_Pin_5)
 */
+
+// RS485 dir macros
+#define RS485_TXEN			GPIO_WriteBit(GPIOA, GPIO_Pin_5, 1)
+#define RS485_RXEN			GPIO_WriteBit(GPIOA, GPIO_Pin_5, 0)
 
 // PWM enable macro
 #define PWMEN_PIN_TOGGLE	GPIO_ToggleBits(GPIOE, GPIO_Pin_15)

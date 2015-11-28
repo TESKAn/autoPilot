@@ -1215,6 +1215,42 @@ void Delaynus(vu32 nus)
     }
 }
 
+void transferDMA_USART1(uint8_t *data, int length)
+{
+	DMA_InitTypeDef DMAInitStructure;
+	// Configure USART1 DMA
+	//deinit DMA channel
+	DMA_DeInit(DMA_USART1);
+	//set init structure
+	//channel to use
+	DMAInitStructure.DMA_Channel = DMA_USART1_CH;
+	//peripheral data address
+	DMAInitStructure.DMA_PeripheralBaseAddr = (uint32_t)&USART1->DR;//    USART2_DR_ADDRESS;
+	// DMA buffer address
+	DMAInitStructure.DMA_Memory0BaseAddr = (uint32_t)data;
+	DMAInitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
+	DMAInitStructure.DMA_BufferSize = length;
+	DMAInitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+	DMAInitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+	DMAInitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+	DMAInitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+	DMAInitStructure.DMA_Mode = DMA_Mode_Normal;
+	DMAInitStructure.DMA_Priority = DMA_Priority_Low;
+	DMAInitStructure.DMA_FIFOMode = DMA_FIFOMode_Enable;
+	DMAInitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_Full;
+	DMAInitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
+	DMAInitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
+	//configure peripheral
+	DMA_Init(DMA_USART1, &DMAInitStructure);
+
+	//Enable DMA2 stream 5 - USART2 TX
+	DMA_Cmd(DMA_USART1, ENABLE);
+	//configure to use DMA
+	USART_DMACmd(USART1, USART_DMAReq_Tx, ENABLE);
+	// Configure end of transfer interrupt
+	DMA_ITConfig(DMA_USART1, DMA_IT_TC, ENABLE);
+}
+
 void transferDMA_USART2(uint8_t *data, int length)
 {
 	DMA_InitTypeDef DMAInitStructure;

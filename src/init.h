@@ -16,6 +16,7 @@ void init_Timer6();
 void init_Timer8();
 void init_Timer9();
 void init_Timer14();
+void init_DMA();
 void init_ADC();
 void init_DAC();
 void init_USART1();

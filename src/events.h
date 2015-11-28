@@ -16,6 +16,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void);
 void DMA1_Stream6_ISR_Handler(void);
 void DMA1_Stream4_ISR_Handler(void);
 void DMA1_Stream3_ISR_Handler(void);
+void DMA2_Stream5_ISR_Handler(void);
 //void I2C2_EV_IRQHandler(void);
 void TIM1_CC_ISR_Handler(void);
 void USART1_ISR_Handler(void);

@@ -272,6 +272,17 @@ void DMA1_Stream3_IRQHandler(void)
 }
 
 /**
+  * @brief  This function handles DMA1 stream3 event interrupt request.
+  * @param  None
+  * @retval None
+  * @services DMA1 stream 3
+  */
+void DMA2_Stream5_IRQHandler(void)
+{
+	DMA2_Stream5_ISR_Handler();
+}
+
+/**
   * @brief  This function handles TIM1 capture compare interrupt request.
   * @param  None
   * @retval None

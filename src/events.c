@@ -116,6 +116,19 @@ void DMA1_Stream3_ISR_Handler(void)
 	I2C2_WAITINGDATA = 0;
 }
 
+/**
+  * @brief  This function handles DMA2 stream5 event interrupt request.
+  * @param  None
+  * @retval None
+  * @services DMA5 stream 5
+  */
+
+void DMA2_Stream5_ISR_Handler(void)
+{
+
+	DMA_ClearITPendingBit(DMA_USART2, DMA_IT_TC);
+	DMA_ITConfig(DMA_USART2, DMA_IT_TC, DISABLE);
+}
 
 
 /**
