@@ -125,7 +125,7 @@ void DMA1_Stream3_ISR_Handler(void)
 
 void DMA2_Stream5_ISR_Handler(void)
 {
-
+	RS485_RXEN;
 	DMA_ClearITPendingBit(DMA_USART2, DMA_IT_TC);
 	DMA_ITConfig(DMA_USART2, DMA_IT_TC, DISABLE);
 }

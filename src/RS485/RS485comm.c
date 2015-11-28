@@ -42,6 +42,14 @@ UInt16 RS485_MasterInitData(void)
 
 UInt16 RS485_MasterWriteByte(void)
 {
+
+	// Transmit data
+
+	// Enable transmit
+	RS485_TXEN;
+	// Send
+	//transferDMA_USART1(uint8_t *data, int length)
+
 	/*
 	switch(RS485Master.ui8TxState)
 	{

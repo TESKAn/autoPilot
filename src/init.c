@@ -721,7 +721,7 @@ void init_USART1()
 
 	//configure module 1 - current/voltage/temperature sensor
 	//set baud rate
-	USART_InitStructure.USART_BaudRate = 19200;
+	USART_InitStructure.USART_BaudRate = 500000;
 	//flow control
 	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
 	//enable receiver and transmitter
