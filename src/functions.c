@@ -1164,10 +1164,6 @@ void extPeripheralInit(void)
 	PSBUSY = 1;
 	// Short delay
 	Delaynus(5000);
-	// Reset PS
-	PSReset();
-	Delayms(100);
-	PSBUSY = 0;
 
 	sensorInit();
 

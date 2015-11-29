@@ -552,16 +552,6 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 
 		if(EXTSENS_INIT_DONE)
 		{
-			// Check power sensor
-			PS_PollTimer++;
-			if(PS_PollTimer >= PS_POLLTIME)
-			{
-				PS_PollTimer = 0;
-				if(!PSBUSY)
-				{
-					PSRequestData();
-				}
-			}
 			// Check I2C sensors
 			I2C2_PollTimer++;
 			if(I2C2_PollTimer >= I2C2_POLLTIME)
@@ -694,7 +684,7 @@ void USART1_ISR_Handler(void)
 //	int iData = 0;
 	if ((USART1->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
 	{
-		PowerSensorCommProcess((uint8_t) USART_ReceiveData(USART1));
+		RS485_ReceiveMessage((uint8_t) USART_ReceiveData(USART1));
 	}
 
 	if((USART1->SR & USART_FLAG_TC) != (u16)RESET)	//if transfer complete

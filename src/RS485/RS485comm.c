@@ -36,6 +36,7 @@ UInt8 RS485ReceiveState = 0;
 UInt8 RS485RXBufIndex = 0;
 UInt8 RS485RXBytesLeft = 0;
 UInt8 RS485Checksum = 0;
+UInt8 RS485ReadReqStartAddress = 0;
 
 // Variables
 uint8_t RS485_CommandBuffer[16];
@@ -45,7 +46,6 @@ RING_BUFFER RS485CommandBuffer;
 // Master functions
 UInt16 RS485_MasterInitData(void)
 {
-	Int16 i16Temp = 0;
 	// Set slaves
 	RS485Servo_FL.REGS.ui8ID = servoFRID;
 	RS485Servo_FR.REGS.ui8ID = servoFLID;
@@ -62,9 +62,12 @@ UInt16 RS485_MasterInitData(void)
 }
 
 
-UInt16 RS485_ServoEnable(UInt8 servoID)
+UInt16 RS485_ServoTest(UInt8 servoID)
 {
-
+	// Store req bytes in tx buffer
+	int bytesToSend = RS485_BufferQueuedCommand(RS485_SERVO_FR_TORQ_ON);
+	// Send data with DMA
+	RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
 	return 0;
 }
 
@@ -106,6 +109,8 @@ UInt16 RS485_ServoReadAll(UInt8 servoID)
 	RS485TransmittBuffer[5] = 0x00;					// Reg address 0
 	RS485TransmittBuffer[6] = 0x49;					// Data to read - 73 regs
 	RS485TransmittBuffer[7] = ~(0x4f + servoID);	// Checksum
+	// Store read address
+	RS485ReadReqStartAddress = 0;
 	return 8;
 }
 
@@ -245,7 +250,7 @@ UInt16 RS485_States_Master(void)
 				// Store req bytes in tx buffer
 				bytesToSend = RS485_BufferQueuedCommand(command);
 				// Send data with DMA
-				RS485_MasterWriteByte(&RS485TransmittBuffer, bytesToSend);
+				RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
 
 			}
 			break;
@@ -349,13 +354,24 @@ UInt16 RS485_ReceiveMessage(UInt8 data)
 
 UInt16 RS485_DecodeMessage()
 {
-	RS485SERVO *SelectedServo;
+	int destIndex = 0;
+	int sourceIndex = 3;
+	int bytes = 0;
 	// Check ID
 	switch(RS485RXBuffer[0])
 	{
-		case servoFRID:
+		case SERVO_FR_ID:
 		{
-			SelectedServo = RS485Servo_FL;
+			// Store error status
+			RS485Servo_FL.errStatus = RS485RXBuffer[2];
+			// Store data bytes
+			destIndex = RS485ReadReqStartAddress;
+			for(bytes = (RS485RXBuffer[1] - 2); bytes != 0; bytes--)
+			{
+				RS485Servo_FL.ui8Data[destIndex] = RS485RXBuffer[sourceIndex];
+				destIndex++;
+				sourceIndex++;
+			}
 			break;
 		}
 	}

@@ -44,7 +44,7 @@ CONVERTNUM UART_Conversion;
 
 void UART_CalculateCRC(uint8_t data)
 {
-	UART_CRC = (uint8_t)crc8_Table[UART_CRC ^ data];
+	UART_CRC = (uint8_t)crc8_ucTable[UART_CRC ^ data];
 }
 
 uint8_t UART_BufCRC(uint8_t *data, int16_t bytes)

@@ -53,7 +53,6 @@
 
 #include "var.h"
 
-#include "powerSensor.h"
 #include "sensors.h"
 
 #include "RS485/RS485comm.h"

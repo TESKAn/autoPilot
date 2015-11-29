@@ -102,6 +102,9 @@ int main(void)
 	// Set UART buffer
 	UART_Init();
 
+	// Init RS485
+	RS485_MasterInitData();
+
 
 	// Peripherals initialized, wait 1 sec
 	Delayms(100);
@@ -122,9 +125,9 @@ int main(void)
 
 	MPU_COMM_ENABLED = 1;
 
-	RS485_TXEN;
 	RS485_RXEN;
-	RS485_TXEN;
+
+	RS485_ServoTest(0);
 
 	// Mount SD card
     while (1)
