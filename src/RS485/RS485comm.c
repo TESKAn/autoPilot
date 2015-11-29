@@ -64,8 +64,16 @@ UInt16 RS485_MasterInitData(void)
 
 UInt16 RS485_ServoTest(UInt8 servoID)
 {
+	int bytesToSend = 0;
 	// Store req bytes in tx buffer
-	int bytesToSend = RS485_BufferQueuedCommand(RS485_SERVO_FR_TORQ_ON);
+	if(servoID == 0)
+	{
+		bytesToSend = RS485_BufferQueuedCommand(RS485_SERVO_FR_TORQ_ON);
+	}
+	else
+	{
+		bytesToSend = RS485_BufferQueuedCommand(RS485_SERVO_FR_TORQ_OFF);
+	}
 	// Send data with DMA
 	RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
 	return 0;
@@ -95,12 +103,13 @@ UInt16 RS485_ServoTorqueOFF(UInt8 servoID)
 	RS485TransmittBuffer[4] = RS485_COMMAND_WRITE;	// Command
 	RS485TransmittBuffer[5] = 0x18;					// Reg address 24
 	RS485TransmittBuffer[6] = 0x00;					// Data to write
-	RS485TransmittBuffer[7] = ~(0x20 + servoID);	// Checksum
+	RS485TransmittBuffer[7] = ~(0x1f + servoID);	// Checksum
 	return 8;
 }
 
 UInt16 RS485_ServoReadAll(UInt8 servoID)
 {
+	int i = 0;
 	RS485TransmittBuffer[0] = 0xff;
 	RS485TransmittBuffer[1] = 0xff;
 	RS485TransmittBuffer[2] = servoID;				// ID
@@ -108,7 +117,15 @@ UInt16 RS485_ServoReadAll(UInt8 servoID)
 	RS485TransmittBuffer[4] = RS485_COMMAND_READ;	// Command
 	RS485TransmittBuffer[5] = 0x00;					// Reg address 0
 	RS485TransmittBuffer[6] = 0x49;					// Data to read - 73 regs
-	RS485TransmittBuffer[7] = ~(0x4f + servoID);	// Checksum
+
+	// Calculate checksum
+	RS485TransmittBuffer[7] = RS485TransmittBuffer[2];
+	for(i = 3; i < 7; i++)
+	{
+		RS485TransmittBuffer[7] += RS485TransmittBuffer[i];
+	}
+	RS485TransmittBuffer[7] = ~(RS485TransmittBuffer[7]);				// Checksum
+
 	// Store read address
 	RS485ReadReqStartAddress = 0;
 	return 8;
@@ -226,7 +243,7 @@ UInt16 RS485_MasterWriteByte(uint8_t *data, int length)
 }
 
 
-UInt16 RS485_States_Master(void)
+UInt16 RS485_States_Master()
 {
 	UInt8 command = 0;
 	UInt16 bytesToSend = 0;

@@ -90,6 +90,7 @@
 #define FPU_EXC_OVERFLOW		flag1.bits.BIT3
 #define FPU_EXC_DIVZERO			flag1.bits.BIT4
 #define FPU_EXC_INVALIDOP		flag1.bits.BIT5
+//#define RS485_SET_INPUT			flag1.bits.BIT6
 
 // Clear flag1 FPU exceptions
 #define CLEAR_FPU_EXCEPTIONS	flag1.flag.flag = flag1.flag.flag & 0xFFFFFFC3
@@ -102,7 +103,7 @@
 #define DMA_USART2				DMA1_Stream6
 #define DMA_I2C2_TX				DMA1_Stream7
 
-#define DMA_USART1				DMA2_Stream5
+#define DMA_USART1				DMA2_Stream7
 #define DMA_USART1_CH			DMA_Channel_4
 
 #define DMA_I2C2_RX_TCIF 		DMA_FLAG_TCIF3

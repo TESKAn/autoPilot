@@ -1221,7 +1221,7 @@ void transferDMA_USART1(uint8_t *data, int length)
 	//channel to use
 	DMAInitStructure.DMA_Channel = DMA_USART1_CH;
 	//peripheral data address
-	DMAInitStructure.DMA_PeripheralBaseAddr = (uint32_t)&USART1->DR;//    USART2_DR_ADDRESS;
+	DMAInitStructure.DMA_PeripheralBaseAddr = (uint32_t)&USART1->DR;//    USART1_DR_ADDRESS;
 	// DMA buffer address
 	DMAInitStructure.DMA_Memory0BaseAddr = (uint32_t)data;
 	DMAInitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
@@ -1239,7 +1239,7 @@ void transferDMA_USART1(uint8_t *data, int length)
 	//configure peripheral
 	DMA_Init(DMA_USART1, &DMAInitStructure);
 
-	//Enable DMA2 stream 5 - USART1 TX
+	//Enable DMA2 stream 7 - USART1 TX
 	DMA_Cmd(DMA_USART1, ENABLE);
 	//configure to use DMA
 	USART_DMACmd(USART1, USART_DMAReq_Tx, ENABLE);

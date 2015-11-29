@@ -127,8 +127,6 @@ int main(void)
 
 	RS485_RXEN;
 
-	RS485_ServoTest(0);
-
 	// Mount SD card
     while (1)
     {
@@ -252,6 +250,20 @@ int main(void)
 			case 13:
 			{
 				UART_QueueMessagef(GYRO_X, fusionData._gyro.vector.x);
+				mainLoopState = 0;
+				break;
+			}
+			case 14:
+			{
+				// Send data with DMA
+				RS485_ServoTest(0);
+				mainLoopState = 0;
+				break;
+			}
+			case 15:
+			{
+				// Send data with DMA
+				RS485_ServoTest(1);
 				mainLoopState = 0;
 				break;
 			}

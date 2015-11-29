@@ -32,20 +32,18 @@ typedef int8_t Int8;
 // Function declarations
 UInt16 RS485_MasterInitData(void);
 UInt16 RS485_ServoTest(UInt8 servoID);
-
-UInt16 RS485_ReceiveMessage(UInt8 data);
-
+UInt16 RS485_ServoTorqueON(UInt8 servoID);
+UInt16 RS485_ServoTorqueOFF(UInt8 servoID);
+UInt16 RS485_ServoReadAll(UInt8 servoID);
+UInt16 RS485_ServoSetPosition(UInt8 servoID, UInt16 servoPosition);
+UInt16 RS485_ServoSetSpeed(UInt8 servoID, UInt16 servoSpeed);
+UInt16 RS485_ServoSetCompliance(UInt8 servoID, UInt8 CWMargin, UInt8 CCWMargin, UInt8 CWSlope, UInt8 CCWSlope);
 UInt16 RS485_BufferQueuedCommand(UInt8 command);
-
-UInt16 RS485_MasterInitData(void);
 UInt16 RS485_MasterWriteByte(uint8_t *data, int length);
-UInt16 RS485_States_Master(void);
-UInt16 RS485_MasterecodeMessage(UInt8 data);
-
-UInt16 RS485_initData(void);
-UInt16 RS485_writeByte(void);
-UInt16 RS485_States_slave(UInt8 data);
+UInt16 RS485_States_Master();
+UInt16 RS485_ReceiveMessage(UInt8 data);
 UInt16 RS485_DecodeMessage();
+
 
 // Hardware dependent macros
 #define RS485_ENABLE_RX						RS485_RXEN

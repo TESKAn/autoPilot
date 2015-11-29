@@ -538,6 +538,16 @@ void init_DMA()
 	// Configure USART3 DMA
 	//deinit DMA channel
 	DMA_DeInit(DMA_USART3);
+
+	// Disable/clear interrupts
+	DMA_ClearITPendingBit(DMA_USART1, DMA_IT_TC);
+	DMA_ITConfig(DMA_USART1, DMA_IT_TC, DISABLE);
+
+	DMA_ClearITPendingBit(DMA_USART2, DMA_IT_TC);
+	DMA_ITConfig(DMA_USART2, DMA_IT_TC, DISABLE);
+
+	DMA_ClearITPendingBit(DMA_USART3, DMA_IT_TC);
+	DMA_ITConfig(DMA_USART3, DMA_IT_TC, DISABLE);
 }
 
 void init_ADC()
@@ -720,6 +730,7 @@ void init_USART1()
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
 	//configure module 1 - current/voltage/temperature sensor
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE); //for USART1 and USART6
 	//set baud rate
 	USART_InitStructure.USART_BaudRate = 500000;
 	//flow control
@@ -768,7 +779,6 @@ void init_USART2()
 	// Configure USART2
 	//Remember to set GPIO pins in GPIO configuration
 	//enable peripheral clock
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE); //for USART1 and USART6
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2 | RCC_APB1Periph_USART3, ENABLE); //for USART2, USART3, UART4 or UART5.
 	//program port parameters
 	//set baud rate
@@ -789,7 +799,6 @@ void init_USART2()
 	//enable interrupt - RX not empty, transfer complete
 	//USART_ITConfig(USART2, USART_IT_RXNE | USART_IT_TC, ENABLE);
 	USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
-
 
 	//enable module 2
 	USART_Cmd(USART2, ENABLE);
@@ -1203,7 +1212,7 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
 	NVIC_Init(&NVCInitStructure);
 
-	//init DMA1 stream3 interrupt
+	//init DMA1 stream3 interrupt, I2C
 	//set IRQ channel
 	NVCInitStructure.NVIC_IRQChannel = DMA1_Stream3_IRQn;
 	//set priority 0 - 15
@@ -1214,7 +1223,7 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
 	NVIC_Init(&NVCInitStructure);
 
-	//init DMA1 stream4 interrupt
+	//init DMA1 stream4 interrupt, GPS
 	//set IRQ channel
 	NVCInitStructure.NVIC_IRQChannel = DMA1_Stream4_IRQn;
 	//set priority 0 - 15
@@ -1225,9 +1234,20 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
 	NVIC_Init(&NVCInitStructure);
 
-	//init DMA1 stream6 interrupt
+	//init DMA1 stream6 interrupt, PC COMM
 	//set IRQ channel
 	NVCInitStructure.NVIC_IRQChannel = DMA1_Stream6_IRQn;
+	//set priority 0 - 15
+	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+	//set priority 0 - 15
+	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+	//enable IRQ channel
+	NVCInitStructure.NVIC_IRQChannelCmd = newState;
+	NVIC_Init(&NVCInitStructure);
+
+	//init DMA2 stream7 interrupt, RS485
+	//set IRQ channel
+	NVCInitStructure.NVIC_IRQChannel = DMA2_Stream7_IRQn;
 	//set priority 0 - 15
 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
 	//set priority 0 - 15
@@ -1372,6 +1392,8 @@ void System_Config(void)
 	init_ADC();
 	// DAC config
 	//init_DAC();
+	// Init DMA
+	init_DMA();
 	// Enable interrupts - don't forget to enable specific interrupts
 	NVIC_EnableInterrupts(ENABLE);
 	// Init ADC0 as GPIO with pull - down

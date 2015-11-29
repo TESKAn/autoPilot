@@ -272,14 +272,14 @@ void DMA1_Stream3_IRQHandler(void)
 }
 
 /**
-  * @brief  This function handles DMA1 stream3 event interrupt request.
+  * @brief  This function handles DMA2 stream7 event interrupt request.
   * @param  None
   * @retval None
-  * @services DMA1 stream 3
+  * @services DMA7 stream 7
   */
-void DMA2_Stream5_IRQHandler(void)
+void DMA2_Stream7_IRQHandler(void)
 {
-	DMA2_Stream5_ISR_Handler();
+	DMA2_Stream7_ISR_Handler();
 }
 
 /**

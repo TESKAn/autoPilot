@@ -63,7 +63,7 @@ void ADC_ISR_Handler(void)
 
 void DMA1_Stream6_ISR_Handler(void)
 {
-	DMA_ClearITPendingBit(DMA1_Stream6, DMA_IT_TC);
+	DMA_ClearITPendingBit(DMA_USART2, DMA_IT_TC);
 	DMA_ITConfig(DMA_USART2, DMA_IT_TC, DISABLE);
 	UART2_Transferring = 0;
 	// Check to send data
@@ -82,7 +82,7 @@ void DMA1_Stream4_ISR_Handler(void)
 	// Clear GPS is sending data
 	GPS_Sending(0);
 	//GPS_SENDING = 0;
-	DMA_ClearITPendingBit(DMA1_Stream4, DMA_IT_TC);
+	DMA_ClearITPendingBit(DMA_USART3, DMA_IT_TC);
 	DMA_ITConfig(DMA_USART3, DMA_IT_TC, DISABLE);
 }
 
@@ -123,13 +123,15 @@ void DMA1_Stream3_ISR_Handler(void)
   * @services DMA5 stream 5
   */
 
-void DMA2_Stream5_ISR_Handler(void)
+void DMA2_Stream7_ISR_Handler(void)
 {
+	// Clear interrupt flag
+	USART_ClearFlag(USART1, USART_FLAG_TC);
 	// Enable USART1 TC interrupt
 	USART_ITConfig(USART1, USART_IT_TC, ENABLE);
 	// Clear DMA interrupt
-	DMA_ClearITPendingBit(DMA_USART2, DMA_IT_TC);
-	DMA_ITConfig(DMA_USART2, DMA_IT_TC, DISABLE);
+	DMA_ClearITPendingBit(DMA_USART1, DMA_IT_TC);
+	DMA_ITConfig(DMA_USART1, DMA_IT_TC, DISABLE);
 }
 
 
@@ -509,6 +511,13 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		TIM_ClearFlag(TIM14, TIM_FLAG_Update);
 		TIM_ClearITPendingBit(TIM14, TIM_IT_Update);
 
+		/*
+		if(RS485_SET_INPUT)
+		{
+			RS485_SET_INPUT = 0;
+			RS485_RXEN;
+		}*/
+
 		// Update system time
 		systemTime++;
 		// UART2 timeout
@@ -691,6 +700,8 @@ void USART1_ISR_Handler(void)
 	{
 		// Disable transfer complete interrupt
 		USART_ITConfig(USART1, USART_IT_TC, DISABLE);
+
+		//RS485_SET_INPUT = 1;
 		// Enable RX
 		RS485_RXEN;
 		// Clear interrupt flag
