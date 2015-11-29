@@ -125,7 +125,9 @@ void DMA1_Stream3_ISR_Handler(void)
 
 void DMA2_Stream5_ISR_Handler(void)
 {
-	RS485_RXEN;
+	// Enable USART1 TC interrupt
+	USART_ITConfig(USART1, USART_IT_TC, ENABLE);
+	// Clear DMA interrupt
 	DMA_ClearITPendingBit(DMA_USART2, DMA_IT_TC);
 	DMA_ITConfig(DMA_USART2, DMA_IT_TC, DISABLE);
 }
@@ -638,7 +640,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			disk_timerproc();
 		}
 		// Call PS timer
-		PS_Timer();
+		//PS_Timer();
 		// Call sensor timer
 		sensorInterruptTimer();
 	}
@@ -699,8 +701,8 @@ void USART1_ISR_Handler(void)
 	{
 		// Disable transfer complete interrupt
 		USART_ITConfig(USART1, USART_IT_TC, DISABLE);
-		// Send CRC
-		USART_SendData(USART1, 0x6d);
+		// Enable RX
+		RS485_RXEN;
 		// Clear interrupt flag
 		USART_ClearFlag(USART1, USART_FLAG_TC);
 	}

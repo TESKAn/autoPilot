@@ -1243,7 +1243,7 @@ void transferDMA_USART1(uint8_t *data, int length)
 	//configure peripheral
 	DMA_Init(DMA_USART1, &DMAInitStructure);
 
-	//Enable DMA2 stream 5 - USART2 TX
+	//Enable DMA2 stream 5 - USART1 TX
 	DMA_Cmd(DMA_USART1, ENABLE);
 	//configure to use DMA
 	USART_DMACmd(USART1, USART_DMAReq_Tx, ENABLE);

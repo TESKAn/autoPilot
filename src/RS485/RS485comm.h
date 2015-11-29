@@ -54,6 +54,16 @@ UInt16 RS485_decodeMessage(void);
 #define RS485_TEST_TX_IDLE					1//ioctl(SCI_0, SCI_GET_TX_IDLE, NULL)
 #define RS485_TEST_RX_FULL					1//ioctl(SCI_0, SCI_GET_RX_FULL, NULL)
 
+// Define commands that we can queue
+#define RS485_SERVO_FR_TORQ_ON				1
+#define RS485_SERVO_FR_TORQ_OFF				2
+#define RS485_SERVO_FL_TORQ_ON				3
+#define RS485_SERVO_FL_TORQ_OFF				4
+#define RS485_SERVO_R_TORQ_ON				5
+#define RS485_SERVO_R_TORQ_OFF				6
+
+
+
 // Commands macros
 #define RS485_COMMAND_NONE					0x00
 #define RS485_COMMAND_PING					0x01
@@ -72,25 +82,27 @@ UInt16 RS485_decodeMessage(void);
 // Master defines
 // Master state machine
 #define RS485_M_STATE_IDLE					0
-#define RS485_M_STATE_WRITE					1
-#define RS485_M_STATE_TORQUE_ON				2
-#define RS485_M_STATE_TORQUE_OFF			3
-#define RS485_M_STATE_READ_ALL				4
-#define RS485_M_STATE_SET_POS				5
-#define RS485_M_STATE_SET_SPEED				6
-#define RS485_M_STATE_SET_COMPLIANCE		7
-#define RS485_M_STATE_REQUEST				8
-//#define RS485_M_STATE_
-//#define RS485_M_STATE_
+#define RS485_M_STATE_POLL					1
+#define RS485_M_STATE_WAITING_RESPONSE		2
+
+
+
+// Master poll slaves
+#define RS485_POLL_SERVO_FR			0
+#define RS485_POLL_SERVO_FL			1
+#define RS485_POLL_SERVO_R			2
+#define RS485_POLL_MOTOR_FR			3
+#define RS485_POLL_MOTOR_FL			4
+#define RS485_POLL_MOTOR_R			5
+
 
 // Receiver states
 #define RS485_M_IDLE				0
 #define RS485_M_WAIT_FOR_SIGNAL		1
 #define RS485_M_WAIT_FOR_ID			2
 #define RS485_M_WAIT_FOR_LENGTH		3
-#define RS485_M_WAIT_FOR_INSTR_ERR	4
-#define RS485_M_WAIT_FOR_PARAMETERS	5
-#define RS485_M_WAIT_FOR_CHECKSUM	6
+#define RS485_M_WAIT_FOR_DATA		4
+#define RS485_M_WAIT_FOR_CHECKSUM	5
 
 // Transmitter states
 #define RS485_M_TX_IDLE				0
