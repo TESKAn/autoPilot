@@ -20,7 +20,7 @@ FLIGHT_CORE FCFlightData;
 RCDATA RCData;
 // Flight check interval
 uint32_t ui32FlightCheckCounter = 0;
-uint32_t ui32FlightCheckInterval = 20;
+uint32_t ui32FlightCheckInterval = 10;
 
 // Flag variables
 volatile Flag flag0;

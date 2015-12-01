@@ -273,8 +273,40 @@
 #define REPORT_ADC				0x100000
 
 // UART2 comm macros
-#define GYRO_X							2
-#define MAIN_LOOP_STATE					11
+// Declare variables
+
+#define VAR_VERSION						0
+#define VAR_BUILD						1
+#define VAR_GYRO_X						2
+#define VAR_GYRO_Y						3
+#define VAR_GYRO_Z						4
+#define VAR_ACC_X						5
+#define VAR_ACC_Y						6
+#define VAR_ACC_Z						7
+#define VAR_MAG_X						8
+#define VAR_MAG_Y						9
+#define VAR_MAG_Z						10
+#define VAR_MAIN_LOOP_STATE				11
+
+
+
+
+/*
+ *             varList.Add(new transportVar("version", 0, 2, VarType.i16, false));
+            varList.Add(new transportVar("Build", 1, 2, VarType.i16, false));
+            varList.Add(new transportVar("GyroX", 2, 4, VarType.f, false));
+            varList.Add(new transportVar("GyroY", 3, 4, VarType.f, false));
+            varList.Add(new transportVar("GyroZ", 4, 4, VarType.f, false));
+            varList.Add(new transportVar("AccX", 5, 4, VarType.f, false));
+            varList.Add(new transportVar("AccY", 6, 4, VarType.f, false));
+            varList.Add(new transportVar("AccZ", 7, 4, VarType.f, false));
+            varList.Add(new transportVar("MagX", 8, 4, VarType.f, false));
+            varList.Add(new transportVar("MagY", 9, 4, VarType.f, false));
+            varList.Add(new transportVar("MagZ", 10, 4, VarType.f, false));
+            varList.Add(new transportVar("mainLoopState", 11, 2, VarType.i16, true));
+            varList.Add(new transportVar("i32 var", 12, 4, VarType.i32, true));
+            varList.Add(new transportVar("f var", 13, 4, VarType.f, true));
+ */
 
 
 

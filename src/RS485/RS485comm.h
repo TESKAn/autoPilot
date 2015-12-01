@@ -65,7 +65,12 @@ UInt16 RS485_DecodeMessage();
 #define RS485_SERVO_FL_TORQ_OFF				4
 #define RS485_SERVO_R_TORQ_ON				5
 #define RS485_SERVO_R_TORQ_OFF				6
-
+#define RS485_POLL_SERVO_FR					7
+#define RS485_POLL_SERVO_FL					8
+#define RS485_POLL_SERVO_R					9
+#define RS485_POLL_MOTOR_FR					10
+#define RS485_POLL_MOTOR_FL					11
+#define RS485_POLL_MOTOR_R					12
 
 
 // Commands macros
@@ -92,12 +97,12 @@ UInt16 RS485_DecodeMessage();
 
 
 // Master poll slaves
-#define RS485_POLL_SERVO_FR			0
-#define RS485_POLL_SERVO_FL			1
-#define RS485_POLL_SERVO_R			2
-#define RS485_POLL_MOTOR_FR			3
-#define RS485_POLL_MOTOR_FL			4
-#define RS485_POLL_MOTOR_R			5
+#define RS485_POLL_STATE_SERVO_FR			0
+#define RS485_POLL_STATE_SERVO_FL			1
+#define RS485_POLL_STATE_SERVO_R			2
+#define RS485_POLL_STATE_MOTOR_FR			3
+#define RS485_POLL_STATE_MOTOR_FL			4
+#define RS485_POLL_STATE_MOTOR_R			5
 
 
 // Receiver states

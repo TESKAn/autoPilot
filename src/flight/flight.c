@@ -39,6 +39,10 @@ void flight_init(FLIGHT_CORE *data, RCDATA * RCInputs)
 	data->f32NacelleTilt_FL = RC_DEFAULT_NACELLE_TILT;
 	data->f32NacelleTilt_FR = RC_DEFAULT_NACELLE_TILT;
 	data->f32NacelleTilt_BM = RC_DEFAULT_NACELLE_TILT;
+	// Set zero angle values
+	data->TILT_SERVOS.ui16ServoFLZero = NACELLE_FL_ZERO;
+	data->TILT_SERVOS.ui16ServoFRZero = NACELLE_FR_ZERO;
+	data->TILT_SERVOS.ui16ServoRZero = NACELLE_R_ZERO;
 
 	RCInputs->PWMIN_1_MID = RC_IN_DEFAULT_MIDPOINT;
 	RCInputs->PWMIN_2_MID = RC_IN_DEFAULT_MIDPOINT;

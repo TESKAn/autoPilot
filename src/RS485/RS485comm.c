@@ -12,10 +12,17 @@
 #define SERVO_FR_ID		0x01
 #define SERVO_FL_ID		0x02
 #define SERVO_R_ID		0x03
+#define MOTOR_FR_ID		0x04
+#define MOTOR_FL_ID		0x05
+#define MOTOR_R_ID		0x06
 
 UInt8 servoFRID = SERVO_FR_ID;
 UInt8 servoFLID = SERVO_FL_ID;
 UInt8 servoRID = SERVO_R_ID;
+
+UInt8 motorFRID = MOTOR_FR_ID;
+UInt8 motorFLID = MOTOR_FL_ID;
+UInt8 motorRID = MOTOR_R_ID;
 
 RS485SERVO RS485Servo_FL;
 RS485SERVO RS485Servo_FR;
@@ -27,10 +34,13 @@ UInt8 RS485RXBuffer[128];
 UInt8 RS485BytesToReceive = 0;
 
 UInt8 RS485MasterState = RS485_M_IDLE;
+UInt8 RS485MasterPollState = RS485_POLL_SERVO_FR;
 UInt8 RS485MasterPoll = 0;
 
+// 20 ms timeout
 UInt16 RS485TimerCount = 0;
-UInt16 RS485TimerTimeout = 5000;
+UInt16 RS485TimerTimeout = 20;
+UInt8 RS485ResponseReceived = 0;
 
 UInt8 RS485ReceiveState = 0;
 UInt8 RS485RXBufIndex = 0;
@@ -199,6 +209,30 @@ UInt16 RS485_ServoSetCompliance(UInt8 servoID, UInt8 CWMargin, UInt8 CCWMargin, 
 	return 11;
 }
 
+UInt16 RS485_MotorReadAll(UInt8 motorID)
+{
+	int i = 0;
+	RS485TransmittBuffer[0] = 0xff;
+	RS485TransmittBuffer[1] = 0xff;
+	RS485TransmittBuffer[2] = motorID;				// ID
+	RS485TransmittBuffer[3] = 0x04;					// Length
+	RS485TransmittBuffer[4] = RS485_COMMAND_READ;	// Command
+	RS485TransmittBuffer[5] = 0x00;					// Reg address 0
+	RS485TransmittBuffer[6] = 0x49;					// Data to read - 73 regs
+
+	// Calculate checksum
+	RS485TransmittBuffer[7] = RS485TransmittBuffer[2];
+	for(i = 3; i < 7; i++)
+	{
+		RS485TransmittBuffer[7] += RS485TransmittBuffer[i];
+	}
+	RS485TransmittBuffer[7] = ~(RS485TransmittBuffer[7]);				// Checksum
+
+	// Store read address
+	RS485ReadReqStartAddress = 0;
+	return 8;
+}
+
 UInt16 RS485_BufferQueuedCommand(UInt8 command)
 {
 	UInt16 bytes = 0;
@@ -224,6 +258,46 @@ UInt16 RS485_BufferQueuedCommand(UInt8 command)
 			bytes = RS485_ServoTorqueOFF(servoFLID);
 			break;
 		}
+		case RS485_SERVO_R_TORQ_ON:
+		{
+			bytes = RS485_ServoTorqueON(servoRID);
+			break;
+		}
+		case RS485_SERVO_R_TORQ_OFF:
+		{
+			bytes = RS485_ServoTorqueOFF(servoRID);
+			break;
+		}
+		case RS485_POLL_SERVO_FR:
+		{
+			bytes = RS485_ServoReadAll(servoFRID);
+			break;
+		}
+		case RS485_POLL_SERVO_FL:
+		{
+			bytes = RS485_ServoReadAll(servoFLID);
+			break;
+		}
+		case RS485_POLL_SERVO_R:
+		{
+			bytes = RS485_ServoReadAll(servoRID);
+			break;
+		}
+		case RS485_POLL_MOTOR_FR:
+		{
+			bytes = RS485_MotorReadAll(motorFRID);
+			break;
+		}
+		case RS485_POLL_MOTOR_FL:
+		{
+			bytes = RS485_MotorReadAll(motorFLID);
+			break;
+		}
+		case RS485_POLL_MOTOR_R:
+		{
+			bytes = RS485_MotorReadAll(motorRID);
+			break;
+		}
 	}
 	return bytes;
 }
@@ -231,14 +305,11 @@ UInt16 RS485_BufferQueuedCommand(UInt8 command)
 
 UInt16 RS485_MasterWriteByte(uint8_t *data, int length)
 {
-
 	// Transmit data
-
 	// Enable transmit
 	RS485_TXEN;
 	// Send
 	transferDMA_USART1(data, length);
-
 	return 0;
 }
 
@@ -258,7 +329,75 @@ UInt16 RS485_States_Master()
 			// Check send buffer
 			if(0 == RS485CommandBuffer.count)
 			{
-
+				// Go through RS485 slaves and request data
+				switch(RS485MasterPollState)
+				{
+					case RS485_POLL_STATE_SERVO_FR:
+					{
+						// Store req bytes in tx buffer
+						bytesToSend = RS485_BufferQueuedCommand(RS485_POLL_SERVO_FR);
+						// Send data with DMA
+						RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
+						// Set next
+						RS485MasterPollState = RS485_POLL_STATE_SERVO_FL;
+						break;
+					}
+					case RS485_POLL_STATE_SERVO_FL:
+					{
+						// Store req bytes in tx buffer
+						bytesToSend = RS485_BufferQueuedCommand(RS485_POLL_SERVO_FL);
+						// Send data with DMA
+						RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
+						// Set next
+						RS485MasterPollState = RS485_POLL_STATE_SERVO_R;
+						break;
+					}
+					case RS485_POLL_STATE_SERVO_R:
+					{
+						// Store req bytes in tx buffer
+						bytesToSend = RS485_BufferQueuedCommand(RS485_POLL_SERVO_R);
+						// Send data with DMA
+						RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
+						// Set next
+						RS485MasterPollState = RS485_POLL_STATE_MOTOR_FR;
+						break;
+					}
+					case RS485_POLL_STATE_MOTOR_FR:
+					{
+						// Store req bytes in tx buffer
+						bytesToSend = RS485_BufferQueuedCommand(RS485_POLL_MOTOR_FR);
+						// Send data with DMA
+						RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
+						// Set next
+						RS485MasterPollState = RS485_POLL_STATE_MOTOR_FL;
+						break;
+					}
+					case RS485_POLL_STATE_MOTOR_FL:
+					{
+						// Store req bytes in tx buffer
+						bytesToSend = RS485_BufferQueuedCommand(RS485_POLL_MOTOR_FL);
+						// Send data with DMA
+						RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
+						// Set next
+						RS485MasterPollState = RS485_POLL_STATE_MOTOR_R;
+						break;
+					}
+					case RS485_POLL_STATE_MOTOR_R:
+					{
+						// Store req bytes in tx buffer
+						bytesToSend = RS485_BufferQueuedCommand(RS485_POLL_MOTOR_R);
+						// Send data with DMA
+						RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
+						// Set next
+						RS485MasterPollState = RS485_POLL_STATE_SERVO_FR;
+						break;
+					}
+					default:
+					{
+						RS485MasterPollState = RS485_POLL_STATE_SERVO_FR;
+						break;
+					}
+				}
 			}
 			else
 			{
@@ -270,12 +409,25 @@ UInt16 RS485_States_Master()
 				RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
 
 			}
+			// Go to waiting for response state
+			RS485MasterState = RS485_M_STATE_WAITING_RESPONSE;
 			break;
 		}
 
 		case RS485_M_STATE_WAITING_RESPONSE:
 		{
-
+			RS485TimerCount++;
+			if(RS485TimerCount > RS485TimerTimeout)
+			{
+				// Timeout, no response from slave device.
+				// Go back to poll state
+				RS485MasterState = RS485_M_STATE_POLL;
+			}
+			if(0 != RS485ResponseReceived)
+			{
+				// Go back to poll state
+				RS485MasterState = RS485_M_STATE_POLL;
+			}
 			break;
 		}
 
@@ -352,6 +504,8 @@ UInt16 RS485_ReceiveMessage(UInt8 data)
 			{
 				// Data valid, decode
 				RS485_DecodeMessage();
+				// Mark response received - store ID
+				RS485ResponseReceived = RS485RXBuffer[0];
 			}
 			RS485ReceiveState = RS485_M_IDLE;
 			RS485RXBytesLeft = 0;
@@ -389,6 +543,8 @@ UInt16 RS485_DecodeMessage()
 				destIndex++;
 				sourceIndex++;
 			}
+			// Send back some data
+
 			break;
 		}
 	}

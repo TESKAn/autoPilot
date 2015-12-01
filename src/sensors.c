@@ -266,7 +266,6 @@ void copySensorData(void)
 	// Mark end of sensor updating
 	SENSORS_UPDATING = 0;
 
-
 	// Store angles
 	storeAHRSAngles(&fusionData);
 

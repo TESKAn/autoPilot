@@ -105,6 +105,13 @@ typedef struct
 		float32_t f32Yaw;
 	}ORIENTATION_ADJUST;
 
+	struct
+	{
+		uint16_t ui16ServoFLZero;
+		uint16_t ui16ServoFRZero;
+		uint16_t ui16ServoRZero;
+	}TILT_SERVOS;
+
 	// Variables
 	// Minimal plane speed to be considered as flying
 	float32_t f32MinPlaneSpeed;

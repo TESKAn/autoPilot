@@ -511,13 +511,6 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		TIM_ClearFlag(TIM14, TIM_FLAG_Update);
 		TIM_ClearITPendingBit(TIM14, TIM_IT_Update);
 
-		/*
-		if(RS485_SET_INPUT)
-		{
-			RS485_SET_INPUT = 0;
-			RS485_RXEN;
-		}*/
-
 		// Update system time
 		systemTime++;
 		// UART2 timeout
@@ -543,9 +536,6 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		{
 			PWMEN_PIN_TOGGLE;
 		}
-
-
-		//AC_Serializer();
 
 		if(ADC_ENABLED)
 		{
@@ -601,14 +591,30 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			// Check flight states
 			flight_checkStates(&FCFlightData);
 			// Get new servo values
-			flight_decodeServos(&RCData, &FCFlightData);
+			flight_decodeServos(&FCFlightData, &RCData);
 		}
+
+		// Call RS485 states
+		RS485_States_Master();
 
 
 		// LED counter
 		LED_ToggleCount++;
 		if(LED_ToggleCount >= 75)
 		{
+			// Send out data
+			UART_QueueMessagef(VAR_GYRO_X, fusionData._gyro.vector.x);
+			UART_QueueMessagef(VAR_GYRO_Y, fusionData._gyro.vector.y);
+			UART_QueueMessagef(VAR_GYRO_Z, fusionData._gyro.vector.z);
+
+			UART_QueueMessagef(VAR_ACC_X, fusionData._accelerometer.vector.x);
+			UART_QueueMessagef(VAR_ACC_Y, fusionData._accelerometer.vector.y);
+			UART_QueueMessagef(VAR_ACC_Z, fusionData._accelerometer.vector.z);
+
+			UART_QueueMessagef(VAR_MAG_X, fusionData._mag.vector.x);
+			UART_QueueMessagef(VAR_MAG_Y, fusionData._mag.vector.y);
+			UART_QueueMessagef(VAR_MAG_Z, fusionData._mag.vector.z);
+
 			// Event every second
 
 			// Write log
@@ -638,8 +644,6 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			SD_TimerCount = 0;
 			disk_timerproc();
 		}
-		// Call PS timer
-		//PS_Timer();
 		// Call sensor timer
 		sensorInterruptTimer();
 	}

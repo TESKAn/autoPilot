@@ -109,7 +109,7 @@ int32_t UART_RcvData(uint8_t data)
 
 				break;
 			}
-			case MAIN_LOOP_STATE:
+			case VAR_MAIN_LOOP_STATE:
 			{
 				// mainLoopState, uint16_t
 				if(UART2_RcvdBytes == 5)
@@ -128,6 +128,7 @@ int32_t UART_RcvData(uint8_t data)
 				}
 				break;
 			}
+
 			default:
 			{
 				UART2_RcvdBytes = 0;
@@ -181,29 +182,21 @@ int UART_CopyToTransmitBuf()
 	return numBytes;
 }
 
-int32_t UART_BufferMessage(uint8_t *data, int16_t bytes)
-{
-	int i = 0;
-	for(i = 0; i < bytes; i++)
-	{
-		RB_push(&UARTBuffer, data[i]);
-	}
-	return 0;
-}
-
 int32_t UART_QueueMessagei16(int16_t var, int16_t data)
 {
 	int i = 0;
-	uint8_t messageBuffer[5];
+	uint8_t messageBuffer[7];
+	messageBuffer[0] = 0xff;
+	messageBuffer[1] = 0xff;
 	UART_Conversion.i16[0] = var;
 	UART_Conversion.i16[1] = data;
-	messageBuffer[0] = UART_Conversion.ch[0];
-	messageBuffer[1] = UART_Conversion.ch[1];
+	messageBuffer[2] = UART_Conversion.ch[0];
+	messageBuffer[3] = UART_Conversion.ch[1];
 
-	messageBuffer[2] = UART_Conversion.ch[2];
-	messageBuffer[3] = UART_Conversion.ch[3];
-	messageBuffer[4] = UART_BufCRC(messageBuffer, 5);
-	for(i = 0; i < 5; i++)
+	messageBuffer[4] = UART_Conversion.ch[2];
+	messageBuffer[5] = UART_Conversion.ch[3];
+	messageBuffer[6] = UART_BufCRC(messageBuffer, 6);
+	for(i = 0; i < 7; i++)
 	{
 		RB_push(&UARTBuffer, messageBuffer[i]);
 	}
@@ -217,24 +210,47 @@ int32_t UART_QueueMessagei16(int16_t var, int16_t data)
 
 int32_t UART_QueueMessagei32(int16_t var, int32_t data)
 {
-
+	int i = 0;
+	uint8_t messageBuffer[9];
+	messageBuffer[0] = 0xff;
+	messageBuffer[1] = 0xff;
+	UART_Conversion.i16[0] = var;
+	messageBuffer[2] = UART_Conversion.ch[0];
+	messageBuffer[3] = UART_Conversion.ch[1];
+	UART_Conversion.i32[0] = data;
+	messageBuffer[4] = UART_Conversion.ch[0];
+	messageBuffer[5] = UART_Conversion.ch[1];
+	messageBuffer[6] = UART_Conversion.ch[2];
+	messageBuffer[7] = UART_Conversion.ch[3];
+	messageBuffer[8] = UART_BufCRC(messageBuffer, 8);
+	for(i = 0; i < 9; i++)
+	{
+		RB_push(&UARTBuffer, messageBuffer[i]);
+	}
+	// If UART is not busy, send data
+	if(!UART2_Transferring)
+	{
+		UART_SendBuffer();
+	}
 	return 0;
 }
 
 int32_t UART_QueueMessagef(int16_t var, float data)
 {
 	int i = 0;
-	uint8_t messageBuffer[7];
+	uint8_t messageBuffer[9];
+	messageBuffer[0] = 0xff;
+	messageBuffer[1] = 0xff;
 	UART_Conversion.i16[0] = var;
-	messageBuffer[0] = UART_Conversion.ch[0];
-	messageBuffer[1] = UART_Conversion.ch[1];
-	UART_Conversion.f32[0] = data;
 	messageBuffer[2] = UART_Conversion.ch[0];
 	messageBuffer[3] = UART_Conversion.ch[1];
-	messageBuffer[4] = UART_Conversion.ch[2];
-	messageBuffer[5] = UART_Conversion.ch[3];
-	messageBuffer[6] = UART_BufCRC(messageBuffer, 6);
-	for(i = 0; i < 7; i++)
+	UART_Conversion.f32[0] = data;
+	messageBuffer[4] = UART_Conversion.ch[0];
+	messageBuffer[5] = UART_Conversion.ch[1];
+	messageBuffer[6] = UART_Conversion.ch[2];
+	messageBuffer[7] = UART_Conversion.ch[3];
+	messageBuffer[8] = UART_BufCRC(messageBuffer, 8);
+	for(i = 0; i < 9; i++)
 	{
 		RB_push(&UARTBuffer, messageBuffer[i]);
 	}

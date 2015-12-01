@@ -29,6 +29,10 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 // Default transition tilt in deg
 #define RC_NACELLE_TRANSITION_TILT		45.0f;
 #define RC_NACELLE_HOVERTRANSITION_TILT	75.0f;
+// Define nacelle zeros
+#define NACELLE_FR_ZERO					0
+#define NACELLE_FL_ZERO					0
+#define NACELLE_R_ZERO					0
 
 // Macros that encode PWM inputs to specific channels
 #define RC_AILERON		PWMIN_1_Zero
@@ -56,9 +60,9 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 #define RC_AILERON_R_MID	PWMOUT_Offset_2
 
 
-#define RC_NACELLE_FL_MID	PWMOUT_Offset_9
-#define RC_NACELLE_FR_MID	PWMOUT_Offset_10
-#define RC_NACELLE_BM_MID	PWMOUT_Offset_11
+#define RC_NACELLE_FL_MID	0
+#define RC_NACELLE_FR_MID	0
+#define RC_NACELLE_R_MID	0
 #define RC_NACELLE_BR_MID	PWMOUT_Offset_12
 
 // Input values macros
