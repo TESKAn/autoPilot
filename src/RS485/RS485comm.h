@@ -15,6 +15,7 @@
  *      Author: jmoc
  */
 // Typedefs
+typedef uint32_t UInt32;
 typedef uint16_t UInt16;
 typedef uint8_t UInt8;
 typedef int16_t Int16;
@@ -38,11 +39,16 @@ UInt16 RS485_ServoReadAll(UInt8 servoID);
 UInt16 RS485_ServoSetPosition(UInt8 servoID, UInt16 servoPosition);
 UInt16 RS485_ServoSetSpeed(UInt8 servoID, UInt16 servoSpeed);
 UInt16 RS485_ServoSetCompliance(UInt8 servoID, UInt8 CWMargin, UInt8 CCWMargin, UInt8 CWSlope, UInt8 CCWSlope);
+UInt16 RS485_MotorReadAll(UInt8 motorID);
+UInt16 RS485_MotorSetMinSpeed(UInt8 motorID, float32_t minSpeed);
+UInt16 RS485_MotorSetMaxSpeed(UInt8 motorID, float32_t minSpeed);
+UInt16 RS485_MotorEnablePWMs(UInt8 motorID, UInt16 enable);
 UInt16 RS485_BufferQueuedCommand(UInt8 command);
 UInt16 RS485_MasterWriteByte(uint8_t *data, int length);
 UInt16 RS485_States_Master();
 UInt16 RS485_ReceiveMessage(UInt8 data);
 UInt16 RS485_DecodeMessage();
+Int16 RS485_SetupMotors();
 
 
 // Hardware dependent macros
@@ -59,18 +65,16 @@ UInt16 RS485_DecodeMessage();
 #define RS485_TEST_RX_FULL					1//ioctl(SCI_0, SCI_GET_RX_FULL, NULL)
 
 // Define commands that we can queue
-#define RS485_SERVO_FR_TORQ_ON				1
-#define RS485_SERVO_FR_TORQ_OFF				2
-#define RS485_SERVO_FL_TORQ_ON				3
-#define RS485_SERVO_FL_TORQ_OFF				4
-#define RS485_SERVO_R_TORQ_ON				5
-#define RS485_SERVO_R_TORQ_OFF				6
-#define RS485_POLL_SERVO_FR					7
-#define RS485_POLL_SERVO_FL					8
-#define RS485_POLL_SERVO_R					9
-#define RS485_POLL_MOTOR_FR					10
-#define RS485_POLL_MOTOR_FL					11
-#define RS485_POLL_MOTOR_R					12
+#define RS485_POLL_SERVO					1
+#define RS485_POLL_MOTOR					2
+#define RS485_SERVO_TORQ_ON					3
+#define RS485_SERVO_TORQ_OFF				4
+#define RS485_SET_MOTOR_POSITION			5
+#define RS485_SET_MOTOR_SPEED				6
+#define RS485_SET_MOTOR_MIN_SPEED			7
+#define RS485_SET_MOTOR_MAX_SPEED			8
+#define RS485_ENABLE_MOTOR_PWMIN			9
+
 
 
 // Commands macros
@@ -118,8 +122,23 @@ UInt16 RS485_DecodeMessage();
 #define RS485_M_TX_SENDING			1
 #define RS485_M_TX_FINISHED			2
 
+// Command store struct
+typedef struct tagRS485COMMAND
+{
+	union
+	{
+		UInt32 ui32Packed;
+		struct tagVARS
+		{
+			UInt8 ui8Address;
+			UInt8 ui8Command;
+			UInt16 ui16Data;
+		}VARS;
+	};
+}RS485COMMAND;
 
-// Structure that holds all relevant data
+
+// Structure that holds all relevant data for servo
 typedef struct tagRS485SERVO
 {
 	UInt8 errStatus;
@@ -171,6 +190,51 @@ typedef struct tagRS485SERVO
 	};
 
 }RS485SERVO;
+
+// Structure that holds all relevant data for motor
+typedef struct tagRS485MOTOR
+{
+	UInt8 errStatus;
+	union
+	{
+		struct
+		{
+			UInt8 ui8Data[39];				// Main data structure
+		};
+		struct
+		{
+			// Some params
+			UInt16 ui16ModelNumber;
+			UInt8 ui8FirmwareVersion;
+			UInt8 ui8ID;
+			UInt8 ui8BaudRate;
+			// Motor control
+			// Motor state - idle, run, error
+			UInt16 ui16State;
+			// State transition command
+			UInt16 ui16Command;
+			// Motor min/max RPM
+			// 9
+			float32_t f32MinRPM;
+			// 13
+			float32_t f32MaxRPM;
+			// Enable PWMs
+			// 17
+			UInt8 ui8PWMEnabled;
+			// Errors
+			UInt16 ui16Errors;
+			// Status of the motor
+			float32_t f32UIn;
+			float32_t f32IIn;
+			float32_t f32PIn;
+			float32_t f32RPM;
+			float32_t f32SetRPM;
+
+
+		}REGS;
+	};
+
+}RS485MOTOR;
 
 
 #endif /* RS485COMM_H_ */

@@ -1393,3 +1393,78 @@ uint8_t RB_pop(RING_BUFFER* rb)
     return data;
 }
 
+int16_t RB_flush(RING_BUFFER* rb)
+{
+    rb->data_start = rb->buffer;
+    rb->data_end = rb->buffer;
+    rb->count = 0;
+    return 0;
+}
+
+// 32 bit ring buffer
+
+int16_t RB32_full(RING_BUFFER32* rb)
+{
+    if(rb->count == rb->size) return 0;
+    else return -1;
+}
+
+int16_t RB32_Init(RING_BUFFER32* rb, uint32_t *buf, int16_t size)
+{
+	rb->buffer = buf;
+
+    rb->buffer_end = rb->buffer + size;
+    rb->size = size;
+    rb->data_start = rb->buffer;
+    rb->data_end = rb->buffer;
+    rb->count = 0;
+
+	return 0;
+}
+
+int16_t RB32_push(RING_BUFFER32* rb, uint32_t data)
+{
+    *rb->data_end = data;
+    rb->data_end++;
+    if (rb->data_end == rb->buffer_end)
+        rb->data_end = rb->buffer;
+
+    if (0 == RB_full(rb))
+    {
+        if ((rb->data_start + 1) == rb->buffer_end)
+        {
+            rb->data_start = rb->buffer;
+        }
+        else
+        {
+            rb->data_start++;
+        }
+    }
+    else
+    {
+        rb->count++;
+    }
+	return 0;
+}
+
+uint32_t RB32_pop(RING_BUFFER32* rb)
+{
+    uint32_t data = *rb->data_start;
+    rb->data_start++;
+    if (rb->data_start == rb->buffer_end)
+    {
+        rb->data_start = rb->buffer;
+    }
+    rb->count--;
+
+    return data;
+}
+
+int16_t RB32_flush(RING_BUFFER32* rb)
+{
+    rb->data_start = rb->buffer;
+    rb->data_end = rb->buffer;
+    rb->count = 0;
+    return 0;
+}
+

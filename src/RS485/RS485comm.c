@@ -34,7 +34,7 @@ UInt8 RS485RXBuffer[128];
 UInt8 RS485BytesToReceive = 0;
 
 UInt8 RS485MasterState = RS485_M_IDLE;
-UInt8 RS485MasterPollState = RS485_POLL_SERVO_FR;
+UInt8 RS485MasterPollState = RS485_POLL_STATE_SERVO_FR;
 UInt8 RS485MasterPoll = 0;
 
 // 20 ms timeout
@@ -49,9 +49,15 @@ UInt8 RS485Checksum = 0;
 UInt8 RS485ReadReqStartAddress = 0;
 
 // Variables
-uint8_t RS485_CommandBuffer[16];
+UInt32 RS485_CommandBuffer[16];
 
-RING_BUFFER RS485CommandBuffer;
+RING_BUFFER32 RS485CommandBuffer;
+
+RS485COMMAND RS485CommandDecoder;
+
+CONVERTNUM RS485ConvertNum;
+
+
 
 // Master functions
 UInt16 RS485_MasterInitData(void)
@@ -75,14 +81,21 @@ UInt16 RS485_MasterInitData(void)
 UInt16 RS485_ServoTest(UInt8 servoID)
 {
 	int bytesToSend = 0;
+	RS485COMMAND servoCommand;
 	// Store req bytes in tx buffer
 	if(servoID == 0)
 	{
-		bytesToSend = RS485_BufferQueuedCommand(RS485_SERVO_FR_TORQ_ON);
+		servoCommand.VARS.ui8Address = servoFRID;
+		servoCommand.VARS.ui8Command = RS485_SERVO_TORQ_ON;
+		servoCommand.VARS.ui16Data = 0;
+		bytesToSend = RS485_BufferQueuedCommand(servoCommand);
 	}
 	else
 	{
-		bytesToSend = RS485_BufferQueuedCommand(RS485_SERVO_FR_TORQ_OFF);
+		servoCommand.VARS.ui8Address = servoFRID;
+		servoCommand.VARS.ui8Command = RS485_SERVO_TORQ_OFF;
+		servoCommand.VARS.ui16Data = 0;
+		bytesToSend = RS485_BufferQueuedCommand(servoCommand);
 	}
 	// Send data with DMA
 	RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
@@ -233,71 +246,142 @@ UInt16 RS485_MotorReadAll(UInt8 motorID)
 	return 8;
 }
 
-UInt16 RS485_BufferQueuedCommand(UInt8 command)
+UInt16 RS485_MotorSetMinSpeed(UInt8 motorID, float32_t minSpeed)
+{
+	int i = 0;
+
+	RS485ConvertNum.f32[0] = minSpeed;
+
+
+	RS485TransmittBuffer[0] = 0xff;
+	RS485TransmittBuffer[1] = 0xff;
+	RS485TransmittBuffer[2] = motorID;				// ID
+	RS485TransmittBuffer[3] = 0x04;					// Length
+	RS485TransmittBuffer[4] = RS485_COMMAND_WRITE;	// Command
+	RS485TransmittBuffer[5] = 0x09;					// Reg address 9
+	RS485TransmittBuffer[6] = RS485ConvertNum.ch[0];
+	RS485TransmittBuffer[7] = RS485ConvertNum.ch[1];
+	RS485TransmittBuffer[8] = RS485ConvertNum.ch[2];
+	RS485TransmittBuffer[9] = RS485ConvertNum.ch[3];
+
+	// Calculate checksum
+	RS485TransmittBuffer[10] = RS485TransmittBuffer[2];
+	for(i = 3; i < 10; i++)
+	{
+		RS485TransmittBuffer[10] += RS485TransmittBuffer[i];
+	}
+	RS485TransmittBuffer[10] = ~(RS485TransmittBuffer[10]);				// Checksum
+
+	return 0;
+}
+
+UInt16 RS485_MotorSetMaxSpeed(UInt8 motorID, float32_t maxSpeed)
+{
+	int i = 0;
+
+	RS485ConvertNum.f32[0] = maxSpeed;
+
+
+	RS485TransmittBuffer[0] = 0xff;
+	RS485TransmittBuffer[1] = 0xff;
+	RS485TransmittBuffer[2] = motorID;				// ID
+	RS485TransmittBuffer[3] = 0x04;					// Length
+	RS485TransmittBuffer[4] = RS485_COMMAND_WRITE;	// Command
+	RS485TransmittBuffer[5] = 0x0d;					// Reg address 13
+	RS485TransmittBuffer[6] = RS485ConvertNum.ch[0];
+	RS485TransmittBuffer[7] = RS485ConvertNum.ch[1];
+	RS485TransmittBuffer[8] = RS485ConvertNum.ch[2];
+	RS485TransmittBuffer[9] = RS485ConvertNum.ch[3];
+
+	// Calculate checksum
+	RS485TransmittBuffer[10] = RS485TransmittBuffer[2];
+	for(i = 3; i < 10; i++)
+	{
+		RS485TransmittBuffer[10] += RS485TransmittBuffer[i];
+	}
+	RS485TransmittBuffer[10] = ~(RS485TransmittBuffer[10]);				// Checksum
+
+	return 0;
+}
+
+UInt16 RS485_MotorEnablePWMs(UInt8 motorID, UInt16 enable)
+{
+	int i = 0;
+	RS485TransmittBuffer[0] = 0xff;
+	RS485TransmittBuffer[1] = 0xff;
+	RS485TransmittBuffer[2] = motorID;				// ID
+	RS485TransmittBuffer[3] = 0x04;					// Length
+	RS485TransmittBuffer[4] = RS485_COMMAND_WRITE;	// Command
+	RS485TransmittBuffer[5] = 0x11;					// Reg address 17
+	RS485TransmittBuffer[6] = (UInt8)enable;		// Data
+
+	// Calculate checksum
+	RS485TransmittBuffer[7] = RS485TransmittBuffer[2];
+	for(i = 3; i < 7; i++)
+	{
+		RS485TransmittBuffer[7] += RS485TransmittBuffer[i];
+	}
+	RS485TransmittBuffer[7] = ~(RS485TransmittBuffer[7]);				// Checksum
+
+	// Store read address
+	RS485ReadReqStartAddress = 0;
+	return 8;
+}
+
+
+
+UInt16 RS485_BufferQueuedCommand(RS485COMMAND command)
 {
 	UInt16 bytes = 0;
-	switch(command)
+	switch(command.VARS.ui8Command)
 	{
-		case RS485_SERVO_FR_TORQ_ON:
+		case RS485_POLL_SERVO:
 		{
-			bytes = RS485_ServoTorqueON(servoFRID);
+			bytes = RS485_ServoReadAll(command.VARS.ui8Address);
 			break;
 		}
-		case RS485_SERVO_FR_TORQ_OFF:
+		case RS485_POLL_MOTOR:
 		{
-			bytes = RS485_ServoTorqueOFF(servoFRID);
+			bytes = RS485_MotorReadAll(command.VARS.ui8Address);
 			break;
 		}
-		case RS485_SERVO_FL_TORQ_ON:
+		case RS485_SERVO_TORQ_ON:
 		{
-			bytes = RS485_ServoTorqueON(servoFLID);
+			bytes = RS485_ServoTorqueON(command.VARS.ui8Address);
 			break;
 		}
-		case RS485_SERVO_FL_TORQ_OFF:
+		case RS485_SERVO_TORQ_OFF:
 		{
-			bytes = RS485_ServoTorqueOFF(servoFLID);
+			bytes = RS485_ServoTorqueOFF(command.VARS.ui8Address);
 			break;
 		}
-		case RS485_SERVO_R_TORQ_ON:
+		case RS485_SET_MOTOR_POSITION:
 		{
-			bytes = RS485_ServoTorqueON(servoRID);
+			bytes = RS485_ServoSetPosition(command.VARS.ui8Address, command.VARS.ui16Data);
 			break;
 		}
-		case RS485_SERVO_R_TORQ_OFF:
+		case RS485_SET_MOTOR_SPEED:
 		{
-			bytes = RS485_ServoTorqueOFF(servoRID);
+			bytes = RS485_ServoSetSpeed(command.VARS.ui8Address, command.VARS.ui16Data);
 			break;
 		}
-		case RS485_POLL_SERVO_FR:
+		case RS485_SET_MOTOR_MIN_SPEED:
 		{
-			bytes = RS485_ServoReadAll(servoFRID);
+			bytes = RS485_MotorSetMinSpeed(command.VARS.ui8Address, (float32_t)command.VARS.ui16Data);
 			break;
 		}
-		case RS485_POLL_SERVO_FL:
+		case RS485_SET_MOTOR_MAX_SPEED:
 		{
-			bytes = RS485_ServoReadAll(servoFLID);
+			bytes = RS485_MotorSetMaxSpeed(command.VARS.ui8Address, (float32_t)command.VARS.ui16Data);
 			break;
 		}
-		case RS485_POLL_SERVO_R:
+		case RS485_ENABLE_MOTOR_PWMIN:
 		{
-			bytes = RS485_ServoReadAll(servoRID);
+			bytes = RS485_MotorEnablePWMs(command.VARS.ui8Address, command.VARS.ui16Data);
 			break;
 		}
-		case RS485_POLL_MOTOR_FR:
-		{
-			bytes = RS485_MotorReadAll(motorFRID);
-			break;
-		}
-		case RS485_POLL_MOTOR_FL:
-		{
-			bytes = RS485_MotorReadAll(motorFLID);
-			break;
-		}
-		case RS485_POLL_MOTOR_R:
-		{
-			bytes = RS485_MotorReadAll(motorRID);
-			break;
-		}
+
+
 	}
 	return bytes;
 }
@@ -402,9 +486,9 @@ UInt16 RS485_States_Master()
 			else
 			{
 				// Get command from buffer
-				command = RB_pop(&RS485CommandBuffer);
+				RS485CommandDecoder.ui32Packed = RB32_pop(&RS485CommandBuffer);
 				// Store req bytes in tx buffer
-				bytesToSend = RS485_BufferQueuedCommand(command);
+				bytesToSend = RS485_BufferQueuedCommand(RS485CommandDecoder);
 				// Send data with DMA
 				RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
 
@@ -548,5 +632,63 @@ UInt16 RS485_DecodeMessage()
 			break;
 		}
 	}
+	return 0;
+}
+
+// Setup motors
+Int16 RS485_SetupMotors()
+{
+	RS485COMMAND motorCommand;
+
+	// Set motor min RPM ***************************
+	// Motor 1
+	motorCommand.VARS.ui8Address = motorFRID;
+	motorCommand.VARS.ui8Command = RS485_SET_MOTOR_MIN_SPEED;
+	motorCommand.VARS.ui16Data = 500;
+	// Store command
+	RB32_push(&RS485CommandBuffer, motorCommand.ui32Packed);
+	// Motor 2
+	motorCommand.VARS.ui8Address = motorFLID;
+	// Store command
+	RB32_push(&RS485CommandBuffer, motorCommand.ui32Packed);
+	// Motor 3
+	motorCommand.VARS.ui8Address = motorRID;
+	// Store command
+	RB32_push(&RS485CommandBuffer, motorCommand.ui32Packed);
+
+	// Set motor max RPM ***************************
+	// Motor 1
+	motorCommand.VARS.ui8Address = motorFRID;
+	motorCommand.VARS.ui8Command = RS485_SET_MOTOR_MAX_SPEED;
+	motorCommand.VARS.ui16Data = 10000;
+	// Store command
+	RB32_push(&RS485CommandBuffer, motorCommand.ui32Packed);
+	// Motor 2
+	motorCommand.VARS.ui8Address = motorFLID;
+	// Store command
+	RB32_push(&RS485CommandBuffer, motorCommand.ui32Packed);
+	// Motor 3
+	motorCommand.VARS.ui8Address = motorRID;
+	// Store command
+	RB32_push(&RS485CommandBuffer, motorCommand.ui32Packed);
+
+	// Enable PWM inputs ***************************
+	// Motor 1
+	motorCommand.VARS.ui8Address = motorFRID;
+	motorCommand.VARS.ui8Command = RS485_ENABLE_MOTOR_PWMIN;
+	motorCommand.VARS.ui16Data = 1;
+	// Store command
+	RB32_push(&RS485CommandBuffer, motorCommand.ui32Packed);
+	// Motor 2
+	motorCommand.VARS.ui8Address = motorFLID;
+	// Store command
+	RB32_push(&RS485CommandBuffer, motorCommand.ui32Packed);
+	// Motor 3
+	motorCommand.VARS.ui8Address = motorRID;
+	// Store command
+	RB32_push(&RS485CommandBuffer, motorCommand.ui32Packed);
+
+
+
 	return 0;
 }
