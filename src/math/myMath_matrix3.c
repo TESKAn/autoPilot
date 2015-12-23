@@ -166,51 +166,64 @@ ErrorStatus matrix3_MatrixMultiply(Matrixf * matA, Matrixf * matB, Matrixf * mat
 	float32_t b = 0;
 	float32_t c = 0;
 
+	Matrixf matX;
+
 	// Calculate resulting matrix by multiplying matrices A and B
 	// Row A.a, col B.x
 	a = matA->a.x * matB->a.x;
 	b = matA->a.y * matB->b.x;
 	c = matA->a.z * matB->c.x;
-	matC->a.x = a + b + c;
+	matX.a.x = a + b + c;
 	a = matA->a.x * matB->a.y;
 	b = matA->a.y * matB->b.y;
 	c = matA->a.z * matB->c.y;
-	matC->a.y = a + b + c;
+	matX.a.y = a + b + c;
 	a = matA->a.x * matB->a.z;
 	b = matA->a.y * matB->b.z;
 	c = matA->a.z * matB->c.z;
-	matC->a.z = a + b + c;
+	matX.a.z = a + b + c;
 
 	a = matA->b.x * matB->a.x;
 	b = matA->b.y * matB->b.x;
 	c = matA->b.z * matB->c.x;
-	matC->b.x = a + b + c;
+	matX.b.x = a + b + c;
 	a = matA->b.x * matB->a.y;
 	b = matA->b.y * matB->b.y;
 	c = matA->b.z * matB->c.y;
-	matC->b.y = a + b + c;
+	matX.b.y = a + b + c;
 	a = matA->b.x * matB->a.z;
 	b = matA->b.y * matB->b.z;
 	c = matA->b.z * matB->c.z;
-	matC->b.z = a + b + c;
+	matX.b.z = a + b + c;
 
 	a = matA->c.x * matB->a.x;
 	b = matA->c.y * matB->b.x;
 	c = matA->c.z * matB->c.x;
-	matC->c.x = a + b + c;
+	matX.c.x = a + b + c;
 	a = matA->c.x * matB->a.y;
 	b = matA->c.y * matB->b.y;
 	c = matA->c.z * matB->c.y;
-	matC->c.y = a + b + c;
+	matX.c.y = a + b + c;
 	a = matA->c.x * matB->a.z;
 	b = matA->c.y * matB->b.z;
 	c = matA->c.z * matB->c.z;
-	matC->c.z = a + b + c;
+	matX.c.z = a + b + c;
 
 	// Check if FPU result is OK
 	if(!FPU_EXCEPTION)
 	{
 		status = SUCCESS;
+		matC->a.x = matX.a.x;
+		matC->a.y = matX.a.y;
+		matC->a.z = matX.a.z;
+
+		matC->b.x = matX.b.x;
+		matC->b.y = matX.b.y;
+		matC->b.z = matX.b.z;
+
+		matC->c.x = matX.c.x;
+		matC->c.y = matX.c.y;
+		matC->c.z = matX.c.z;
 	}
 
 	return status;
@@ -218,17 +231,31 @@ ErrorStatus matrix3_MatrixMultiply(Matrixf * matA, Matrixf * matB, Matrixf * mat
 
 ErrorStatus matrix3_transpose(Matrixf * matA, Matrixf * matB)
 {
-	matA->a.x = matB->a.x;
-	matA->a.y = matB->b.x;
-	matA->a.z = matB->c.x;
+	Matrixf matX;
 
-	matA->b.x = matB->a.y;
-	matA->b.y = matB->b.y;
-	matA->b.z = matB->c.y;
+	matX.a.x = matB->a.x;
+	matX.a.y = matB->b.x;
+	matX.a.z = matB->c.x;
 
-	matA->c.x = matB->a.z;
-	matA->c.y = matB->b.z;
-	matA->c.z = matB->c.z;
+	matX.b.x = matB->a.y;
+	matX.b.y = matB->b.y;
+	matX.b.z = matB->c.y;
+
+	matX.c.x = matB->a.z;
+	matX.c.y = matB->b.z;
+	matX.c.z = matB->c.z;
+
+	matB->a.x = matX.a.x;
+	matB->a.y = matX.a.y;
+	matB->a.z = matX.a.z;
+
+	matB->b.x = matX.b.x;
+	matB->b.y = matX.b.y;
+	matB->b.z = matX.b.z;
+
+	matB->c.x = matX.c.x;
+	matB->c.y = matX.c.y;
+	matB->c.z = matX.c.z;
 
 	return SUCCESS;
 }

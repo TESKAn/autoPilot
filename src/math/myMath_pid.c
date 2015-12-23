@@ -96,13 +96,14 @@ ErrorStatus math_PID(float32_t error, float32_t dt, myMath_PID * data)
 	if(dt != 0)
 	{
 		data->ed = data->ed / dt;
+		// Then d
+		data->d = data->ed * data->Kd;
 	}
 	else
 	{
-		data->ed = 100;
+		data->ed = 0;
+		data->d = 0;
 	}
-	// Then d
-	data->d = data->ed * data->Kd;
 
 	// Store error
 	data->em = error;

@@ -64,19 +64,23 @@ ErrorStatus vectorf_dotProduct(Vectorf * vecA, Vectorf * vecB, float32_t * res)
 ErrorStatus vectorf_crossProduct(Vectorf * vecA, Vectorf * vecB, Vectorf * vecC)
 {
 	ErrorStatus status = ERROR;
+	Vectorf tempVec;
 	// Set FPU exception bit to 0
 	FPU_EXCEPTION = 0;
 	// Result X = Ay*Bz - Az*By
-	vecC->x = vecA->y * vecB->z - vecA->z * vecB->y;
+	tempVec.x = vecA->y * vecB->z - vecA->z * vecB->y;
 	// Result Y = Az*Bx - Ax*Bz
-	vecC->y = vecA->z * vecB->x - vecA->x * vecB->z;
+	tempVec.y = vecA->z * vecB->x - vecA->x * vecB->z;
 	// Result Z = Ax*By - Ay*Bx
-	vecC->z = vecA->x * vecB->y - vecA->y * vecB->x;
+	tempVec.z = vecA->x * vecB->y - vecA->y * vecB->x;
 
 	// Check if FPU result is OK
 	if(!FPU_EXCEPTION)
 	{
 		status = SUCCESS;
+		vecC->x = tempVec.x;
+		vecC->y = tempVec.y;
+		vecC->z = tempVec.z;
 	}
 	return status;
 }

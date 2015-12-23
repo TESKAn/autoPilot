@@ -1429,7 +1429,7 @@ int16_t RB32_push(RING_BUFFER32* rb, uint32_t data)
     if (rb->data_end == rb->buffer_end)
         rb->data_end = rb->buffer;
 
-    if (0 == RB_full(rb))
+    if (0 == RB32_full(rb))
     {
         if ((rb->data_start + 1) == rb->buffer_end)
         {

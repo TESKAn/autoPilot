@@ -71,7 +71,7 @@ int16_t RB_flush(RING_BUFFER* rb);
 int16_t RB32_full(RING_BUFFER32* rb);
 int16_t RB32_Init(RING_BUFFER32* rb, uint32_t *buf, int16_t size);
 int16_t RB32_push(RING_BUFFER32* rb, uint32_t data);
-uint8_t RB32_pop(RING_BUFFER32* rb);
+uint32_t RB32_pop(RING_BUFFER32* rb);
 int16_t RB32_flush(RING_BUFFER32* rb);
 
 #endif /* FUNCTIONS_H_ */

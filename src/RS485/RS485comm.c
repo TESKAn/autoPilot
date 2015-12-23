@@ -418,8 +418,11 @@ UInt16 RS485_States_Master()
 				{
 					case RS485_POLL_STATE_SERVO_FR:
 					{
+						RS485CommandDecoder.VARS.ui8Address = servoFRID;
+						RS485CommandDecoder.VARS.ui8Command = RS485_POLL_SERVO;
+						RS485CommandDecoder.VARS.ui16Data = 0;
 						// Store req bytes in tx buffer
-						bytesToSend = RS485_BufferQueuedCommand(RS485_POLL_SERVO_FR);
+						bytesToSend = RS485_BufferQueuedCommand(RS485CommandDecoder);
 						// Send data with DMA
 						RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
 						// Set next
@@ -429,7 +432,11 @@ UInt16 RS485_States_Master()
 					case RS485_POLL_STATE_SERVO_FL:
 					{
 						// Store req bytes in tx buffer
-						bytesToSend = RS485_BufferQueuedCommand(RS485_POLL_SERVO_FL);
+						RS485CommandDecoder.VARS.ui8Address = servoFLID;
+						RS485CommandDecoder.VARS.ui8Command = RS485_POLL_SERVO;
+						RS485CommandDecoder.VARS.ui16Data = 0;
+						// Store req bytes in tx buffer
+						bytesToSend = RS485_BufferQueuedCommand(RS485CommandDecoder);
 						// Send data with DMA
 						RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
 						// Set next
@@ -439,7 +446,11 @@ UInt16 RS485_States_Master()
 					case RS485_POLL_STATE_SERVO_R:
 					{
 						// Store req bytes in tx buffer
-						bytesToSend = RS485_BufferQueuedCommand(RS485_POLL_SERVO_R);
+						RS485CommandDecoder.VARS.ui8Address = servoRID;
+						RS485CommandDecoder.VARS.ui8Command = RS485_POLL_SERVO;
+						RS485CommandDecoder.VARS.ui16Data = 0;
+						// Store req bytes in tx buffer
+						bytesToSend = RS485_BufferQueuedCommand(RS485CommandDecoder);
 						// Send data with DMA
 						RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
 						// Set next
@@ -449,7 +460,11 @@ UInt16 RS485_States_Master()
 					case RS485_POLL_STATE_MOTOR_FR:
 					{
 						// Store req bytes in tx buffer
-						bytesToSend = RS485_BufferQueuedCommand(RS485_POLL_MOTOR_FR);
+						RS485CommandDecoder.VARS.ui8Address = motorFRID;
+						RS485CommandDecoder.VARS.ui8Command = RS485_POLL_MOTOR;
+						RS485CommandDecoder.VARS.ui16Data = 0;
+						// Store req bytes in tx buffer
+						bytesToSend = RS485_BufferQueuedCommand(RS485CommandDecoder);
 						// Send data with DMA
 						RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
 						// Set next
@@ -459,7 +474,11 @@ UInt16 RS485_States_Master()
 					case RS485_POLL_STATE_MOTOR_FL:
 					{
 						// Store req bytes in tx buffer
-						bytesToSend = RS485_BufferQueuedCommand(RS485_POLL_MOTOR_FL);
+						RS485CommandDecoder.VARS.ui8Address = motorFLID;
+						RS485CommandDecoder.VARS.ui8Command = RS485_POLL_MOTOR;
+						RS485CommandDecoder.VARS.ui16Data = 0;
+						// Store req bytes in tx buffer
+						bytesToSend = RS485_BufferQueuedCommand(RS485CommandDecoder);
 						// Send data with DMA
 						RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
 						// Set next
@@ -469,7 +488,11 @@ UInt16 RS485_States_Master()
 					case RS485_POLL_STATE_MOTOR_R:
 					{
 						// Store req bytes in tx buffer
-						bytesToSend = RS485_BufferQueuedCommand(RS485_POLL_MOTOR_R);
+						RS485CommandDecoder.VARS.ui8Address = motorRID;
+						RS485CommandDecoder.VARS.ui8Command = RS485_POLL_MOTOR;
+						RS485CommandDecoder.VARS.ui16Data = 0;
+						// Store req bytes in tx buffer
+						bytesToSend = RS485_BufferQueuedCommand(RS485CommandDecoder);
 						// Send data with DMA
 						RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
 						// Set next
