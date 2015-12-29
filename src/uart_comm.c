@@ -6,6 +6,8 @@
  */
 #include "allinclude.h"
 
+
+
 // CRC table
 const int crc8_ucTable[ ] =
 {
@@ -64,19 +66,6 @@ void UART_Init()
 	UART2_RcvdBytes = 0;
 	UART2_RcvingVar = 0;
 	UART_CRC = 0xff;
-}
-
-void UART_Timeout()
-{
-	UART2_TimeoutCounter++;
-	// Timeout?
-	if(UART2_TimeoutCounter > UART2_TimeoutTime)
-	{
-		UART2_TimeoutCounter = UART2_TimeoutTime;
-		UART2_RcvdBytes = 0;
-		UART2_RcvingVar = 0;
-		UART_CRC = 0xff;
-	}
 }
 
 int32_t UART_RcvData(uint8_t data)
@@ -161,6 +150,19 @@ int32_t UART_RcvData(uint8_t data)
 
 
 	return 0;
+}
+
+void UART_Timeout()
+{
+	UART2_TimeoutCounter++;
+	// Timeout?
+	if(UART2_TimeoutCounter > UART2_TimeoutTime)
+	{
+		UART2_TimeoutCounter = UART2_TimeoutTime;
+		UART2_RcvdBytes = 0;
+		UART2_RcvingVar = 0;
+		UART_CRC = 0xff;
+	}
 }
 
 int32_t UART_SendBuffer()

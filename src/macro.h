@@ -274,6 +274,7 @@
 
 // UART2 comm macros
 // Declare variables
+// Must be accessible to all files
 
 #define VAR_VERSION						0
 #define VAR_BUILD						1
