@@ -287,6 +287,7 @@
 #define VAR_MAG_Y						9
 #define VAR_MAG_Z						10
 #define VAR_MAIN_LOOP_STATE				11
+#define VAR_RS485_SERVO_POSITION		12
 
 
 

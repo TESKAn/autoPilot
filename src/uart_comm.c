@@ -128,6 +128,25 @@ int32_t UART_RcvData(uint8_t data)
 				}
 				break;
 			}
+			case VAR_RS485_SERVO_POSITION:
+			{
+				// servo position, uint16_t
+				if(UART2_RcvdBytes == 5)
+				{
+					// Check CRC
+					if(0 == UART_CRC)
+					{
+						// Store var
+						UART_Conversion.ch[0] = UART2_RecBuffer[2];
+						UART_Conversion.ch[1] = UART2_RecBuffer[3];
+						servoMovePosition = UART_Conversion.i16[0];
+					}
+					UART2_RcvdBytes = 0;
+					UART2_RcvingVar = 0;
+					UART_CRC = 0xff;
+				}
+				break;
+			}
 
 			default:
 			{

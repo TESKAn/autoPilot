@@ -73,6 +73,7 @@ typedef union
 
 
 extern volatile uint16_t mainLoopState;
+extern volatile uint16_t servoMovePosition;
 
 extern FUSION_CORE fusionData;
 

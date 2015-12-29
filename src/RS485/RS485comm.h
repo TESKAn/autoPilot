@@ -68,6 +68,10 @@ typedef struct tagRS485COMMAND
 #define RS485_SET_MOTOR_MIN_SPEED			7
 #define RS485_SET_MOTOR_MAX_SPEED			8
 #define RS485_ENABLE_MOTOR_PWMIN			9
+#define RS485_SET_SERVO_ID					10
+#define RS485_SET_SERVO_ANGLEMIN_LIM		11
+#define RS485_SET_SERVO_ANGLEMAX_LIM		12
+#define RS485_SET_SERVO_SPEED				13
 
 // Commands macros
 #define RS485_COMMAND_NONE					0x00
@@ -115,6 +119,7 @@ typedef struct tagRS485COMMAND
 typedef struct tagRS485SERVO
 {
 	UInt8 errStatus;
+	UInt16 ui16MoveToPos;
 	union
 	{
 		struct
@@ -211,7 +216,10 @@ typedef struct tagRS485MOTOR
 
 // Function declarations
 UInt16 RS485_MasterInitData(void);
+UInt16 RS485_MasterState(int state);
 UInt16 RS485_ServoTest(UInt8 servoID);
+UInt16 RS485_ServoWrite8(UInt8 servoID, UInt8 address, UInt8 data);
+UInt16 RS485_ServoWrite16(UInt8 servoID, UInt8 address, UInt16 data);
 UInt16 RS485_ServoTorqueON(UInt8 servoID);
 UInt16 RS485_ServoTorqueOFF(UInt8 servoID);
 UInt16 RS485_ServoReadAll(UInt8 servoID);
@@ -227,6 +235,7 @@ UInt16 RS485_MasterWriteByte(uint8_t *data, int length);
 UInt16 RS485_States_Master();
 UInt16 RS485_ReceiveMessage(UInt8 data);
 UInt16 RS485_DecodeMessage();
+Int16 RS485_SetupServos();
 Int16 RS485_SetupMotors();
 
 
