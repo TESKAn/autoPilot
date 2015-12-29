@@ -24,6 +24,8 @@ UInt8 motorFRID = MOTOR_FR_ID;
 UInt8 motorFLID = MOTOR_FL_ID;
 UInt8 motorRID = MOTOR_R_ID;
 
+Int8 RS485PollInterval = 10;
+
 RS485SERVO RS485Servo_FL;
 RS485SERVO RS485Servo_FR;
 RS485SERVO RS485Servo_R;
@@ -136,15 +138,17 @@ UInt16 RS485_ServoTest(UInt8 servoID)
 		// Servo 1
 		servoCommand.VARS.ui8Address = servoFRID;
 		servoCommand.VARS.ui8Command = RS485_SET_MOTOR_POSITION;
-		servoCommand.VARS.ui16Data = 183;
+		servoCommand.VARS.ui16Data = 787;
 		// Store command
 		RB32_push(&RS485CommandBuffer, servoCommand.ui32Packed);
 		// Servo 2
 		servoCommand.VARS.ui8Address = servoFLID;
+		servoCommand.VARS.ui16Data = 203;
 		// Store command
 		RB32_push(&RS485CommandBuffer, servoCommand.ui32Packed);
 		// Servo 3
 		servoCommand.VARS.ui8Address = servoRID;
+		servoCommand.VARS.ui16Data = 193;
 		// Store command
 		RB32_push(&RS485CommandBuffer, servoCommand.ui32Packed);
 	}
@@ -159,10 +163,12 @@ UInt16 RS485_ServoTest(UInt8 servoID)
 		RB32_push(&RS485CommandBuffer, servoCommand.ui32Packed);
 		// Servo 2
 		servoCommand.VARS.ui8Address = servoFLID;
+		servoCommand.VARS.ui16Data = 510;
 		// Store command
 		RB32_push(&RS485CommandBuffer, servoCommand.ui32Packed);
 		// Servo 3
 		servoCommand.VARS.ui8Address = servoRID;
+		servoCommand.VARS.ui16Data = 500;
 		// Store command
 		RB32_push(&RS485CommandBuffer, servoCommand.ui32Packed);
 	}
@@ -707,12 +713,23 @@ UInt16 RS485_States_Master()
 			{
 				// Timeout, no response from slave device.
 				// Go back to poll state
-				RS485MasterState = RS485_M_STATE_POLL;
+				RS485MasterState = RS485_M_STATE_DELAY;
 			}
 			if(0 != RS485ResponseReceived)
 			{
 				// Go back to poll state
+				RS485MasterState = RS485_M_STATE_DELAY;
+			}
+			break;
+		}
+
+		case RS485_M_STATE_DELAY:
+		{
+			RS485PollInterval--;
+			if(0 > RS485PollInterval)
+			{
 				RS485MasterState = RS485_M_STATE_POLL;
+				RS485PollInterval = 10;
 			}
 			break;
 		}
@@ -905,7 +922,7 @@ Int16 RS485_SetupServos()
 	// Servo 1
 	servoCommand.VARS.ui8Address = servoFRID;
 	servoCommand.VARS.ui8Command = RS485_SET_SERVO_SPEED;
-	servoCommand.VARS.ui16Data = 20;
+	servoCommand.VARS.ui16Data = 100;
 	// Store command
 	RB32_push(&RS485CommandBuffer, servoCommand.ui32Packed);
 	// Servo 2

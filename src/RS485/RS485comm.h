@@ -93,6 +93,7 @@ typedef struct tagRS485COMMAND
 #define RS485_M_STATE_IDLE					0
 #define RS485_M_STATE_POLL					1
 #define RS485_M_STATE_WAITING_RESPONSE		2
+#define RS485_M_STATE_DELAY					3
 
 // Master poll slaves
 #define RS485_POLL_STATE_SERVO_FR			0
