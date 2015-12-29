@@ -324,6 +324,12 @@ int main(void)
 				mainLoopState = 0;
 				break;
 			}
+			case 24:
+			{
+				RS485_ServoTest(7);
+				mainLoopState = 0;
+				break;
+			}
 			default:
 			{
 				mainLoopState = 0;

@@ -184,9 +184,20 @@ UInt16 RS485_ServoTest(UInt8 servoID)
 		// Store command
 		RB32_push(&RS485CommandBuffer, servoCommand.ui32Packed);
 	}
-
-	// Send data with DMA
-	RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
+	else if(servoID == 7)
+	{
+		// Move servos
+		// Servo 1
+		servoCommand.VARS.ui8Address = servoFRID;
+		servoCommand.VARS.ui8Command = RS485_SET_SERVO_ANGLEMIN_LIM;
+		servoCommand.VARS.ui16Data = 183;
+		bytesToSend = RS485_BufferQueuedCommand(servoCommand);
+	}
+	if(0 != bytesToSend)
+	{
+		// Send data with DMA
+		RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
+	}
 	return 0;
 }
 
@@ -238,13 +249,13 @@ UInt16 RS485_ServoWrite16(UInt8 servoID, UInt8 address, UInt16 data)
 	RS485TransmittBuffer[0] = 0xff;
 	RS485TransmittBuffer[1] = 0xff;
 	RS485TransmittBuffer[2] = servoID;					// ID
-	RS485TransmittBuffer[3] = 0x04;						// Length
+	RS485TransmittBuffer[3] = 0x05;						// Length
 	RS485TransmittBuffer[4] = RS485_COMMAND_WRITE;		// Command
 	RS485TransmittBuffer[5] = address;					// Reg address
 	RS485TransmittBuffer[6] = data & 0xff;				// Data to write low
 	RS485TransmittBuffer[7] = (data >> 8)&0xff;			// Data to write high
 	// Calculate checksum
-	RS485TransmittBuffer[8] = ~(0x07 + servoID + address + RS485TransmittBuffer[6] + RS485TransmittBuffer[7]);	// Checksum
+	RS485TransmittBuffer[8] = ~(0x08 + servoID + address + RS485TransmittBuffer[6] + RS485TransmittBuffer[7]);	// Checksum
 	return 9;
 }
 
@@ -573,6 +584,7 @@ UInt16 RS485_States_Master()
 			// Check send buffer
 			if(0 == RS485CommandBuffer.count)
 			{
+				/*
 				// Go through RS485 slaves and request data
 				switch(RS485MasterPollState)
 				{
@@ -671,7 +683,7 @@ UInt16 RS485_States_Master()
 						RS485MasterPollState = RS485_POLL_STATE_SERVO_FR;
 						break;
 					}
-				}
+				}*/
 			}
 			else
 			{
@@ -681,7 +693,7 @@ UInt16 RS485_States_Master()
 				bytesToSend = RS485_BufferQueuedCommand(RS485CommandDecoder);
 				// Send data with DMA
 				RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
-
+				RS485MasterState = RS485_M_STATE_WAITING_RESPONSE;
 			}
 			// Go to waiting for response state
 			RS485MasterState = RS485_M_STATE_WAITING_RESPONSE;
@@ -893,7 +905,7 @@ Int16 RS485_SetupServos()
 	// Servo 1
 	servoCommand.VARS.ui8Address = servoFRID;
 	servoCommand.VARS.ui8Command = RS485_SET_SERVO_SPEED;
-	servoCommand.VARS.ui16Data = 100;
+	servoCommand.VARS.ui16Data = 20;
 	// Store command
 	RB32_push(&RS485CommandBuffer, servoCommand.ui32Packed);
 	// Servo 2
