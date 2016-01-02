@@ -516,6 +516,9 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		// UART2 timeout
 		UART_Timeout();
 
+		// RS485 timing
+		RS485_Timing();
+
 		// Signal strength count
 		signalStrengthCount++;
 		if(signalStrengthCount > SIGNALSTRENGTH_MAXTIME)
@@ -614,6 +617,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			UART_QueueMessagef(VAR_MAG_X, fusionData._mag.vector.x);
 			UART_QueueMessagef(VAR_MAG_Y, fusionData._mag.vector.y);
 			UART_QueueMessagef(VAR_MAG_Z, fusionData._mag.vector.z);
+
 
 			// Event every second
 

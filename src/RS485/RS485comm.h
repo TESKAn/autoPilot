@@ -216,6 +216,7 @@ typedef struct tagRS485MOTOR
 }RS485MOTOR;
 
 // Function declarations
+Int16 RS485_Timing();
 UInt16 RS485_MasterInitData(void);
 UInt16 RS485_MasterState(int state);
 UInt16 RS485_ServoTest(UInt8 servoID);

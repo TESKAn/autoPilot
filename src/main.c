@@ -330,6 +330,30 @@ int main(void)
 				mainLoopState = 0;
 				break;
 			}
+			case 25:
+			{
+				RS485_ServoTest(8);
+				mainLoopState = 0;
+				break;
+			}
+			case 26:
+			{
+				RS485_ServoTest(9);
+				mainLoopState = 0;
+				break;
+			}
+			case 27:
+			{
+				RS485_ServoTest(10);
+				mainLoopState = 0;
+				break;
+			}
+			case 28:
+			{
+				RS485_ServoTest(11);
+				mainLoopState = 0;
+				break;
+			}
 			default:
 			{
 				mainLoopState = 0;
