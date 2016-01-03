@@ -63,7 +63,7 @@ typedef struct tagRS485COMMAND
 #define RS485_POLL_MOTOR					2
 #define RS485_SERVO_TORQ_ON					3
 #define RS485_SERVO_TORQ_OFF				4
-#define RS485_SET_MOTOR_POSITION			5
+#define RS485_SET_SERVO_POSITION			5
 #define RS485_SET_MOTOR_SPEED				6
 #define RS485_SET_MOTOR_MIN_SPEED			7
 #define RS485_SET_MOTOR_MAX_SPEED			8
@@ -72,6 +72,7 @@ typedef struct tagRS485COMMAND
 #define RS485_SET_SERVO_ANGLEMIN_LIM		11
 #define RS485_SET_SERVO_ANGLEMAX_LIM		12
 #define RS485_SET_SERVO_SPEED				13
+#define RS485_SET_MOTOR_POSITION			14
 
 // Commands macros
 #define RS485_COMMAND_NONE					0x00
@@ -219,9 +220,10 @@ typedef struct tagRS485MOTOR
 Int16 RS485_Timing();
 UInt16 RS485_MasterInitData(void);
 UInt16 RS485_MasterState(int state);
+Int16 RS485_MotorTest(UInt8 func);
 UInt16 RS485_ServoTest(UInt8 servoID);
-UInt16 RS485_ServoWrite8(UInt8 servoID, UInt8 address, UInt8 data);
-UInt16 RS485_ServoWrite16(UInt8 servoID, UInt8 address, UInt16 data);
+UInt16 RS485_Write8(UInt8 servoID, UInt8 address, UInt8 data);
+UInt16 RS485_Write16(UInt8 servoID, UInt8 address, UInt16 data);
 UInt16 RS485_ServoTorqueON(UInt8 servoID);
 UInt16 RS485_ServoTorqueOFF(UInt8 servoID);
 UInt16 RS485_ServoReadAll(UInt8 servoID);
