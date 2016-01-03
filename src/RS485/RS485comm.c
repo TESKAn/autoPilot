@@ -61,17 +61,30 @@ CONVERTNUM RS485ConvertNum;
 
 Int16 i16RS485Timing = 0;
 
+Int16 i16RS485TimeOut = 100;
 
 
 Int16 RS485_Timing()
 {
 	i16RS485Timing++;
-	if(10 <= i16RS485Timing)
+	if(100 <= i16RS485Timing)
 	{
 		i16RS485Timing = 0;
 		UART_QueueMessagei16(VAR_SERVOFL, RS485Servo_FL.REGS.ui16PresentPosition);
 		UART_QueueMessagei16(VAR_SERVOFR, RS485Servo_FR.REGS.ui16PresentPosition);
 		UART_QueueMessagei16(VAR_SERVOR, RS485Servo_R.REGS.ui16PresentPosition);
+	}
+	// Check RX process
+	if(RS485_M_IDLE != RS485ReceiveState)
+	{
+		i16RS485TimeOut--;
+		if(0 >= i16RS485TimeOut)
+		{
+			RS485ReceiveState = RS485_M_IDLE;
+			i16RS485TimeOut = 100;
+			RS485RXBytesLeft = 0;
+			RS485RXBufIndex = 0;
+		}
 	}
 	return 0;
 }
@@ -366,8 +379,8 @@ UInt16 RS485_ServoReadAll(UInt8 servoID)
 	RS485TransmittBuffer[2] = servoID;				// ID
 	RS485TransmittBuffer[3] = 0x04;					// Length
 	RS485TransmittBuffer[4] = RS485_COMMAND_READ;	// Command
-	RS485TransmittBuffer[5] = 0x00;					// Reg address 0
-	RS485TransmittBuffer[6] = 0x49;					// Data to read - 73 regs
+	RS485TransmittBuffer[5] = 0x18;					// Reg address 24
+	RS485TransmittBuffer[6] = 0x1a;//0x49;					// Data to read - 73 regs
 
 	// Calculate checksum
 	RS485TransmittBuffer[7] = RS485TransmittBuffer[2];
@@ -378,7 +391,7 @@ UInt16 RS485_ServoReadAll(UInt8 servoID)
 	RS485TransmittBuffer[7] = ~(RS485TransmittBuffer[7]);				// Checksum
 
 	// Store read address
-	RS485ReadReqStartAddress = 0;
+	RS485ReadReqStartAddress = RS485TransmittBuffer[5];
 	return 8;
 }
 
@@ -654,7 +667,6 @@ UInt16 RS485_States_Master()
 			// Check send buffer
 			if(0 == RS485CommandBuffer.count)
 			{
-				/*
 				// Go through RS485 slaves and request data
 				switch(RS485MasterPollState)
 				{
@@ -753,7 +765,7 @@ UInt16 RS485_States_Master()
 						RS485MasterPollState = RS485_POLL_STATE_SERVO_FR;
 						break;
 					}
-				}*/
+				}
 			}
 			else
 			{
@@ -809,6 +821,8 @@ UInt16 RS485_States_Master()
 
 UInt16 RS485_ReceiveMessage(UInt8 data)
 {
+	// Reset RX timer
+	i16RS485TimeOut = 100;
 	switch(RS485ReceiveState)
 	{
 		case RS485_M_IDLE:
@@ -827,6 +841,10 @@ UInt16 RS485_ReceiveMessage(UInt8 data)
 			{
 				RS485ReceiveState = RS485_M_WAIT_FOR_ID;
 			}
+			else
+			{
+				RS485ReceiveState = RS485_M_IDLE;
+			}
 			break;
 		}
 		case RS485_M_WAIT_FOR_ID:
@@ -844,7 +862,7 @@ UInt16 RS485_ReceiveMessage(UInt8 data)
 			RS485Checksum += data;
 			// Store length
 			RS485RXBuffer[1] = data;
-			RS485RXBytesLeft = data;
+			RS485RXBytesLeft = data - 1;
 			RS485RXBufIndex = 2;
 			RS485ReceiveState = RS485_M_WAIT_FOR_DATA;
 			break;
