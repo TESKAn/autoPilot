@@ -73,6 +73,9 @@ typedef struct tagRS485COMMAND
 #define RS485_SET_SERVO_ANGLEMAX_LIM		12
 #define RS485_SET_SERVO_SPEED				13
 #define RS485_SET_MOTOR_POSITION			14
+#define RS485_SET_MOTOR_PARK				15
+#define RS485_SET_MOTOR_RUN					16
+#define RS485_SET_MOTOR_RPM					17
 
 // Commands macros
 #define RS485_COMMAND_NONE					0x00
@@ -177,44 +180,53 @@ typedef struct tagRS485MOTOR
 	UInt8 errStatus;
 	union
 	{
-		struct
-		{
-			UInt8 ui8Data[39];				// Main data structure
-		};
+		UInt8 ui8Data[69];				// Main data structure
 		struct
 		{
 			// Some params
-			UInt16 ui16ModelNumber;
-			UInt8 ui8FirmwareVersion;
-			UInt8 ui8ID;
-			UInt8 ui8BaudRate;
+			UInt16 ui16ModelNumber;		// 0
+			UInt8 ui8FirmwareVersion;	// 2
+			UInt8 ui8ID;				// 3
+			UInt8 ui8BaudRate;			// 4
+			UInt8 ui8Empty;				// 5
+			// Errors
+			UInt16 ui16Errors;			// 6
+			// Future expansion
+			UInt8 uiEmpty1[24];			// 32 bytes total
+			// Status of the motor
+			float f32UIn;				// 32
+			float f32IIn;				// 36
+			float f32PIn;				// 40
+			float f32RPM;				// 44
+			float f32SetRPM;			// 48
 			// Motor control
 			// Motor state - idle, run, error
-			UInt16 ui16State;
+			UInt16 ui16State;			// 52
 			// State transition command
-			UInt16 ui16Command;
+			UInt16 ui16Command;			// 54
+			// Arm
+			UInt8 ui8Armed;				// 56
+			// Park
+			UInt8 ui8Park;				// 57
+			// Reverse rotation
+			UInt8 ui8ReverseRotation;	// 58
+			// Park position
+			Int16 i16ParkPosition;		// 59
+
 			// Motor min/max RPM
-			// 9
-			float32_t f32MinRPM;
-			// 13
-			float32_t f32MaxRPM;
-			// Enable PWMs
-			// 17
-			UInt8 ui8PWMEnabled;
-			// Errors
-			UInt16 ui16Errors;
-			// Status of the motor
-			float32_t f32UIn;
-			float32_t f32IIn;
-			float32_t f32PIn;
-			float32_t f32RPM;
-			float32_t f32SetRPM;
-
-
+			float f32MinRPM;			// 61
+			float f32MaxRPM;			// 65	// +4 = total
 		}REGS;
 	};
 
 }RS485MOTOR;
+
+// Defs for registers
+#define MOTORREG_SETRPM				48
+#define MOTORREG_ARMED				56
+#define MOTORREG_PARK				57
+#define MOTORREG_REVERSE			58
+#define MOTORREG_PARKPOSITION		60
 
 // Function declarations
 Int16 RS485_Timing();
@@ -224,6 +236,7 @@ Int16 RS485_MotorTest(UInt8 func);
 UInt16 RS485_ServoTest(UInt8 servoID);
 UInt16 RS485_Write8(UInt8 servoID, UInt8 address, UInt8 data);
 UInt16 RS485_Write16(UInt8 servoID, UInt8 address, UInt16 data);
+UInt16 RS485_Read(UInt8 ID, UInt8 readStart, UInt8 readCount);
 UInt16 RS485_ServoTorqueON(UInt8 servoID);
 UInt16 RS485_ServoTorqueOFF(UInt8 servoID);
 UInt16 RS485_ServoReadAll(UInt8 servoID);

@@ -707,9 +707,7 @@ void USART1_ISR_Handler(void)
 	if((USART1->SR & USART_FLAG_TC) != (u16)RESET)	//if transfer complete
 	{
 		// Disable transfer complete interrupt
-		USART_ITConfig(USART1, USART_IT_TC, DISABLE);
-
-		//RS485_SET_INPUT = 1;
+		USART_ITConfig(USART1, USART_IT_TC, DISABLE);;
 		// Enable RX
 		RS485_RXEN;
 		// Clear interrupt flag

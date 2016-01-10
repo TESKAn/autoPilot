@@ -1357,40 +1357,47 @@ int16_t RB_Init(RING_BUFFER* rb, uint8_t *buf, int16_t size)
 
 int16_t RB_push(RING_BUFFER* rb, uint8_t data)
 {
-    *rb->data_end = data;
-    rb->data_end++;
-    if (rb->data_end == rb->buffer_end)
-        rb->data_end = rb->buffer;
+	if(rb->count < rb->size)
+	{
+		*rb->data_end = data;
+		rb->data_end++;
+		if (rb->data_end == rb->buffer_end)
+			rb->data_end = rb->buffer;
 
-    if (0 == RB_full(rb))
-    {
-        if ((rb->data_start + 1) == rb->buffer_end)
-        {
-            rb->data_start = rb->buffer;
-        }
-        else
-        {
-            rb->data_start++;
-        }
-    }
-    else
-    {
-        rb->count++;
-    }
+		if (0 == RB_full(rb))
+		{
+			if ((rb->data_start + 1) == rb->buffer_end)
+			{
+				rb->data_start = rb->buffer;
+			}
+			else
+			{
+				rb->data_start++;
+			}
+		}
+		else
+		{
+			rb->count++;
+		}
+	}
 	return 0;
 }
 
 uint8_t RB_pop(RING_BUFFER* rb)
 {
-    uint8_t data = *rb->data_start;
-    rb->data_start++;
-    if (rb->data_start == rb->buffer_end)
-    {
-        rb->data_start = rb->buffer;
-    }
-    rb->count--;
+	if(0 < rb->count)
+	{
+		uint8_t data = *rb->data_start;
+		rb->data_start++;
+		if (rb->data_start == rb->buffer_end)
+		{
+			rb->data_start = rb->buffer;
+		}
+		rb->count--;
 
-    return data;
+		return data;
+	}
+	return 0;
 }
 
 int16_t RB_flush(RING_BUFFER* rb)
@@ -1424,40 +1431,46 @@ int16_t RB32_Init(RING_BUFFER32* rb, uint32_t *buf, int16_t size)
 
 int16_t RB32_push(RING_BUFFER32* rb, uint32_t data)
 {
-    *rb->data_end = data;
-    rb->data_end++;
-    if (rb->data_end == rb->buffer_end)
-        rb->data_end = rb->buffer;
+	if(rb->count < rb->size)
+	{
+		*rb->data_end = data;
+		rb->data_end++;
+		if (rb->data_end == rb->buffer_end)
+			rb->data_end = rb->buffer;
 
-    if (0 == RB32_full(rb))
-    {
-        if ((rb->data_start + 1) == rb->buffer_end)
-        {
-            rb->data_start = rb->buffer;
-        }
-        else
-        {
-            rb->data_start++;
-        }
-    }
-    else
-    {
-        rb->count++;
-    }
+		if (0 == RB32_full(rb))
+		{
+			if ((rb->data_start + 1) == rb->buffer_end)
+			{
+				rb->data_start = rb->buffer;
+			}
+			else
+			{
+				rb->data_start++;
+			}
+		}
+		else
+		{
+			rb->count++;
+		}
+	}
 	return 0;
 }
 
 uint32_t RB32_pop(RING_BUFFER32* rb)
 {
-    uint32_t data = *rb->data_start;
-    rb->data_start++;
-    if (rb->data_start == rb->buffer_end)
-    {
-        rb->data_start = rb->buffer;
-    }
-    rb->count--;
-
-    return data;
+	if(0 < rb->count)
+	{
+		uint32_t data = *rb->data_start;
+		rb->data_start++;
+		if (rb->data_start == rb->buffer_end)
+		{
+			rb->data_start = rb->buffer;
+		}
+		rb->count--;
+		return data;
+	}
+    return 0;
 }
 
 int16_t RB32_flush(RING_BUFFER32* rb)

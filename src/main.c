@@ -354,6 +354,30 @@ int main(void)
 				mainLoopState = 0;
 				break;
 			}
+			case 29:
+			{
+				RS485_MotorTest(0);
+				mainLoopState = 0;
+				break;
+			}
+			case 30:
+			{
+				RS485_MotorTest(1);
+				mainLoopState = 0;
+				break;
+			}
+			case 31:
+			{
+				RS485_MotorTest(2);
+				mainLoopState = 0;
+				break;
+			}
+			case 32:
+			{
+				RS485_MotorTest(3);
+				mainLoopState = 0;
+				break;
+			}
 			default:
 			{
 				mainLoopState = 0;

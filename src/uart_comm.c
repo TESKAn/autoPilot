@@ -136,6 +136,46 @@ int32_t UART_RcvData(uint8_t data)
 				}
 				break;
 			}
+			case VAR_MOTOR_FR_RPM:
+			{
+				// Motor RPM, float32
+				if(UART2_RcvdBytes == 7)
+				{
+					// Check CRC
+					if(0 == UART_CRC)
+					{
+						// Store var
+						UART_Conversion.ch[0] = UART2_RecBuffer[2];
+						UART_Conversion.ch[1] = UART2_RecBuffer[3];
+						UART_Conversion.ch[2] = UART2_RecBuffer[4];
+						UART_Conversion.ch[3] = UART2_RecBuffer[5];
+						motorFRSpeed = UART_Conversion.f32[0];
+					}
+					UART2_RcvdBytes = 0;
+					UART2_RcvingVar = 0;
+					UART_CRC = 0xff;
+				}
+				break;
+			}
+			case VAR_RREADRS485DATA:
+			{
+				// readRS485Data, int16_t
+				if(UART2_RcvdBytes == 5)
+				{
+					// Check CRC
+					if(0 == UART_CRC)
+					{
+						// Store var
+						UART_Conversion.ch[0] = UART2_RecBuffer[2];
+						UART_Conversion.ch[1] = UART2_RecBuffer[3];
+						readRS485Data = UART_Conversion.i16[0];
+					}
+					UART2_RcvdBytes = 0;
+					UART2_RcvingVar = 0;
+					UART_CRC = 0xff;
+				}
+				break;
+			}
 
 			default:
 			{

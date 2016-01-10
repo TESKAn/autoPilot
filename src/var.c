@@ -11,6 +11,8 @@
 
 volatile uint16_t mainLoopState = 0;
 volatile uint16_t servoMovePosition = 0;
+volatile float32_t motorFRSpeed = 0.0f;
+volatile uint16_t readRS485Data = 0;;
 
 // Fusion data
 FUSION_CORE fusionData;

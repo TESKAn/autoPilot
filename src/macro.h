@@ -292,6 +292,8 @@
 #define VAR_SERVOFR						13
 #define VAR_SERVOFL						14
 #define VAR_SERVOR						15
+#define VAR_MOTOR_FR_RPM				16
+#define VAR_RREADRS485DATA				17
 
 
 

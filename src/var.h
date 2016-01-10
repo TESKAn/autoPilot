@@ -74,6 +74,8 @@ typedef union
 
 extern volatile uint16_t mainLoopState;
 extern volatile uint16_t servoMovePosition;
+extern volatile float32_t motorFRSpeed;
+extern volatile uint16_t readRS485Data;
 
 extern FUSION_CORE fusionData;
 
