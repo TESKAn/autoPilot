@@ -63,11 +63,11 @@ void ADC_ISR_Handler(void)
 
 void DMA1_Stream6_ISR_Handler(void)
 {
+	// Clear DMA interrupt
 	DMA_ClearITPendingBit(DMA_USART2, DMA_IT_TC);
 	DMA_ITConfig(DMA_USART2, DMA_IT_TC, DISABLE);
-	UART2_Transferring = 0;
-	// Check to send data
-	UART_SendBuffer();
+	// Enable UART2 TC interrupt to wait for end of transfer
+	USART_ITConfig(USART2, USART_IT_TC, ENABLE);
 }
 
 /**
@@ -701,13 +701,16 @@ void USART1_ISR_Handler(void)
 //	int iData = 0;
 	if ((USART1->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
 	{
-		RS485_ReceiveMessage((uint8_t) USART_ReceiveData(USART1));
+		// Store data to buffer
+		//RB_push(&RB_USART1, (uint8_t) USART_ReceiveData(USART1));
+		RB_push(&RB_USART1, (uint8_t)(USART1->DR & (uint16_t)0x01FF));
+		//RS485_ReceiveMessage((uint8_t) USART_ReceiveData(USART1));
 	}
 
 	if((USART1->SR & USART_FLAG_TC) != (u16)RESET)	//if transfer complete
 	{
 		// Disable transfer complete interrupt
-		USART_ITConfig(USART1, USART_IT_TC, DISABLE);;
+		USART_ITConfig(USART1, USART_IT_TC, DISABLE);
 		// Enable RX
 		RS485_RXEN;
 		// Clear interrupt flag
@@ -725,13 +728,20 @@ void USART2_ISR_Handler(void)
 {
 	if ((USART2->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
 	{
-		UART_RcvData((uint8_t)(USART2->DR & (uint16_t)0x01FF));
+		RB_push(&RB_USART2, (uint8_t)(USART2->DR & (uint16_t)0x01FF));
+		//UART_RcvData((uint8_t)(USART2->DR & (uint16_t)0x01FF));
 	}
 
 	if((USART2->SR & USART_FLAG_TC) != (u16)RESET)	//if transfer complete
 	{
 		// Clear TC
 		USART2->SR = USART2->SR & !USART_FLAG_TC;
+		// Disable TC interrupt
+		USART_ITConfig(USART2, USART_IT_TC, DISABLE);
+		// Mark not transferring
+		UART2_Transferring = 0;
+		// Check to send data
+		UART_SendBuffer();
 	}
 }
 

@@ -8,6 +8,8 @@
 #ifndef VAR_H_
 #define VAR_H_
 
+
+
 // Flag register typedef
 typedef union
 {
@@ -76,6 +78,13 @@ extern volatile uint16_t mainLoopState;
 extern volatile uint16_t servoMovePosition;
 extern volatile float32_t motorFRSpeed;
 extern volatile uint16_t readRS485Data;
+
+// Ring buffers for serial communications
+extern RING_BUFFER RB_USART1;
+extern uint8_t usart1_buf[128];
+
+extern RING_BUFFER RB_USART2;
+extern uint8_t usart2_buf[128];
 
 extern FUSION_CORE fusionData;
 

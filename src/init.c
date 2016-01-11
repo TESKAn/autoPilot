@@ -1166,7 +1166,7 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 {
 	//interrupt controller
 	NVIC_InitTypeDef NVCInitStructure;
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
 	//init ADC interrupt
 	//set IRQ channel
@@ -1174,7 +1174,7 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	//set priority 0 - 15
 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
 	//set priority 0 - 15
-	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
 	//enable IRQ channel
 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
 	NVIC_Init(&NVCInitStructure);
@@ -1183,9 +1183,9 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	//set IRQ channel
 	NVCInitStructure.NVIC_IRQChannel = USART1_IRQn;
 	//set priority 0 - 15
-	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 14;
 	//set priority 0 - 15
-	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
 	//enable IRQ channel
 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
 	NVIC_Init(&NVCInitStructure);
@@ -1194,9 +1194,9 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	//set IRQ channel
 	NVCInitStructure.NVIC_IRQChannel = USART2_IRQn;
 	//set priority 0 - 15
-	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 14;
 	//set priority 0 - 15
-	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
 	//enable IRQ channel
 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
 	NVIC_Init(&NVCInitStructure);
@@ -1207,7 +1207,7 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	//set priority 0 - 15
 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
 	//set priority 0 - 15
-	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
 	//enable IRQ channel
 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
 	NVIC_Init(&NVCInitStructure);
@@ -1218,7 +1218,7 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	//set priority 0 - 15
 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
 	//set priority 0 - 15
-	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
 	//enable IRQ channel
 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
 	NVIC_Init(&NVCInitStructure);
@@ -1229,7 +1229,7 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	//set priority 0 - 15
 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
 	//set priority 0 - 15
-	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
 	//enable IRQ channel
 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
 	NVIC_Init(&NVCInitStructure);
@@ -1240,7 +1240,7 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	//set priority 0 - 15
 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
 	//set priority 0 - 15
-	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
 	//enable IRQ channel
 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
 	NVIC_Init(&NVCInitStructure);
@@ -1251,7 +1251,7 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	//set priority 0 - 15
 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
 	//set priority 0 - 15
-	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
 	//enable IRQ channel
 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
 	NVIC_Init(&NVCInitStructure);
@@ -1262,7 +1262,7 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	//set priority 0 - 15
 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
 	//set priority 0 - 15
-	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
 	//enable IRQ channel
 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
 	NVIC_Init(&NVCInitStructure);
@@ -1273,7 +1273,7 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	//set priority 0 - 15
 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
 	//set priority 0 - 15
-	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
 	//enable IRQ channel
 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
 	NVIC_Init(&NVCInitStructure);
@@ -1284,7 +1284,7 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	//set priority 0 - 15
 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
 	//set priority 0 - 15
-	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
 	//enable IRQ channel
 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
 	NVIC_Init(&NVCInitStructure);
@@ -1295,7 +1295,7 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	//set priority 0 - 15
 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
 	//set priority 0 - 15
-	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
 	//enable IRQ channel
 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
 	NVIC_Init(&NVCInitStructure);
@@ -1306,7 +1306,7 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	//set priority 0 - 15
 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
 	//set priority 0 - 15
-	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
 	//enable IRQ channel
 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
 	NVIC_Init(&NVCInitStructure);
@@ -1314,8 +1314,8 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	// Init EXTI interrupt
 	// Enable and set EXTI Line0 Interrupt to the lowest priority
 	NVCInitStructure.NVIC_IRQChannel = EXTI0_IRQn;
-	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 0x15;
-	NVCInitStructure.NVIC_IRQChannelSubPriority = 0x15;
+	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
 	NVIC_Init(&NVCInitStructure);
 
@@ -1325,7 +1325,7 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	//set priority 0 - 15
 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
 	//set priority 0 - 15
-	NVCInitStructure.NVIC_IRQChannelSubPriority = 15;
+	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
 	//enable IRQ channel
 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
 	NVIC_Init(&NVCInitStructure);

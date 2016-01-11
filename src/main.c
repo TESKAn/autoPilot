@@ -65,6 +65,9 @@ int main(void)
 	// Init sensor data structures
 	fusion_init(&fusionData);
 
+	// Init serial port data structure
+	RB_Init(&RB_USART1, usart1_buf, 128);
+
 	// Setup RC PWM outputs
 	RCData.PWMOUT_1 = 1500;
 	RCData.PWMOUT_2 = 1500;
@@ -130,6 +133,17 @@ int main(void)
 	// Mount SD card
     while (1)
     {
+    	// Process RS485
+    	if(0 != RB_USART1.count)
+    	{
+    		RS485_ReceiveMessage(RB_pop(&RB_USART1));
+    	}
+    	// Process serial comm
+    	if(0 != RB_USART2.count)
+    	{
+    		UART_RcvData(RB_pop(&RB_USART2));
+    	}
+
     	// Main loop switch
     	switch(mainLoopState)
     	{

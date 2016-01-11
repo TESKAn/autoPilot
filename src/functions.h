@@ -28,7 +28,6 @@ typedef struct
       int32_t size;
   }__attribute__((aligned(4),packed))  RING_BUFFER32;
 
-
 void calibrateI2CSensors(void);
 void refreshPWMOutputs(void);
 uint32_t getSystemTime(void);

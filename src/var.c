@@ -12,7 +12,13 @@
 volatile uint16_t mainLoopState = 0;
 volatile uint16_t servoMovePosition = 0;
 volatile float32_t motorFRSpeed = 0.0f;
-volatile uint16_t readRS485Data = 0;;
+volatile uint16_t readRS485Data = 0;
+
+// Ring buffers for serial communications
+RING_BUFFER RB_USART1;
+uint8_t usart1_buf[128];
+RING_BUFFER RB_USART2;
+uint8_t usart2_buf[128];
 
 // Fusion data
 FUSION_CORE fusionData;
