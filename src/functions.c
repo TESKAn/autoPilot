@@ -1362,23 +1362,15 @@ int16_t RB_push(RING_BUFFER* rb, uint8_t data)
 		*rb->data_end = data;
 		rb->data_end++;
 		if (rb->data_end == rb->buffer_end)
+		{
 			rb->data_end = rb->buffer;
-
-		if (0 == RB_full(rb))
-		{
-			if ((rb->data_start + 1) == rb->buffer_end)
-			{
-				rb->data_start = rb->buffer;
-			}
-			else
-			{
-				rb->data_start++;
-			}
 		}
-		else
-		{
-			rb->count++;
-		}
+		rb->count++;
+	}
+	else
+	{
+		// Return error
+		return -1;
 	}
 	return 0;
 }
@@ -1436,23 +1428,15 @@ int16_t RB32_push(RING_BUFFER32* rb, uint32_t data)
 		*rb->data_end = data;
 		rb->data_end++;
 		if (rb->data_end == rb->buffer_end)
+		{
 			rb->data_end = rb->buffer;
-
-		if (0 == RB32_full(rb))
-		{
-			if ((rb->data_start + 1) == rb->buffer_end)
-			{
-				rb->data_start = rb->buffer;
-			}
-			else
-			{
-				rb->data_start++;
-			}
 		}
-		else
-		{
-			rb->count++;
-		}
+		rb->count++;
+	}
+	else
+	{
+		// Return error
+		return -1;
 	}
 	return 0;
 }

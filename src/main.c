@@ -67,6 +67,7 @@ int main(void)
 
 	// Init serial port data structure
 	RB_Init(&RB_USART1, usart1_buf, 128);
+	RB_Init(&RB_USART2, usart2_buf, 128);
 
 	// Setup RC PWM outputs
 	RCData.PWMOUT_1 = 1500;
