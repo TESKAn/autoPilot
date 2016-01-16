@@ -58,8 +58,6 @@
 #include "sensors.h"
 
 #include "RS485/RS485comm.h"
-#include "RS485/rs485Master.h"
-
 
 
 #endif /* ALLINCLUDE_H_ */

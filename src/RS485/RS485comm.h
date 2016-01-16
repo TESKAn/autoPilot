@@ -107,18 +107,19 @@ typedef struct tagRS485COMMAND
 #define RS485_POLL_STATE_MOTOR_FL			4
 #define RS485_POLL_STATE_MOTOR_R			5
 
-// Receiver states
-#define RS485_M_IDLE				0
-#define RS485_M_WAIT_FOR_SIGNAL		1
-#define RS485_M_WAIT_FOR_ID			2
-#define RS485_M_WAIT_FOR_LENGTH		3
-#define RS485_M_WAIT_FOR_DATA		4
-#define RS485_M_WAIT_FOR_CHECKSUM	5
-
 // Transmitter states
 #define RS485_M_TX_IDLE				0
 #define RS485_M_TX_SENDING			1
 #define RS485_M_TX_FINISHED			2
+
+// Receiver states
+#define RS485_RX_IDLE					0
+#define RS485_RX_WAIT_FOR_SIGNAL		1
+#define RS485_RX_WAIT_FOR_ID			2
+#define RS485_RX_WAIT_FOR_LENGTH		3
+#define RS485_RX_WAIT_FOR_INSTR_ERR		4
+#define RS485_RX_WAIT_FOR_PARAMETERS	5
+#define RS485_RX_WAIT_FOR_CHECKSUM		6
 
 // Structure that holds all relevant data for servo
 typedef struct tagRS485SERVO
@@ -184,7 +185,7 @@ typedef struct tagRS485MOTOR
 	UInt8 errStatus;
 	union
 	{
-		UInt8 ui8Data[69];				// Main data structure
+		UInt8 ui8REGSData[69];				// Main data structure
 		struct
 		{
 			// Some params
@@ -225,40 +226,105 @@ typedef struct tagRS485MOTOR
 
 }RS485MOTOR;
 
+typedef struct tagRS485RXDATA
+{
+	UInt8 ui8RXState;
+
+	UInt8 ui8RXCounter;			// Count bytes for RX
+
+	// Timeouts
+	UInt16 ui16RXTimeoutCounter;
+	UInt16 ui16RXCommTimeout;
+
+	union
+	{
+		UInt8 bytes[140];
+		struct
+		{
+			union
+			{
+				UInt32 ui32Header;
+				UInt8 ui8Bytes[4];
+			}HEADER;
+			UInt8 ui8ID;
+			union
+			{
+				UInt16 ui16PacketLength;
+				UInt8 ui8Bytes[2];
+			}LENGTH;
+			UInt8 ui8Instruction;
+			UInt8 ui8Parameters[128];
+			UInt8 ui8RS485RXIndex;			// Index of next place to write to
+			UInt8 ui8ParamByteCount;		// How many bytes are in parameters
+			union
+			{
+				UInt16 ui16CRC;
+				UInt8 ui8Bytes[2];
+			}CRCDATA;
+		};
+	}RXDATA;
+}RS485RXDATA;
+
+typedef struct tagRS485WAITINGUNIT
+{
+	UInt8 ui8ID;
+	UInt8 ui8Instruction;
+	UInt16 ui16RegAddress;
+	UInt16 ui16ByteCount;
+
+}RS485WAITINGUNIT;
+
 // Defs for registers
 #define MOTORREG_SETRPM				48
 #define MOTORREG_ARMED				56
 #define MOTORREG_PARK				57
 #define MOTORREG_REVERSE			58
-#define MOTORREG_PARKPOSITION		60
+#define MOTORREG_PARKPOSITION		59
+#define MOTORREG_MIN_SPEED			61
+#define MOTORREG_MAX_SPEED			65
+#define MOTORREG_ENABLE_PWMIN		0
+#define MOTORREG_
+#define MOTORREG_
+#define MOTORREG_
+#define MOTORREG_
+#define MOTORREG_
+#define MOTORREG_
+#define MOTORREG_
+
+#define SERVOREG_ENABLE_TORQUE		24
+#define SERVOREG_POSITION			30
+#define SERVOREG_SPEED				32
+#define SERVOREG_PGAIN				28
+#define SERVOREG_IGAIN				27
+#define SERVOREG_DGAIN				26
+#define SERVOREG_MIN_ANGLE_REG		6
+#define SERVOREG_MAX_ANGLE_REG		8
+#define SERVOREG_
+#define SERVOREG_
+#define SERVOREG_
+#define SERVOREG_
+#define SERVOREG_
+#define SERVOREG_
+
 
 // Function declarations
 Int16 RS485_Timing();
-UInt16 RS485_MasterInitData(void);
-UInt16 RS485_MasterState(int state);
+Int16 RS485_MasterInitData(void);
+Int16 RS485_MasterState(int state);
 Int16 RS485_MotorTest(UInt8 func);
-UInt16 RS485_ServoTest(UInt8 servoID);
-UInt16 RS485_Write8(UInt8 servoID, UInt8 address, UInt8 data);
-UInt16 RS485_Write16(UInt8 servoID, UInt8 address, UInt16 data);
-UInt16 RS485_Read(UInt8 ID, UInt8 readStart, UInt8 readCount);
-UInt16 RS485_ServoTorqueON(UInt8 servoID);
-UInt16 RS485_ServoTorqueOFF(UInt8 servoID);
-UInt16 RS485_ServoReadAll(UInt8 servoID);
-UInt16 RS485_ServoSetPosition(UInt8 servoID, UInt16 servoPosition);
-UInt16 RS485_ServoSetSpeed(UInt8 servoID, UInt16 servoSpeed);
-UInt16 RS485_ServoSetCompliance(UInt8 servoID, UInt8 CWMargin, UInt8 CCWMargin, UInt8 CWSlope, UInt8 CCWSlope);
-UInt16 RS485_MotorReadAll(UInt8 motorID);
-UInt16 RS485_MotorSetMinSpeed(UInt8 motorID, float32_t minSpeed);
-UInt16 RS485_MotorSetMaxSpeed(UInt8 motorID, float32_t minSpeed);
-UInt16 RS485_MotorEnablePWMs(UInt8 motorID, UInt16 enable);
+Int16 RS485_ServoTest(UInt8 servoID);
+UInt16 RS485_Write8(UInt8 ID, UInt16 address, UInt8 data);
+UInt16 RS485_Write16(UInt8 ID, UInt16 address, UInt16 data);
+UInt16 RS485_Writefloat(UInt8 ID, UInt16 address, float data);
+UInt16 RS485_Read(UInt8 ID, UInt16 address, UInt16 count);
 UInt16 RS485_BufferQueuedCommand(RS485COMMAND command);
-UInt16 RS485_MasterWriteByte(uint8_t *data, int length);
-UInt16 RS485_States_Master();
-UInt16 RS485_ReceiveMessage(UInt8 data);
-UInt16 RS485_DecodeMessage();
+Int16 RS485_MasterWriteByte(uint8_t *data, int length);
+void RS485_States_Master();
+void RS485_ReceiveMessage(UInt8 data);
+Int16 RS485_DecodeMessage();
 Int16 RS485_SetupServos();
 Int16 RS485_SetupMotors();
-
+UInt16 update_crc(UInt16 crc_accum, UInt8 *data_blk_ptr, UInt16 data_blk_size);
 
 
 #endif /* RS485COMM_H_ */

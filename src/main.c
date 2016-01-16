@@ -258,138 +258,36 @@ int main(void)
 			}
 			case 12:
 			{
-				SENSOR_TEST_STEP = 1;
-				mainLoopState = 0;
-				break;
-			}
-			case 13:
-			{
-				UART_QueueMessagef(VAR_GYRO_X, fusionData._gyro.vector.x);
-				mainLoopState = 0;
-				break;
-			}
-			case 14:
-			{
-				// Send data with DMA
-				// Torque ON
-				RS485_ServoTest(0);
-				mainLoopState = 0;
-				break;
-			}
-			case 15:
-			{
-				// Send data with DMA
-				// Torque OFF
-				RS485_ServoTest(1);
-				mainLoopState = 0;
-				break;
-			}
-			case 16:
-			{
-				// Send data with DMA
-				// Set ID to 0x11
-				RS485_ServoTest(2);
-				mainLoopState = 0;
-				break;
-			}
-			case 17:
-			{
-				// Send data with DMA
-				// Set FR position
-				RS485_ServoTest(3);
-				mainLoopState = 0;
-				break;
-			}
-			case 18:
-			{
 				// Start servo poll
 				RS485_MasterState(1);
 				mainLoopState = 0;
 				break;
 			}
-			case 19:
+			case 13:
 			{
 				// Stop servo poll
 				RS485_MasterState(2);
 				mainLoopState = 0;
 				break;
 			}
-			case 20:
+			case 14:
 			{
-				// Buffer servo move
-				RS485_SetupServos();
-				mainLoopState = 0;
-				break;
-			}
-			case 21:
-			{
-				RS485_ServoTest(4);
-				mainLoopState = 0;
-				break;
-			}
-			case 22:
-			{
-				RS485_ServoTest(5);
-				mainLoopState = 0;
-				break;
-			}
-			case 23:
-			{
-				RS485_ServoTest(6);
-				mainLoopState = 0;
-				break;
-			}
-			case 24:
-			{
-				RS485_ServoTest(7);
-				mainLoopState = 0;
-				break;
-			}
-			case 25:
-			{
-				RS485_ServoTest(8);
-				mainLoopState = 0;
-				break;
-			}
-			case 26:
-			{
-				RS485_ServoTest(9);
-				mainLoopState = 0;
-				break;
-			}
-			case 27:
-			{
-				RS485_ServoTest(10);
-				mainLoopState = 0;
-				break;
-			}
-			case 28:
-			{
-				RS485_ServoTest(11);
-				mainLoopState = 0;
-				break;
-			}
-			case 29:
-			{
+				// Enable motor
 				RS485_MotorTest(0);
 				mainLoopState = 0;
 				break;
 			}
-			case 30:
+			case 15:
 			{
+				// Disable motor
 				RS485_MotorTest(1);
 				mainLoopState = 0;
 				break;
 			}
-			case 31:
+			case 16:
 			{
+				// Set RPM
 				RS485_MotorTest(2);
-				mainLoopState = 0;
-				break;
-			}
-			case 32:
-			{
-				RS485_MotorTest(3);
 				mainLoopState = 0;
 				break;
 			}

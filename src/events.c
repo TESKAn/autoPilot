@@ -502,8 +502,7 @@ void TIM1_BRK_TIM9_ISR_Handler(void)
 void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 {
 	//Check trigger event
-	uint8_t ui8Temp = 0;
-	int i,j;
+
 	uint8_t retriesCount = 0;
 	ErrorStatus error = SUCCESS;
 	if((TIM14->SR & TIM_FLAG_Update) != (u16)RESET)

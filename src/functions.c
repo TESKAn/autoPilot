@@ -1411,7 +1411,6 @@ int16_t RB32_full(RING_BUFFER32* rb)
 int16_t RB32_Init(RING_BUFFER32* rb, uint32_t *buf, int16_t size)
 {
 	rb->buffer = buf;
-
     rb->buffer_end = rb->buffer + size;
     rb->size = size;
     rb->data_start = rb->buffer;
