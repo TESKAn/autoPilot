@@ -126,7 +126,6 @@ UInt16 RS485_MasterState(int state)
 			RS485MasterState = RS485_M_STATE_IDLE;
 			break;
 		}
-
 	}
 	return 0;
 }
@@ -1066,7 +1065,7 @@ UInt16 RS485_DecodeMessage()
 			destIndex = RS485ReadReqStartAddress;
 			for(bytes = (RS485RXBuffer[1] - 2); bytes != 0; bytes--)
 			{
-				RS485Servo_FR.ui8Data[destIndex] = RS485RXBuffer[sourceIndex];
+				RS485Servo_FR.ui8REGSData[destIndex] = RS485RXBuffer[sourceIndex];
 				destIndex++;
 				sourceIndex++;
 			}
@@ -1080,7 +1079,7 @@ UInt16 RS485_DecodeMessage()
 			destIndex = RS485ReadReqStartAddress;
 			for(bytes = (RS485RXBuffer[1] - 2); bytes != 0; bytes--)
 			{
-				RS485Servo_FL.ui8Data[destIndex] = RS485RXBuffer[sourceIndex];
+				RS485Servo_FL.ui8REGSData[destIndex] = RS485RXBuffer[sourceIndex];
 				destIndex++;
 				sourceIndex++;
 			}
@@ -1094,7 +1093,7 @@ UInt16 RS485_DecodeMessage()
 			destIndex = RS485ReadReqStartAddress;
 			for(bytes = (RS485RXBuffer[1] - 2); bytes != 0; bytes--)
 			{
-				RS485Servo_R.ui8Data[destIndex] = RS485RXBuffer[sourceIndex];
+				RS485Servo_R.ui8REGSData[destIndex] = RS485RXBuffer[sourceIndex];
 				destIndex++;
 				sourceIndex++;
 			}

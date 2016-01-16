@@ -129,46 +129,50 @@ typedef struct tagRS485SERVO
 	{
 		struct
 		{
-			UInt8 ui8Data[49];				// Main data structure
+			UInt8 ui8REGSData[74];				// Main data structure
 		};
 		struct
 		{
-			UInt16 ui16ModelNumber;
-			UInt8 ui8FirmwareVersion;
-			UInt8 ui8ID;
-			UInt8 ui8BaudRate;
-			UInt8 ui8ReturnDelayTime;
-			UInt16 CWAngleLimit;
-			UInt16 CCWAngleLimit;
-			UInt8 ui8Empty1;
-			UInt8 ui8InternalTempLimit;
-			UInt8 ui8LowLimitVoltage;
-			UInt8 ui8HighLimitVoltage;
-			UInt16 ui16MaxTorque;
-			UInt8 ui8StatusReturnLevel;
-			UInt8 ui8AlarmLED;
-			UInt8 ui8AlarmShutdown;
-			UInt8 ui8Empty2[5];
-			//UInt8 ui8AlarmShutdown;
-			UInt8 ui8TorqueEnabled;
-			UInt8 ui8LEDONOFF;
-			UInt8 ui8CWComplianceMargin;
-			UInt8 ui8CCWComplianceMargin;
-			UInt8 ui8CWComplianceSlope;
-			UInt8 ui8CCWComplianceSlope;
-			UInt16 ui16GoalPosition;
-			UInt16 ui16MovingSpeed;
-			UInt16 ui16TorqueLimit;
-			UInt16 ui16PresentPosition;
-			UInt16 ui16PresentSpeed;
-			UInt16 ui16PresentLoad;
-			UInt8 ui8PresentVoltage;
-			UInt8 ui8PresentTemperature;
-			UInt8 ui8Registered;
-			UInt8 ui8Empty3;
-			UInt8 ui8Moving;
-			UInt8 ui8Lock;
-			UInt16 ui16Punch;
+			UInt16 ui16ModelNumber;			// 0
+			UInt8 ui8FirmwareVersion;		// 2
+			UInt8 ui8ID;					// 3
+			UInt8 ui8BaudRate;				// 4
+			UInt8 ui8ReturnDelayTime;		// 5
+			UInt16 CWAngleLimit;			// 6
+			UInt16 CCWAngleLimit;			// 8
+			UInt8 ui8Empty1;				// 10
+			UInt8 ui8InternalTempLimit;		// 11
+			UInt8 ui8LowLimitVoltage; 		// 12
+			UInt8 ui8HighLimitVoltage;		// 13
+			UInt16 ui16MaxTorque;			// 14
+			UInt8 ui8StatusReturnLevel;		// 16
+			UInt8 ui8AlarmLED;				// 17
+			UInt8 ui8AlarmShutdown;			// 18
+			UInt8 ui8Empty2;				// 19
+			UInt16 ui16MultiTurnOffset;		// 20
+			UInt8 ui8ResolutionDivider;		// 22
+			UInt8 ui8Empty3;				// 23
+			UInt8 ui8TorqueEnabled;			// 24
+			UInt8 ui8LEDONOFF;				// 25
+			UInt8 ui8DGain;					// 26
+			UInt8 ui8IGain;					// 27
+			UInt8 ui8PGain;					// 28
+			UInt8 ui8Empty4;				// 29
+			UInt16 ui16GoalPosition;		// 30
+			UInt16 ui16MovingSpeed;			// 32
+			UInt16 ui16TorqueLimit;			// 34
+			UInt16 ui16PresentPosition;		// 36
+			UInt16 ui16PresentSpeed;		// 38
+			UInt16 ui16PresentLoad;			// 40
+			UInt8 ui8PresentVoltage;		// 42
+			UInt8 ui8PresentTemperature;	// 43
+			UInt8 ui8Registered;			// 44
+			UInt8 ui8Empty5;				// 45
+			UInt8 ui8Moving;				// 46
+			UInt8 ui8Lock;					// 47
+			UInt16 ui16Punch;				// 48
+			UInt8 ui8Empty6[23];			// 49 - 72
+			UInt8 ui8GoalAcceleration;		// 73
 		}REGS;
 	};
 
