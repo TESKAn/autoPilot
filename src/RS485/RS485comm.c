@@ -695,19 +695,17 @@ void RS485_ReceiveMessage(UInt8 data)
 		{
 			// Store instruction
 			RS485Data->RXDATA.ui8Instruction = data;
-			// Go to wait for parameters, if RS485Data.ui8RS485RXBytes > 0
-			if(0 < RS485Data->RXDATA.ui8ParamByteCount)
+			if(3 == RS485Data->RXDATA.LENGTH.ui16PacketLength)
 			{
-				// Waiting for parameters
-				RS485Data->ui8RXState = RS485_RX_WAIT_FOR_PARAMETERS;
-				// Reset buffer index
-				RS485Data->RXDATA.ui8RS485RXIndex = 0;
-			}
-			else
-			{
+				// No parameters, only instruction + CRC
 				// Wait for checksum
 				RS485Data->ui8RXState = RS485_RX_WAIT_FOR_CHECKSUM;
 				RS485Data->ui8RXCounter = 0;
+			}
+			else
+			{
+				// Waiting for parameters
+				RS485Data->ui8RXState = RS485_RX_WAIT_FOR_PARAMETERS;
 			}
 			break;
 		}
