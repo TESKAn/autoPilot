@@ -20,6 +20,9 @@ uint8_t usart1_buf[128];
 RING_BUFFER RB_USART2;
 uint8_t usart2_buf[128];
 
+// RS485 command structure
+RS485COMMAND RS485ExecuteCommand;
+
 // Fusion data
 FUSION_CORE fusionData;
 

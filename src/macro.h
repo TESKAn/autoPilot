@@ -294,9 +294,16 @@
 #define VAR_SERVOR						15
 #define VAR_MOTOR_FR_RPM				16
 #define VAR_RREADRS485DATA				17
-
-
-
+#define VAR_RS485COMMAND				18
+#define VAR_DCM_AX                      19
+#define VAR_DCM_AY                      20
+#define VAR_DCM_AZ                      21
+#define VAR_DCM_BX                      22
+#define VAR_DCM_BY                      23
+#define VAR_DCM_BZ                      24
+#define VAR_DCM_CX                      25
+#define VAR_DCM_CY                      26
+#define VAR_DCM_CZ                      27
 
 
 

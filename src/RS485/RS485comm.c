@@ -125,6 +125,13 @@ Int16 RS485_MasterInitData(void)
 	return 0;
 }
 
+// Queue a command
+Int16 RS485_QueueCommand(RS485COMMAND cmdToExec)
+{
+	// Store command
+	return RB32_push(&RS485CommandBuffer, cmdToExec.ui32Packed);
+}
+
 Int16 RS485_MasterState(int state)
 {
 	switch(state)
@@ -421,6 +428,16 @@ UInt16 RS485_BufferQueuedCommand(RS485COMMAND command)
 			bytes = RS485_Writefloat(command.VARS.ui8Address, MOTORREG_SETRPM, (float)command.VARS.ui16Data);
 			break;
 		}
+		case RS485_WRITE_MOTOR_ARMED_REG:
+		{
+			bytes = RS485_Write8(command.VARS.ui8Address, MOTORREG_ARMED, (UInt8)command.VARS.ui16Data);
+			break;
+		}
+		case RS485_WRITE_MOTOR_PARK_REG:
+		{
+			bytes = RS485_Write8(command.VARS.ui8Address, MOTORREG_PARK, (UInt8)command.VARS.ui16Data);
+			break;
+		}
 	}
 	return bytes;
 }
@@ -496,9 +513,9 @@ void RS485_States_Master()
 							// Send data with DMA
 							RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
 							// Set next
-							//RS485MasterPollState = RS485_POLL_STATE_MOTOR_FR;
-							readRS485Data = 0;
-							RS485MasterPollState = RS485_POLL_STATE_SERVO_FR;
+							RS485MasterPollState = RS485_POLL_STATE_MOTOR_FR;
+							//readRS485Data = 0;
+							//RS485MasterPollState = RS485_POLL_STATE_SERVO_FR;
 							RS485MasterState = RS485_M_STATE_WAITING_RESPONSE;
 
 							break;
@@ -552,6 +569,7 @@ void RS485_States_Master()
 						default:
 						{
 							RS485MasterPollState = RS485_POLL_STATE_SERVO_FR;
+							readRS485Data = 0;
 							break;
 						}
 					}

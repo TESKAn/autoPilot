@@ -605,6 +605,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		if(LED_ToggleCount >= 75)
 		{
 			// Send out data
+			// From sensors
 			UART_QueueMessagef(VAR_GYRO_X, fusionData._gyro.vector.x);
 			UART_QueueMessagef(VAR_GYRO_Y, fusionData._gyro.vector.y);
 			UART_QueueMessagef(VAR_GYRO_Z, fusionData._gyro.vector.z);
@@ -617,6 +618,18 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			UART_QueueMessagef(VAR_MAG_Y, fusionData._mag.vector.y);
 			UART_QueueMessagef(VAR_MAG_Z, fusionData._mag.vector.z);
 
+			// DCM matrix
+			UART_QueueMessagef(VAR_DCM_AX, fusionData._fusion_DCM.a.x);
+			UART_QueueMessagef(VAR_DCM_AY, fusionData._fusion_DCM.a.y);
+			UART_QueueMessagef(VAR_DCM_AZ, fusionData._fusion_DCM.a.z);
+
+			UART_QueueMessagef(VAR_DCM_BX, fusionData._fusion_DCM.b.x);
+			UART_QueueMessagef(VAR_DCM_BY, fusionData._fusion_DCM.b.y);
+			UART_QueueMessagef(VAR_DCM_BZ, fusionData._fusion_DCM.b.z);
+
+			UART_QueueMessagef(VAR_DCM_CX, fusionData._fusion_DCM.c.x);
+			UART_QueueMessagef(VAR_DCM_CY, fusionData._fusion_DCM.c.y);
+			UART_QueueMessagef(VAR_DCM_CZ, fusionData._fusion_DCM.c.z);
 
 			// Event every second
 

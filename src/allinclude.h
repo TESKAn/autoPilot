@@ -52,12 +52,13 @@
 #include "events.h"
 #include "flight.h"
 
+#include "RS485/RS485comm.h"
 
 #include "var.h"
 
 #include "sensors.h"
 
-#include "RS485/RS485comm.h"
+
 
 
 #endif /* ALLINCLUDE_H_ */

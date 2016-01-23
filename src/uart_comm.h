@@ -19,5 +19,9 @@ int UART_CopyToTransmitBuf();
 int32_t UART_QueueMessagei16(int16_t var, int16_t data);
 int32_t UART_QueueMessagei32(int16_t var, int32_t data);
 int32_t UART_QueueMessagef(int16_t var, float data);
+int32_t UART_QueueMessageui16(int16_t var, uint16_t data);
+int32_t UART_QueueMessageui32(int16_t var, uint32_t data);
+int32_t UART_QueueMessagei8(int16_t var, int8_t data);
+int32_t UART_QueueMessageui8(int16_t var, uint8_t data);
 
 #endif /* UART_COMM_H_ */

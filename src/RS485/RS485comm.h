@@ -76,6 +76,8 @@ typedef struct tagRS485COMMAND
 #define RS485_SET_MOTOR_PARK				15
 #define RS485_SET_MOTOR_RUN					16
 #define RS485_SET_MOTOR_RPM					17
+#define RS485_WRITE_MOTOR_ARMED_REG			18
+#define RS485_WRITE_MOTOR_PARK_REG			19
 
 // Commands macros
 #define RS485_COMMAND_NONE					0x00
@@ -310,6 +312,7 @@ typedef struct tagRS485WAITINGUNIT
 // Function declarations
 Int16 RS485_Timing();
 Int16 RS485_MasterInitData(void);
+Int16 RS485_QueueCommand(RS485COMMAND cmdToExec);
 Int16 RS485_MasterState(int state);
 Int16 RS485_MotorTest(UInt8 func);
 Int16 RS485_ServoTest(UInt8 servoID);

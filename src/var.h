@@ -60,7 +60,8 @@ typedef union
 {
 	float64_t f64;
 	float32_t f32[2];
-	unsigned char ch[8];
+	uint8_t ch[8];
+	int8_t i8[8];
 	uint32_t ui32[2];
 	int32_t i32[2];
 	uint16_t ui16[4];
@@ -85,6 +86,9 @@ extern uint8_t usart1_buf[128];
 
 extern RING_BUFFER RB_USART2;
 extern uint8_t usart2_buf[128];
+
+// RS485 command structure
+extern RS485COMMAND RS485ExecuteCommand;
 
 extern FUSION_CORE fusionData;
 

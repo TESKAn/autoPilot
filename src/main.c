@@ -218,7 +218,6 @@ int main(void)
 				MPU6000_ReadFTValues();
 				MPU_COMM_ENABLED = 1;
 
-
 				break;
 			}
 			case 7:
@@ -288,6 +287,13 @@ int main(void)
 			{
 				// Set RPM
 				RS485_MotorTest(2);
+				mainLoopState = 0;
+				break;
+			}
+			case 17:
+			{
+				// Store command
+				RS485_QueueCommand(RS485ExecuteCommand);
 				mainLoopState = 0;
 				break;
 			}
