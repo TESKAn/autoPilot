@@ -173,6 +173,10 @@ void flight_checkStates(FLIGHT_CORE *data)
 		{
 			break;
 		}
+		case FLIGHT_INIT:
+		{
+			break;
+		}
 		case FLIGHT_STABILIZE_HOVER:
 		{
 			// Check - do we go for transition?

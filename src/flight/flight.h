@@ -84,9 +84,10 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 // Macros
 // States
 #define FLIGHT_IDLE						0
-#define FLIGHT_STABILIZE_HOVER			1
-#define FLIGHT_STABILIZE_PLANE			2
-#define FLIGHT_STABILIZE_TRANSITION		3
+#define FLIGHT_INIT						1
+#define FLIGHT_STABILIZE_HOVER			2
+#define FLIGHT_STABILIZE_PLANE			3
+#define FLIGHT_STABILIZE_TRANSITION		4
 
 // Tilt transition states
 #define FLIGHT_TILT_START				0
