@@ -77,38 +77,49 @@ int32_t UART_RcvData(uint8_t data)
 	// Store it
 	UART2_RecBuffer[UART2_RcvdBytes] = data;
 	UART2_RcvdBytes++;
+	// Check for header
+	if(2 > UART2_RcvdBytes)
+	{
+		// If data is not 0xff, reset receive process
+		if(0xff != data)
+		{
+			UART2_RcvdBytes = 0;
+			UART2_RcvingVar = 0;
+			UART_CRC = 0xff;
+		}
+	}
 	// Check data pos
-	if(UART2_RcvdBytes == 2)
+	else if(4 == UART2_RcvdBytes)
 	{
 		// We have var ID. Store it.
-		UART_Conversion.ch[0] = UART2_RecBuffer[0];
-		UART_Conversion.ch[1] = UART2_RecBuffer[1];
+		UART_Conversion.ch[0] = UART2_RecBuffer[2];
+		UART_Conversion.ch[1] = UART2_RecBuffer[3];
 		UART2_RcvingVar = UART_Conversion.i16[0];
 	}
-	else if(UART2_RcvdBytes > 2)
+	else if(UART2_RcvdBytes > 4)
 	{
+
 		switch(UART2_RcvingVar)
 		{
 			case 0:
-			{
-				break;
-			}
 			case 1:
 			{
-
+				UART2_RcvdBytes = 0;
+				UART2_RcvingVar = 0;
+				UART_CRC = 0xff;
 				break;
 			}
 			case VAR_MAIN_LOOP_STATE:
 			{
 				// mainLoopState, uint16_t
-				if(UART2_RcvdBytes == 5)
+				if(UART2_RcvdBytes == 7)
 				{
 					// Check CRC
 					if(0 == UART_CRC)
 					{
 						// Store var
-						UART_Conversion.ch[0] = UART2_RecBuffer[2];
-						UART_Conversion.ch[1] = UART2_RecBuffer[3];
+						UART_Conversion.ch[0] = UART2_RecBuffer[4];
+						UART_Conversion.ch[1] = UART2_RecBuffer[5];
 						mainLoopState = UART_Conversion.i16[0];
 					}
 					UART2_RcvdBytes = 0;
@@ -120,14 +131,14 @@ int32_t UART_RcvData(uint8_t data)
 			case VAR_RS485_SERVO_POSITION:
 			{
 				// servo position, uint16_t
-				if(UART2_RcvdBytes == 5)
+				if(UART2_RcvdBytes == 7)
 				{
 					// Check CRC
 					if(0 == UART_CRC)
 					{
 						// Store var
-						UART_Conversion.ch[0] = UART2_RecBuffer[2];
-						UART_Conversion.ch[1] = UART2_RecBuffer[3];
+						UART_Conversion.ch[0] = UART2_RecBuffer[4];
+						UART_Conversion.ch[1] = UART2_RecBuffer[5];
 						servoMovePosition = UART_Conversion.i16[0];
 					}
 					UART2_RcvdBytes = 0;
@@ -139,16 +150,16 @@ int32_t UART_RcvData(uint8_t data)
 			case VAR_MOTOR_FR_RPM:
 			{
 				// Motor RPM, float32
-				if(UART2_RcvdBytes == 7)
+				if(UART2_RcvdBytes == 9)
 				{
 					// Check CRC
 					if(0 == UART_CRC)
 					{
 						// Store var
-						UART_Conversion.ch[0] = UART2_RecBuffer[2];
-						UART_Conversion.ch[1] = UART2_RecBuffer[3];
-						UART_Conversion.ch[2] = UART2_RecBuffer[4];
-						UART_Conversion.ch[3] = UART2_RecBuffer[5];
+						UART_Conversion.ch[0] = UART2_RecBuffer[4];
+						UART_Conversion.ch[1] = UART2_RecBuffer[5];
+						UART_Conversion.ch[2] = UART2_RecBuffer[6];
+						UART_Conversion.ch[3] = UART2_RecBuffer[7];
 						motorFRSpeed = UART_Conversion.f32[0];
 					}
 					UART2_RcvdBytes = 0;
@@ -160,14 +171,14 @@ int32_t UART_RcvData(uint8_t data)
 			case VAR_RREADRS485DATA:
 			{
 				// readRS485Data, int16_t
-				if(UART2_RcvdBytes == 5)
+				if(UART2_RcvdBytes == 7)
 				{
 					// Check CRC
 					if(0 == UART_CRC)
 					{
 						// Store var
-						UART_Conversion.ch[0] = UART2_RecBuffer[2];
-						UART_Conversion.ch[1] = UART2_RecBuffer[3];
+						UART_Conversion.ch[0] = UART2_RecBuffer[4];
+						UART_Conversion.ch[1] = UART2_RecBuffer[5];
 						readRS485Data = UART_Conversion.i16[0];
 					}
 					UART2_RcvdBytes = 0;
@@ -179,16 +190,16 @@ int32_t UART_RcvData(uint8_t data)
 			case VAR_RS485COMMAND:
 			{
 				// RS485 data, uint32
-				if(UART2_RcvdBytes == 7)
+				if(UART2_RcvdBytes == 9)
 				{
 					// Check CRC
 					if(0 == UART_CRC)
 					{
 						// Store var
-						UART_Conversion.ch[0] = UART2_RecBuffer[2];
-						UART_Conversion.ch[1] = UART2_RecBuffer[3];
-						UART_Conversion.ch[2] = UART2_RecBuffer[4];
-						UART_Conversion.ch[3] = UART2_RecBuffer[5];
+						UART_Conversion.ch[0] = UART2_RecBuffer[4];
+						UART_Conversion.ch[1] = UART2_RecBuffer[5];
+						UART_Conversion.ch[2] = UART2_RecBuffer[6];
+						UART_Conversion.ch[3] = UART2_RecBuffer[7];
 						RS485ExecuteCommand.ui32Packed = UART_Conversion.ui32[0];
 					}
 					UART2_RcvdBytes = 0;
@@ -197,7 +208,6 @@ int32_t UART_RcvData(uint8_t data)
 				}
 				break;
 			}
-
 			default:
 			{
 				UART2_RcvdBytes = 0;
@@ -207,9 +217,6 @@ int32_t UART_RcvData(uint8_t data)
 			}
 		}
 	}
-
-
-
 	return 0;
 }
 
