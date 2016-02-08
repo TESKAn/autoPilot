@@ -523,7 +523,6 @@ void power_on (void)
 {
 	SPI_InitTypeDef  SPI_InitStructure;
 	GPIO_InitTypeDef GPIO_InitStructure;
-	volatile BYTE dummyread = 0;
 
 	/* Enable GPIO clock for CS */
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIO_CS, ENABLE);
@@ -604,8 +603,11 @@ void power_on (void)
 	// End of SD card SPI init
 
 	/* drain SPI */
-	while (SPI_I2S_GetFlagStatus(SPI_SD, SPI_I2S_FLAG_TXE) == RESET) { ; }
-	dummyread = SPI_I2S_ReceiveData(SPI_SD);
+	while (SPI_I2S_GetFlagStatus(SPI_SD, SPI_I2S_FLAG_TXE) == RESET)
+	{
+		SPI_I2S_ReceiveData(SPI_SD);
+	}
+
 
 
 #ifdef STM32_SD_USE_DMA

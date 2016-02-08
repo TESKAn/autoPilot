@@ -12,7 +12,44 @@
 #include "math/myMath_matrix3.h"
 #include "sensor_typedefs.h"
 #include "gps.h"
-#include "functions.h"
+
+void GPSTransferDMA(uint8_t *data, int length)
+{
+	// Mark GPS is sending data
+	GPS_Sending(1);
+	DMA_InitTypeDef DMAInitStructure;
+	// Configure USART3 DMA
+	//deinit DMA channel
+	DMA_DeInit(DMA1_Stream4);
+	//set init structure
+	//channel to use
+	DMAInitStructure.DMA_Channel = DMA_Channel_7;
+	//peripheral data address
+	DMAInitStructure.DMA_PeripheralBaseAddr = (uint32_t)&USART3->DR;//    USART3_DR_ADDRESS;
+	// DMA buffer address
+	DMAInitStructure.DMA_Memory0BaseAddr = (uint32_t)data;
+	DMAInitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
+	DMAInitStructure.DMA_BufferSize = length;
+	DMAInitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+	DMAInitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+	DMAInitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+	DMAInitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+	DMAInitStructure.DMA_Mode = DMA_Mode_Normal;
+	DMAInitStructure.DMA_Priority = DMA_Priority_Low;
+	DMAInitStructure.DMA_FIFOMode = DMA_FIFOMode_Enable;
+	DMAInitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_Full;
+	DMAInitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
+	DMAInitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
+	//configure peripheral
+	DMA_Init(DMA1_Stream4, &DMAInitStructure);
+
+	//Enable DMA1 stream 4 - USART3 TX
+	DMA_Cmd(DMA1_Stream4, ENABLE);
+	//configure to use DMA
+	USART_DMACmd(USART3, USART_DMAReq_Tx, ENABLE);
+	// Configure end of transfer interrupt
+	DMA_ITConfig(DMA1_Stream4, DMA_IT_TC, ENABLE);
+}
 
 void GPS_Sending(int state)
 {
@@ -20,7 +57,20 @@ void GPS_Sending(int state)
 	else GPS_SENDING = 0;
 }
 
-ErrorStatus gps_initData(GPSData *data)
+float32_t GPSIntToFloat(uint16_t whole, uint16_t frac)
+{
+	float32_t result = 0;
+	float32_t temp = 0;
+	temp = (float32_t)frac;
+	while(temp > 1.0f)
+	{
+		temp = temp / 10;
+	}
+	result = (float32_t)whole + temp;
+	return result;
+}
+
+ErrorStatus gps_initData(GPSData *data, uint32_t time)
 {
 	data->altitude = 0;
 	data->latitude = 0;
@@ -85,21 +135,23 @@ void GPSStopOutput(void)
 	numbytes++;
 
 	// Send to DMA
-	transferDMA_USART3(GPS_DataBuffer, numbytes);
+	GPSTransferDMA(GPS_DataBuffer, numbytes);
 }
 
-void GPSSetDataOutput(void)
+void GPSSetDataOutput(uint32_t time)
 {
 	int numbytes = 0;
 	int i = 0;
-	uint32_t GPSTime = 0;
-	uint32_t CurrentGPSTime = 0;
+//	uint32_t GPSTime = 0;
+//	uint32_t CurrentGPSTime = 0;
 	uint8_t checksum = 0;
 	// Store current time
-	GPSTime = getSystemTime();
+//	GPSTime = time;
 	// If data is transferring
 	if(GPS_SENDING)
 	{
+		return;
+		/*
 		// Wait end of transfer
 		//GPSTime = systemTime;
 		while(GPS_SENDING != 0)
@@ -110,7 +162,7 @@ void GPSSetDataOutput(void)
 			{
 				break;
 			}
-		}
+		}*/
 	}
 	// Mark GPS is sending data
 	GPS_SENDING = 1;
@@ -148,7 +200,7 @@ void GPSSetDataOutput(void)
 	numbytes++;
 
 	// Send to DMA
-	transferDMA_USART3(GPS_DataBuffer, numbytes);
+	GPSTransferDMA(GPS_DataBuffer, numbytes);
 }
 
 uint8_t GPS_GetChar(uint8_t data, FlagStatus part)
@@ -196,7 +248,7 @@ uint8_t GPS_CharToByte(uint8_t data)
 }
 
 // GGA and RMC message receive process
-void GPS_ReceiveProcess(uint8_t data)
+void GPS_ReceiveProcess(uint8_t data, uint32_t time)
 {
 	uint16_t temp = 0;
 	uint32_t timeCalculation = 0;
@@ -218,9 +270,8 @@ void GPS_ReceiveProcess(uint8_t data)
 					GPSFLAG_CR_RECEIVED = 0;
 					GPSFLAG_CHECKSUM_RESET = 1;
 					// Mark new data time
-					//fusionData._gps.dataTime = getSystemTime();
 					timeCalculation = fusionData._gps.dataTime;
-					fusionData._gps.dataTime = getSystemTime();
+					fusionData._gps.dataTime = time;
 					fusionData._gps.deltaTime = fusionData._gps.dataTime - timeCalculation;
 					// Mark data is being updated
 					fusionData._gps.dataOK = 0;
@@ -512,32 +563,27 @@ void GPS_ReceiveProcess(uint8_t data)
 						// Check that data is OK
 						if((GPS_Digits[0] == GPS_GetChar(GPS_Checksum_Save, SET))&&(GPS_Digits[1] == GPS_GetChar(GPS_Checksum_Save, RESET)))
 						{
-							// Data is OK, store
-							for(temp = 0; temp < 24; temp++)
-							{
-								//MODBUSReg[temp + 2] = GPS_RECDATA[temp];
-							}
 							// Check if data is valid
 							//if((fusionData._gps.valid & 0x8000) != 0)
 							{
 								// Latitude, longitude in rad = res * (pi/180*180)
-								fusionData._gps.latitude = (float64_t)intToFloat(GPS_LATITUDE_T, GPS_LATITUDE_FRAC_T);
+								fusionData._gps.latitude = (float64_t)GPSIntToFloat(GPS_LATITUDE_T, GPS_LATITUDE_FRAC_T);
 								fusionData._gps.latitude = (fusionData._gps.latitude * PI)/32400;
-								fusionData._gps.longitude = (float64_t)intToFloat(GPS_LONGITUDE_T, GPS_LONGITUDE_FRAC_T);
+								fusionData._gps.longitude = (float64_t)GPSIntToFloat(GPS_LONGITUDE_T, GPS_LONGITUDE_FRAC_T);
 								fusionData._gps.longitude = (fusionData._gps.longitude * PI)/10800;
 
 								// Convert speed from knots to m/2
-								fusionData._gps.speed = intToFloat(GPS_SPEED_T, GPS_SPEED_FRAC_T) * 0.51444f;
+								fusionData._gps.speed = GPSIntToFloat(GPS_SPEED_T, GPS_SPEED_FRAC_T) * 0.51444f;
 
-								fusionData._gps.altitude = intToFloat(GPS_ALTITUDE_T, GPS_ALTITUDE_FRAC_T);
+								fusionData._gps.altitude = GPSIntToFloat(GPS_ALTITUDE_T, GPS_ALTITUDE_FRAC_T);
 
-								fusionData._gps.trackAngle = intToFloat(GPS_TRACKANGLE_T, GPS_TRACKANGLE_FRAC_T);
+								fusionData._gps.trackAngle = GPSIntToFloat(GPS_TRACKANGLE_T, GPS_TRACKANGLE_FRAC_T);
 
-								fusionData._gps.hdop = intToFloat(GPS_HDOP_T, GPS_HDOP_FRAC_T);
+								fusionData._gps.hdop = GPSIntToFloat(GPS_HDOP_T, GPS_HDOP_FRAC_T);
 
-								fusionData._gps.gg = intToFloat(GPS_GG_T, GPS_GG_FRAC_T);
+								fusionData._gps.gg = GPSIntToFloat(GPS_GG_T, GPS_GG_FRAC_T);
 
-								fusionData._gps.magvar = intToFloat(GPS_MAGVAR_T,GPS_MAGVAR_FRAC_T);
+								fusionData._gps.magvar = GPSIntToFloat(GPS_MAGVAR_T,GPS_MAGVAR_FRAC_T);
 
 								fusionData._gps.satStatus = GPS_SATSTATUS_T;
 
@@ -549,8 +595,6 @@ void GPS_ReceiveProcess(uint8_t data)
 								fusionData._gps.magvar_ew = GPS_MAGWAR_EW_T;
 								fusionData._gps.valid = GPS_VALID_T;
 
-
-
 								// Store to GPS_Data as floats
 								fusionData._gps.day = (uint8_t)GPS_DAY_T;
 								fusionData._gps.month = (uint8_t)GPS_MONTH_T;
@@ -560,8 +604,6 @@ void GPS_ReceiveProcess(uint8_t data)
 								fusionData._gps.dataOK = 1;
 
 							}
-							// Mark GPS OK
-							//SCR2 = SCR2 | SCR2_GPSOK;
 						}
 						else
 						{

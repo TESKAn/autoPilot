@@ -21,35 +21,34 @@
 #include "airSpeed.h"
 #include "gps.h"
 #include "altimeter.h"
-#include "functions.h"
 
-ErrorStatus fusion_init(FUSION_CORE *coreData)
+ErrorStatus fusion_init(FUSION_CORE *coreData, uint32_t time)
 {
 
-	if(ERROR == AirSpeed_initDataStructure(&coreData->_airSpeed))
+	if(ERROR == AirSpeed_initDataStructure(&coreData->_airSpeed, time))
 	{
 		return ERROR;
 	}
-	if(ERROR == altimeter_initDataStructure(&coreData->_altimeter))
+	if(ERROR == altimeter_initDataStructure(&coreData->_altimeter, time))
 	{
 		return ERROR;
 	}
-	if(ERROR == gyro_initDataStructure(&coreData->_gyro))
-	{
-		return ERROR;
-	}
-
-	if(ERROR == mag_initDataStructure(&coreData->_mag))
+	if(ERROR == gyro_initDataStructure(&coreData->_gyro, time))
 	{
 		return ERROR;
 	}
 
-	if(ERROR == acc_initDataStructure(&coreData->_accelerometer))
+	if(ERROR == mag_initDataStructure(&coreData->_mag, time))
 	{
 		return ERROR;
 	}
 
-	if(ERROR == gps_initData(&coreData->_gps))
+	if(ERROR == acc_initDataStructure(&coreData->_accelerometer, time))
+	{
+		return ERROR;
+	}
+
+	if(ERROR == gps_initData(&coreData->_gps, time))
 	{
 		return ERROR;
 	}
@@ -65,26 +64,15 @@ ErrorStatus fusion_init(FUSION_CORE *coreData)
 	math_PIDInit(&coreData->_gyroErrorPID.y, GYRO_PID_DRIFT_KP, GYRO_PID_DRIFT_KI, GYRO_PID_DRIFT_KD);
 	math_PIDInit(&coreData->_gyroErrorPID.z, GYRO_PID_DRIFT_KP, GYRO_PID_DRIFT_KI, GYRO_PID_DRIFT_KD);
 
-	coreData->_gyroErrorPID.x.errIMax = GYRO_PID_DRIFT_IMAX;
-	coreData->_gyroErrorPID.x.errIMin = GYRO_PID_DRIFT_IMIN;
+
 	coreData->_gyroErrorPID.x.outMax = GYRO_PID_DRIFT_SMAX;
 	coreData->_gyroErrorPID.x.outMin = GYRO_PID_DRIFT_SMIN;
-	coreData->_gyroErrorPID.x.errMax = GYRO_PID_DRIFT_EMAX;
-	coreData->_gyroErrorPID.x.errMin = GYRO_PID_DRIFT_EMIN;
 
-	coreData->_gyroErrorPID.y.errIMax = GYRO_PID_DRIFT_IMAX;
-	coreData->_gyroErrorPID.y.errIMin = GYRO_PID_DRIFT_IMIN;
 	coreData->_gyroErrorPID.y.outMax = GYRO_PID_DRIFT_SMAX;
 	coreData->_gyroErrorPID.y.outMin = GYRO_PID_DRIFT_SMIN;
-	coreData->_gyroErrorPID.y.errMax = GYRO_PID_DRIFT_EMAX;
-	coreData->_gyroErrorPID.y.errMin = GYRO_PID_DRIFT_EMIN;
 
-	coreData->_gyroErrorPID.z.errIMax = GYRO_PID_DRIFT_IMAX;
-	coreData->_gyroErrorPID.z.errIMin = GYRO_PID_DRIFT_IMIN;
 	coreData->_gyroErrorPID.z.outMax = GYRO_PID_DRIFT_SMAX;
 	coreData->_gyroErrorPID.z.outMin = GYRO_PID_DRIFT_SMIN;
-	coreData->_gyroErrorPID.z.errMax = GYRO_PID_DRIFT_EMAX;
-	coreData->_gyroErrorPID.z.errMin = GYRO_PID_DRIFT_EMIN;
 
 
 
@@ -93,26 +81,14 @@ ErrorStatus fusion_init(FUSION_CORE *coreData)
 	math_PIDInit(&coreData->_gyroGainPID.y, GYRO_PID_GAIN_KP, GYRO_PID_GAIN_KI, GYRO_PID_GAIN_KD);
 	math_PIDInit(&coreData->_gyroGainPID.z, GYRO_PID_GAIN_KP, GYRO_PID_GAIN_KI, GYRO_PID_GAIN_KD);
 
-	coreData->_gyroGainPID.x.errIMax = GYRO_PID_GAIN_IMAX;
-	coreData->_gyroGainPID.x.errIMin = GYRO_PID_GAIN_IMIN;
 	coreData->_gyroGainPID.x.outMax = GYRO_PID_GAIN_SMAX;
 	coreData->_gyroGainPID.x.outMin = GYRO_PID_GAIN_SMIN;
-	coreData->_gyroGainPID.x.errMax = GYRO_PID_GAIN_EMAX;
-	coreData->_gyroGainPID.x.errMin = GYRO_PID_GAIN_EMIN;
 
-	coreData->_gyroGainPID.y.errIMax = GYRO_PID_GAIN_IMAX;
-	coreData->_gyroGainPID.y.errIMin = GYRO_PID_GAIN_IMIN;
 	coreData->_gyroGainPID.y.outMax = GYRO_PID_GAIN_SMAX;
 	coreData->_gyroGainPID.y.outMin = GYRO_PID_GAIN_SMIN;
-	coreData->_gyroGainPID.y.errMax = GYRO_PID_GAIN_EMAX;
-	coreData->_gyroGainPID.y.errMin = GYRO_PID_GAIN_EMIN;
 
-	coreData->_gyroGainPID.z.errIMax = GYRO_PID_GAIN_IMAX;
-	coreData->_gyroGainPID.z.errIMin = GYRO_PID_GAIN_IMIN;
 	coreData->_gyroGainPID.z.outMax = GYRO_PID_GAIN_SMAX;
 	coreData->_gyroGainPID.z.outMin = GYRO_PID_GAIN_SMIN;
-	coreData->_gyroGainPID.z.errMax = GYRO_PID_GAIN_EMAX;
-	coreData->_gyroGainPID.z.errMin = GYRO_PID_GAIN_EMIN;
 
 	// Create identity matrix
 	matrix3_init(1, &coreData->_fusion_DCM);
@@ -138,7 +114,7 @@ ErrorStatus fusion_init(FUSION_CORE *coreData)
 	// Mark wait for valid sensor signals
 	coreData->sFlag.bits.SFLAG_DO_DCM_UPDATE = 0;
 	// Store initial time
-	coreData->ui32SensorInitTime = getSystemTime();
+	coreData->ui32SensorInitTime = time;
 
 	return SUCCESS;
 }
@@ -171,7 +147,7 @@ ErrorStatus fusion_initGyroGainPID(FUSION_CORE *data)
 	return SUCCESS;
 }
 
-ErrorStatus fusion_dataUpdate(FUSION_CORE *data, FUSION_SENSORDATA *sensorData)
+ErrorStatus fusion_dataUpdate(FUSION_CORE *data, FUSION_SENSORDATA *sensorData, uint32_t time)
 {
 	// Update temperature
 	fusion_calculateMPUTemperature(data, sensorData->data.temperature, sensorData->data.dataTakenTime);
@@ -185,7 +161,7 @@ ErrorStatus fusion_dataUpdate(FUSION_CORE *data, FUSION_SENSORDATA *sensorData)
 	else
 	{
 		// Check time
-		if(SENSOR_INVALID_TIME < (getSystemTime() - data->ui32SensorInitTime))
+		if(SENSOR_INVALID_TIME < (time - data->ui32SensorInitTime))
 		{
 			// If 1 second has passed since power up,try to init DCM matrix to initial value
 			if(SUCCESS == fusion_generateDCM(data))
@@ -294,8 +270,8 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 		ErrorStatus status;
 		status = SUCCESS;
 		Vectorf temporaryVector = vectorf_init(0);
-		Vectorf temporaryVector1 = vectorf_init(0);
-		Vectorf temporaryVector2 = vectorf_init(0);
+		//Vectorf temporaryVector1 = vectorf_init(0);
+		//Vectorf temporaryVector2 = vectorf_init(0);
 		Vectorf error_gps_acc = vectorf_init(0);				// Error from GPS and accelerometer data
 		Vectorf error_acc_gravity = vectorf_init(0);			// Error from acceleration and gravity
 		Vectorf error_mag = vectorf_init(0);					// Error from compass
@@ -613,8 +589,8 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 	Matrixf updateMatrix;									// Update matrix
 	Matrixf newMatrix;										// Place to store new DCM matrix
 	float32_t dt = 0;
-	float32_t f32Temp = 0.0f;
-	Vectorf coning = vectorf_init(0);
+	//float32_t f32Temp = 0.0f;
+	//Vectorf coning = vectorf_init(0);
 	Vectorf rotation = vectorf_init(0);
 	Vectorf rotationCorrection = vectorf_init(0);
 	int vecm0 = 0;;

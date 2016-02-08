@@ -12,7 +12,6 @@
 #include "math/myMath_matrix3.h"
 #include "sensor_typedefs.h"
 #include "mag.h"
-#include "functions.h"
 
 //#define MAG_DEFAULT_RATE					0.000635075720f			// 1,3/2047 -> gauss, result is in gauss	0,00917431192660550458715596330275
 #define MAG_DEFAULT_RATE					0.000917431192660550458715596330275f			// 1,3/2047 -> gauss, result is in gauss	0,00917431192660550458715596330275
@@ -21,12 +20,12 @@
 #define MAG_DEF_OFFSET_Z					0.07706425f
 
 // Init data structure
-ErrorStatus mag_initDataStructure(MagData *data)
+ErrorStatus mag_initDataStructure(MagData *data, uint32_t time)
 {
 	ErrorStatus success = ERROR;
 	Kalman3_Init(&data->kFilter, 0.022f, 0.617f);
 	data->heading = 0.0f;
-	data->dataTime = getSystemTime();
+	data->dataTime = time;
 	data->deltaTime = 0;
 	data->hardIron = vectorf_init(0);
 	data->magRate = MAG_DEFAULT_RATE;
@@ -76,8 +75,8 @@ ErrorStatus mag_initDataStructure(MagData *data)
 ErrorStatus mag_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 {
 	ErrorStatus success = ERROR;
-	float32_t temp;
-	Vectorf calcVector = vectorf_init(0);
+	//float32_t temp;
+	//Vectorf calcVector = vectorf_init(0);
 
 	float32_t cos_pitch_sq = 0.0f;
 	float32_t headY = 0.0f;

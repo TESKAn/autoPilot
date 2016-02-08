@@ -12,7 +12,7 @@
 
 
 // Function declarations
-ErrorStatus AirSpeed_initDataStructure(airSpeedData *data);
-ErrorStatus AirSpeed_CalculateAirSpeed(airSpeedData *data, uint16_t Pp, float32_t Pb, uint16_t T);
+ErrorStatus AirSpeed_initDataStructure(airSpeedData *data, uint32_t time);
+ErrorStatus AirSpeed_CalculateAirSpeed(airSpeedData *data, uint16_t Pp, float32_t Pb, uint16_t T, uint32_t time);
 
 #endif /* AIRSPEED_H_ */

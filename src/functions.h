@@ -29,6 +29,8 @@ typedef struct
   }__attribute__((aligned(4),packed))  RING_BUFFER32;
 
 void calibrateI2CSensors(void);
+void Refresh485();
+int16_t checkServo(RS485SERVO * servo);
 void refreshPWMOutputs(void);
 uint32_t getSystemTime(void);
 float32_t getFTime(void);

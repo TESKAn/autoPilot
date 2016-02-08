@@ -11,13 +11,12 @@
 #include "math/myMath_vec3.h"
 #include "sensor_typedefs.h"
 #include "altimeter.h"
-#include "functions.h"
 
 // Init data structure
-ErrorStatus altimeter_initDataStructure(AltimeterData *data)
+ErrorStatus altimeter_initDataStructure(AltimeterData *data, uint32_t time)
 {
 
-	data->dataTime = getSystemTime();
+	data->dataTime = time;
 	data->deltaTime = 0;
 	data->pressure = 0;
 	data->altitude = 0;

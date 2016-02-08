@@ -9,7 +9,6 @@
 #include "arm_math.h"
 #include "sensor_typedefs.h"
 #include "airSpeed.h"
-#include "functions.h"
 
 // We need some variables to calculate airspeed
 // pitot AD sample, which we have to convert to Pa
@@ -18,11 +17,11 @@
 // AD result is uint16_t
 
 
-ErrorStatus AirSpeed_initDataStructure(airSpeedData *data)
+ErrorStatus AirSpeed_initDataStructure(airSpeedData *data, uint32_t time)
 {
 	data->valid = 1;
 	data->airSpeed = 0;
-	data->dataTime = getSystemTime();
+	data->dataTime = time;
 	data->deltaTime = 0;
 	return SUCCESS;
 }
@@ -30,7 +29,7 @@ ErrorStatus AirSpeed_initDataStructure(airSpeedData *data)
 // Pp is pitot pressure difference
 // Pb is baro pressure from altimeter
 // T is temperature in degC * 100
-ErrorStatus AirSpeed_CalculateAirSpeed(airSpeedData *data, uint16_t Pp, float32_t Pb, uint16_t T)
+ErrorStatus AirSpeed_CalculateAirSpeed(airSpeedData *data, uint16_t Pp, float32_t Pb, uint16_t T, uint32_t time)
 {
 	ErrorStatus status = ERROR;
 	// Calculate float temperature
@@ -45,7 +44,7 @@ ErrorStatus AirSpeed_CalculateAirSpeed(airSpeedData *data, uint16_t Pp, float32_
 	// Update airspeed data, do some filtering
 	data->airSpeed = 0.7f * data->airSpeed + 0.3f * result;
 	// Mark time when we calculated speed
-	data->dataTime = getSystemTime();
+	data->dataTime = time;
 
 	return status;
 }

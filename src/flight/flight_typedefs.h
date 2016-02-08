@@ -63,6 +63,8 @@ typedef struct
 	uint32_t ui32FlightStateMachine;
 	uint32_t ui32FlightTransitionState;
 
+	uint32_t ui32FlightInitState;
+
 	// PIDs
 	myMath_PID PIDPitch;
 	myMath_PID PIDRoll;
@@ -107,10 +109,33 @@ typedef struct
 
 	struct
 	{
-		uint16_t ui16ServoFLZero;
-		uint16_t ui16ServoFRZero;
-		uint16_t ui16ServoRZero;
+		float32_t f32AllowedPositionDeviation;
+		float32_t f32ServoFLZero;
+		float32_t f32ServoFRZero;
+		float32_t f32ServoRZero;
+		uint8_t ui8ServoFRID;
+		uint8_t ui8ServoFLID;
+		uint8_t ui8ServoRID;
+		uint8_t ui8Empty;
+		uint8_t ui8EnableFR;
+		uint8_t ui8EnableFL;
+		uint8_t ui8EnableR;
+		uint8_t ui8Empty1;
 	}TILT_SERVOS;
+
+	struct
+	{
+		uint8_t ui8MotorFRID;
+		uint8_t ui8MotorFLID;
+		uint8_t ui8MotorRID;
+		uint8_t ui8Empty;
+	}MOTORS;
+
+	struct
+	{
+		uint16_t ui16GearUp;
+		uint16_t ui16Empty;
+	}GEAR;
 
 	// Variables
 	// Minimal plane speed to be considered as flying
@@ -125,7 +150,7 @@ typedef struct
 	float32_t f32NacelleCommonTilt;
 	float32_t f32NacelleTilt_FL;
 	float32_t f32NacelleTilt_FR;
-	float32_t f32NacelleTilt_BM;
+	float32_t f32NacelleTilt_R;
 	// Engine nacelles tilt angle change for each iteration
 	float32_t f32NacelleTiltSpeed;
 

@@ -11,7 +11,7 @@
 
 
 
-ErrorStatus altimeter_initDataStructure(AltimeterData *data);
+ErrorStatus altimeter_initDataStructure(AltimeterData *data, uint32_t time);
 ErrorStatus altimeter_update(FUSION_CORE *data, uint32_t rawData_P, int8_t temp_deg, uint8_t temp_frac, uint32_t dataTime);
 
 #endif /* ALTIMETER_H_ */

@@ -249,28 +249,7 @@
 // How much time between pulses to declare value to be DC
 #define SIGNALSTRENGTH_MAXTIME	3000	// 3 seconds
 
-// Fast report macros
-#define REPORT_DCM				0x000001
-#define REPORT_ACC				0x000002
-#define REPORT_GYRO				0x000004
-#define REPORT_MAG				0x000008
-#define REPORT_TC				0x000010
-#define REPORT_RPC				0x000020
-#define REPORT_YAWC				0x000040
-#define REPORT_GRAVITY			0x000080
-#define REPORT_MAG_OFFSET		0x000100
-#define REPORT_PID_I			0x000200
-#define REPORT_PID_P			0x000400
-#define REPORT_PID_R			0x000800
-#define REPORT_DCM_XE_B			0x001000		// Earth X axis expressed in body coordinate system
-#define REPORT_DCM_YE_B			0x002000
-#define REPORT_DCM_ZE_B			0x004000
-#define REPORT_DCM_XB_E			0x008000		// X body axis expressed in earth coordinate system
-#define REPORT_DCM_YB_E			0x010000
-#define REPORT_DCM_ZB_E			0x020000
-#define REPORT_GYRO_ADJUSTED	0x040000
-#define REPORT_MAG_EARTH		0x080000
-#define REPORT_ADC				0x100000
+
 
 // UART2 comm macros
 // Declare variables
@@ -304,7 +283,33 @@
 #define VAR_DCM_CX                      25
 #define VAR_DCM_CY                      26
 #define VAR_DCM_CZ                      27
-
-
+#define VAR_PWMIN_1                     28
+#define VAR_PWMIN_2                     29
+#define VAR_PWMIN_3                     30
+#define VAR_PWMIN_4                     31
+#define VAR_PWMIN_5                     32
+#define VAR_PWMIN_6                     33
+#define VAR_PWMIN_7                     34
+#define VAR_PWMIN_8                     35
+#define VAR_PWMIN_1_ZERO                36
+#define VAR_PWMIN_2_ZERO                37
+#define VAR_PWMIN_3_ZERO                38
+#define VAR_PWMIN_4_ZERO                39
+#define VAR_PWMIN_5_ZERO                40
+#define VAR_PWMIN_6_ZERO                41
+#define VAR_PWMIN_7_ZERO                42
+#define VAR_PWMIN_8_ZERO                43
+#define VAR_PWMOUT_1                    44
+#define VAR_PWMOUT_2                    45
+#define VAR_PWMOUT_3                    46
+#define VAR_PWMOUT_4                    47
+#define VAR_PWMOUT_5                    48
+#define VAR_PWMOUT_6                    49
+#define VAR_PWMOUT_7                    50
+#define VAR_PWMOUT_8                    51
+#define VAR_PWMOUT_9                    52
+#define VAR_PWMOUT_10                   53
+#define VAR_PWMOUT_11                   54
+#define VAR_PWMOUT_12                   55
 
 #endif /* MACRO_H_ */

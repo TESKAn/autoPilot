@@ -104,6 +104,30 @@ Int16 RS485_Timing()
 	return 0;
 }
 
+Int16 RS485_WriteServoPosition(UInt8 ID, UInt16 position)
+{
+	RS485COMMAND motorCommand;
+	// Motor
+	motorCommand.VARS.ui8Address = ID;
+	motorCommand.VARS.ui8Command = RS485_SET_SERVO_POSITION;
+	motorCommand.VARS.ui16Data = position;
+	// Store command
+	RB32_push(&RS485CommandBuffer, motorCommand.ui32Packed);
+	return 0;
+}
+
+Int16 RS485_WriteServoTorqueEnable(UInt8 ID, UInt16 enable)
+{
+	RS485COMMAND motorCommand;
+	// Motor
+	motorCommand.VARS.ui8Address = ID;
+	motorCommand.VARS.ui8Command = RS485_WRITE_SERVO_TORQ_ENABLE;
+	motorCommand.VARS.ui16Data = enable;
+	// Store command
+	RB32_push(&RS485CommandBuffer, motorCommand.ui32Packed);
+	return 0;
+}
+
 
 // Master functions
 Int16 RS485_MasterInitData(void)
@@ -112,6 +136,10 @@ Int16 RS485_MasterInitData(void)
 	RS485Servo_FL.REGS.ui8ID = servoFRID;
 	RS485Servo_FR.REGS.ui8ID = servoFLID;
 	RS485Servo_R.REGS.ui8ID = servoRID;
+
+	RS485Motor_FL.REGS.ui8ID = motorFLID;
+	RS485Motor_FR.REGS.ui8ID = motorFRID;
+	RS485Motor_R.REGS.ui8ID = motorRID;
 
 	RS485Data = &RS485DataStruct;
 
@@ -436,6 +464,11 @@ UInt16 RS485_BufferQueuedCommand(RS485COMMAND command)
 		case RS485_WRITE_MOTOR_PARK_REG:
 		{
 			bytes = RS485_Write8(command.VARS.ui8Address, MOTORREG_PARK, (UInt8)command.VARS.ui16Data);
+			break;
+		}
+		case RS485_WRITE_SERVO_TORQ_ENABLE:
+		{
+			bytes = RS485_Write8(command.VARS.ui8Address, SERVOREG_ENABLE_TORQUE, (UInt8)command.VARS.ui16Data);
 			break;
 		}
 	}

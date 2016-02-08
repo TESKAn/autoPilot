@@ -7,7 +7,7 @@
 
 DWORD get_fattime (void)
 {
-	DWORD res = 0;
+	//DWORD res = 0;
 
 	//RTC_t rtc;
 

@@ -15,6 +15,99 @@ void calibrateI2CSensors(void)
 
 }
 
+// Update RS485 data
+void Refresh485()
+{
+	// Check servos
+	//**************************************
+	checkServo(&RS485Servo_FR);
+	checkServo(&RS485Servo_FL);
+	checkServo(&RS485Servo_R);
+	//**************************************
+}
+
+int16_t checkServo(RS485SERVO * servo)
+{
+	float32_t f32Temp = 0.0f;
+	float32_t f32Zero = 0.0f;
+	float32_t* f32ReqPosition;
+	uint8_t* ui8EnableServo = 0;
+	uint16_t ui16Temp = 0;
+
+	// Get relevant data
+	if(servo->REGS.ui8ID == RS485Servo_FR.REGS.ui8ID)
+	{
+		ui8EnableServo = &FCFlightData.TILT_SERVOS.ui8EnableFR;
+		f32Zero = FCFlightData.TILT_SERVOS.f32ServoFRZero;
+		f32ReqPosition = &FCFlightData.f32NacelleTilt_FR;
+	}
+	else if(servo->REGS.ui8ID == RS485Servo_FL.REGS.ui8ID)
+	{
+		ui8EnableServo = &FCFlightData.TILT_SERVOS.ui8EnableFL;
+		f32Zero = FCFlightData.TILT_SERVOS.f32ServoFLZero;
+		f32ReqPosition = &FCFlightData.f32NacelleTilt_FL;
+	}
+	else if(servo->REGS.ui8ID == RS485Servo_R.REGS.ui8ID)
+	{
+		ui8EnableServo = &FCFlightData.TILT_SERVOS.ui8EnableR;
+		f32Zero = FCFlightData.TILT_SERVOS.f32ServoRZero;
+		f32ReqPosition = &FCFlightData.f32NacelleTilt_R;
+	}
+
+	// Check servos
+	//**************************************
+	// FR torque enabled?
+	if(1 == servo->REGS.ui8TorqueEnabled)
+	{
+		// Check - disable?
+		if(0 == *ui8EnableServo)
+		{
+			// If servo is enabled
+			if(1 == servo->REGS.ui8TorqueEnabled)
+			{
+				servo->REGS.ui8TorqueEnabled = 0;
+				RS485_WriteServoTorqueEnable(servo->REGS.ui8ID, 0);
+			}
+		}
+		else
+		{
+			// Calculate servo tilt
+			// 4096 = 360 deg
+			f32Temp = (float32_t)servo->REGS.ui16PresentPosition - f32Zero;
+			f32Temp *= 0.087890625;
+			// We have angle as offset from horizontal.
+			// Check deviation
+			f32Temp = *f32ReqPosition - f32Temp;
+			if(0.0f > f32Temp) f32Temp = -f32Temp;
+			if(f32Temp > FCFlightData.TILT_SERVOS.f32AllowedPositionDeviation)
+			{
+				// Set new position
+				f32Temp = *f32ReqPosition * 11.37777777777777;
+				f32Temp = f32Temp + f32Zero;
+				ui16Temp = (uint16_t)f32Temp;
+				RS485_WriteServoPosition(servo->REGS.ui8ID, ui16Temp);
+			}
+		}
+	}
+	else
+	{
+		if(1 == *ui8EnableServo)
+		{
+			if(0 == servo->REGS.ui8TorqueEnabled)
+			{
+				servo->REGS.ui8TorqueEnabled = 1;
+				RS485_WriteServoTorqueEnable(servo->REGS.ui8ID, 1);
+			}
+		}
+		// Calculate position from current servo data
+		f32Temp = (float32_t)servo->REGS.ui16PresentPosition - f32Zero;
+		f32Temp *= 0.087890625;
+		*f32ReqPosition = f32Temp;
+	}
+	//**************************************
+	return 0;
+}
+
 // Update PWM out values
 void refreshPWMOutputs(void)
 {
@@ -26,6 +119,10 @@ void refreshPWMOutputs(void)
 	TIM_SetCompare3(TIM3, RCData.PWMOUT_6);
 	TIM_SetCompare2(TIM3, RCData.PWMOUT_7);
 	TIM_SetCompare1(TIM3, RCData.PWMOUT_8);
+	TIM_SetCompare4(TIM2, RCData.PWMOUT_9);
+	TIM_SetCompare3(TIM2, RCData.PWMOUT_10);
+	TIM_SetCompare2(TIM2, RCData.PWMOUT_11);
+	TIM_SetCompare1(TIM2, RCData.PWMOUT_12);
 }
 
 uint32_t getSystemTime(void)
@@ -257,7 +354,7 @@ void write_toLog(void)
 	*BufferPointer += sprintf (&Buffer[*BufferPointer], "%d;%d;%d;", (int16_t)GYRO_X, (int16_t)GYRO_Y, (int16_t)GYRO_Z);
 	// Store magnetometer X, Y, Z
 	*BufferPointer += sprintf (&Buffer[*BufferPointer], "%d;%d;%d;", (int16_t)MAG_X, (int16_t)MAG_Y, (int16_t)MAG_Z);
-	/*
+
 	// Store barometer pressure
 	temp1 = (uint16_t)(fusionData._altimeter.pressure / 1000);
 	temp2 = (uint16_t)(fusionData._altimeter.pressure % 1000);
@@ -269,8 +366,7 @@ void write_toLog(void)
 	*BufferPointer += sprintf (&Buffer[*BufferPointer], ",%d;", temp1);
 
 	*BufferPointer += sprintf (&Buffer[*BufferPointer], "%d;", AIN3);
-*/
-/*
+
 	// Store power Uin, Iin, mAh used, T1, T2, T3 - always positive 16 bit
 	*BufferPointer = *BufferPointer + storeNumber(VOLTAGE, Buffer, *BufferPointer);
 	*BufferPointer = *BufferPointer + storeNumber(CURRENT, Buffer, *BufferPointer);
@@ -278,8 +374,7 @@ void write_toLog(void)
 	*BufferPointer = *BufferPointer + storeNumber(T1, Buffer, *BufferPointer);
 	*BufferPointer = *BufferPointer + storeNumber(T2, Buffer, *BufferPointer);
 	*BufferPointer = *BufferPointer + storeNumber(T3, Buffer, *BufferPointer);
-*/
-/*
+
 	// Write \r\n
 	Buffer[*BufferPointer] = 0x0d;
 	*BufferPointer = *BufferPointer + 1;
@@ -1155,7 +1250,7 @@ void extPeripheralInit(void)
 	FS_Initialize();
 
 	// Setup GPS
-	GPSSetDataOutput();
+	GPSSetDataOutput(getSystemTime());
 
 	Delayms(100);
 	// Setup sensors

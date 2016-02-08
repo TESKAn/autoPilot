@@ -22,11 +22,7 @@ ErrorStatus math_PIDInit(myMath_PID* PID, float32_t kp, float32_t ki, float32_t 
 	PID->Ki = ki;
 	PID->Kd = kd;
 
-	PID->errIMax = 1000;
-	PID->errIMin = -1000;
-
-	PID->errMax = 100;
-	PID->errMin = -100;
+	PID->limit = 0;
 
 	PID->outMax = 100;
 	PID->outMin = -100;
@@ -74,23 +70,21 @@ ErrorStatus math_PID(float32_t error, float32_t dt, myMath_PID * data)
 	// Set FPU exception bit to 0
 	FPU_EXCEPTION = 0;
 
-	// Saturate error
-	if(error > data->errMax) error = data->errMax;
-	else if(error < data->errMin) error = data->errMin;
+
 	// Calculate p
 	data->p = error * data->Kp;
 	// Calculate I
-	// Add error * dt to integral
-	data->im = data->im + (error * dt);
-	// Saturate I
-	if(data->im > data->errIMax) data->im = data->errIMax;
-	else if(data->im < data->errIMin) data->im = data->errIMin;
+	if(0 == data->limit)
+	{
+		// Add error * dt to integral
+		data->im = data->im + (error * dt);
+	}
 	// Calculate I as im*Ki
 	data->i = data->im * data->Ki;
 
 	// Calculate d
 	// First de
-	data->ed = data->em - error;
+	data->ed = error - data->em;
 	// Then de/dt
 	// Check that dt is not 0
 	if(dt != 0)
@@ -112,8 +106,20 @@ ErrorStatus math_PID(float32_t error, float32_t dt, myMath_PID * data)
 	data->s = data->p + data->i + data->d;
 
 	// Saturate output
-	if(data->s > data->outMax) data->s = data->outMax;
-	else if(data->s < data->outMin) data->s = data->outMin;
+	if(data->s > data->outMax)
+	{
+		data->s = data->outMax;
+		data->limit = 1;
+	}
+	else if(data->s < data->outMin)
+	{
+		data->s = data->outMin;
+		data->limit = 1;
+	}
+	else
+	{
+		data->limit = 0;
+	}
 
 	// Check if FPU result is OK
 	if(!FPU_EXCEPTION)

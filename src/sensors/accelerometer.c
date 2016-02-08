@@ -13,7 +13,6 @@
 #include "math/myMath_matrix3.h"
 #include "sensor_typedefs.h"
 #include "accelerometer.h"
-#include "functions.h"
 
 #define ACC_DEFAULT_RATE					0.000244140625f			// 8/32768 -> g
 // Use gains correction
@@ -21,11 +20,11 @@
 
 
 // Init accelerometer data structure
-ErrorStatus acc_initDataStructure(AccelerometerData *data)
+ErrorStatus acc_initDataStructure(AccelerometerData *data, uint32_t time)
 {
 	ErrorStatus status = ERROR;
 	Kalman3_Init(&data->kFilter, 0.022f, 0.617f);
-	data->dataTime = getSystemTime();
+	data->dataTime = time;
 	data->deltaTime = 0;
 	data->offset = vectori16_init(0);
 	data->gains = vectorf_init(1);

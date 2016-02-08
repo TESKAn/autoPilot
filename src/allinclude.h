@@ -20,12 +20,15 @@
 #include "arm_math.h"
 #include "math.h"
 
+#include "RS485/RS485comm.h"
+
 #include "uart_comm.h"
 
 
 
 #include "kalman.h"
 
+#include "math/myMath.h"
 #include "sensors/sensor_typedefs.h"
 #include "sensors/sensors_fusion.h"
 
@@ -50,9 +53,11 @@
 #include "init.h"
 
 #include "events.h"
+
+
 #include "flight.h"
 
-#include "RS485/RS485comm.h"
+
 
 #include "var.h"
 

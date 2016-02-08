@@ -90,13 +90,7 @@ extern volatile FlagGPS GPSFlag;
 #define GPSFLAG_CHECKSUM_RESET	GPSFlag.bits.BIT6
 #define GPS_SENDING				GPSFlag.bits.BIT7
 
-void GPS_Sending(int state);
-void GPSStopOutput(void);
-void GPSSetDataOutput(void);
-uint8_t GPS_GetChar(uint8_t data, FlagStatus part);
-uint8_t GPS_CalculateChecksum(uint8_t *data, int startByte, int dataCount);
-uint8_t GPS_CharToByte(uint8_t data);
-void GPS_ReceiveProcess(uint8_t data);
+
 
 // GPS state variables
 // Waiting to get start of message, '$'
@@ -157,9 +151,17 @@ void GPS_ReceiveProcess(uint8_t data);
 #define GPS_MAGVAR_FRAC_T		GPS_RECDATA[25]
 #define GPS_MAGWAR_EW_T			GPS_RECDATA[26]
 
-ErrorStatus gps_initData(GPSData *data);
 
-
+void GPSTransferDMA(uint8_t *data, int length);
+void GPS_Sending(int state);
+float32_t GPSIntToFloat(uint16_t whole, uint16_t frac);
+ErrorStatus gps_initData(GPSData *data, uint32_t time);
+void GPSStopOutput(void);
+void GPSSetDataOutput(uint32_t time);
+uint8_t GPS_GetChar(uint8_t data, FlagStatus part);
+uint8_t GPS_CalculateChecksum(uint8_t *data, int startByte, int dataCount);
+uint8_t GPS_CharToByte(uint8_t data);
+void GPS_ReceiveProcess(uint8_t data, uint32_t time);
 
 
 

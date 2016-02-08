@@ -28,6 +28,9 @@ void flight_init(FLIGHT_CORE *data, RCDATA * RCInputs)
 {
 	// Set initial state
 	data->ui32FlightStateMachine = FLIGHT_IDLE;
+
+	data->ui32FlightInitState = FINIT_IDLE;
+
 	data->f32MinPlaneSpeed = RC_DEFAULT_PLANE_MIN_SPEED;
 	data->f32MaxHoverSpeed = RC_DEFAULT_HOVER_MAX_SPEED;
 	data->f32NacelleTiltSpeed = RC_DEFAULT_TILT_SPEED;
@@ -38,11 +41,12 @@ void flight_init(FLIGHT_CORE *data, RCDATA * RCInputs)
 	data->f32NacelleCommonTilt = RC_DEFAULT_NACELLE_TILT;
 	data->f32NacelleTilt_FL = RC_DEFAULT_NACELLE_TILT;
 	data->f32NacelleTilt_FR = RC_DEFAULT_NACELLE_TILT;
-	data->f32NacelleTilt_BM = RC_DEFAULT_NACELLE_TILT;
+	data->f32NacelleTilt_R = RC_DEFAULT_NACELLE_TILT;
 	// Set zero angle values
-	data->TILT_SERVOS.ui16ServoFLZero = NACELLE_FL_ZERO;
-	data->TILT_SERVOS.ui16ServoFRZero = NACELLE_FR_ZERO;
-	data->TILT_SERVOS.ui16ServoRZero = NACELLE_R_ZERO;
+	data->TILT_SERVOS.f32AllowedPositionDeviation =
+	data->TILT_SERVOS.f32ServoFLZero = NACELLE_FL_ZERO;
+	data->TILT_SERVOS.f32ServoFRZero = NACELLE_FR_ZERO;
+	data->TILT_SERVOS.f32ServoRZero = NACELLE_R_ZERO;
 
 	RCInputs->PWMIN_1_MID = RC_IN_DEFAULT_MIDPOINT;
 	RCInputs->PWMIN_2_MID = RC_IN_DEFAULT_MIDPOINT;
@@ -175,6 +179,69 @@ void flight_checkStates(FLIGHT_CORE *data)
 		}
 		case FLIGHT_INIT:
 		{
+			switch(data->ui32FlightInitState)
+			{
+				case FINIT_IDLE:
+				{
+					// Send command enable servo torque
+					data->TILT_SERVOS.ui8EnableFR = 1;
+					data->TILT_SERVOS.ui8EnableFL = 1;
+					data->TILT_SERVOS.ui8EnableR = 1;
+					// Wait
+					data->ui32FlightInitState = FINIT_WAIT_STORQUE_ON;
+					break;
+				}
+				case FINIT_WAIT_STORQUE_ON:
+				{
+					// Check readout values
+					/*
+					if(1 == RS485Servo_FR.REGS.ui8TorqueEnabled)
+					{
+						if(1 == RS485Servo_FL.REGS.ui8TorqueEnabled)
+						{
+							if(1 == RS485Servo_R.REGS.ui8TorqueEnabled)
+							{
+								// Set new position
+								FCFlightData.f32NacelleTilt_FR = 90.0f;
+								FCFlightData.f32NacelleTilt_FL = 90.0f;
+								FCFlightData.f32NacelleTilt_R = 90.0f;
+								// Wait
+								data->ui32FlightInitState = FINIT_WAIT_SPOS_DOWN;
+							}
+						}
+					}*/
+					break;
+				}
+				case FINIT_WAIT_SPOS_DOWN:
+				{
+					break;
+				}
+				case FINIT_WAIT_MOTOR_ON:
+				{
+					break;
+				}
+				case FINIT_WAIT_MOTOR_PARK:
+				{
+					break;
+				}
+				case FINIT_WAIT_SPOS_UP:
+				{
+					break;
+				}
+				case FINIT_WAIT_SPOS_LEVEL:
+				{
+					break;
+				}
+				case FINIT_WAIT_SPOS_VTOL:
+				{
+					break;
+				}
+				default:
+				{
+					data->ui32FlightInitState = FINIT_IDLE;
+					break;
+				}
+			}
 			break;
 		}
 		case FLIGHT_STABILIZE_HOVER:
@@ -234,7 +301,7 @@ void flight_checkStates(FLIGHT_CORE *data)
 						}
 						data->f32NacelleTilt_FL -= data->f32NacelleTiltSpeed;
 						data->f32NacelleTilt_FR -= data->f32NacelleTiltSpeed;
-						data->f32NacelleTilt_BM -= data->f32NacelleTiltSpeed;
+						data->f32NacelleTilt_R -= data->f32NacelleTiltSpeed;
 					}
 					else
 					{
@@ -260,7 +327,7 @@ void flight_checkStates(FLIGHT_CORE *data)
 						}
 						data->f32NacelleTilt_FL += data->f32NacelleTiltSpeed;
 						data->f32NacelleTilt_FR += data->f32NacelleTiltSpeed;
-						data->f32NacelleTilt_BM += data->f32NacelleTiltSpeed;
+						data->f32NacelleTilt_R += data->f32NacelleTiltSpeed;
 					}
 					else
 					{
@@ -322,7 +389,7 @@ void flight_checkStates(FLIGHT_CORE *data)
 						}
 						data->f32NacelleTilt_FL -= data->f32NacelleTiltSpeed;
 						data->f32NacelleTilt_FR -= data->f32NacelleTiltSpeed;
-						data->f32NacelleTilt_BM -= data->f32NacelleTiltSpeed;
+						data->f32NacelleTilt_R -= data->f32NacelleTiltSpeed;
 					}
 					else
 					{
@@ -346,7 +413,7 @@ void flight_checkStates(FLIGHT_CORE *data)
 						}
 						data->f32NacelleTilt_FL += data->f32NacelleTiltSpeed;
 						data->f32NacelleTilt_FR += data->f32NacelleTiltSpeed;
-						data->f32NacelleTilt_BM += data->f32NacelleTiltSpeed;
+						data->f32NacelleTilt_R += data->f32NacelleTiltSpeed;
 					}
 					else
 					{
@@ -405,7 +472,7 @@ void flight_checkStates(FLIGHT_CORE *data)
 						}
 						data->f32NacelleTilt_FL += data->f32NacelleTiltSpeed;
 						data->f32NacelleTilt_FR += data->f32NacelleTiltSpeed;
-						data->f32NacelleTilt_BM += data->f32NacelleTiltSpeed;
+						data->f32NacelleTilt_R += data->f32NacelleTiltSpeed;
 					}
 					break;
 				}
@@ -429,7 +496,7 @@ void flight_checkStates(FLIGHT_CORE *data)
 						}
 						data->f32NacelleTilt_FL -= data->f32NacelleTiltSpeed;
 						data->f32NacelleTilt_FR -= data->f32NacelleTiltSpeed;
-						data->f32NacelleTilt_BM -= data->f32NacelleTiltSpeed;
+						data->f32NacelleTilt_R -= data->f32NacelleTiltSpeed;
 					}
 					break;
 				}
@@ -479,7 +546,7 @@ void flight_checkStates(FLIGHT_CORE *data)
 					}
 					data->f32NacelleTilt_FL += data->f32NacelleTiltSpeed;
 					data->f32NacelleTilt_FR += data->f32NacelleTiltSpeed;
-					data->f32NacelleTilt_BM += data->f32NacelleTiltSpeed;
+					data->f32NacelleTilt_R += data->f32NacelleTiltSpeed;
 					break;
 				}
 				case FLIGHT_TILT_ABORT_SPEED_OK_H:
@@ -494,7 +561,7 @@ void flight_checkStates(FLIGHT_CORE *data)
 					}
 					data->f32NacelleTilt_FL -= data->f32NacelleTiltSpeed;
 					data->f32NacelleTilt_FR -= data->f32NacelleTiltSpeed;
-					data->f32NacelleTilt_BM -= data->f32NacelleTiltSpeed;
+					data->f32NacelleTilt_R -= data->f32NacelleTiltSpeed;
 					break;
 				}
 				case FLIGHT_TILT_ABORT_END_P:
@@ -591,13 +658,40 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		RCValues->RC_MOTOR_BM = -FCFlightData->PIDPitch.s + FCFlightData->PIDAltitude.s;
 
 		// Controll yaw with nacelle roll
-		RCValues->RC_NACELLE_BR = FCFlightData->PIDYaw.s;
+		//RCValues->RC_NACELLE_BR = FCFlightData->PIDYaw.s;
 
 	}
 	else
 	{
 
 	}
+
+	// Set gear
+	if(0 < RCValues->RC_GEAR_GYRO)
+	{
+		// Go to plane mode
+		RCValues->RC_GEAR = 1000;
+	}
+	else
+	{
+		// Transition not finished, abort
+		RCValues->RC_GEAR = 2000;
+	}
+
+	// Store as pwm out values
+	RCValues->PWMOUT_1 = (uint16_t)RCValues->PWMOUT_Val_1;
+	RCValues->PWMOUT_2 = (uint16_t)RCValues->PWMOUT_Val_2;
+	RCValues->PWMOUT_3 = (uint16_t)RCValues->PWMOUT_Val_3;
+	RCValues->PWMOUT_4 = (uint16_t)RCValues->PWMOUT_Val_4;
+	RCValues->PWMOUT_5 = (uint16_t)RCValues->PWMOUT_Val_5;
+	RCValues->PWMOUT_6 = (uint16_t)RCValues->PWMOUT_Val_6;
+	RCValues->PWMOUT_7 = (uint16_t)RCValues->PWMOUT_Val_7;
+	RCValues->PWMOUT_8 = (uint16_t)RCValues->PWMOUT_Val_8;
+	RCValues->PWMOUT_9 = (uint16_t)RCValues->PWMOUT_Val_9;
+	RCValues->PWMOUT_10 = (uint16_t)RCValues->PWMOUT_Val_10;
+	RCValues->PWMOUT_11 = (uint16_t)RCValues->PWMOUT_Val_11;
+	RCValues->PWMOUT_12 = (uint16_t)RCValues->PWMOUT_Val_12;
+
 }
 
 

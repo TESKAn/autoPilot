@@ -78,6 +78,7 @@ typedef struct tagRS485COMMAND
 #define RS485_SET_MOTOR_RPM					17
 #define RS485_WRITE_MOTOR_ARMED_REG			18
 #define RS485_WRITE_MOTOR_PARK_REG			19
+#define RS485_WRITE_SERVO_TORQ_ENABLE		20
 
 // Commands macros
 #define RS485_COMMAND_NONE					0x00
@@ -311,6 +312,8 @@ typedef struct tagRS485WAITINGUNIT
 
 // Function declarations
 Int16 RS485_Timing();
+Int16 RS485_WriteServoPosition(UInt8 ID, UInt16 position);
+Int16 RS485_WriteServoTorqueEnable(UInt8 ID, UInt16 enable);
 Int16 RS485_MasterInitData(void);
 Int16 RS485_QueueCommand(RS485COMMAND cmdToExec);
 Int16 RS485_MasterState(int state);
@@ -328,6 +331,15 @@ Int16 RS485_DecodeMessage();
 Int16 RS485_SetupServos();
 Int16 RS485_SetupMotors();
 UInt16 update_crc(UInt16 crc_accum, UInt8 *data_blk_ptr, UInt16 data_blk_size);
+
+// Extern's
+extern RS485SERVO RS485Servo_FL;
+extern RS485SERVO RS485Servo_FR;
+extern RS485SERVO RS485Servo_R;
+
+extern RS485MOTOR RS485Motor_FL;
+extern RS485MOTOR RS485Motor_FR;
+extern RS485MOTOR RS485Motor_R;
 
 
 #endif /* RS485COMM_H_ */

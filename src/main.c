@@ -63,7 +63,7 @@ int main(void)
 	//float32_t temp = 0;
 
 	// Init sensor data structures
-	fusion_init(&fusionData);
+	fusion_init(&fusionData, getSystemTime());
 
 	// Init serial port data structure
 	RB_Init(&RB_USART1, usart1_buf, 128);
@@ -130,6 +130,9 @@ int main(void)
 	MPU_COMM_ENABLED = 1;
 
 	RS485_RXEN;
+
+	// Start servo poll
+	RS485_MasterState(1);
 
 	// Mount SD card
     while (1)
@@ -295,6 +298,11 @@ int main(void)
 				// Store command
 				RS485_QueueCommand(RS485ExecuteCommand);
 				mainLoopState = 0;
+				break;
+			}
+			case 18:
+			{
+
 				break;
 			}
 			default:

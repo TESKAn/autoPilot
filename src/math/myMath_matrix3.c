@@ -317,7 +317,7 @@ ErrorStatus matrix3_normalizeOrthogonalizeMatrix(Matrixf * rotMatrix, float32_t 
 	error = 3 - error;
 	error = error / 2;
 	// If error is larger than we permit, return ERROR
-	/*
+
 	if(maxError < error)
 	{
 		return ERROR;
@@ -328,11 +328,11 @@ ErrorStatus matrix3_normalizeOrthogonalizeMatrix(Matrixf * rotMatrix, float32_t 
 	error = 3 - error;
 	error = error / 2;
 	// If error is larger than we permit, return ERROR
-	/*
+
 	if(maxError < error)
 	{
 		return ERROR;
-	}*//*
+	}
 	status = vectorf_scalarProduct(&rotMatrix->b, error, &rotMatrix->b);
 	// Calculate Z as cross product of X and Y
 	status = vectorf_crossProduct(&rotMatrix->a, &rotMatrix->b, &rotMatrix->c);
@@ -341,7 +341,7 @@ ErrorStatus matrix3_normalizeOrthogonalizeMatrix(Matrixf * rotMatrix, float32_t 
 	error = 3 - error;
 	error = error / 2;
 	// If error is larger than we permit, return ERROR
-	/*
+
 	if(maxError < error)
 	{
 		return ERROR;

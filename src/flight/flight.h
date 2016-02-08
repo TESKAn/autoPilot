@@ -30,17 +30,18 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 #define RC_NACELLE_TRANSITION_TILT		45.0f;
 #define RC_NACELLE_HOVERTRANSITION_TILT	75.0f;
 // Define nacelle zeros
-#define NACELLE_FR_ZERO					0
-#define NACELLE_FL_ZERO					0
-#define NACELLE_R_ZERO					0
+#define NACELLE_MAX_TILT_DEVIATION		2.0f
+#define NACELLE_FR_ZERO					2048.0f
+#define NACELLE_FL_ZERO					2048.0f
+#define NACELLE_R_ZERO					2048.0f
 
 // Macros that encode PWM inputs to specific channels
-#define RC_AILERON		PWMIN_1_Zero
-#define RC_ELEVATOR		PWMIN_2_Zero
-#define RC_THROTTLE		PWMIN_3_Zero
-#define RC_RUDDER		PWMIN_4_Zero
-#define RC_GEAR_GYRO	PWMIN_5_Zero
-#define RC_FLAPS_PITCH	PWMIN_6_Zero
+#define RC_AILERON		PWMIN_2_Zero
+#define RC_ELEVATOR		PWMIN_3_Zero
+#define RC_THROTTLE		PWMIN_4_Zero
+#define RC_RUDDER		PWMIN_5_Zero
+#define RC_GEAR_GYRO	PWMIN_6_Zero
+#define RC_FLAPS_PITCH	PWMIN_7_Zero
 
 // Macros that encode PWM outputs for different servos
 #define RC_AILERON_L	PWMOUT_Val_1
@@ -50,11 +51,14 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 #define RC_MOTOR_FR		PWMOUT_Val_4
 #define RC_MOTOR_BM		PWMOUT_Val_5
 
+#define RC_GEAR			PWMOUT_Val_12
+
+/*
 #define RC_NACELLE_FL	PWMOUT_Val_9
 #define RC_NACELLE_FR	PWMOUT_Val_10
 #define RC_NACELLE_BM	PWMOUT_Val_11
 #define RC_NACELLE_BR	PWMOUT_Val_12
-
+*/
 
 #define RC_AILERON_L_MID	PWMOUT_Offset_1
 #define RC_AILERON_R_MID	PWMOUT_Offset_2
@@ -88,6 +92,16 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 #define FLIGHT_STABILIZE_HOVER			2
 #define FLIGHT_STABILIZE_PLANE			3
 #define FLIGHT_STABILIZE_TRANSITION		4
+
+// Flight init states
+#define FINIT_IDLE						0
+#define FINIT_WAIT_STORQUE_ON			1
+#define FINIT_WAIT_SPOS_DOWN			2
+#define FINIT_WAIT_MOTOR_ON				3
+#define FINIT_WAIT_MOTOR_PARK			4
+#define FINIT_WAIT_SPOS_UP				5
+#define FINIT_WAIT_SPOS_LEVEL			6
+#define FINIT_WAIT_SPOS_VTOL			7
 
 // Tilt transition states
 #define FLIGHT_TILT_START				0

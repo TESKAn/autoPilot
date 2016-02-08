@@ -261,7 +261,7 @@ void copySensorData(void)
 	// Add data time
 	I2C2_sensorBufRX.data.dataTakenTime = sensorAcquisitionTime;
 	// Call fusion update function
-	fusion_dataUpdate(&fusionData, &I2C2_sensorBufRX);
+	fusion_dataUpdate(&fusionData, &I2C2_sensorBufRX, receiveTime);
 
 	// Mark end of sensor updating
 	SENSORS_UPDATING = 0;

@@ -12,7 +12,6 @@
 #include "sensor_typedefs.h"
 #include "kalman.h"
 #include "gyro.h"
-#include "functions.h"
 
 
 #define GYRO_DEFAULT_RATE					0.0152587890625f//0.030517578125f			// 500/32768 -> deg/sec
@@ -20,9 +19,9 @@
 #define GYRO_RAD_TO_DEG						57.295779513082f		// 1 rad/sec is this in deg/sec
 
 // Init data structure
-ErrorStatus gyro_initDataStructure(GyroData *data)
+ErrorStatus gyro_initDataStructure(GyroData *data, uint32_t time)
 {
-	data->dataTime = getSystemTime();
+	data->dataTime = time;
 	data->deltaTime = 0;
 
 	data->offset = vectori16_init(0);

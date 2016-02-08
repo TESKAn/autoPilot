@@ -594,6 +594,10 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			flight_checkStates(&FCFlightData);
 			// Get new servo values
 			flight_decodeServos(&FCFlightData, &RCData);
+			// Refresh PWM outputs
+			refreshPWMOutputs();
+			// Update RS485
+			Refresh485();
 		}
 
 		// Call RS485 states
@@ -602,8 +606,9 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 
 		// LED counter
 		LED_ToggleCount++;
-		if(LED_ToggleCount >= 75)
+		if(LED_ToggleCount >= 200)
 		{
+			LED_ToggleCount = 0;
 			// Send out data
 			// From sensors
 			UART_QueueMessagef(VAR_GYRO_X, fusionData._gyro.vector.x);
@@ -630,6 +635,44 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			UART_QueueMessagef(VAR_DCM_CX, fusionData._fusion_DCM.c.x);
 			UART_QueueMessagef(VAR_DCM_CY, fusionData._fusion_DCM.c.y);
 			UART_QueueMessagef(VAR_DCM_CZ, fusionData._fusion_DCM.c.z);
+			// 6*3*6=162
+
+			// PWM inputs
+
+			UART_QueueMessageui16(VAR_PWMIN_1, RCData.PWMIN_1);
+			UART_QueueMessageui16(VAR_PWMIN_2, RCData.PWMIN_2);
+			UART_QueueMessageui16(VAR_PWMIN_3, RCData.PWMIN_3);
+			UART_QueueMessageui16(VAR_PWMIN_4, RCData.PWMIN_4);
+			UART_QueueMessageui16(VAR_PWMIN_5, RCData.PWMIN_5);
+			UART_QueueMessageui16(VAR_PWMIN_6, RCData.PWMIN_6);
+			UART_QueueMessageui16(VAR_PWMIN_7, RCData.PWMIN_7);
+			UART_QueueMessageui16(VAR_PWMIN_8, RCData.PWMIN_8);
+			// 8*7=56
+
+			UART_QueueMessagef(VAR_PWMIN_1_ZERO, RCData.PWMIN_1_Zero);
+			UART_QueueMessagef(VAR_PWMIN_2_ZERO, RCData.PWMIN_2_Zero);
+			UART_QueueMessagef(VAR_PWMIN_3_ZERO, RCData.PWMIN_3_Zero);
+			UART_QueueMessagef(VAR_PWMIN_4_ZERO, RCData.PWMIN_4_Zero);
+			UART_QueueMessagef(VAR_PWMIN_5_ZERO, RCData.PWMIN_5_Zero);
+			UART_QueueMessagef(VAR_PWMIN_6_ZERO, RCData.PWMIN_6_Zero);
+			UART_QueueMessagef(VAR_PWMIN_7_ZERO, RCData.PWMIN_7_Zero);
+			UART_QueueMessagef(VAR_PWMIN_8_ZERO, RCData.PWMIN_8_Zero);
+			// 8*9=72
+
+			UART_QueueMessageui16(VAR_PWMOUT_1, RCData.PWMOUT_1);
+			UART_QueueMessageui16(VAR_PWMOUT_2, RCData.PWMOUT_2);
+			UART_QueueMessageui16(VAR_PWMOUT_3, RCData.PWMOUT_3);
+			UART_QueueMessageui16(VAR_PWMOUT_4, RCData.PWMOUT_4);
+			UART_QueueMessageui16(VAR_PWMOUT_5, RCData.PWMOUT_5);
+			UART_QueueMessageui16(VAR_PWMOUT_6, RCData.PWMOUT_6);
+			UART_QueueMessageui16(VAR_PWMOUT_7, RCData.PWMOUT_7);
+			UART_QueueMessageui16(VAR_PWMOUT_8, RCData.PWMOUT_8);
+			UART_QueueMessageui16(VAR_PWMOUT_9, RCData.PWMOUT_9);
+			UART_QueueMessageui16(VAR_PWMOUT_10, RCData.PWMOUT_10);
+			UART_QueueMessageui16(VAR_PWMOUT_11, RCData.PWMOUT_11);
+			UART_QueueMessageui16(VAR_PWMOUT_12, RCData.PWMOUT_12);
+			// 12*7=84
+
 
 			// Event every second
 
@@ -640,7 +683,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 				write_toLog();
 			}
 			*/
-			LED_ToggleCount = 0;
+
 			// Toggle LED
 			// Check GPS data valid - MODBUSREG[21] bit 15
 			/*
@@ -768,7 +811,7 @@ void USART3_ISR_Handler(void)
 	if ((USART3->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
 	{
 		iData = USART_ReceiveData(USART3);
-		GPS_ReceiveProcess((uint8_t)iData);
+		GPS_ReceiveProcess((uint8_t)iData, getSystemTime());
 	}
 
 	if((USART3->SR & USART_FLAG_TC) != (u16)RESET)	//if transfer complete
