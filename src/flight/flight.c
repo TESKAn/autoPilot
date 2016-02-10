@@ -194,26 +194,43 @@ void flight_checkStates(FLIGHT_CORE *data)
 				case FINIT_WAIT_STORQUE_ON:
 				{
 					// Check readout values
-					/*
-					if(1 == RS485Servo_FR.REGS.ui8TorqueEnabled)
+					if(1 == data->TILT_SERVOS.ui8FREnabled)
 					{
-						if(1 == RS485Servo_FL.REGS.ui8TorqueEnabled)
+						if(1 == data->TILT_SERVOS.ui8FLEnabled)
 						{
-							if(1 == RS485Servo_R.REGS.ui8TorqueEnabled)
+							if(1 == data->TILT_SERVOS.ui8REnabled)
 							{
 								// Set new position
-								FCFlightData.f32NacelleTilt_FR = 90.0f;
-								FCFlightData.f32NacelleTilt_FL = 90.0f;
-								FCFlightData.f32NacelleTilt_R = 90.0f;
+								data->f32NacelleTilt_FR = 90.0f;
+								data->f32NacelleTilt_FL = 90.0f;
+								data->f32NacelleTilt_R = 90.0f;
 								// Wait
 								data->ui32FlightInitState = FINIT_WAIT_SPOS_DOWN;
 							}
 						}
-					}*/
+					}
 					break;
 				}
 				case FINIT_WAIT_SPOS_DOWN:
 				{
+					if(88 < data->TILT_SERVOS.f32ServoFRAngle)
+					{
+						if(88 < data->TILT_SERVOS.f32ServoFLAngle)
+						{
+							if(88 < data->TILT_SERVOS.f32ServoRAngle)
+							{
+
+
+								// Set new position
+								data->f32NacelleTilt_FR = 90.0f;
+								data->f32NacelleTilt_FL = 90.0f;
+								data->f32NacelleTilt_R = 90.0f;
+								// Wait
+								data->ui32FlightInitState = FINIT_WAIT_SPOS_DOWN;
+							}
+						}
+					}
+
 					break;
 				}
 				case FINIT_WAIT_MOTOR_ON:

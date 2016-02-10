@@ -18,44 +18,136 @@ void calibrateI2CSensors(void)
 // Update RS485 data
 void Refresh485()
 {
-	// Check servos
 	//**************************************
-	checkServo(&RS485Servo_FR);
-	checkServo(&RS485Servo_FL);
-	checkServo(&RS485Servo_R);
+	// Check servos
+	CheckServo(&RS485Servo_FR);
+	CheckServo(&RS485Servo_FL);
+	CheckServo(&RS485Servo_R);
+	//**************************************
+	// Check motors
+	CheckMotor(&RS485Motor_FR);
+	CheckMotor(&RS485Motor_FL);
+	CheckMotor(&RS485Motor_R);
 	//**************************************
 }
 
-int16_t checkServo(RS485SERVO * servo)
+int16_t CheckMotor(RS485MOTOR* motor)
+{
+	float32_t f32Temp = 0.0f;
+	uint8_t* ui8EnableMotor;
+	uint8_t* ui8MotorEnabled;
+	uint8_t* ui8ParkMotor;
+	uint8_t* ui8MotorParked;
+	uint16_t ui16Temp = 0;
+
+	// Get relevant data
+	if(motor->REGS.ui8ID == RS485Motor_FR.REGS.ui8ID)
+	{
+		ui8EnableMotor = &FCFlightData.MOTORS.ui8EnableFR;
+		ui8MotorEnabled = &FCFlightData.MOTORS.ui8FREnabled;
+		ui8ParkMotor = &FCFlightData.MOTORS.ui8FRPark;
+		ui8MotorParked = &FCFlightData.MOTORS.ui8FRParked;
+	}
+	//else
+
+
+	// Update status
+	if(1 == motor->ui8FreshData)
+	{
+		*ui8MotorEnabled = motor->REGS.ui8Armed;
+		*ui8MotorParked = motor->REGS.ui8Park;
+	}
+
+	// Motor enabled?
+	if(1 == motor->REGS.ui8Armed)
+	{
+		// Check - disarm?
+		if(0 == ui8EnableMotor)
+		{
+			RS485_WriteMotorEnable(motor->REGS.ui8ID, 0);
+			// Mark waiting fresh data
+			motor->ui8FreshData = 0;
+		}
+		// Check - park?
+		if(1 == *ui8MotorParked)
+		{
+			if(0 == *ui8ParkMotor)
+			{
+				RS485_WriteMotorPark(motor->REGS.ui8ID, 0);
+			}
+		}
+		else
+		{
+			if(1 == *ui8ParkMotor)
+			{
+				RS485_WriteMotorPark(motor->REGS.ui8ID, 1);
+			}
+		}
+	}
+	else
+	{
+		// Check - arm?
+		if(1 == *ui8EnableMotor)
+		{
+			RS485_WriteMotorEnable(motor->REGS.ui8ID, 1);
+			// Mark waiting fresh data
+			motor->ui8FreshData = 0;
+		}
+	}
+
+	return 0;
+}
+
+int16_t CheckServo(RS485SERVO * servo)
 {
 	float32_t f32Temp = 0.0f;
 	float32_t f32Zero = 0.0f;
 	float32_t* f32ReqPosition;
-	uint8_t* ui8EnableServo = 0;
+	float32_t* f32CurrPosition;
+	uint8_t* ui8EnableServo;
+	uint8_t* ui8ServoEnabled;
 	uint16_t ui16Temp = 0;
 
 	// Get relevant data
 	if(servo->REGS.ui8ID == RS485Servo_FR.REGS.ui8ID)
 	{
 		ui8EnableServo = &FCFlightData.TILT_SERVOS.ui8EnableFR;
+		ui8ServoEnabled = &FCFlightData.TILT_SERVOS.ui8FREnabled;
 		f32Zero = FCFlightData.TILT_SERVOS.f32ServoFRZero;
 		f32ReqPosition = &FCFlightData.f32NacelleTilt_FR;
+		f32CurrPosition = &FCFlightData.TILT_SERVOS.f32ServoFRAngle;
 	}
 	else if(servo->REGS.ui8ID == RS485Servo_FL.REGS.ui8ID)
 	{
 		ui8EnableServo = &FCFlightData.TILT_SERVOS.ui8EnableFL;
+		ui8ServoEnabled = &FCFlightData.TILT_SERVOS.ui8FLEnabled;
 		f32Zero = FCFlightData.TILT_SERVOS.f32ServoFLZero;
 		f32ReqPosition = &FCFlightData.f32NacelleTilt_FL;
+		f32CurrPosition = &FCFlightData.TILT_SERVOS.f32ServoFLAngle;
 	}
 	else if(servo->REGS.ui8ID == RS485Servo_R.REGS.ui8ID)
 	{
 		ui8EnableServo = &FCFlightData.TILT_SERVOS.ui8EnableR;
+		ui8ServoEnabled = &FCFlightData.TILT_SERVOS.ui8REnabled;
 		f32Zero = FCFlightData.TILT_SERVOS.f32ServoRZero;
 		f32ReqPosition = &FCFlightData.f32NacelleTilt_R;
+		f32CurrPosition = &FCFlightData.TILT_SERVOS.f32ServoRAngle;
+	}
+
+	// Update status
+	if(1 == servo->ui8FreshData)
+	{
+		*ui8ServoEnabled = servo->REGS.ui8TorqueEnabled;
 	}
 
 	// Check servos
 	//**************************************
+	// Calculate position from current servo data
+	// 4096 = 360 deg
+	f32Temp = (float32_t)servo->REGS.ui16PresentPosition - f32Zero;
+	f32Temp *= 0.087890625;
+	*f32CurrPosition = f32Temp;
+
 	// FR torque enabled?
 	if(1 == servo->REGS.ui8TorqueEnabled)
 	{
@@ -67,17 +159,14 @@ int16_t checkServo(RS485SERVO * servo)
 			{
 				servo->REGS.ui8TorqueEnabled = 0;
 				RS485_WriteServoTorqueEnable(servo->REGS.ui8ID, 0);
+				// Mark waiting fresh data
+				servo->ui8FreshData = 0;
 			}
 		}
 		else
 		{
-			// Calculate servo tilt
-			// 4096 = 360 deg
-			f32Temp = (float32_t)servo->REGS.ui16PresentPosition - f32Zero;
-			f32Temp *= 0.087890625;
-			// We have angle as offset from horizontal.
 			// Check deviation
-			f32Temp = *f32ReqPosition - f32Temp;
+			f32Temp = *f32ReqPosition - *f32CurrPosition;
 			if(0.0f > f32Temp) f32Temp = -f32Temp;
 			if(f32Temp > FCFlightData.TILT_SERVOS.f32AllowedPositionDeviation)
 			{
@@ -86,6 +175,8 @@ int16_t checkServo(RS485SERVO * servo)
 				f32Temp = f32Temp + f32Zero;
 				ui16Temp = (uint16_t)f32Temp;
 				RS485_WriteServoPosition(servo->REGS.ui8ID, ui16Temp);
+				// Mark waiting fresh data
+				servo->ui8FreshData = 0;
 			}
 		}
 	}
@@ -97,12 +188,10 @@ int16_t checkServo(RS485SERVO * servo)
 			{
 				servo->REGS.ui8TorqueEnabled = 1;
 				RS485_WriteServoTorqueEnable(servo->REGS.ui8ID, 1);
+				// Mark waiting fresh data
+				servo->ui8FreshData = 0;
 			}
 		}
-		// Calculate position from current servo data
-		f32Temp = (float32_t)servo->REGS.ui16PresentPosition - f32Zero;
-		f32Temp *= 0.087890625;
-		*f32ReqPosition = f32Temp;
 	}
 	//**************************************
 	return 0;

@@ -128,6 +128,7 @@ typedef struct tagRS485COMMAND
 typedef struct tagRS485SERVO
 {
 	UInt8 errStatus;
+	UInt8 ui8FreshData;
 	UInt16 ui16MoveToPos;
 	union
 	{
@@ -186,6 +187,7 @@ typedef struct tagRS485SERVO
 typedef struct tagRS485MOTOR
 {
 	UInt8 errStatus;
+	UInt8 ui8FreshData;
 	union
 	{
 		UInt8 ui8REGSData[69];				// Main data structure
@@ -239,9 +241,11 @@ typedef struct tagRS485RXDATA
 	UInt16 ui16RXTimeoutCounter;
 	UInt16 ui16RXCommTimeout;
 
-	union
+	struct
 	{
-		UInt8 bytes[140];
+		UInt8 ui8Parameters[128];
+		UInt8 ui8RS485RXIndex;			// Index of next place to write to
+		UInt8 ui8ParamByteCount;		// How many bytes are in parameters
 		struct
 		{
 			union
@@ -256,9 +260,7 @@ typedef struct tagRS485RXDATA
 				UInt8 ui8Bytes[2];
 			}LENGTH;
 			UInt8 ui8Instruction;
-			UInt8 ui8Parameters[128];
-			UInt8 ui8RS485RXIndex;			// Index of next place to write to
-			UInt8 ui8ParamByteCount;		// How many bytes are in parameters
+
 			union
 			{
 				UInt16 ui16CRC;
@@ -314,6 +316,9 @@ typedef struct tagRS485WAITINGUNIT
 Int16 RS485_Timing();
 Int16 RS485_WriteServoPosition(UInt8 ID, UInt16 position);
 Int16 RS485_WriteServoTorqueEnable(UInt8 ID, UInt16 enable);
+Int16 RS485_WriteMotorEnable(UInt8 ID, UInt16 enable);
+Int16 RS485_WriteMotorPark(UInt8 ID, UInt16 enable);
+Int16 RS485_WriteMotorSpeed(UInt8 ID, UInt16 speed);
 Int16 RS485_MasterInitData(void);
 Int16 RS485_QueueCommand(RS485COMMAND cmdToExec);
 Int16 RS485_MasterState(int state);

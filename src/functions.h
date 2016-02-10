@@ -30,7 +30,8 @@ typedef struct
 
 void calibrateI2CSensors(void);
 void Refresh485();
-int16_t checkServo(RS485SERVO * servo);
+int16_t CheckMotor(RS485MOTOR* motor);
+int16_t CheckServo(RS485SERVO * servo);
 void refreshPWMOutputs(void);
 uint32_t getSystemTime(void);
 float32_t getFTime(void);

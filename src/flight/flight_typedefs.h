@@ -113,6 +113,9 @@ typedef struct
 		float32_t f32ServoFLZero;
 		float32_t f32ServoFRZero;
 		float32_t f32ServoRZero;
+		float32_t f32ServoFRAngle;
+		float32_t f32ServoFLAngle;
+		float32_t f32ServoRAngle;
 		uint8_t ui8ServoFRID;
 		uint8_t ui8ServoFLID;
 		uint8_t ui8ServoRID;
@@ -121,6 +124,10 @@ typedef struct
 		uint8_t ui8EnableFL;
 		uint8_t ui8EnableR;
 		uint8_t ui8Empty1;
+		uint8_t ui8FREnabled;
+		uint8_t ui8FLEnabled;
+		uint8_t ui8REnabled;
+		uint8_t ui8Empty2;
 	}TILT_SERVOS;
 
 	struct
@@ -129,6 +136,22 @@ typedef struct
 		uint8_t ui8MotorFLID;
 		uint8_t ui8MotorRID;
 		uint8_t ui8Empty;
+		uint8_t ui8EnableFR;
+		uint8_t ui8EnableFL;
+		uint8_t ui8EnableR;
+		uint8_t ui8Empty1;
+		uint8_t ui8FREnabled;
+		uint8_t ui8FLEnabled;
+		uint8_t ui8REnabled;
+		uint8_t ui8Empty2;
+		uint8_t ui8FRPark;
+		uint8_t ui8FLPark;
+		uint8_t ui8RPark;
+		uint8_t ui8Empty3;
+		uint8_t ui8FRParked;
+		uint8_t ui8FLParked;
+		uint8_t ui8RParked;
+		uint8_t ui8Empty4;
 	}MOTORS;
 
 	struct

@@ -43,6 +43,7 @@ RS485RXDATA* RS485Data;
 
 // Store info of unit that we are talking to
 RS485WAITINGUNIT RS485CurrentUnit;
+RS485COMMAND RS485CurrentCommand;
 
 UInt8 RS485TransmittBuffer[64];
 
@@ -79,6 +80,7 @@ Int16 i16RS485TimeOut = 100;
 
 Int16 RS485_Timing()
 {
+	/*
 	i16RS485Timing++;
 	if(100 <= i16RS485Timing)
 	{
@@ -87,6 +89,7 @@ Int16 RS485_Timing()
 		UART_QueueMessagei16(VAR_SERVOFR, RS485Servo_FR.REGS.ui16PresentPosition);
 		UART_QueueMessagei16(VAR_SERVOR, RS485Servo_R.REGS.ui16PresentPosition);
 	}
+	*/
 	// Check RX process
 #ifndef RS485_NOTIMEOUT
 
@@ -106,25 +109,61 @@ Int16 RS485_Timing()
 
 Int16 RS485_WriteServoPosition(UInt8 ID, UInt16 position)
 {
-	RS485COMMAND motorCommand;
-	// Motor
-	motorCommand.VARS.ui8Address = ID;
-	motorCommand.VARS.ui8Command = RS485_SET_SERVO_POSITION;
-	motorCommand.VARS.ui16Data = position;
+	RS485COMMAND Command;
+	// Servo
+	Command.VARS.ui8Address = ID;
+	Command.VARS.ui8Command = RS485_SET_SERVO_POSITION;
+	Command.VARS.ui16Data = position;
 	// Store command
-	RB32_push(&RS485CommandBuffer, motorCommand.ui32Packed);
+	RB32_push(&RS485CommandBuffer, Command.ui32Packed);
 	return 0;
 }
 
 Int16 RS485_WriteServoTorqueEnable(UInt8 ID, UInt16 enable)
 {
-	RS485COMMAND motorCommand;
-	// Motor
-	motorCommand.VARS.ui8Address = ID;
-	motorCommand.VARS.ui8Command = RS485_WRITE_SERVO_TORQ_ENABLE;
-	motorCommand.VARS.ui16Data = enable;
+	RS485COMMAND Command;
+	// Servo
+	Command.VARS.ui8Address = ID;
+	Command.VARS.ui8Command = RS485_WRITE_SERVO_TORQ_ENABLE;
+	Command.VARS.ui16Data = enable;
 	// Store command
-	RB32_push(&RS485CommandBuffer, motorCommand.ui32Packed);
+	RB32_push(&RS485CommandBuffer, Command.ui32Packed);
+	return 0;
+}
+
+Int16 RS485_WriteMotorEnable(UInt8 ID, UInt16 enable)
+{
+	RS485COMMAND Command;
+	// Motor
+	Command.VARS.ui8Address = ID;
+	Command.VARS.ui8Command = RS485_WRITE_MOTOR_ARMED_REG;
+	Command.VARS.ui16Data = enable;
+	// Store command
+	RB32_push(&RS485CommandBuffer, Command.ui32Packed);
+	return 0;
+}
+
+Int16 RS485_WriteMotorPark(UInt8 ID, UInt16 enable)
+{
+	RS485COMMAND Command;
+	// Motor
+	Command.VARS.ui8Address = ID;
+	Command.VARS.ui8Command = RS485_WRITE_MOTOR_PARK_REG;
+	Command.VARS.ui16Data = enable;
+	// Store command
+	RB32_push(&RS485CommandBuffer, Command.ui32Packed);
+	return 0;
+}
+
+Int16 RS485_WriteMotorSpeed(UInt8 ID, UInt16 speed)
+{
+	RS485COMMAND Command;
+	// Motor
+	Command.VARS.ui8Address = ID;
+	Command.VARS.ui8Command = RS485_SET_MOTOR_RPM;
+	Command.VARS.ui16Data = speed;
+	// Store command
+	RB32_push(&RS485CommandBuffer, Command.ui32Packed);
 	return 0;
 }
 
@@ -142,6 +181,9 @@ Int16 RS485_MasterInitData(void)
 	RS485Motor_R.REGS.ui8ID = motorRID;
 
 	RS485Data = &RS485DataStruct;
+
+	// Set timeout
+	RS485Data->ui16RXCommTimeout = 500;
 
 	// Init command buffer
 	RB32_Init(&RS485CommandBuffer, RS485_CommandBuffer, 16);
@@ -607,12 +649,15 @@ void RS485_States_Master()
 						}
 					}
 				}
-
 			}
 			else
 			{
 				// Get command from buffer
 				RS485CommandDecoder.ui32Packed = RB32_pop(&RS485CommandBuffer);
+				// Store last command sent
+				RS485CurrentCommand.VARS.ui8Address = RS485CommandDecoder.VARS.ui8Address;
+				RS485CurrentCommand.VARS.ui8Command = RS485CommandDecoder.VARS.ui8Command;
+				RS485CurrentCommand.VARS.ui16Data = RS485CommandDecoder.VARS.ui16Data;
 				// Store req bytes in tx buffer
 				bytesToSend = RS485_BufferQueuedCommand(RS485CommandDecoder);
 				// Send data with DMA
@@ -633,11 +678,14 @@ void RS485_States_Master()
 			RS485TimerCount++;
 			if(RS485TimerCount > RS485TimerTimeout)
 			{
+				RS485TimerCount = RS485TimerTimeout;
 				// Timeout, no response from slave device.
+				// Requeue message
+				//RB32_push(&RS485CommandBuffer, RS485CurrentCommand.ui32Packed);
 				// Go back to poll state
 				RS485MasterState = RS485_M_STATE_DELAY;
 			}
-			if(0 != RS485ResponseReceived)
+			else if(0 != RS485ResponseReceived)
 			{
 				// Slave responded
 				// Go back to poll state
@@ -671,6 +719,13 @@ void RS485_ReceiveMessage(UInt8 data)
 {
 	UInt16 ui16Temp = 0;
 	RS485Data->ui16RXTimeoutCounter = 0;
+	// Store
+	RS485Data->RXDATA.ui8Parameters[RS485Data->RXDATA.ui8RS485RXIndex] = data;
+	RS485Data->RXDATA.ui8RS485RXIndex++;
+	if(128 <= RS485Data->RXDATA.ui8RS485RXIndex)
+	{
+		RS485Data->RXDATA.ui8RS485RXIndex = 0;
+	}
 	switch(RS485Data->ui8RXState)
 	{
 		case RS485_RX_IDLE:
@@ -680,8 +735,10 @@ void RS485_ReceiveMessage(UInt8 data)
 			{
 				// Go to wait for signal
 				RS485Data->ui8RXState = RS485_RX_WAIT_FOR_SIGNAL;
-				RS485Data->RXDATA.HEADER.ui8Bytes[3] = data;
+				RS485Data->RXDATA.HEADER.ui8Bytes[0] = data;
 				RS485Data->ui8RXCounter = 1;
+				RS485Data->RXDATA.ui8Parameters[0] = data;
+				RS485Data->RXDATA.ui8RS485RXIndex = 1;
 			}
 			break;
 		}
@@ -689,14 +746,13 @@ void RS485_ReceiveMessage(UInt8 data)
 		{
 			if(3 > RS485Data->ui8RXCounter)
 			{
-				RS485Data->RXDATA.HEADER.ui8Bytes[3 - RS485Data->ui8RXCounter] = data;
+				RS485Data->RXDATA.HEADER.ui8Bytes[RS485Data->ui8RXCounter] = data;
 				RS485Data->ui8RXCounter ++;
 			}
 			else
 			{
-				RS485Data->RXDATA.HEADER.ui8Bytes[0] = 0;
 				// Check header
-				if(0xfffffd00 == RS485Data->RXDATA.HEADER.ui32Header)
+				if(0x00fdffff == RS485Data->RXDATA.HEADER.ui32Header)
 				{
 					RS485Data->ui8RXState = RS485_RX_WAIT_FOR_ID;
 					RS485Data->ui8RXCounter = 0;
@@ -734,8 +790,8 @@ void RS485_ReceiveMessage(UInt8 data)
 			RS485Data->ui8RXCounter++;
 			if(2 == RS485Data->ui8RXCounter)
 			{
-				// Store number of bytes in parameters, is length - 3 bytes for crc and instruction
-				RS485Data->RXDATA.ui8ParamByteCount = RS485Data->RXDATA.LENGTH.ui16PacketLength - 3;
+				// Store number of bytes in parameters, is length + 5 bytes for total packet length - crc
+				RS485Data->RXDATA.ui8ParamByteCount = RS485Data->RXDATA.LENGTH.ui16PacketLength + 5;
 				// Go to wait for instruction
 				RS485Data->ui8RXState = RS485_RX_WAIT_FOR_INSTR_ERR;
 				RS485Data->ui8RXCounter = 0;
@@ -762,10 +818,6 @@ void RS485_ReceiveMessage(UInt8 data)
 		}
 		case RS485_RX_WAIT_FOR_PARAMETERS:
 		{
-			// Store parameter
-			RS485Data->RXDATA.ui8Parameters[RS485Data->RXDATA.ui8RS485RXIndex] = data;
-			RS485Data->RXDATA.ui8RS485RXIndex++;
-
 			// Have all parameters?
 			if(RS485Data->RXDATA.ui8ParamByteCount == RS485Data->RXDATA.ui8RS485RXIndex)
 			{
@@ -783,14 +835,15 @@ void RS485_ReceiveMessage(UInt8 data)
 			{
 
 				// Calculate CRC
-				ui16Temp = update_crc(0, RS485Data->RXDATA.bytes, 8 + RS485Data->RXDATA.ui8ParamByteCount);
+				ui16Temp = update_crc(0, RS485Data->RXDATA.ui8Parameters, 5 + RS485Data->RXDATA.LENGTH.ui16PacketLength);
 				if(ui16Temp == RS485Data->RXDATA.CRCDATA.ui16CRC)
 				{
 					RS485_DecodeMessage();
 				}
+				RS485Data->ui8RXState = RS485_RX_IDLE;
+				RS485Data->ui8RXCounter = 0;
 			}
-			RS485Data->ui8RXState = RS485_RX_IDLE;
-			RS485Data->ui8RXCounter = 0;
+
 			break;
 		}
 		default:
@@ -804,82 +857,76 @@ Int16 RS485_DecodeMessage()
 {
 	int destIndex = 0;
 	int bytes = 0;
+	UInt8* ui8DestRegAddress;
+	UInt8* ui8FreshData;
 	// Mark we have response
 	RS485ResponseReceived = 1;
-	// Check ID
+	// Check where to put data
 	switch(RS485Data->RXDATA.ui8ID)
 	{
 		case SERVO_FR_ID:
 		{
-			// Check if response was OK
-			if(0 == RS485Data->RXDATA.ui8Parameters[0])
-			{
-				// No error
-				RS485Servo_FR.errStatus = RS485Data->RXDATA.ui8Parameters[1];
-				// Store data
-				destIndex = RS485CurrentUnit.ui16RegAddress;
-
-				for(bytes = 0; bytes < RS485CurrentUnit.ui16ByteCount; bytes++)
-				{
-					RS485Servo_FR.ui8REGSData[destIndex] = RS485Data->RXDATA.ui8Parameters[bytes + 2];
-					destIndex++;
-				}
-			}
+			// Error status
+			RS485Servo_FR.errStatus = RS485Data->RXDATA.ui8Parameters[8];
+			ui8DestRegAddress = RS485CurrentUnit.ui16RegAddress + RS485Servo_FR.ui8REGSData;
+			ui8FreshData = &RS485Servo_FR.ui8FreshData;
 			break;
 		}
 		case SERVO_FL_ID:
 		{
-			// Check if response was OK
-			if(0 == RS485Data->RXDATA.ui8Parameters[0])
-			{
-				// No error
-				RS485Servo_FL.errStatus = RS485Data->RXDATA.ui8Parameters[1];
-				// Store data
-				destIndex = RS485CurrentUnit.ui16RegAddress;
-
-				for(bytes = 0; bytes < RS485CurrentUnit.ui16ByteCount; bytes++)
-				{
-					RS485Servo_FL.ui8REGSData[destIndex] = RS485Data->RXDATA.ui8Parameters[bytes + 2];
-					destIndex++;
-				}
-			}
+			// Error status
+			RS485Servo_FL.errStatus = RS485Data->RXDATA.ui8Parameters[8];
+			ui8DestRegAddress = RS485CurrentUnit.ui16RegAddress + RS485Servo_FL.ui8REGSData;
+			ui8FreshData = &RS485Servo_FL.ui8FreshData;
 			break;
 		}
 		case SERVO_R_ID:
 		{
-			// Check if response was OK
-			if(0 == RS485Data->RXDATA.ui8Parameters[0])
-			{
-				// No error
-				RS485Servo_R.errStatus = RS485Data->RXDATA.ui8Parameters[1];
-				// Store data
-				destIndex = RS485CurrentUnit.ui16RegAddress;
-
-				for(bytes = 0; bytes < RS485CurrentUnit.ui16ByteCount; bytes++)
-				{
-					RS485Servo_R.ui8REGSData[destIndex] = RS485Data->RXDATA.ui8Parameters[bytes + 2];
-					destIndex++;
-				}
-			}
+			// Error status
+			RS485Servo_R.errStatus = RS485Data->RXDATA.ui8Parameters[8];
+			ui8DestRegAddress = RS485CurrentUnit.ui16RegAddress + RS485Servo_R.ui8REGSData;
+			ui8FreshData = &RS485Servo_R.ui8FreshData;
 			break;
 		}
 		case MOTOR_FR_ID:
 		{
-			// Check if response was OK
-			if(0 == RS485Data->RXDATA.ui8Parameters[0])
-			{
-				// No error
-				RS485Motor_FR.errStatus = RS485Data->RXDATA.ui8Parameters[1];
-				// Store data
-				destIndex = RS485CurrentUnit.ui16RegAddress;
-
-				for(bytes = 0; bytes < RS485CurrentUnit.ui16ByteCount; bytes++)
-				{
-					RS485Motor_FR.ui8REGSData[destIndex] = RS485Data->RXDATA.ui8Parameters[bytes + 2];
-					destIndex++;
-				}
-			}
+			// Error status
+			RS485Motor_FR.errStatus = RS485Data->RXDATA.ui8Parameters[8];
+			ui8DestRegAddress = RS485CurrentUnit.ui16RegAddress + RS485Motor_FR.ui8REGSData;
+			ui8FreshData = &RS485Motor_FR.ui8FreshData;
 			break;
+		}
+		case MOTOR_FL_ID:
+		{
+			// Error status
+			RS485Motor_FL.errStatus = RS485Data->RXDATA.ui8Parameters[8];
+			ui8DestRegAddress = RS485CurrentUnit.ui16RegAddress + RS485Motor_FL.ui8REGSData;
+			ui8FreshData = &RS485Motor_FL.ui8FreshData;
+			break;
+		}
+		case MOTOR_R_ID:
+		{
+			// Error status
+			RS485Motor_R.errStatus = RS485Data->RXDATA.ui8Parameters[8];
+			ui8DestRegAddress = RS485CurrentUnit.ui16RegAddress + RS485Motor_R.ui8REGSData;
+			ui8FreshData = &RS485Motor_R.ui8FreshData;
+			break;
+		}
+	}
+
+	if(RS485_COMMAND_READ == RS485CurrentUnit.ui8Instruction)
+	{
+		// Write data to registers
+		destIndex = 0;
+		for(bytes = 0; bytes < RS485CurrentUnit.ui16ByteCount; bytes++)
+		{
+			ui8DestRegAddress[destIndex] = RS485Data->RXDATA.ui8Parameters[bytes + 9];
+			destIndex++;
+		}
+		// Mark fresh data
+		if(3 < RS485Data->RXDATA.LENGTH.ui16PacketLength)
+		{
+			*ui8FreshData = 1;
 		}
 	}
 	return 0;
