@@ -33,12 +33,12 @@ void Refresh485()
 
 int16_t CheckMotor(RS485MOTOR* motor)
 {
-	float32_t f32Temp = 0.0f;
+	//float32_t f32Temp = 0.0f;
 	uint8_t* ui8EnableMotor;
 	uint8_t* ui8MotorEnabled;
 	uint8_t* ui8ParkMotor;
 	uint8_t* ui8MotorParked;
-	uint16_t ui16Temp = 0;
+	//uint16_t ui16Temp = 0;
 
 	// Get relevant data
 	if(motor->REGS.ui8ID == RS485Motor_FR.REGS.ui8ID)

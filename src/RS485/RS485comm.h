@@ -79,6 +79,7 @@ typedef struct tagRS485COMMAND
 #define RS485_WRITE_MOTOR_ARMED_REG			18
 #define RS485_WRITE_MOTOR_PARK_REG			19
 #define RS485_WRITE_SERVO_TORQ_ENABLE		20
+#define RS485_WRITE_MOTOR_REVERSE_REG		21
 
 // Commands macros
 #define RS485_COMMAND_NONE					0x00
@@ -190,7 +191,7 @@ typedef struct tagRS485MOTOR
 	UInt8 ui8FreshData;
 	union
 	{
-		UInt8 ui8REGSData[69];				// Main data structure
+		UInt8 ui8REGSData[64];				// Main data structure
 		struct
 		{
 			// Some params
@@ -201,31 +202,46 @@ typedef struct tagRS485MOTOR
 			UInt8 ui8Empty;				// 5
 			// Errors
 			UInt16 ui16Errors;			// 6
-			// Future expansion
-			UInt8 uiEmpty1[24];			// 32 bytes total
-			// Status of the motor
-			float f32UIn;				// 32
-			float f32IIn;				// 36
-			float f32PIn;				// 40
-			float f32RPM;				// 44
-			float f32SetRPM;			// 48
-			// Motor control
-			// Motor state - idle, run, error
-			UInt16 ui16State;			// 52
-			// State transition command
-			UInt16 ui16Command;			// 54
-			// Arm
-			UInt8 ui8Armed;				// 56
-			// Park
-			UInt8 ui8Park;				// 57
-			// Reverse rotation
-			UInt8 ui8ReverseRotation;	// 58
-			// Park position
-			Int16 i16ParkPosition;		// 59
 
-			// Motor min/max RPM
-			float f32MinRPM;			// 61
-			float f32MaxRPM;			// 65	// +4 = total
+			// Motor state - idle, run, error
+			UInt16 ui16State;			// 8
+
+			// Status of the motor
+			Int16 i16UIn;				// 10
+			Int16 i16IIn;				// 12
+			Int16 i16PIn;				// 14
+			Int16 i16RPM;				// 16
+
+			// Future expansion
+			UInt8 uiEmpty1[14];			// 32 bytes total
+
+			// Motor control
+			// Arm
+			UInt8 ui8Armed;				// 32
+			// Park
+			UInt8 ui8Park;				// 33
+			// Reverse rotation
+			UInt8 ui8ReverseRotation;	// 34
+			UInt8 uiEmpty2;
+			// Park position
+			Int16 i16ParkPosition;		// 36
+
+			Int16 i16SetRPM;			// 38
+			Int16 i16MaxRPM;			// 40
+			Int16 i16MinRPM;			// 42
+
+			// PWM input
+			UInt8 ui8MeasurePWMMin;		// 44
+			UInt8 ui8MeasurePWMMax;		// 45
+			UInt8 ui8UsePWMIN;			// 46
+			UInt8 uiEmpty3;				// 47
+			Int16 i16PWMMin;			// 48
+			Int16 i16PWMMax;			// 50
+			Int16 i16ZeroSpeedPWM;		// 52
+			Int16 i16CurrentPWM;		// 54	//55 bytes total
+
+			UInt8 uiEmpty4[9];					// 64 bytes total
+
 		}REGS;
 	};
 
@@ -280,17 +296,17 @@ typedef struct tagRS485WAITINGUNIT
 }RS485WAITINGUNIT;
 
 // Defs for registers
-#define MOTORREG_SETRPM				48
-#define MOTORREG_ARMED				56
-#define MOTORREG_PARK				57
-#define MOTORREG_REVERSE			58
-#define MOTORREG_PARKPOSITION		59
-#define MOTORREG_MIN_SPEED			61
-#define MOTORREG_MAX_SPEED			65
-#define MOTORREG_ENABLE_PWMIN		0
-#define MOTORREG_
-#define MOTORREG_
-#define MOTORREG_
+#define MOTORREG_SETRPM				38
+#define MOTORREG_ARMED				32
+#define MOTORREG_PARK				33
+#define MOTORREG_REVERSE			34
+#define MOTORREG_PARKPOSITION		36
+#define MOTORREG_MIN_SPEED			42
+#define MOTORREG_MAX_SPEED			40
+#define MOTORREG_ENABLE_PWMIN		46
+#define MOTORREG_MEAS_MIN_PWM		44
+#define MOTORREG_MEAS_MAX_PWM		45
+#define MOTORREG_ZERO_SPEED_PWM		52
 #define MOTORREG_
 #define MOTORREG_
 #define MOTORREG_

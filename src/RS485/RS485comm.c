@@ -260,20 +260,21 @@ Int16 RS485_MotorTest(UInt8 func)
 }
 
 Int16 RS485_ServoTest(UInt8 func)
-{
+{/*
 	RS485COMMAND servoCommand;
+
 	switch(func)
 	{
 		case 0:
 		{
 			servoCommand.VARS.ui8Address = servoFRID;
-			servoCommand.VARS.ui8Command = RS485_SERVO_TORQ_ON;
+			//servoCommand.VARS.ui8Command = RS485_SERVO_TORQ_ON;
 			servoCommand.VARS.ui16Data = 0;
 			// Store command
 			RB32_push(&RS485CommandBuffer, servoCommand.ui32Packed);
 			break;
 		}
-	}
+	}*/
 	return 0;
 }
 
@@ -416,102 +417,124 @@ UInt16 RS485_Read(UInt8 ID, UInt16 address, UInt16 count)
 UInt16 RS485_BufferQueuedCommand(RS485COMMAND command)
 {
 	UInt16 bytes = 0;
-	switch(command.VARS.ui8Command)
+	// Store additional data in address bits 6 & 7
+	if(0 != (command.VARS.ui8Address & 0xC0))
 	{
-		case RS485_POLL_SERVO:
+		if(0 != (command.VARS.ui8Address & 0x80))
 		{
-			bytes = RS485_Read(command.VARS.ui8Address, 24, 25);
-			break;
+			command.VARS.ui8Address = command.VARS.ui8Address & ~0x80;
+			RS485_Write8(command.VARS.ui8Address, command.VARS.ui8Command, (UInt8)command.VARS.ui16Data);
 		}
-		case RS485_POLL_MOTOR:
+		else
 		{
-			bytes = RS485_Read(command.VARS.ui8Address, 32, 32);
-			break;
+			command.VARS.ui8Address = command.VARS.ui8Address & ~0x40;
+			RS485_Write16(command.VARS.ui8Address, command.VARS.ui8Command, command.VARS.ui16Data);
 		}
-		case RS485_SERVO_TORQ_ON:
+	}
+	else
+	{
+		switch(command.VARS.ui8Command)
 		{
-			bytes = RS485_Write8(command.VARS.ui8Address, SERVOREG_ENABLE_TORQUE, 1);
-			break;
-		}
-		case RS485_SERVO_TORQ_OFF:
-		{
-			bytes = RS485_Write8(command.VARS.ui8Address, SERVOREG_ENABLE_TORQUE, 0);
-			break;
-		}
-		case RS485_SET_SERVO_POSITION:
-		{
-			bytes = RS485_Write16(command.VARS.ui8Address, SERVOREG_POSITION, command.VARS.ui16Data);
-			break;
-		}
-		case RS485_SET_MOTOR_SPEED:
-		{
-			bytes = RS485_Write16(command.VARS.ui8Address, SERVOREG_SPEED, command.VARS.ui16Data);
-			break;
-		}
-		case RS485_SET_MOTOR_MIN_SPEED:
-		{
-			bytes = RS485_Writefloat(command.VARS.ui8Address, MOTORREG_MIN_SPEED, (float32_t)command.VARS.ui16Data);
-			break;
-		}
-		case RS485_SET_MOTOR_MAX_SPEED:
-		{
-			bytes = RS485_Writefloat(command.VARS.ui8Address, MOTORREG_MAX_SPEED, (float32_t)command.VARS.ui16Data);
-			break;
-		}
-		case RS485_ENABLE_MOTOR_PWMIN:
-		{
-			bytes = RS485_Write8(command.VARS.ui8Address, MOTORREG_ENABLE_PWMIN, command.VARS.ui16Data);
-			break;
-		}
-		case RS485_SET_SERVO_ANGLEMIN_LIM:
-		{
-			bytes = RS485_Write16(command.VARS.ui8Address, SERVOREG_MIN_ANGLE_REG, command.VARS.ui16Data);
-			break;
-		}
-		case RS485_SET_SERVO_ANGLEMAX_LIM:
-		{
-			bytes = RS485_Write16(command.VARS.ui8Address, SERVOREG_MAX_ANGLE_REG, command.VARS.ui16Data);
-			break;
-		}
-		case RS485_SET_SERVO_SPEED:
-		{
-			bytes = RS485_Write16(command.VARS.ui8Address, SERVOREG_SPEED, command.VARS.ui16Data);
-			break;
-		}
-		case RS485_SET_MOTOR_POSITION:
-		{
-			bytes = RS485_Write16(command.VARS.ui8Address, MOTORREG_PARKPOSITION, command.VARS.ui16Data);
-			break;
-		}
-		case RS485_SET_MOTOR_PARK:
-		{
-			bytes = RS485_Write8(command.VARS.ui8Address, MOTORREG_PARK, 1);
-			break;
-		}
-		case RS485_SET_MOTOR_RUN:
-		{
-			bytes = RS485_Write8(command.VARS.ui8Address, MOTORREG_ARMED, (UInt8)command.VARS.ui16Data);
-			break;
-		}
-		case RS485_SET_MOTOR_RPM:
-		{
-			bytes = RS485_Writefloat(command.VARS.ui8Address, MOTORREG_SETRPM, (float)command.VARS.ui16Data);
-			break;
-		}
-		case RS485_WRITE_MOTOR_ARMED_REG:
-		{
-			bytes = RS485_Write8(command.VARS.ui8Address, MOTORREG_ARMED, (UInt8)command.VARS.ui16Data);
-			break;
-		}
-		case RS485_WRITE_MOTOR_PARK_REG:
-		{
-			bytes = RS485_Write8(command.VARS.ui8Address, MOTORREG_PARK, (UInt8)command.VARS.ui16Data);
-			break;
-		}
-		case RS485_WRITE_SERVO_TORQ_ENABLE:
-		{
-			bytes = RS485_Write8(command.VARS.ui8Address, SERVOREG_ENABLE_TORQUE, (UInt8)command.VARS.ui16Data);
-			break;
+			case RS485_POLL_SERVO:
+			{
+				bytes = RS485_Read(command.VARS.ui8Address, 24, 25);
+				break;
+			}
+			case RS485_POLL_MOTOR:
+			{
+				bytes = RS485_Read(command.VARS.ui8Address, 32, 32);
+				break;
+			}
+			case RS485_SERVO_TORQ_ON:
+			{
+				bytes = RS485_Write8(command.VARS.ui8Address, SERVOREG_ENABLE_TORQUE, 1);
+				break;
+			}
+			case RS485_SERVO_TORQ_OFF:
+			{
+				bytes = RS485_Write8(command.VARS.ui8Address, SERVOREG_ENABLE_TORQUE, 0);
+				break;
+			}
+			case RS485_SET_SERVO_POSITION:
+			{
+				bytes = RS485_Write16(command.VARS.ui8Address, SERVOREG_POSITION, command.VARS.ui16Data);
+				break;
+			}
+			case RS485_SET_MOTOR_SPEED:
+			{
+				bytes = RS485_Write16(command.VARS.ui8Address, SERVOREG_SPEED, command.VARS.ui16Data);
+				break;
+			}
+			case RS485_SET_MOTOR_MIN_SPEED:
+			{
+				bytes = RS485_Write16(command.VARS.ui8Address, MOTORREG_MIN_SPEED, (Int16)command.VARS.ui16Data);
+				break;
+			}
+			case RS485_SET_MOTOR_MAX_SPEED:
+			{
+				bytes = RS485_Write16(command.VARS.ui8Address, MOTORREG_MAX_SPEED, (Int16)command.VARS.ui16Data);
+				break;
+			}
+			case RS485_ENABLE_MOTOR_PWMIN:
+			{
+				bytes = RS485_Write8(command.VARS.ui8Address, MOTORREG_ENABLE_PWMIN, command.VARS.ui16Data);
+				break;
+			}
+			case RS485_SET_SERVO_ANGLEMIN_LIM:
+			{
+				bytes = RS485_Write16(command.VARS.ui8Address, SERVOREG_MIN_ANGLE_REG, command.VARS.ui16Data);
+				break;
+			}
+			case RS485_SET_SERVO_ANGLEMAX_LIM:
+			{
+				bytes = RS485_Write16(command.VARS.ui8Address, SERVOREG_MAX_ANGLE_REG, command.VARS.ui16Data);
+				break;
+			}
+			case RS485_SET_SERVO_SPEED:
+			{
+				bytes = RS485_Write16(command.VARS.ui8Address, SERVOREG_SPEED, command.VARS.ui16Data);
+				break;
+			}
+			case RS485_SET_MOTOR_POSITION:
+			{
+				bytes = RS485_Write16(command.VARS.ui8Address, MOTORREG_PARKPOSITION, command.VARS.ui16Data);
+				break;
+			}
+			case RS485_SET_MOTOR_PARK:
+			{
+				bytes = RS485_Write8(command.VARS.ui8Address, MOTORREG_PARK, 1);
+				break;
+			}
+			case RS485_SET_MOTOR_RUN:
+			{
+				bytes = RS485_Write8(command.VARS.ui8Address, MOTORREG_ARMED, (UInt8)command.VARS.ui16Data);
+				break;
+			}
+			case RS485_SET_MOTOR_RPM:
+			{
+				bytes = RS485_Write16(command.VARS.ui8Address, MOTORREG_SETRPM, (Int16)command.VARS.ui16Data);
+				break;
+			}
+			case RS485_WRITE_MOTOR_ARMED_REG:
+			{
+				bytes = RS485_Write8(command.VARS.ui8Address, MOTORREG_ARMED, (UInt8)command.VARS.ui16Data);
+				break;
+			}
+			case RS485_WRITE_MOTOR_PARK_REG:
+			{
+				bytes = RS485_Write8(command.VARS.ui8Address, MOTORREG_PARK, (UInt8)command.VARS.ui16Data);
+				break;
+			}
+			case RS485_WRITE_SERVO_TORQ_ENABLE:
+			{
+				bytes = RS485_Write8(command.VARS.ui8Address, SERVOREG_ENABLE_TORQUE, (UInt8)command.VARS.ui16Data);
+				break;
+			}
+			case RS485_WRITE_MOTOR_REVERSE_REG:
+			{
+				bytes = RS485_Write8(command.VARS.ui8Address, MOTORREG_REVERSE, (UInt8)command.VARS.ui16Data);
+				break;
+			}
 		}
 	}
 	return bytes;
@@ -987,8 +1010,9 @@ Int16 RS485_SetupServos()
 
 	// Set torque ON ***************************
 	// Servo 1
+	/*
 	servoCommand.VARS.ui8Address = servoFRID;
-	servoCommand.VARS.ui8Command = RS485_SERVO_TORQ_ON;
+	//servoCommand.VARS.ui8Command = RS485_SERVO_TORQ_ON;
 	servoCommand.VARS.ui16Data = 0;
 	// Store command
 	RB32_push(&RS485CommandBuffer, servoCommand.ui32Packed);
@@ -1000,7 +1024,7 @@ Int16 RS485_SetupServos()
 	servoCommand.VARS.ui8Address = servoRID;
 	// Store command
 	RB32_push(&RS485CommandBuffer, servoCommand.ui32Packed);
-
+*/
 
 	return 0;
 }
