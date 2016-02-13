@@ -80,6 +80,11 @@ typedef struct tagRS485COMMAND
 #define RS485_WRITE_MOTOR_PARK_REG			19
 #define RS485_WRITE_SERVO_TORQ_ENABLE		20
 #define RS485_WRITE_MOTOR_REVERSE_REG		21
+#define RS485_WRITE_MOTOR_MEAS_PWMLOW		22
+#define RS485_WRITE_MOTOR_MEAS_PWMHIGH		23
+#define RS485_WRITE_MOTOR_PWM_ZERO_SPEED	24
+#define RS485_WRITE_MOTOR_USE_PWM			25
+#define RS485_WRITE_MOTOR_REVERSE_ROTATION	26
 
 // Commands macros
 #define RS485_COMMAND_NONE					0x00
@@ -335,6 +340,11 @@ Int16 RS485_WriteServoTorqueEnable(UInt8 ID, UInt16 enable);
 Int16 RS485_WriteMotorEnable(UInt8 ID, UInt16 enable);
 Int16 RS485_WriteMotorPark(UInt8 ID, UInt16 enable);
 Int16 RS485_WriteMotorSpeed(UInt8 ID, UInt16 speed);
+Int16 RS485_WriteMotorMeasPWMMin(UInt8 ID, UInt16 enable);
+Int16 RS485_WriteMotorMeasPWMMax(UInt8 ID, UInt16 enable);
+Int16 RS485_WriteMotorZeroPWM(UInt8 ID, UInt16 value);
+Int16 RS485_WriteMotorUsePWM(UInt8 ID, UInt16 enable);
+Int16 RS485_WriteMotorReverseRotation(UInt8 ID, UInt16 enable);
 Int16 RS485_MasterInitData(void);
 Int16 RS485_QueueCommand(RS485COMMAND cmdToExec);
 Int16 RS485_MasterState(int state);

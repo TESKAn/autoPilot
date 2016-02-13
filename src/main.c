@@ -302,7 +302,8 @@ int main(void)
 			}
 			case 18:
 			{
-
+				refreshPWMOutputs();
+				mainLoopState = 0;
 				break;
 			}
 			default:

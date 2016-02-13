@@ -43,7 +43,7 @@ void flight_init(FLIGHT_CORE *data, RCDATA * RCInputs)
 	data->f32NacelleTilt_FR = RC_DEFAULT_NACELLE_TILT;
 	data->f32NacelleTilt_R = RC_DEFAULT_NACELLE_TILT;
 	// Set zero angle values
-	data->TILT_SERVOS.f32AllowedPositionDeviation =
+	data->TILT_SERVOS.f32AllowedPositionDeviation = 20.0f;	// ~2 deg
 	data->TILT_SERVOS.f32ServoFLZero = NACELLE_FL_ZERO;
 	data->TILT_SERVOS.f32ServoFRZero = NACELLE_FR_ZERO;
 	data->TILT_SERVOS.f32ServoRZero = NACELLE_R_ZERO;
@@ -69,6 +69,20 @@ void flight_init(FLIGHT_CORE *data, RCDATA * RCInputs)
 	RCInputs->PWMOUT_Offset_10 = RC_IN_DEFAULT_MIDPOINT;
 	RCInputs->PWMOUT_Offset_11 = RC_IN_DEFAULT_MIDPOINT;
 	RCInputs->PWMOUT_Offset_12 = RC_IN_DEFAULT_MIDPOINT;
+
+	// Set default PWM outputs
+	// Gear down
+	RCInputs->RC_GEAR = 2000;
+	// Ailerons to midpoint
+	RCInputs->RC_AILERON_L = 1500;
+	RCInputs->RC_AILERON_R = 1500;
+	// Motors to zero
+	RCInputs->RC_MOTOR_FL = 1000;
+	RCInputs->RC_MOTOR_FR = 1000;
+	RCInputs->RC_MOTOR_R = 1000;
+	// Nacelle tilt to midpoint
+	RCInputs->RC_MOTOR_R_TILT = 1500;
+
 
 	RCInputs->SCALES.f32AileronScale = RC_IN_DEFAULT_SCALE_AILERON;
 	RCInputs->SCALES.f32ElevatorScale = RC_IN_DEFAULT_SCALE_ELEVATOR;
@@ -169,7 +183,7 @@ void flight_checkRCInputs(RCDATA * RCInputs, FLIGHT_CORE * FCFlightData)
 }
 
 // Main flight state machine
-void flight_checkStates(FLIGHT_CORE *data)
+void flight_checkStates(FLIGHT_CORE *data, RCDATA * RCValues)
 {
 	switch(data->ui32FlightStateMachine)
 	{
@@ -183,6 +197,28 @@ void flight_checkStates(FLIGHT_CORE *data)
 			{
 				case FINIT_IDLE:
 				{
+					// Set motor PWMs to min
+					RCValues->RC_MOTOR_FL = 1000;
+					RCValues->RC_MOTOR_FR = 1000;
+					RCValues->RC_MOTOR_R = 1000;
+					// Mark measure low PWM time
+					data->MOTORS.ui8FRMeasPWMLow = 1;
+					data->MOTORS.ui8FLMeasPWMLow = 1;
+					data->MOTORS.ui8RMeasPWMLow = 1;
+					// Next state
+					data->ui32FlightInitState = FINIT_MEAS_PWM_LOW;
+					break;
+				}
+				case FINIT_MEAS_PWM_LOW:
+				{
+					// Check if values are updated
+
+					break;
+				}
+				case FINIT_MEAS_PWM_HIGH:
+				{
+
+
 					// Send command enable servo torque
 					data->TILT_SERVOS.ui8EnableFR = 1;
 					data->TILT_SERVOS.ui8EnableFL = 1;
@@ -213,20 +249,22 @@ void flight_checkStates(FLIGHT_CORE *data)
 				}
 				case FINIT_WAIT_SPOS_DOWN:
 				{
-					if(88 < data->TILT_SERVOS.f32ServoFRAngle)
+					if(88.0f < data->TILT_SERVOS.f32ServoFRAngle)
 					{
-						if(88 < data->TILT_SERVOS.f32ServoFLAngle)
+						if(88.0f < data->TILT_SERVOS.f32ServoFLAngle)
 						{
-							if(88 < data->TILT_SERVOS.f32ServoRAngle)
+							if(88.0f < data->TILT_SERVOS.f32ServoRAngle)
 							{
+								// Motors ON
 
-
+								/*
 								// Set new position
-								data->f32NacelleTilt_FR = 90.0f;
-								data->f32NacelleTilt_FL = 90.0f;
-								data->f32NacelleTilt_R = 90.0f;
+								data->f32NacelleTilt_FR = 0.0f;
+								data->f32NacelleTilt_FL = 0.0f;
+								data->f32NacelleTilt_R = 0.0f;
 								// Wait
 								data->ui32FlightInitState = FINIT_WAIT_SPOS_DOWN;
+								*/
 							}
 						}
 					}
@@ -657,6 +695,7 @@ void flight_stabilizeHover(FLIGHT_CORE * FCFlightData)
 // Hardware specific function - decode flight commands to servo commands
 void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 {
+	float32_t f32Temp;
 	// Next depends on current mode
 	if(RC_Flags.bits.PLANE)
 	{
@@ -672,10 +711,10 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 
 		RCValues->RC_MOTOR_FR = FCFlightData->PIDPitch.s - FCFlightData->PIDRoll.s + FCFlightData->PIDAltitude.s;
 
-		RCValues->RC_MOTOR_BM = -FCFlightData->PIDPitch.s + FCFlightData->PIDAltitude.s;
+		RCValues->RC_MOTOR_R = -FCFlightData->PIDPitch.s + FCFlightData->PIDAltitude.s;
 
 		// Controll yaw with nacelle roll
-		//RCValues->RC_NACELLE_BR = FCFlightData->PIDYaw.s;
+		RCValues->RC_MOTOR_R_TILT = FCFlightData->PIDYaw.s;
 
 	}
 	else
@@ -683,19 +722,38 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 
 	}
 
+	//***********************************
+	// Set tilt values
+	// Set new position
+	f32Temp = FCFlightData->f32NacelleTilt_FR * 11.37777777777777;
+	f32Temp = f32Temp + FCFlightData->TILT_SERVOS.f32ServoFRZero;
+	FCFlightData->TILT_SERVOS.ui16FRRequestedPosition = (uint16_t)f32Temp;
+
+	f32Temp = FCFlightData->f32NacelleTilt_FL * 11.37777777777777;
+	f32Temp = f32Temp + FCFlightData->TILT_SERVOS.f32ServoFLZero;
+	FCFlightData->TILT_SERVOS.ui16FLRequestedPosition = (uint16_t)f32Temp;
+
+	f32Temp = FCFlightData->f32NacelleTilt_R * 11.37777777777777;
+	f32Temp = f32Temp + FCFlightData->TILT_SERVOS.f32ServoRZero;
+	FCFlightData->TILT_SERVOS.ui16RRequestedPosition = (uint16_t)f32Temp;
+	//***********************************
+
+	//***********************************
 	// Set gear
 	if(0 < RCValues->RC_GEAR_GYRO)
 	{
-		// Go to plane mode
+		// Gear up
 		RCValues->RC_GEAR = 1000;
 	}
 	else
 	{
-		// Transition not finished, abort
+		// Gear down
 		RCValues->RC_GEAR = 2000;
 	}
+	//***********************************
 
-	// Store as pwm out values
+	//***********************************
+	// Store pwm out values
 	RCValues->PWMOUT_1 = (uint16_t)RCValues->PWMOUT_Val_1;
 	RCValues->PWMOUT_2 = (uint16_t)RCValues->PWMOUT_Val_2;
 	RCValues->PWMOUT_3 = (uint16_t)RCValues->PWMOUT_Val_3;
@@ -708,7 +766,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 	RCValues->PWMOUT_10 = (uint16_t)RCValues->PWMOUT_Val_10;
 	RCValues->PWMOUT_11 = (uint16_t)RCValues->PWMOUT_Val_11;
 	RCValues->PWMOUT_12 = (uint16_t)RCValues->PWMOUT_Val_12;
-
+	//***********************************
 }
 
 

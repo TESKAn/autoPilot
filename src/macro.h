@@ -181,7 +181,7 @@
 #define TIM1_PULSE		1049
 
 // Timer 2 macros
-#define TIM2_PERIOD		19999
+#define TIM2_PERIOD		2999//19999	// Make PWM faster - 3 ms.
 #define TIM2_PRESCALER	83
 #define TIM2_PULSE		1049
 
@@ -311,5 +311,52 @@
 #define VAR_PWMOUT_10                   53
 #define VAR_PWMOUT_11                   54
 #define VAR_PWMOUT_12                   55
+
+#define VAR_MOTOR_FR_ARMED              56
+#define VAR_MOTOR_FR_USEPWM             57
+#define VAR_MOTOR_FR_REVERSE            58
+#define VAR_MOTOR_FR_PARK               59
+#define VAR_MOTOR_FR_PARKPOS            60
+#define VAR_MOTOR_FR_PWMMIN             61
+#define VAR_MOTOR_FR_PWMMAX             62
+#define VAR_MOTOR_FR_CURRENTPWM         63
+#define VAR_MOTOR_FR_SETRPM             64
+#define VAR_MOTOR_FR_CURRENTRPM         65
+#define VAR_MOTOR_FL_ARMED              66
+#define VAR_MOTOR_FL_USEPWM             67
+#define VAR_MOTOR_FL_REVERSE            68
+#define VAR_MOTOR_FL_PARK               69
+#define VAR_MOTOR_FL_PARKPOS            70
+#define VAR_MOTOR_FL_PWMMIN             71
+#define VAR_MOTOR_FL_PWMMAX             72
+#define VAR_MOTOR_FL_CURRENTPWM         73
+#define VAR_MOTOR_FL_SETRPM             74
+#define VAR_MOTOR_FL_CURRENTRPM         75
+#define VAR_MOTOR_R_ARMED               76
+#define VAR_MOTOR_R_USEPWM              77
+#define VAR_MOTOR_R_REVERSE             78
+#define VAR_MOTOR_R_PARK                79
+#define VAR_MOTOR_R_PARKPOS             80
+#define VAR_MOTOR_R_PWMMIN              81
+#define VAR_MOTOR_R_PWMMAX              82
+#define VAR_MOTOR_R_CURRENTPWM          83
+#define VAR_MOTOR_R_SETRPM              84
+#define VAR_MOTOR_R_CURRENTRPM          85
+
+#define VAR_SERVO_FR_TORQ_ON            86
+#define VAR_SERVO_FR_GOAL_POS           87
+#define VAR_SERVO_FR_POS                88
+#define VAR_SERVO_FR_VOLTAGE            89
+#define VAR_SERVO_FR_TEMPERATURE        90
+#define VAR_SERVO_FL_TORQ_ON            91
+#define VAR_SERVO_FL_GOAL_POS           92
+#define VAR_SERVO_FL_POS                93
+#define VAR_SERVO_FL_VOLTAGE            94
+#define VAR_SERVO_FL_TEMPERATURE        95
+#define VAR_SERVO_R_TORQ_ON             96
+#define VAR_SERVO_R_GOAL_POS            97
+#define VAR_SERVO_R_POS                 98
+#define VAR_SERVO_R_VOLTAGE             99
+#define VAR_SERVO_R_TEMPERATURE         100
 
 #endif /* MACRO_H_ */

@@ -208,6 +208,101 @@ int32_t UART_RcvData(uint8_t data)
 				}
 				break;
 			}
+			case VAR_PWMOUT_8:
+			{
+				// int16_t
+				if(UART2_RcvdBytes == 7)
+				{
+					// Check CRC
+					if(0 == UART_CRC)
+					{
+						// Store var
+						UART_Conversion.ch[0] = UART2_RecBuffer[4];
+						UART_Conversion.ch[1] = UART2_RecBuffer[5];
+						RCData.PWMOUT_8 = UART_Conversion.i16[0];
+					}
+					UART2_RcvdBytes = 0;
+					UART2_RcvingVar = 0;
+					UART_CRC = 0xff;
+				}
+				break;
+			}
+			case VAR_PWMOUT_9:
+			{
+				// int16_t
+				if(UART2_RcvdBytes == 7)
+				{
+					// Check CRC
+					if(0 == UART_CRC)
+					{
+						// Store var
+						UART_Conversion.ch[0] = UART2_RecBuffer[4];
+						UART_Conversion.ch[1] = UART2_RecBuffer[5];
+						RCData.PWMOUT_9 = UART_Conversion.i16[0];
+					}
+					UART2_RcvdBytes = 0;
+					UART2_RcvingVar = 0;
+					UART_CRC = 0xff;
+				}
+				break;
+			}
+			case VAR_PWMOUT_10:
+			{
+				// int16_t
+				if(UART2_RcvdBytes == 7)
+				{
+					// Check CRC
+					if(0 == UART_CRC)
+					{
+						// Store var
+						UART_Conversion.ch[0] = UART2_RecBuffer[4];
+						UART_Conversion.ch[1] = UART2_RecBuffer[5];
+						RCData.PWMOUT_10 = UART_Conversion.i16[0];
+					}
+					UART2_RcvdBytes = 0;
+					UART2_RcvingVar = 0;
+					UART_CRC = 0xff;
+				}
+				break;
+			}
+			case VAR_PWMOUT_11:
+			{
+				// int16_t
+				if(UART2_RcvdBytes == 7)
+				{
+					// Check CRC
+					if(0 == UART_CRC)
+					{
+						// Store var
+						UART_Conversion.ch[0] = UART2_RecBuffer[4];
+						UART_Conversion.ch[1] = UART2_RecBuffer[5];
+						RCData.PWMOUT_11 = UART_Conversion.i16[0];
+					}
+					UART2_RcvdBytes = 0;
+					UART2_RcvingVar = 0;
+					UART_CRC = 0xff;
+				}
+				break;
+			}
+			case VAR_PWMOUT_12:
+			{
+				// int16_t
+				if(UART2_RcvdBytes == 7)
+				{
+					// Check CRC
+					if(0 == UART_CRC)
+					{
+						// Store var
+						UART_Conversion.ch[0] = UART2_RecBuffer[4];
+						UART_Conversion.ch[1] = UART2_RecBuffer[5];
+						RCData.PWMOUT_12 = UART_Conversion.i16[0];
+					}
+					UART2_RcvdBytes = 0;
+					UART2_RcvingVar = 0;
+					UART_CRC = 0xff;
+				}
+				break;
+			}
 			default:
 			{
 				UART2_RcvdBytes = 0;

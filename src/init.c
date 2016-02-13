@@ -121,7 +121,7 @@ void init_Timer2()
 	//set pin mode to alternate function
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
 	//set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
@@ -782,7 +782,7 @@ void init_USART2()
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2 | RCC_APB1Periph_USART3, ENABLE); //for USART2, USART3, UART4 or UART5.
 	//program port parameters
 	//set baud rate
-	USART_InitStructure.USART_BaudRate = 38400;
+	USART_InitStructure.USART_BaudRate = 115200;//38400;
 	//flow control
 	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
 	//enable receiver and transmitter

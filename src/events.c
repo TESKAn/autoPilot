@@ -591,7 +591,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			// Run flight check algorithms
 			flight_checkRCInputs(&RCData, &FCFlightData);
 			// Check flight states
-			flight_checkStates(&FCFlightData);
+			flight_checkStates(&FCFlightData, &RCData);
 			// Get new servo values
 			flight_decodeServos(&FCFlightData, &RCData);
 			// Refresh PWM outputs
@@ -606,7 +606,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 
 		// LED counter
 		LED_ToggleCount++;
-		if(LED_ToggleCount >= 200)
+		if(LED_ToggleCount >= 100)
 		{
 			LED_ToggleCount = 0;
 			// Send out data
@@ -672,6 +672,62 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			UART_QueueMessageui16(VAR_PWMOUT_11, RCData.PWMOUT_11);
 			UART_QueueMessageui16(VAR_PWMOUT_12, RCData.PWMOUT_12);
 			// 12*7=84
+			// 374
+			UART_QueueMessageui16(VAR_MOTOR_FR_ARMED, (UInt16)RS485Motor_FR.REGS.ui8Armed);
+			UART_QueueMessageui16(VAR_MOTOR_FR_USEPWM, (UInt16)RS485Motor_FR.REGS.ui8UsePWMIN);
+			UART_QueueMessageui16(VAR_MOTOR_FR_REVERSE, (UInt16)RS485Motor_FR.REGS.ui8ReverseRotation);
+			UART_QueueMessageui16(VAR_MOTOR_FR_PARK, (UInt16)RS485Motor_FR.REGS.ui8Park);
+			UART_QueueMessagei16(VAR_MOTOR_FR_PARKPOS, RS485Motor_FR.REGS.i16ParkPosition);
+			UART_QueueMessagei16(VAR_MOTOR_FR_PWMMIN, RS485Motor_FR.REGS.i16PWMMin);
+			UART_QueueMessagei16(VAR_MOTOR_FR_PWMMAX, RS485Motor_FR.REGS.i16PWMMax);
+			UART_QueueMessagei16(VAR_MOTOR_FR_CURRENTPWM, RS485Motor_FR.REGS.i16CurrentPWM);
+			UART_QueueMessagei16(VAR_MOTOR_FR_SETRPM, RS485Motor_FR.REGS.i16SetRPM);
+			UART_QueueMessagei16(VAR_MOTOR_FR_CURRENTRPM, RS485Motor_FR.REGS.i16RPM);
+			// 10*7 = 70
+			UART_QueueMessageui16(VAR_MOTOR_FL_ARMED, (UInt16)RS485Motor_FL.REGS.ui8Armed);
+			UART_QueueMessageui16(VAR_MOTOR_FL_USEPWM, (UInt16)RS485Motor_FL.REGS.ui8UsePWMIN);
+			UART_QueueMessageui16(VAR_MOTOR_FL_REVERSE, (UInt16)RS485Motor_FL.REGS.ui8ReverseRotation);
+			UART_QueueMessageui16(VAR_MOTOR_FL_PARK, (UInt16)RS485Motor_FL.REGS.ui8Park);
+			UART_QueueMessagei16(VAR_MOTOR_FL_PARKPOS, RS485Motor_FL.REGS.i16ParkPosition);
+			UART_QueueMessagei16(VAR_MOTOR_FL_PWMMIN, RS485Motor_FL.REGS.i16PWMMin);
+			UART_QueueMessagei16(VAR_MOTOR_FL_PWMMAX, RS485Motor_FL.REGS.i16PWMMax);
+			UART_QueueMessagei16(VAR_MOTOR_FL_CURRENTPWM, RS485Motor_FL.REGS.i16CurrentPWM);
+			UART_QueueMessagei16(VAR_MOTOR_FL_SETRPM, RS485Motor_FL.REGS.i16SetRPM);
+			UART_QueueMessagei16(VAR_MOTOR_FL_CURRENTRPM, RS485Motor_FL.REGS.i16RPM);
+			// 10*7 = 70
+			UART_QueueMessageui16(VAR_MOTOR_R_ARMED, (UInt16)RS485Motor_R.REGS.ui8Armed);
+			UART_QueueMessageui16(VAR_MOTOR_R_USEPWM, (UInt16)RS485Motor_R.REGS.ui8UsePWMIN);
+			UART_QueueMessageui16(VAR_MOTOR_R_REVERSE, (UInt16)RS485Motor_R.REGS.ui8ReverseRotation);
+			UART_QueueMessageui16(VAR_MOTOR_R_PARK, (UInt16)RS485Motor_R.REGS.ui8Park);
+			UART_QueueMessagei16(VAR_MOTOR_R_PARKPOS, RS485Motor_R.REGS.i16ParkPosition);
+			UART_QueueMessagei16(VAR_MOTOR_R_PWMMIN, RS485Motor_R.REGS.i16PWMMin);
+			UART_QueueMessagei16(VAR_MOTOR_R_PWMMAX, RS485Motor_R.REGS.i16PWMMax);
+			UART_QueueMessagei16(VAR_MOTOR_R_CURRENTPWM, RS485Motor_R.REGS.i16CurrentPWM);
+			UART_QueueMessagei16(VAR_MOTOR_R_SETRPM, RS485Motor_R.REGS.i16SetRPM);
+			UART_QueueMessagei16(VAR_MOTOR_R_CURRENTRPM, RS485Motor_R.REGS.i16RPM);
+			// 10*7 = 70
+			// 584
+			UART_QueueMessageui16(VAR_SERVO_FR_TORQ_ON, (UInt16)RS485Servo_FR.REGS.ui8TorqueEnabled);
+			UART_QueueMessageui16(VAR_SERVO_FR_GOAL_POS, RS485Servo_FR.REGS.ui16GoalPosition);
+			UART_QueueMessageui16(VAR_SERVO_FR_POS, RS485Servo_FR.REGS.ui16PresentPosition);
+			UART_QueueMessageui16(VAR_SERVO_FR_VOLTAGE, (UInt16)RS485Servo_FR.REGS.ui8PresentVoltage);
+			UART_QueueMessageui16(VAR_SERVO_FR_TEMPERATURE, (UInt16)RS485Servo_FR.REGS.ui8PresentTemperature);
+			// 5*7=35
+			UART_QueueMessageui16(VAR_SERVO_FL_TORQ_ON, (UInt16)RS485Servo_FL.REGS.ui8TorqueEnabled);
+			UART_QueueMessageui16(VAR_SERVO_FL_GOAL_POS, RS485Servo_FL.REGS.ui16GoalPosition);
+			UART_QueueMessageui16(VAR_SERVO_FL_POS, RS485Servo_FL.REGS.ui16PresentPosition);
+			UART_QueueMessageui16(VAR_SERVO_FL_VOLTAGE, (UInt16)RS485Servo_FL.REGS.ui8PresentVoltage);
+			UART_QueueMessageui16(VAR_SERVO_FL_TEMPERATURE, (UInt16)RS485Servo_FL.REGS.ui8PresentTemperature);
+			// 5*7=35
+			UART_QueueMessageui16(VAR_SERVO_R_TORQ_ON, (UInt16)RS485Servo_R.REGS.ui8TorqueEnabled);
+			UART_QueueMessageui16(VAR_SERVO_R_GOAL_POS, RS485Servo_R.REGS.ui16GoalPosition);
+			UART_QueueMessageui16(VAR_SERVO_R_POS, RS485Servo_R.REGS.ui16PresentPosition);
+			UART_QueueMessageui16(VAR_SERVO_R_VOLTAGE, (UInt16)RS485Servo_R.REGS.ui8PresentVoltage);
+			UART_QueueMessageui16(VAR_SERVO_R_TEMPERATURE, (UInt16)RS485Servo_R.REGS.ui8PresentTemperature);
+			// 5*7=35
+			// 689
+
+
 
 
 			// Event every second

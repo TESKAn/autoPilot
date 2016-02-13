@@ -167,6 +167,65 @@ Int16 RS485_WriteMotorSpeed(UInt8 ID, UInt16 speed)
 	return 0;
 }
 
+Int16 RS485_WriteMotorMeasPWMMin(UInt8 ID, UInt16 enable)
+{
+	RS485COMMAND Command;
+	// Motor
+	Command.VARS.ui8Address = ID;
+	Command.VARS.ui8Command = RS485_WRITE_MOTOR_MEAS_PWMLOW;
+	Command.VARS.ui16Data = enable;
+	// Store command
+	RB32_push(&RS485CommandBuffer, Command.ui32Packed);
+	return 0;
+}
+
+Int16 RS485_WriteMotorMeasPWMMax(UInt8 ID, UInt16 enable)
+{
+	RS485COMMAND Command;
+	// Motor
+	Command.VARS.ui8Address = ID;
+	Command.VARS.ui8Command = RS485_WRITE_MOTOR_MEAS_PWMHIGH;
+	Command.VARS.ui16Data = enable;
+	// Store command
+	RB32_push(&RS485CommandBuffer, Command.ui32Packed);
+	return 0;
+}
+
+Int16 RS485_WriteMotorZeroPWM(UInt8 ID, UInt16 value)
+{
+	RS485COMMAND Command;
+	// Motor
+	Command.VARS.ui8Address = ID;
+	Command.VARS.ui8Command = RS485_WRITE_MOTOR_PWM_ZERO_SPEED;
+	Command.VARS.ui16Data = value;
+	// Store command
+	RB32_push(&RS485CommandBuffer, Command.ui32Packed);
+	return 0;
+}
+
+Int16 RS485_WriteMotorUsePWM(UInt8 ID, UInt16 enable)
+{
+	RS485COMMAND Command;
+	// Motor
+	Command.VARS.ui8Address = ID;
+	Command.VARS.ui8Command = RS485_WRITE_MOTOR_USE_PWM;
+	Command.VARS.ui16Data = enable;
+	// Store command
+	RB32_push(&RS485CommandBuffer, Command.ui32Packed);
+	return 0;
+}
+
+Int16 RS485_WriteMotorReverseRotation(UInt8 ID, UInt16 enable)
+{
+	RS485COMMAND Command;
+	// Motor
+	Command.VARS.ui8Address = ID;
+	Command.VARS.ui8Command = RS485_WRITE_MOTOR_REVERSE_ROTATION;
+	Command.VARS.ui16Data = enable;
+	// Store command
+	RB32_push(&RS485CommandBuffer, Command.ui32Packed);
+	return 0;
+}
 
 // Master functions
 Int16 RS485_MasterInitData(void)
@@ -187,6 +246,9 @@ Int16 RS485_MasterInitData(void)
 
 	// Init command buffer
 	RB32_Init(&RS485CommandBuffer, RS485_CommandBuffer, 16);
+
+	RS485Motor_R.REGS.i16ParkPosition = 2048;
+	RS485Motor_R.REGS.i16ZeroSpeedPWM = 50;
 
 	// Set to receive
 	RS485_ENABLE_RX;
@@ -535,6 +597,31 @@ UInt16 RS485_BufferQueuedCommand(RS485COMMAND command)
 				bytes = RS485_Write8(command.VARS.ui8Address, MOTORREG_REVERSE, (UInt8)command.VARS.ui16Data);
 				break;
 			}
+			case RS485_WRITE_MOTOR_MEAS_PWMLOW:
+			{
+				bytes = RS485_Write8(command.VARS.ui8Address, MOTORREG_MEAS_MIN_PWM, (UInt8)command.VARS.ui16Data);
+				break;
+			}
+			case RS485_WRITE_MOTOR_MEAS_PWMHIGH:
+			{
+				bytes = RS485_Write8(command.VARS.ui8Address, MOTORREG_MEAS_MAX_PWM, (UInt8)command.VARS.ui16Data);
+				break;
+			}
+			case RS485_WRITE_MOTOR_PWM_ZERO_SPEED:
+			{
+				bytes = RS485_Write16(command.VARS.ui8Address, MOTORREG_ZERO_SPEED_PWM, command.VARS.ui16Data);
+				break;
+			}
+			case RS485_WRITE_MOTOR_USE_PWM:
+			{
+				bytes = RS485_Write8(command.VARS.ui8Address, MOTORREG_ENABLE_PWMIN, (UInt8)command.VARS.ui16Data);
+				break;
+			}
+			case RS485_WRITE_MOTOR_REVERSE_ROTATION:
+			{
+				bytes = RS485_Write8(command.VARS.ui8Address, MOTORREG_REVERSE, (UInt8)command.VARS.ui16Data);
+				break;
+			}
 		}
 	}
 	return bytes;
@@ -566,7 +653,7 @@ void RS485_States_Master()
 			// Check send buffer
 			if(0 == RS485CommandBuffer.count)
 			{
-				if(0 != readRS485Data)
+				//if(0 != readRS485Data)
 				{
 					// Go through RS485 slaves and request data
 					switch(RS485MasterPollState)
@@ -941,6 +1028,8 @@ Int16 RS485_DecodeMessage()
 	{
 		// Write data to registers
 		destIndex = 0;
+		// Fix pointer
+		ui8DestRegAddress --;
 		for(bytes = 0; bytes < RS485CurrentUnit.ui16ByteCount; bytes++)
 		{
 			ui8DestRegAddress[destIndex] = RS485Data->RXDATA.ui8Parameters[bytes + 9];

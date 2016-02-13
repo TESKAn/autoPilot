@@ -14,7 +14,7 @@
 // Functions
 void flight_init(FLIGHT_CORE *data, RCDATA * RCInputs);
 void flight_checkRCInputs(RCDATA * RCInputs, FLIGHT_CORE * FCFlightData);
-void flight_checkStates(FLIGHT_CORE *data);
+void flight_checkStates(FLIGHT_CORE *data, RCDATA * RCValues);
 void flight_stabilizeHover(FLIGHT_CORE * FCFlightData);
 void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 
@@ -47,9 +47,10 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 #define RC_AILERON_L	PWMOUT_Val_1
 #define RC_AILERON_R	PWMOUT_Val_2
 
-#define RC_MOTOR_FL		PWMOUT_Val_3
-#define RC_MOTOR_FR		PWMOUT_Val_4
-#define RC_MOTOR_BM		PWMOUT_Val_5
+#define RC_MOTOR_R_TILT	PWMOUT_Val_8
+#define RC_MOTOR_FL		PWMOUT_Val_9
+#define RC_MOTOR_FR		PWMOUT_Val_10
+#define RC_MOTOR_R		PWMOUT_Val_11
 
 #define RC_GEAR			PWMOUT_Val_12
 
@@ -95,13 +96,15 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 
 // Flight init states
 #define FINIT_IDLE						0
-#define FINIT_WAIT_STORQUE_ON			1
-#define FINIT_WAIT_SPOS_DOWN			2
-#define FINIT_WAIT_MOTOR_ON				3
-#define FINIT_WAIT_MOTOR_PARK			4
-#define FINIT_WAIT_SPOS_UP				5
-#define FINIT_WAIT_SPOS_LEVEL			6
-#define FINIT_WAIT_SPOS_VTOL			7
+#define FINIT_MEAS_PWM_LOW				1
+#define FINIT_MEAS_PWM_HIGH				2
+#define FINIT_WAIT_STORQUE_ON			3
+#define FINIT_WAIT_SPOS_DOWN			4
+#define FINIT_WAIT_MOTOR_ON				5
+#define FINIT_WAIT_MOTOR_PARK			6
+#define FINIT_WAIT_SPOS_UP				7
+#define FINIT_WAIT_SPOS_LEVEL			8
+#define FINIT_WAIT_SPOS_VTOL			9
 
 // Tilt transition states
 #define FLIGHT_TILT_START				0
