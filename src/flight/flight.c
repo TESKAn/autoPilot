@@ -22,6 +22,7 @@
 
 RCFlag RC_Flags;
 
+uint16_t ui16CheckStatesDelay = 0;
 
 // Init flight variables
 void flight_init(FLIGHT_CORE *data, RCDATA * RCInputs)
@@ -44,9 +45,9 @@ void flight_init(FLIGHT_CORE *data, RCDATA * RCInputs)
 	data->f32NacelleTilt_R = RC_DEFAULT_NACELLE_TILT;
 	// Set zero angle values
 	data->TILT_SERVOS.f32AllowedPositionDeviation = 20.0f;	// ~2 deg
-	data->TILT_SERVOS.f32ServoFLZero = NACELLE_FL_ZERO;
-	data->TILT_SERVOS.f32ServoFRZero = NACELLE_FR_ZERO;
-	data->TILT_SERVOS.f32ServoRZero = NACELLE_R_ZERO;
+	data->TILT_SERVOS.FR.f32ServoZero = NACELLE_FR_ZERO;
+	data->TILT_SERVOS.FL.f32ServoZero = NACELLE_FL_ZERO;
+	data->TILT_SERVOS.R.f32ServoZero = NACELLE_R_ZERO;
 
 	RCInputs->PWMIN_1_MID = RC_IN_DEFAULT_MIDPOINT;
 	RCInputs->PWMIN_2_MID = RC_IN_DEFAULT_MIDPOINT;
@@ -201,40 +202,134 @@ void flight_checkStates(FLIGHT_CORE *data, RCDATA * RCValues)
 					RCValues->RC_MOTOR_FL = 1000;
 					RCValues->RC_MOTOR_FR = 1000;
 					RCValues->RC_MOTOR_R = 1000;
+					// Reverse motor FR
+					data->MOTORS.FR.ui8ReverseRotation = 1;
+					data->MOTORS.FL.ui8ReverseRotation = 0;
+					data->MOTORS.R.ui8ReverseRotation = 0;
+					// Enable motors
+					data->MOTORS.FR.ui8Enable = 1;
+					data->MOTORS.FL.ui8Enable = 1;
+					data->MOTORS.R.ui8Enable = 1;
+					// Set to park
+					data->MOTORS.FR.ui8Park = 1;
+					data->MOTORS.FL.ui8Park = 1;
+					data->MOTORS.R.ui8Park = 1;
 					// Mark measure low PWM time
-					data->MOTORS.ui8FRMeasPWMLow = 1;
-					data->MOTORS.ui8FLMeasPWMLow = 1;
-					data->MOTORS.ui8RMeasPWMLow = 1;
+					data->MOTORS.FR.ui8MeasPWMMin = 1;
+					data->MOTORS.FL.ui8MeasPWMMin = 1;
+					data->MOTORS.R.ui8MeasPWMMin = 1;
 					// Next state
-					data->ui32FlightInitState = FINIT_MEAS_PWM_LOW;
+					data->ui32FlightInitState = FINIT_MEAS_PWM_MIN;
+					ui16CheckStatesDelay = 50;
 					break;
 				}
-				case FINIT_MEAS_PWM_LOW:
+				case FINIT_MEAS_PWM_MIN:
 				{
 					// Check if values are updated
+					if(1 == data->MOTORS.FR.ui8MeasuringPWMMin)
+					{
+						if(1 == data->MOTORS.FL.ui8MeasuringPWMMin)
+						{
+							if(1 == data->MOTORS.R.ui8MeasuringPWMMin)
+							{
+								if(0 == ui16CheckStatesDelay)
+								{
+									// Mark measure low PWM time
+									data->MOTORS.FR.ui8MeasPWMMin = 0;
+									data->MOTORS.FL.ui8MeasPWMMin = 0;
+									data->MOTORS.R.ui8MeasPWMMin = 0;
+									// Next state
+									data->ui32FlightInitState = FINIT_WAIT_MEAS_PWMMIN;
+									ui16CheckStatesDelay = 50;
+								}
+								else
+								{
+									ui16CheckStatesDelay--;
+								}
+							}
+						}
+					}
 
 					break;
 				}
-				case FINIT_MEAS_PWM_HIGH:
+				case FINIT_WAIT_MEAS_PWMMIN:
 				{
+					if(0 == data->MOTORS.FR.ui8MeasuringPWMMin)
+					{
+						if(0 == data->MOTORS.FL.ui8MeasuringPWMMin)
+						{
+							if(0 == data->MOTORS.R.ui8MeasuringPWMMin)
+							{
+								data->MOTORS.FR.ui8MeasPWMMax = 1;
+								data->MOTORS.FL.ui8MeasPWMMax = 1;
+								data->MOTORS.R.ui8MeasPWMMax = 1;
+								// Set motor PWMs to max
+								RCValues->RC_MOTOR_FL = 2000;
+								RCValues->RC_MOTOR_FR = 2000;
+								RCValues->RC_MOTOR_R = 2000;
+								data->ui32FlightInitState = FINIT_MEAS_PWM_MAX;
+							}
+						}
+					}
+					break;
+				}
+				case FINIT_MEAS_PWM_MAX:
+				{
+					if(1 == data->MOTORS.FR.ui8MeasuringPWMMax)
+					{
+						if(1 == data->MOTORS.FL.ui8MeasuringPWMMax)
+						{
+							if(1 == data->MOTORS.R.ui8MeasuringPWMMax)
+							{
+								if(0 == ui16CheckStatesDelay)
+								{
+									data->MOTORS.FR.ui8MeasPWMMax = 0;
+									data->MOTORS.FL.ui8MeasPWMMax = 0;
+									data->MOTORS.R.ui8MeasPWMMax = 0;
+									// Next state
+									data->ui32FlightInitState = FINIT_WAIT_MEAS_PWMMAX;
+									ui16CheckStatesDelay = 50;
+								}
+								else
+								{
+									ui16CheckStatesDelay--;
+								}
+							}
+						}
+					}
+					break;
+				}
+				case FINIT_WAIT_MEAS_PWMMAX:
+				{
+					if(0 == data->MOTORS.FR.ui8MeasuringPWMMax)
+					{
+						if(0 == data->MOTORS.FL.ui8MeasuringPWMMax)
+						{
+							if(0 == data->MOTORS.R.ui8MeasuringPWMMax)
+							{
+								// Set motor PWMs to min
+								RCValues->RC_MOTOR_FL = 1000;
+								RCValues->RC_MOTOR_FR = 1000;
+								RCValues->RC_MOTOR_R = 1000;
+								// Send command enable servo torque
+								data->TILT_SERVOS.FR.ui8Enable = 1;
+								data->TILT_SERVOS.FL.ui8Enable = 1;
+								data->TILT_SERVOS.R.ui8Enable = 1;
 
-
-					// Send command enable servo torque
-					data->TILT_SERVOS.ui8EnableFR = 1;
-					data->TILT_SERVOS.ui8EnableFL = 1;
-					data->TILT_SERVOS.ui8EnableR = 1;
-					// Wait
-					data->ui32FlightInitState = FINIT_WAIT_STORQUE_ON;
+								data->ui32FlightInitState = FINIT_WAIT_STORQUE_ON;
+							}
+						}
+					}
 					break;
 				}
 				case FINIT_WAIT_STORQUE_ON:
 				{
 					// Check readout values
-					if(1 == data->TILT_SERVOS.ui8FREnabled)
+					if(1 == data->TILT_SERVOS.FR.ui8Enabled)
 					{
-						if(1 == data->TILT_SERVOS.ui8FLEnabled)
+						if(1 == data->TILT_SERVOS.FR.ui8Enabled)
 						{
-							if(1 == data->TILT_SERVOS.ui8REnabled)
+							if(1 == data->TILT_SERVOS.FR.ui8Enabled)
 							{
 								// Set new position
 								data->f32NacelleTilt_FR = 90.0f;
@@ -242,6 +337,7 @@ void flight_checkStates(FLIGHT_CORE *data, RCDATA * RCValues)
 								data->f32NacelleTilt_R = 90.0f;
 								// Wait
 								data->ui32FlightInitState = FINIT_WAIT_SPOS_DOWN;
+
 							}
 						}
 					}
@@ -249,22 +345,22 @@ void flight_checkStates(FLIGHT_CORE *data, RCDATA * RCValues)
 				}
 				case FINIT_WAIT_SPOS_DOWN:
 				{
-					if(88.0f < data->TILT_SERVOS.f32ServoFRAngle)
+					if(88.0f < data->TILT_SERVOS.FR.f32ServoAngle)
 					{
-						if(88.0f < data->TILT_SERVOS.f32ServoFLAngle)
+						if(88.0f < data->TILT_SERVOS.FR.f32ServoAngle)
 						{
-							if(88.0f < data->TILT_SERVOS.f32ServoRAngle)
+							if(88.0f < data->TILT_SERVOS.FR.f32ServoAngle)
 							{
 								// Motors ON
 
-								/*
+
 								// Set new position
 								data->f32NacelleTilt_FR = 0.0f;
 								data->f32NacelleTilt_FL = 0.0f;
 								data->f32NacelleTilt_R = 0.0f;
 								// Wait
-								data->ui32FlightInitState = FINIT_WAIT_SPOS_DOWN;
-								*/
+								data->ui32FlightInitState = FINIT_WAIT_MOTOR_ON;
+
 							}
 						}
 					}
@@ -301,27 +397,28 @@ void flight_checkStates(FLIGHT_CORE *data, RCDATA * RCValues)
 		}
 		case FLIGHT_STABILIZE_HOVER:
 		{
+			/*
 			// Check - do we go for transition?
 			if(RC_Flags.bits.TRANSITION)
 			{
 				data->ui32FlightStateMachine = FLIGHT_STABILIZE_TRANSITION;
 			}
 			// Run stabilising algorithm
-			flight_stabilizeHover(data);
+			flight_stabilizeHover(data);*/
 			break;
 		}
 		case FLIGHT_STABILIZE_PLANE:
-		{
+		{/*
 			// Check - do we go for transition?
 			if(RC_Flags.bits.TRANSITION)
 			{
 				data->ui32FlightStateMachine = FLIGHT_STABILIZE_TRANSITION;
 			}
-
+*/
 			break;
 		}
 		case FLIGHT_STABILIZE_TRANSITION:
-		{
+		{/*
 			// Tilt state machine
 			switch(data->ui32FlightTransitionState)
 			{
@@ -653,10 +750,25 @@ void flight_checkStates(FLIGHT_CORE *data, RCDATA * RCValues)
 				{
 					data->ui32FlightTransitionState = FLIGHT_TILT_START;
 				}
-			}
+			}*/
 			break;
 		}
-
+		case FLIGHT_DISARM:
+		{
+			// Send command disable servo torque
+			data->TILT_SERVOS.FR.ui8Enable = 0;
+			data->TILT_SERVOS.FL.ui8Enable = 0;
+			data->TILT_SERVOS.R.ui8Enable = 0;
+			// Disable motors
+			data->MOTORS.FR.ui8Enable = 0;
+			data->MOTORS.FR.ui8Park = 0;
+			data->MOTORS.FL.ui8Enable = 0;
+			data->MOTORS.FL.ui8Park = 0;
+			data->MOTORS.R.ui8Enable = 0;
+			data->MOTORS.R.ui8Park = 0;
+			data->ui32FlightStateMachine = FLIGHT_IDLE;
+			break;
+		}
 
 		default:
 		{
@@ -725,17 +837,17 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 	//***********************************
 	// Set tilt values
 	// Set new position
-	f32Temp = FCFlightData->f32NacelleTilt_FR * 11.37777777777777;
-	f32Temp = f32Temp + FCFlightData->TILT_SERVOS.f32ServoFRZero;
-	FCFlightData->TILT_SERVOS.ui16FRRequestedPosition = (uint16_t)f32Temp;
+	f32Temp = FCFlightData->f32NacelleTilt_FR + FCFlightData->TILT_SERVOS.FR.f32ServoZero;
+	f32Temp *= 11.37777777777777;
+	FCFlightData->TILT_SERVOS.FR.ui16RequestedPosition = (uint16_t)f32Temp;
 
-	f32Temp = FCFlightData->f32NacelleTilt_FL * 11.37777777777777;
-	f32Temp = f32Temp + FCFlightData->TILT_SERVOS.f32ServoFLZero;
-	FCFlightData->TILT_SERVOS.ui16FLRequestedPosition = (uint16_t)f32Temp;
+	f32Temp = FCFlightData->f32NacelleTilt_FL + FCFlightData->TILT_SERVOS.FL.f32ServoZero;
+	f32Temp *= 11.37777777777777;
+	FCFlightData->TILT_SERVOS.FL.ui16RequestedPosition = (uint16_t)f32Temp;
 
-	f32Temp = FCFlightData->f32NacelleTilt_R * 11.37777777777777;
-	f32Temp = f32Temp + FCFlightData->TILT_SERVOS.f32ServoRZero;
-	FCFlightData->TILT_SERVOS.ui16RRequestedPosition = (uint16_t)f32Temp;
+	f32Temp = FCFlightData->f32NacelleTilt_R + FCFlightData->TILT_SERVOS.R.f32ServoZero;
+	f32Temp *= 11.37777777777777;
+	FCFlightData->TILT_SERVOS.R.ui16RequestedPosition = (uint16_t)f32Temp;
 	//***********************************
 
 	//***********************************
@@ -749,6 +861,35 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 	{
 		// Gear down
 		RCValues->RC_GEAR = 2000;
+	}
+	//***********************************
+
+	//***********************************
+	// Check arm
+	if(0 < RCValues->RC_FLAPS_PITCH)
+	{
+		if(FLIGHT_IDLE == FCFlightData->ui32FlightStateMachine)
+		{
+			FCFlightData->ui32FlightStateMachine = FLIGHT_INIT;
+			FCFlightData->ui32FlightInitState = FINIT_IDLE;
+		}
+	}
+	else
+	{
+		if(FLIGHT_IDLE != FCFlightData->ui32FlightStateMachine)
+		{
+			if(FLIGHT_DISARM != FCFlightData->ui32FlightStateMachine)
+			{
+				FCFlightData->ui32FlightStateMachine = FLIGHT_DISARM;
+				FCFlightData->ui32FlightInitState = FINIT_IDLE;
+				FCFlightData->MOTORS.FR.i16PWMMin = 1000;
+				FCFlightData->MOTORS.FL.i16PWMMin = 1000;
+				FCFlightData->MOTORS.R.i16PWMMin = 1000;
+				FCFlightData->MOTORS.FR.i16PWMMax = 2000;
+				FCFlightData->MOTORS.FL.i16PWMMax = 2000;
+				FCFlightData->MOTORS.R.i16PWMMax = 2000;
+			}
+		}
 	}
 	//***********************************
 

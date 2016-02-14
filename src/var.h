@@ -217,4 +217,6 @@ extern volatile uint16_t errorUpdateInterval;
 // Signal strength variables
 extern volatile uint32_t signalStrengthCount;
 
+extern uint32_t ui32TestVar;
+
 #endif /* VAR_H_ */

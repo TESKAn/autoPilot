@@ -53,9 +53,12 @@ UInt8 RS485MasterState = RS485_M_STATE_IDLE;
 UInt8 RS485MasterPollState = RS485_POLL_STATE_SERVO_FR;
 UInt8 RS485MasterPoll = 0;
 
+// Poll retries
+UInt8 RS485PollRetries = 0;
+
 // 500 ms timeout
 UInt16 RS485TimerCount = 0;
-UInt16 RS485TimerTimeout = 500;
+UInt16 RS485TimerTimeout = 1000;
 UInt8 RS485ResponseReceived = 0;
 
 UInt8 RS485ReceiveState = 0;
@@ -231,12 +234,12 @@ Int16 RS485_WriteMotorReverseRotation(UInt8 ID, UInt16 enable)
 Int16 RS485_MasterInitData(void)
 {
 	// Set slaves
-	RS485Servo_FL.REGS.ui8ID = servoFRID;
-	RS485Servo_FR.REGS.ui8ID = servoFLID;
+	RS485Servo_FR.REGS.ui8ID = servoFRID;
+	RS485Servo_FL.REGS.ui8ID = servoFLID;
 	RS485Servo_R.REGS.ui8ID = servoRID;
 
-	RS485Motor_FL.REGS.ui8ID = motorFLID;
 	RS485Motor_FR.REGS.ui8ID = motorFRID;
+	RS485Motor_FL.REGS.ui8ID = motorFLID;
 	RS485Motor_R.REGS.ui8ID = motorRID;
 
 	RS485Data = &RS485DataStruct;
@@ -773,6 +776,8 @@ void RS485_States_Master()
 				// Send data with DMA
 				RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
 				RS485MasterState = RS485_M_STATE_WAITING_RESPONSE;
+				// retries to send
+				RS485PollRetries = 5;
 			}
 			// Go to waiting for response state
 			RS485MasterState = RS485_M_STATE_WAITING_RESPONSE;
@@ -788,16 +793,29 @@ void RS485_States_Master()
 			RS485TimerCount++;
 			if(RS485TimerCount > RS485TimerTimeout)
 			{
-				RS485TimerCount = RS485TimerTimeout;
+				RS485TimerCount = 0;
+				ui32TestVar++;
 				// Timeout, no response from slave device.
-				// Requeue message
-				//RB32_push(&RS485CommandBuffer, RS485CurrentCommand.ui32Packed);
-				// Go back to poll state
-				RS485MasterState = RS485_M_STATE_DELAY;
+				if(0 < RS485PollRetries)
+				{
+					RS485PollRetries--;
+					// Resend message
+					// Store req bytes in tx buffer
+					bytesToSend = RS485_BufferQueuedCommand(RS485CurrentCommand);
+					// Send data with DMA
+					RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
+					RS485MasterState = RS485_M_STATE_WAITING_RESPONSE;
+				}
+				else
+				{
+					// Go back to poll state
+					RS485MasterState = RS485_M_STATE_DELAY;
+				}
 			}
 			else if(0 != RS485ResponseReceived)
 			{
 				// Slave responded
+				RS485PollRetries = 0;
 				// Go back to poll state
 				RS485MasterState = RS485_M_STATE_DELAY;
 			}
@@ -812,7 +830,7 @@ void RS485_States_Master()
 			if(0 > RS485PollInterval)
 			{
 				RS485MasterState = RS485_M_STATE_POLL;
-				RS485PollInterval = 10;
+				RS485PollInterval = 20;
 			}
 			break;
 		}
@@ -832,7 +850,7 @@ void RS485_ReceiveMessage(UInt8 data)
 	// Store
 	RS485Data->RXDATA.ui8Parameters[RS485Data->RXDATA.ui8RS485RXIndex] = data;
 	RS485Data->RXDATA.ui8RS485RXIndex++;
-	if(128 <= RS485Data->RXDATA.ui8RS485RXIndex)
+	if(127 <= RS485Data->RXDATA.ui8RS485RXIndex)
 	{
 		RS485Data->RXDATA.ui8RS485RXIndex = 0;
 	}
@@ -1156,11 +1174,11 @@ Int16 RS485_SetupMotors()
 	// Store command
 	RB32_push(&RS485CommandBuffer, motorCommand.ui32Packed);
 
-	// Enable PWM inputs ***************************
+	// Set motor min PWM ***************************
 	// Motor 1
 	motorCommand.VARS.ui8Address = motorFRID;
-	motorCommand.VARS.ui8Command = RS485_ENABLE_MOTOR_PWMIN;
-	motorCommand.VARS.ui16Data = 1;
+	motorCommand.VARS.ui8Command = RS485_WRITE_MOTOR_PWM_ZERO_SPEED;
+	motorCommand.VARS.ui16Data = 50;
 	// Store command
 	RB32_push(&RS485CommandBuffer, motorCommand.ui32Packed);
 	// Motor 2
@@ -1171,8 +1189,6 @@ Int16 RS485_SetupMotors()
 	motorCommand.VARS.ui8Address = motorRID;
 	// Store command
 	RB32_push(&RS485CommandBuffer, motorCommand.ui32Packed);
-
-
 
 	return 0;
 }

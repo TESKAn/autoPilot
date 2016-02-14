@@ -155,3 +155,5 @@ volatile uint16_t errorUpdateInterval = 0;
 
 // Signal strength variables
 volatile uint32_t signalStrengthCount = 0;
+
+uint32_t ui32TestVar = 0;

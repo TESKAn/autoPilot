@@ -34,145 +34,182 @@ void Refresh485()
 int16_t CheckMotor(RS485MOTOR* motor)
 {
 	//float32_t f32Temp = 0.0f;
-	uint8_t* ui8EnableMotor;
-	uint8_t* ui8ParkMotor;
-	uint8_t* ui8MeasurePWMMin;
-	uint8_t* ui8MeasurePWMMax;
-	uint8_t* ui8UsePWMInput;
-	uint8_t* ui8ReverseRotation;
-	//uint16_t ui16Temp = 0;
+
+	FLIGHT_MOTOR* FMotorData;
 
 	// Get relevant data
 	if(motor->REGS.ui8ID == RS485Motor_FR.REGS.ui8ID)
 	{
-		ui8EnableMotor = &FCFlightData.MOTORS.ui8EnableFR;
-		ui8ParkMotor = &FCFlightData.MOTORS.ui8FRPark;
-		ui8MeasurePWMMin = &FCFlightData.MOTORS.ui8FRMeasPWMLow;
-		ui8MeasurePWMMax = &FCFlightData.MOTORS.ui8FRMeasPWMLow;
-		ui8UsePWMInput = &FCFlightData.MOTORS.ui8FRUsePWM;
-		ui8ReverseRotation = &FCFlightData.MOTORS.ui8FRReverseRotation;
+		FMotorData = &FCFlightData.MOTORS.FR;
 	}
 	else if(motor->REGS.ui8ID == RS485Motor_FL.REGS.ui8ID)
 	{
+		FMotorData = &FCFlightData.MOTORS.FL;
+	}
+	else if(motor->REGS.ui8ID == RS485Motor_R.REGS.ui8ID)
+	{
+		FMotorData = &FCFlightData.MOTORS.R;
+	}
 
+	if(1 == motor->ui8FreshData)
+	{
+		FMotorData->i16PWMMin = motor->REGS.i16PWMMin;
+		FMotorData->i16PWMMax = motor->REGS.i16PWMMax;
+		FMotorData->ui8Enabled = motor->REGS.ui8Armed;
+		FMotorData->ui8Parked = motor->REGS.ui8Park;
+		FMotorData->ui8Reversed = motor->REGS.ui8ReverseRotation;
+		FMotorData->ui8UsingPWM = motor->REGS.ui8UsePWMIN;
+		FMotorData->ui8MeasuringPWMMin = motor->REGS.ui8MeasurePWMMin;
+		FMotorData->ui8MeasuringPWMMax = motor->REGS.ui8MeasurePWMMax;
 	}
 
 	//***********************************
 	// Check PWM measurement
-	if(1 == motor->REGS.ui8MeasurePWMMin)
+	if(1 == motor->ui8FreshData)
 	{
-		if(0 == *ui8MeasurePWMMin)
+		if(1 == motor->REGS.ui8MeasurePWMMin)
 		{
-			motor->REGS.ui8MeasurePWMMin = 0;
-			RS485_WriteMotorMeasPWMMin(motor->REGS.ui8ID, 0);
+			if(0 == FMotorData->ui8MeasPWMMin)
+			{
+				RS485_WriteMotorMeasPWMMin(motor->REGS.ui8ID, 0);
+				motor->ui8FreshData = 0;
+			}
 		}
-	}
-	else
-	{
-		if(1 == *ui8MeasurePWMMin)
+		else
 		{
-			motor->REGS.ui8MeasurePWMMin = 1;
-			RS485_WriteMotorMeasPWMMin(motor->REGS.ui8ID, 1);
+			if(1 == FMotorData->ui8MeasPWMMin)
+			{
+				RS485_WriteMotorMeasPWMMin(motor->REGS.ui8ID, 1);
+				motor->ui8FreshData = 0;
+			}
 		}
-	}
-	if(1 == motor->REGS.ui8MeasurePWMMax)
-	{
-		if(0 == *ui8MeasurePWMMax)
+		if(1 == motor->REGS.ui8MeasurePWMMax)
 		{
-			motor->REGS.ui8MeasurePWMMax = 0;
-			RS485_WriteMotorMeasPWMMax(motor->REGS.ui8ID, 0);
+			if(0 == FMotorData->ui8MeasPWMMax)
+			{
+				RS485_WriteMotorMeasPWMMax(motor->REGS.ui8ID, 0);
+				motor->ui8FreshData = 0;
+			}
 		}
-	}
-	else
-	{
-		if(1 == *ui8MeasurePWMMax)
+		else
 		{
-			motor->REGS.ui8MeasurePWMMax = 1;
-			RS485_WriteMotorMeasPWMMax(motor->REGS.ui8ID, 1);
+			if(1 == FMotorData->ui8MeasPWMMax)
+			{
+				RS485_WriteMotorMeasPWMMax(motor->REGS.ui8ID, 1);
+				motor->ui8FreshData = 0;
+			}
 		}
 	}
 	//***********************************
 
 	//***********************************
 	// Check enable
-	if(1 == motor->REGS.ui8Armed)
+	if(1 == motor->ui8FreshData)
 	{
-		// Check
-		if(0 == *ui8EnableMotor)
+		if(1 == motor->REGS.ui8Armed)
 		{
-			motor->REGS.ui8Armed = 0;
-			RS485_WriteMotorEnable(motor->REGS.ui8ID, 0);
+			// Check
+			if(0 == FMotorData->ui8Enable)
+			{
+				RS485_WriteMotorEnable(motor->REGS.ui8ID, 0);
+				motor->ui8FreshData = 0;
+			}
 		}
-	}
-	else
-	{
-		if(1 == *ui8EnableMotor)
+		else
 		{
-			motor->REGS.ui8Armed = 1;
-			RS485_WriteMotorEnable(motor->REGS.ui8ID, 1);
+			if(1 == FMotorData->ui8Enable)
+			{
+				RS485_WriteMotorEnable(motor->REGS.ui8ID, 1);
+				motor->ui8FreshData = 0;
+			}
 		}
 	}
 	//***********************************
 
 	//***********************************
 	// Check park
-	if(1 == motor->REGS.ui8Park)
+	if(1 == motor->ui8FreshData)
 	{
-		// Check
-		if(0 == *ui8ParkMotor)
+		if(1 == motor->REGS.ui8Park)
 		{
-			motor->REGS.ui8Park = 0;
-			RS485_WriteMotorPark(motor->REGS.ui8ID, 0);
+			// Check
+			if(0 == FMotorData->ui8Park)
+			{
+				RS485_WriteMotorPark(motor->REGS.ui8ID, 0);
+				motor->ui8FreshData = 0;
+			}
 		}
-	}
-	else
-	{
-		if(1 == *ui8ParkMotor)
+		else
 		{
-			motor->REGS.ui8Park = 1;
-			RS485_WriteMotorPark(motor->REGS.ui8ID, 1);
+			if(1 == FMotorData->ui8Park)
+			{
+				RS485_WriteMotorPark(motor->REGS.ui8ID, 1);
+				motor->ui8FreshData = 0;
+			}
 		}
 	}
 	//***********************************
 
 	//***********************************
 	// Check use PWM
-	if(1 == motor->REGS.ui8UsePWMIN)
+	if(1 == motor->ui8FreshData)
 	{
-		// Check
-		if(0 == *ui8UsePWMInput)
+		if(1 == motor->REGS.ui8UsePWMIN)
 		{
-			motor->REGS.ui8UsePWMIN = 0;
-			RS485_WriteMotorUsePWM(motor->REGS.ui8ID, 0);
+			// Check
+			if(0 == FMotorData->ui8UsePWM)
+			{
+				RS485_WriteMotorUsePWM(motor->REGS.ui8ID, 0);
+				motor->ui8FreshData = 0;
+			}
 		}
-	}
-	else
-	{
-		if(1 == *ui8UsePWMInput)
+		else
 		{
-			motor->REGS.ui8UsePWMIN = 1;
-			RS485_WriteMotorUsePWM(motor->REGS.ui8ID, 1);
+			if(1 == FMotorData->ui8UsePWM)
+			{
+				RS485_WriteMotorUsePWM(motor->REGS.ui8ID, 1);
+				motor->ui8FreshData = 0;
+			}
 		}
 	}
 	//***********************************
 
 	//***********************************
 	// Check reverse rotation
-	if(1 == motor->REGS.ui8ReverseRotation)
+	if(1 == motor->ui8FreshData)
 	{
-		// Check
-		if(0 == *ui8ReverseRotation)
+		if(1 == motor->REGS.ui8ReverseRotation)
 		{
-			motor->REGS.ui8ReverseRotation = 0;
-			RS485_WriteMotorReverseRotation(motor->REGS.ui8ID, 0);
+			// Check
+			if(0 == FMotorData->ui8ReverseRotation)
+			{
+				RS485_WriteMotorReverseRotation(motor->REGS.ui8ID, 0);
+				motor->ui8FreshData = 0;
+			}
+		}
+		else
+		{
+			if(1 == FMotorData->ui8ReverseRotation)
+			{
+				RS485_WriteMotorReverseRotation(motor->REGS.ui8ID, 1);
+				motor->ui8FreshData = 0;
+			}
 		}
 	}
-	else
+	//***********************************
+
+	//***********************************
+	// Check RPM
+	if(1 == motor->ui8FreshData)
 	{
-		if(1 == *ui8ReverseRotation)
+		if(0 == motor->REGS.ui8UsePWMIN)
 		{
-			motor->REGS.ui8ReverseRotation = 1;
-			RS485_WriteMotorReverseRotation(motor->REGS.ui8ID, 1);
+			// Check
+			if(FMotorData->i16SetRPM != motor->REGS.i16SetRPM)
+			{
+				RS485_WriteMotorSpeed(motor->REGS.ui8ID, FMotorData->i16SetRPM);
+				motor->ui8FreshData = 0;
+			}
 		}
 	}
 	//***********************************
@@ -182,77 +219,73 @@ int16_t CheckMotor(RS485MOTOR* motor)
 
 int16_t CheckServo(RS485SERVO * servo)
 {
+	FLIGHT_SERVO* FServoData;
 	float32_t f32Temp = 0.0f;
-	float32_t f32Zero = 0.0f;
-	float32_t* f32ReqPosition;
-	float32_t* f32CurrPosition;
-	uint8_t* ui8EnableServo;
-	uint16_t* ui16RequestedPosition;
-	uint16_t ui16Temp = 0;
+	float32_t f32Zero = 2048.0f;
 
 	// Get relevant data
 	if(servo->REGS.ui8ID == RS485Servo_FR.REGS.ui8ID)
 	{
-		ui8EnableServo = &FCFlightData.TILT_SERVOS.ui8EnableFR;
-		f32Zero = FCFlightData.TILT_SERVOS.f32ServoFRZero;
-		f32ReqPosition = &FCFlightData.f32NacelleTilt_FR;
-		f32CurrPosition = &FCFlightData.TILT_SERVOS.f32ServoFRAngle;
-		ui16RequestedPosition = &FCFlightData.TILT_SERVOS.ui16FRRequestedPosition;
+		FServoData = &FCFlightData.TILT_SERVOS.FR;
 	}
 	else if(servo->REGS.ui8ID == RS485Servo_FL.REGS.ui8ID)
 	{
-		ui8EnableServo = &FCFlightData.TILT_SERVOS.ui8EnableFL;
-		f32Zero = FCFlightData.TILT_SERVOS.f32ServoFLZero;
-		f32ReqPosition = &FCFlightData.f32NacelleTilt_FL;
-		f32CurrPosition = &FCFlightData.TILT_SERVOS.f32ServoFLAngle;
-		ui16RequestedPosition = &FCFlightData.TILT_SERVOS.ui16FLRequestedPosition;
+		FServoData = &FCFlightData.TILT_SERVOS.FL;
 	}
 	else if(servo->REGS.ui8ID == RS485Servo_R.REGS.ui8ID)
 	{
-		ui8EnableServo = &FCFlightData.TILT_SERVOS.ui8EnableR;
-		f32Zero = FCFlightData.TILT_SERVOS.f32ServoRZero;
-		f32ReqPosition = &FCFlightData.f32NacelleTilt_R;
-		f32CurrPosition = &FCFlightData.TILT_SERVOS.f32ServoRAngle;
-		ui16RequestedPosition = &FCFlightData.TILT_SERVOS.ui16RRequestedPosition;
+		FServoData = &FCFlightData.TILT_SERVOS.R;
 	}
 
+	//***********************************
 	// Check servos
-	//**************************************
-	// Calculate position from current servo data
-	// 4096 = 360 deg
-	f32Temp = (float32_t)servo->REGS.ui16PresentPosition - f32Zero;
-	f32Temp *= 0.087890625;
-	*f32CurrPosition = f32Temp;
-
+	// Fresh data?
+	if(1 == servo->ui8FreshData)
+	{
+		FServoData->ui8Enabled = servo->REGS.ui8TorqueEnabled;
+		// Calculate position from current servo data
+		// 4096 = 360 deg
+		f32Temp = (float32_t)servo->REGS.ui16PresentPosition;
+		f32Temp *= 0.087890625;
+		f32Temp -= FServoData->f32ServoZero;
+		FServoData->f32ServoAngle = f32Temp;
+	}
+	//***********************************
 
 	//***********************************
 	// Torque enabled?
-	if(1 == servo->REGS.ui8TorqueEnabled)
+	if(1 == servo->ui8FreshData)
 	{
-		// Check
-		if(0 == *ui8EnableServo)
+		if(1 == servo->REGS.ui8TorqueEnabled)
 		{
-			servo->REGS.ui8TorqueEnabled = 0;
-			RS485_WriteServoTorqueEnable(servo->REGS.ui8ID, 0);
+			// Check
+			if(0 == FServoData->ui8Enable)
+			{
+				RS485_WriteServoTorqueEnable(servo->REGS.ui8ID, 0);
+				servo->ui8FreshData = 0;
+			}
 		}
-	}
-	else
-	{
-		if(1 == *ui8EnableServo)
+		else
 		{
-			servo->REGS.ui8TorqueEnabled = 1;
-			RS485_WriteServoTorqueEnable(servo->REGS.ui8ID, 1);
+			if(1 == FServoData->ui8Enable)
+			{
+				RS485_WriteServoTorqueEnable(servo->REGS.ui8ID, 1);
+				servo->ui8FreshData = 0;
+			}
 		}
 	}
 	//***********************************
 
 	//***********************************
 	// Check position
-	if(*ui16RequestedPosition != servo->REGS.ui16GoalPosition)
+	if(1 == servo->ui8FreshData)
 	{
-		servo->REGS.ui16GoalPosition = *ui16RequestedPosition;
-		// Set new position
-		RS485_WriteServoPosition(servo->REGS.ui8ID, servo->REGS.ui16GoalPosition);
+		if(FServoData->ui16RequestedPosition != servo->REGS.ui16GoalPosition)
+		{
+			// Set new position
+			RS485_WriteServoPosition(servo->REGS.ui8ID, FServoData->ui16RequestedPosition);
+			servo->ui8FreshData = 0;
+		}
 	}
 	//***********************************
 	return 0;

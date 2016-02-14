@@ -60,6 +60,40 @@ typedef union
 
 typedef struct
 {
+	uint8_t ui8MotorID;
+	uint8_t ui8Enable;
+	uint8_t ui8Enabled;
+	uint8_t ui8Park;
+	uint8_t ui8Parked;
+	uint8_t ui8MeasPWMMin;
+	uint8_t ui8MeasPWMMax;
+	uint8_t ui8MeasuringPWMMin;
+	uint8_t ui8MeasuringPWMMax;
+	uint8_t ui8UsePWM;
+	uint8_t ui8UsingPWM;
+	uint8_t ui8ReverseRotation;
+	uint8_t ui8Reversed;
+	uint8_t ui8Empty[3];
+	int16_t i16PWMMin;
+	int16_t i16PWMMax;
+	int16_t i16SetRPM;
+	int16_t i16Empty;
+}__attribute__((aligned(4),packed)) FLIGHT_MOTOR;
+
+typedef struct
+{
+	float32_t f32ServoZero;
+	float32_t f32ServoAngle;
+	uint16_t ui16RequestedPosition;
+	uint16_t ui16Empty;
+	uint8_t ui8ServoID;
+	uint8_t ui8Enable;
+	uint8_t ui8Enabled;
+	uint8_t ui8Empty1;
+}__attribute__((aligned(4),packed)) FLIGHT_SERVO;
+
+typedef struct
+{
 	uint32_t ui32FlightStateMachine;
 	uint32_t ui32FlightTransitionState;
 
@@ -110,67 +144,16 @@ typedef struct
 	struct
 	{
 		float32_t f32AllowedPositionDeviation;
-		float32_t f32ServoFLZero;
-		float32_t f32ServoFRZero;
-		float32_t f32ServoRZero;
-		float32_t f32ServoFRAngle;
-		float32_t f32ServoFLAngle;
-		float32_t f32ServoRAngle;
-		uint16_t ui16FRRequestedPosition;
-		uint16_t ui16FLRequestedPosition;
-		uint16_t ui16RRequestedPosition;
-		uint8_t ui8ServoFRID;
-		uint8_t ui8ServoFLID;
-		uint8_t ui8ServoRID;
-		uint8_t ui8Empty;
-		uint8_t ui8EnableFR;
-		uint8_t ui8EnableFL;
-		uint8_t ui8EnableR;
-		uint8_t ui8Empty1;
-		uint8_t ui8FREnabled;
-		uint8_t ui8FLEnabled;
-		uint8_t ui8REnabled;
-		uint8_t ui8Empty2;
+		FLIGHT_SERVO FR;
+		FLIGHT_SERVO FL;
+		FLIGHT_SERVO R;
 	}TILT_SERVOS;
 
 	struct
 	{
-		uint8_t ui8MotorFRID;
-		uint8_t ui8MotorFLID;
-		uint8_t ui8MotorRID;
-		uint8_t ui8Empty;
-		uint8_t ui8EnableFR;
-		uint8_t ui8EnableFL;
-		uint8_t ui8EnableR;
-		uint8_t ui8Empty1;
-		uint8_t ui8FREnabled;
-		uint8_t ui8FLEnabled;
-		uint8_t ui8REnabled;
-		uint8_t ui8Empty2;
-		uint8_t ui8FRPark;
-		uint8_t ui8FLPark;
-		uint8_t ui8RPark;
-		uint8_t ui8Empty3;
-		uint8_t ui8FRParked;
-		uint8_t ui8FLParked;
-		uint8_t ui8RParked;
-		uint8_t ui8Empty4;
-		uint8_t ui8FRMeasPWMLow;
-		uint8_t ui8FLMeasPWMLow;
-		uint8_t ui8RMeasPWMLow;
-		uint8_t ui8Empty5;
-		uint8_t ui8FRMeasPWMHigh;
-		uint8_t ui8FLMeasPWMHigh;
-		uint8_t ui8RMeasPWMHigh;
-		uint8_t ui8Empty6;
-		uint8_t ui8FRUsePWM;
-		uint8_t ui8FLUsePWM;
-		uint8_t ui8RUsePWM;
-		uint8_t ui8Empty7;
-		uint8_t ui8FRReverseRotation;
-		uint8_t ui8FLReverseRotation;
-		uint8_t ui8RReverseRotation;
-		uint8_t ui8Empty8;
+		FLIGHT_MOTOR FR;
+		FLIGHT_MOTOR FL;
+		FLIGHT_MOTOR R;
 	}MOTORS;
 
 	struct

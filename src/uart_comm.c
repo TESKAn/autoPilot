@@ -303,6 +303,26 @@ int32_t UART_RcvData(uint8_t data)
 				}
 				break;
 			}
+			case VAR_UI32TESTVAR:
+			{
+				if(UART2_RcvdBytes == 9)
+				{
+					// Check CRC
+					if(0 == UART_CRC)
+					{
+						// Store var
+						UART_Conversion.ch[0] = UART2_RecBuffer[4];
+						UART_Conversion.ch[1] = UART2_RecBuffer[5];
+						UART_Conversion.ch[2] = UART2_RecBuffer[6];
+						UART_Conversion.ch[3] = UART2_RecBuffer[7];
+						ui32TestVar = UART_Conversion.ui32[0];
+					}
+					UART2_RcvdBytes = 0;
+					UART2_RcvingVar = 0;
+					UART_CRC = 0xff;
+				}
+				break;
+			}
 			default:
 			{
 				UART2_RcvdBytes = 0;

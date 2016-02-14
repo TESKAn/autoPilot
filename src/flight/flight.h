@@ -31,9 +31,9 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 #define RC_NACELLE_HOVERTRANSITION_TILT	75.0f;
 // Define nacelle zeros
 #define NACELLE_MAX_TILT_DEVIATION		2.0f
-#define NACELLE_FR_ZERO					2048.0f
-#define NACELLE_FL_ZERO					2048.0f
-#define NACELLE_R_ZERO					2048.0f
+#define NACELLE_FR_ZERO					175.78f
+#define NACELLE_FL_ZERO					188.97f
+#define NACELLE_R_ZERO					175.78f
 
 // Macros that encode PWM inputs to specific channels
 #define RC_AILERON		PWMIN_2_Zero
@@ -93,18 +93,21 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 #define FLIGHT_STABILIZE_HOVER			2
 #define FLIGHT_STABILIZE_PLANE			3
 #define FLIGHT_STABILIZE_TRANSITION		4
+#define FLIGHT_DISARM					5
 
 // Flight init states
 #define FINIT_IDLE						0
-#define FINIT_MEAS_PWM_LOW				1
-#define FINIT_MEAS_PWM_HIGH				2
-#define FINIT_WAIT_STORQUE_ON			3
-#define FINIT_WAIT_SPOS_DOWN			4
-#define FINIT_WAIT_MOTOR_ON				5
-#define FINIT_WAIT_MOTOR_PARK			6
-#define FINIT_WAIT_SPOS_UP				7
-#define FINIT_WAIT_SPOS_LEVEL			8
-#define FINIT_WAIT_SPOS_VTOL			9
+#define FINIT_MEAS_PWM_MIN				1
+#define FINIT_WAIT_MEAS_PWMMIN			2
+#define FINIT_MEAS_PWM_MAX				3
+#define FINIT_WAIT_MEAS_PWMMAX			4
+#define FINIT_WAIT_STORQUE_ON			5
+#define FINIT_WAIT_SPOS_DOWN			6
+#define FINIT_WAIT_MOTOR_ON				7
+#define FINIT_WAIT_MOTOR_PARK			8
+#define FINIT_WAIT_SPOS_UP				9
+#define FINIT_WAIT_SPOS_LEVEL			10
+#define FINIT_WAIT_SPOS_VTOL			11
 
 // Tilt transition states
 #define FLIGHT_TILT_START				0

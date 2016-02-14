@@ -43,7 +43,7 @@ typedef struct tagRS485COMMAND
 			UInt16 ui16Data;
 		}VARS;
 	};
-}RS485COMMAND;
+}__attribute__((aligned(4),packed)) RS485COMMAND;
 
 // Hardware dependent macros
 #define RS485_ENABLE_RX						RS485_RXEN
@@ -135,7 +135,9 @@ typedef struct tagRS485SERVO
 {
 	UInt8 errStatus;
 	UInt8 ui8FreshData;
+	UInt8 ui8Empty1;
 	UInt16 ui16MoveToPos;
+	UInt16 ui16Empty1;
 	union
 	{
 		struct
@@ -187,7 +189,7 @@ typedef struct tagRS485SERVO
 		}REGS;
 	};
 
-}RS485SERVO;
+}__attribute__((aligned(4),packed)) RS485SERVO;
 
 // Structure that holds all relevant data for motor
 typedef struct tagRS485MOTOR
@@ -200,13 +202,14 @@ typedef struct tagRS485MOTOR
 		struct
 		{
 			// Some params
-			UInt16 ui16ModelNumber;		// 0
-			UInt8 ui8FirmwareVersion;	// 2
-			UInt8 ui8ID;				// 3
-			UInt8 ui8BaudRate;			// 4
-			UInt8 ui8Empty;				// 5
 			// Errors
-			UInt16 ui16Errors;			// 6
+			UInt16 ui16Errors;			// 0
+			UInt16 ui16ModelNumber;		// 2
+			UInt8 ui8FirmwareVersion;	// 4
+			UInt8 ui8ID;				// 5
+			UInt8 ui8BaudRate;			// 6
+			UInt8 ui8Empty;				// 7
+
 
 			// Motor state - idle, run, error
 			UInt16 ui16State;			// 8
@@ -217,8 +220,9 @@ typedef struct tagRS485MOTOR
 			Int16 i16PIn;				// 14
 			Int16 i16RPM;				// 16
 
+			Int16 i16Empty;
 			// Future expansion
-			UInt8 uiEmpty1[14];			// 32 bytes total
+			UInt8 uiEmpty1[12];			// 32 bytes total
 
 			// Motor control
 			// Arm
@@ -245,12 +249,12 @@ typedef struct tagRS485MOTOR
 			Int16 i16ZeroSpeedPWM;		// 52
 			Int16 i16CurrentPWM;		// 54	//55 bytes total
 
-			UInt8 uiEmpty4[9];					// 64 bytes total
+			UInt8 uiEmpty4[8];					// 64 bytes total
 
 		}REGS;
 	};
 
-}RS485MOTOR;
+}__attribute__((aligned(4),packed)) RS485MOTOR;
 
 typedef struct tagRS485RXDATA
 {
@@ -289,16 +293,17 @@ typedef struct tagRS485RXDATA
 			}CRCDATA;
 		};
 	}RXDATA;
-}RS485RXDATA;
+}__attribute__((aligned(4),packed)) RS485RXDATA;
 
 typedef struct tagRS485WAITINGUNIT
 {
 	UInt8 ui8ID;
 	UInt8 ui8Instruction;
+	UInt8 ui8Empty[2];
 	UInt16 ui16RegAddress;
 	UInt16 ui16ByteCount;
 
-}RS485WAITINGUNIT;
+}__attribute__((aligned(4),packed)) RS485WAITINGUNIT;
 
 // Defs for registers
 #define MOTORREG_SETRPM				38

@@ -726,7 +726,10 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			UART_QueueMessageui16(VAR_SERVO_R_TEMPERATURE, (UInt16)RS485Servo_R.REGS.ui8PresentTemperature);
 			// 5*7=35
 			// 689
+			UART_QueueMessageui32(VAR_UI32FLIGHTSTATEMACHINE, FCFlightData.ui32FlightStateMachine);
+			UART_QueueMessageui32(VAR_UI32FLIGHTINITSTATE, FCFlightData.ui32FlightInitState);
 
+			UART_QueueMessageui32(VAR_UI32TESTVAR, ui32TestVar);
 
 
 
@@ -810,12 +813,13 @@ void TIM1_CC_ISR_Handler(void)
 void USART1_ISR_Handler(void)
 {
 //	int iData = 0;
-	if ((USART1->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
+	while ((USART1->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
 	{
 		// Store data to buffer
 		//RB_push(&RB_USART1, (uint8_t) USART_ReceiveData(USART1));
 		RB_push(&RB_USART1, (uint8_t)(USART1->DR & (uint16_t)0x01FF));
 		//RS485_ReceiveMessage((uint8_t) USART_ReceiveData(USART1));
+		//RS485_ReceiveMessage((uint8_t)(USART1->DR & (uint16_t)0x01FF));
 	}
 
 	if((USART1->SR & USART_FLAG_TC) != (u16)RESET)	//if transfer complete

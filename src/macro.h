@@ -359,4 +359,8 @@
 #define VAR_SERVO_R_VOLTAGE             99
 #define VAR_SERVO_R_TEMPERATURE         100
 
+#define VAR_UI32FLIGHTSTATEMACHINE      101
+#define VAR_UI32FLIGHTINITSTATE         102
+#define VAR_UI32TESTVAR                 103
+
 #endif /* MACRO_H_ */

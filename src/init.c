@@ -1183,7 +1183,7 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	//set IRQ channel
 	NVCInitStructure.NVIC_IRQChannel = USART1_IRQn;
 	//set priority 0 - 15
-	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 14;
+	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 13;
 	//set priority 0 - 15
 	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
 	//enable IRQ channel
