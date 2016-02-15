@@ -9,6 +9,132 @@
 #include <stdlib.h>
 #include "sensors/altimeter.h"
 
+// Send data
+int16_t SendCommData()
+{
+	// From sensors
+	UART_QueueMessagef(VAR_GYRO_X, fusionData._gyro.vector.x);
+	UART_QueueMessagef(VAR_GYRO_Y, fusionData._gyro.vector.y);
+	UART_QueueMessagef(VAR_GYRO_Z, fusionData._gyro.vector.z);
+
+	UART_QueueMessagef(VAR_ACC_X, fusionData._accelerometer.vector.x);
+	UART_QueueMessagef(VAR_ACC_Y, fusionData._accelerometer.vector.y);
+	UART_QueueMessagef(VAR_ACC_Z, fusionData._accelerometer.vector.z);
+
+	UART_QueueMessagef(VAR_MAG_X, fusionData._mag.vector.x);
+	UART_QueueMessagef(VAR_MAG_Y, fusionData._mag.vector.y);
+	UART_QueueMessagef(VAR_MAG_Z, fusionData._mag.vector.z);
+
+	// DCM matrix
+	UART_QueueMessagef(VAR_DCM_AX, fusionData._fusion_DCM.a.x);
+	UART_QueueMessagef(VAR_DCM_AY, fusionData._fusion_DCM.a.y);
+	UART_QueueMessagef(VAR_DCM_AZ, fusionData._fusion_DCM.a.z);
+
+	UART_QueueMessagef(VAR_DCM_BX, fusionData._fusion_DCM.b.x);
+	UART_QueueMessagef(VAR_DCM_BY, fusionData._fusion_DCM.b.y);
+	UART_QueueMessagef(VAR_DCM_BZ, fusionData._fusion_DCM.b.z);
+
+	UART_QueueMessagef(VAR_DCM_CX, fusionData._fusion_DCM.c.x);
+	UART_QueueMessagef(VAR_DCM_CY, fusionData._fusion_DCM.c.y);
+	UART_QueueMessagef(VAR_DCM_CZ, fusionData._fusion_DCM.c.z);
+	// 6*3*6=162
+
+	// PWM inputs
+
+	UART_QueueMessageui16(VAR_PWMIN_1, RCData.PWMIN_1);
+	UART_QueueMessageui16(VAR_PWMIN_2, RCData.PWMIN_2);
+	UART_QueueMessageui16(VAR_PWMIN_3, RCData.PWMIN_3);
+	UART_QueueMessageui16(VAR_PWMIN_4, RCData.PWMIN_4);
+	UART_QueueMessageui16(VAR_PWMIN_5, RCData.PWMIN_5);
+	UART_QueueMessageui16(VAR_PWMIN_6, RCData.PWMIN_6);
+	UART_QueueMessageui16(VAR_PWMIN_7, RCData.PWMIN_7);
+	UART_QueueMessageui16(VAR_PWMIN_8, RCData.PWMIN_8);
+	// 8*7=56
+
+	UART_QueueMessagef(VAR_PWMIN_1_ZERO, RCData.PWMIN_1_Zero);
+	UART_QueueMessagef(VAR_PWMIN_2_ZERO, RCData.PWMIN_2_Zero);
+	UART_QueueMessagef(VAR_PWMIN_3_ZERO, RCData.PWMIN_3_Zero);
+	UART_QueueMessagef(VAR_PWMIN_4_ZERO, RCData.PWMIN_4_Zero);
+	UART_QueueMessagef(VAR_PWMIN_5_ZERO, RCData.PWMIN_5_Zero);
+	UART_QueueMessagef(VAR_PWMIN_6_ZERO, RCData.PWMIN_6_Zero);
+	UART_QueueMessagef(VAR_PWMIN_7_ZERO, RCData.PWMIN_7_Zero);
+	UART_QueueMessagef(VAR_PWMIN_8_ZERO, RCData.PWMIN_8_Zero);
+	// 8*9=72
+
+	UART_QueueMessageui16(VAR_PWMOUT_1, RCData.PWMOUT_1);
+	UART_QueueMessageui16(VAR_PWMOUT_2, RCData.PWMOUT_2);
+	UART_QueueMessageui16(VAR_PWMOUT_3, RCData.PWMOUT_3);
+	UART_QueueMessageui16(VAR_PWMOUT_4, RCData.PWMOUT_4);
+	UART_QueueMessageui16(VAR_PWMOUT_5, RCData.PWMOUT_5);
+	UART_QueueMessageui16(VAR_PWMOUT_6, RCData.PWMOUT_6);
+	UART_QueueMessageui16(VAR_PWMOUT_7, RCData.PWMOUT_7);
+	UART_QueueMessageui16(VAR_PWMOUT_8, RCData.PWMOUT_8);
+	UART_QueueMessageui16(VAR_PWMOUT_9, RCData.PWMOUT_9);
+	UART_QueueMessageui16(VAR_PWMOUT_10, RCData.PWMOUT_10);
+	UART_QueueMessageui16(VAR_PWMOUT_11, RCData.PWMOUT_11);
+	UART_QueueMessageui16(VAR_PWMOUT_12, RCData.PWMOUT_12);
+	// 12*7=84
+	// 374
+	UART_QueueMessageui16(VAR_MOTOR_FR_ARMED, (UInt16)RS485Motor_FR.REGS.ui8Armed);
+	UART_QueueMessageui16(VAR_MOTOR_FR_USEPWM, (UInt16)RS485Motor_FR.REGS.ui8UsePWMIN);
+	UART_QueueMessageui16(VAR_MOTOR_FR_REVERSE, (UInt16)RS485Motor_FR.REGS.ui8ReverseRotation);
+	UART_QueueMessageui16(VAR_MOTOR_FR_PARK, (UInt16)RS485Motor_FR.REGS.ui8Park);
+	UART_QueueMessagei16(VAR_MOTOR_FR_PARKPOS, RS485Motor_FR.REGS.i16ParkPosition);
+	UART_QueueMessagei16(VAR_MOTOR_FR_PWMMIN, RS485Motor_FR.REGS.i16PWMMin);
+	UART_QueueMessagei16(VAR_MOTOR_FR_PWMMAX, RS485Motor_FR.REGS.i16PWMMax);
+	UART_QueueMessagei16(VAR_MOTOR_FR_CURRENTPWM, RS485Motor_FR.REGS.i16CurrentPWM);
+	UART_QueueMessagei16(VAR_MOTOR_FR_SETRPM, RS485Motor_FR.REGS.i16SetRPM);
+	UART_QueueMessagei16(VAR_MOTOR_FR_CURRENTRPM, RS485Motor_FR.REGS.i16RPM);
+	// 10*7 = 70
+	UART_QueueMessageui16(VAR_MOTOR_FL_ARMED, (UInt16)RS485Motor_FL.REGS.ui8Armed);
+	UART_QueueMessageui16(VAR_MOTOR_FL_USEPWM, (UInt16)RS485Motor_FL.REGS.ui8UsePWMIN);
+	UART_QueueMessageui16(VAR_MOTOR_FL_REVERSE, (UInt16)RS485Motor_FL.REGS.ui8ReverseRotation);
+	UART_QueueMessageui16(VAR_MOTOR_FL_PARK, (UInt16)RS485Motor_FL.REGS.ui8Park);
+	UART_QueueMessagei16(VAR_MOTOR_FL_PARKPOS, RS485Motor_FL.REGS.i16ParkPosition);
+	UART_QueueMessagei16(VAR_MOTOR_FL_PWMMIN, RS485Motor_FL.REGS.i16PWMMin);
+	UART_QueueMessagei16(VAR_MOTOR_FL_PWMMAX, RS485Motor_FL.REGS.i16PWMMax);
+	UART_QueueMessagei16(VAR_MOTOR_FL_CURRENTPWM, RS485Motor_FL.REGS.i16CurrentPWM);
+	UART_QueueMessagei16(VAR_MOTOR_FL_SETRPM, RS485Motor_FL.REGS.i16SetRPM);
+	UART_QueueMessagei16(VAR_MOTOR_FL_CURRENTRPM, RS485Motor_FL.REGS.i16RPM);
+	// 10*7 = 70
+	UART_QueueMessageui16(VAR_MOTOR_R_ARMED, (UInt16)RS485Motor_R.REGS.ui8Armed);
+	UART_QueueMessageui16(VAR_MOTOR_R_USEPWM, (UInt16)RS485Motor_R.REGS.ui8UsePWMIN);
+	UART_QueueMessageui16(VAR_MOTOR_R_REVERSE, (UInt16)RS485Motor_R.REGS.ui8ReverseRotation);
+	UART_QueueMessageui16(VAR_MOTOR_R_PARK, (UInt16)RS485Motor_R.REGS.ui8Park);
+	UART_QueueMessagei16(VAR_MOTOR_R_PARKPOS, RS485Motor_R.REGS.i16ParkPosition);
+	UART_QueueMessagei16(VAR_MOTOR_R_PWMMIN, RS485Motor_R.REGS.i16PWMMin);
+	UART_QueueMessagei16(VAR_MOTOR_R_PWMMAX, RS485Motor_R.REGS.i16PWMMax);
+	UART_QueueMessagei16(VAR_MOTOR_R_CURRENTPWM, RS485Motor_R.REGS.i16CurrentPWM);
+	UART_QueueMessagei16(VAR_MOTOR_R_SETRPM, RS485Motor_R.REGS.i16SetRPM);
+	UART_QueueMessagei16(VAR_MOTOR_R_CURRENTRPM, RS485Motor_R.REGS.i16RPM);
+	// 10*7 = 70
+	// 584
+	UART_QueueMessageui16(VAR_SERVO_FR_TORQ_ON, (UInt16)RS485Servo_FR.REGS.ui8TorqueEnabled);
+	UART_QueueMessageui16(VAR_SERVO_FR_GOAL_POS, RS485Servo_FR.REGS.ui16GoalPosition);
+	UART_QueueMessageui16(VAR_SERVO_FR_POS, RS485Servo_FR.REGS.ui16PresentPosition);
+	UART_QueueMessageui16(VAR_SERVO_FR_VOLTAGE, (UInt16)RS485Servo_FR.REGS.ui8PresentVoltage);
+	UART_QueueMessageui16(VAR_SERVO_FR_TEMPERATURE, (UInt16)RS485Servo_FR.REGS.ui8PresentTemperature);
+	// 5*7=35
+	UART_QueueMessageui16(VAR_SERVO_FL_TORQ_ON, (UInt16)RS485Servo_FL.REGS.ui8TorqueEnabled);
+	UART_QueueMessageui16(VAR_SERVO_FL_GOAL_POS, RS485Servo_FL.REGS.ui16GoalPosition);
+	UART_QueueMessageui16(VAR_SERVO_FL_POS, RS485Servo_FL.REGS.ui16PresentPosition);
+	UART_QueueMessageui16(VAR_SERVO_FL_VOLTAGE, (UInt16)RS485Servo_FL.REGS.ui8PresentVoltage);
+	UART_QueueMessageui16(VAR_SERVO_FL_TEMPERATURE, (UInt16)RS485Servo_FL.REGS.ui8PresentTemperature);
+	// 5*7=35
+	UART_QueueMessageui16(VAR_SERVO_R_TORQ_ON, (UInt16)RS485Servo_R.REGS.ui8TorqueEnabled);
+	UART_QueueMessageui16(VAR_SERVO_R_GOAL_POS, RS485Servo_R.REGS.ui16GoalPosition);
+	UART_QueueMessageui16(VAR_SERVO_R_POS, RS485Servo_R.REGS.ui16PresentPosition);
+	UART_QueueMessageui16(VAR_SERVO_R_VOLTAGE, (UInt16)RS485Servo_R.REGS.ui8PresentVoltage);
+	UART_QueueMessageui16(VAR_SERVO_R_TEMPERATURE, (UInt16)RS485Servo_R.REGS.ui8PresentTemperature);
+	// 5*7=35
+	// 689
+	UART_QueueMessageui32(VAR_UI32FLIGHTSTATEMACHINE, FCFlightData.ui32FlightStateMachine);
+	UART_QueueMessageui32(VAR_UI32FLIGHTINITSTATE, FCFlightData.ui32FlightInitState);
+
+	UART_QueueMessageui32(VAR_UI32TESTVAR, ui32TestVar);
+	return 0;
+}
+
 // Calibrate sensors
 void calibrateI2CSensors(void)
 {
@@ -71,7 +197,7 @@ int16_t CheckMotor(RS485MOTOR* motor)
 		{
 			if(0 == FMotorData->ui8MeasPWMMin)
 			{
-				RS485_WriteMotorMeasPWMMin(motor->REGS.ui8ID, 0);
+				RS485_WriteSlaveReg8(motor->REGS.ui8ID, MOTORREG_MEAS_MIN_PWM, 0);
 				motor->ui8FreshData = 0;
 			}
 		}
@@ -79,7 +205,7 @@ int16_t CheckMotor(RS485MOTOR* motor)
 		{
 			if(1 == FMotorData->ui8MeasPWMMin)
 			{
-				RS485_WriteMotorMeasPWMMin(motor->REGS.ui8ID, 1);
+				RS485_WriteSlaveReg8(motor->REGS.ui8ID, MOTORREG_MEAS_MIN_PWM, 1);
 				motor->ui8FreshData = 0;
 			}
 		}
@@ -87,7 +213,7 @@ int16_t CheckMotor(RS485MOTOR* motor)
 		{
 			if(0 == FMotorData->ui8MeasPWMMax)
 			{
-				RS485_WriteMotorMeasPWMMax(motor->REGS.ui8ID, 0);
+				RS485_WriteSlaveReg8(motor->REGS.ui8ID, MOTORREG_MEAS_MAX_PWM, 0);
 				motor->ui8FreshData = 0;
 			}
 		}
@@ -95,7 +221,7 @@ int16_t CheckMotor(RS485MOTOR* motor)
 		{
 			if(1 == FMotorData->ui8MeasPWMMax)
 			{
-				RS485_WriteMotorMeasPWMMax(motor->REGS.ui8ID, 1);
+				RS485_WriteSlaveReg8(motor->REGS.ui8ID, MOTORREG_MEAS_MAX_PWM, 1);
 				motor->ui8FreshData = 0;
 			}
 		}
@@ -111,7 +237,7 @@ int16_t CheckMotor(RS485MOTOR* motor)
 			// Check
 			if(0 == FMotorData->ui8Enable)
 			{
-				RS485_WriteMotorEnable(motor->REGS.ui8ID, 0);
+				RS485_WriteSlaveReg8(motor->REGS.ui8ID, MOTORREG_ARMED, 0);
 				motor->ui8FreshData = 0;
 			}
 		}
@@ -119,7 +245,7 @@ int16_t CheckMotor(RS485MOTOR* motor)
 		{
 			if(1 == FMotorData->ui8Enable)
 			{
-				RS485_WriteMotorEnable(motor->REGS.ui8ID, 1);
+				RS485_WriteSlaveReg8(motor->REGS.ui8ID, MOTORREG_ARMED, 1);
 				motor->ui8FreshData = 0;
 			}
 		}
@@ -135,7 +261,7 @@ int16_t CheckMotor(RS485MOTOR* motor)
 			// Check
 			if(0 == FMotorData->ui8Park)
 			{
-				RS485_WriteMotorPark(motor->REGS.ui8ID, 0);
+				RS485_WriteSlaveReg8(motor->REGS.ui8ID, MOTORREG_PARK, 0);
 				motor->ui8FreshData = 0;
 			}
 		}
@@ -143,7 +269,7 @@ int16_t CheckMotor(RS485MOTOR* motor)
 		{
 			if(1 == FMotorData->ui8Park)
 			{
-				RS485_WriteMotorPark(motor->REGS.ui8ID, 1);
+				RS485_WriteSlaveReg8(motor->REGS.ui8ID, MOTORREG_PARK, 1);
 				motor->ui8FreshData = 0;
 			}
 		}
@@ -159,7 +285,7 @@ int16_t CheckMotor(RS485MOTOR* motor)
 			// Check
 			if(0 == FMotorData->ui8UsePWM)
 			{
-				RS485_WriteMotorUsePWM(motor->REGS.ui8ID, 0);
+				RS485_WriteSlaveReg8(motor->REGS.ui8ID, MOTORREG_USE_PWMIN, 0);
 				motor->ui8FreshData = 0;
 			}
 		}
@@ -167,7 +293,7 @@ int16_t CheckMotor(RS485MOTOR* motor)
 		{
 			if(1 == FMotorData->ui8UsePWM)
 			{
-				RS485_WriteMotorUsePWM(motor->REGS.ui8ID, 1);
+				RS485_WriteSlaveReg8(motor->REGS.ui8ID, MOTORREG_USE_PWMIN, 1);
 				motor->ui8FreshData = 0;
 			}
 		}
@@ -183,7 +309,7 @@ int16_t CheckMotor(RS485MOTOR* motor)
 			// Check
 			if(0 == FMotorData->ui8ReverseRotation)
 			{
-				RS485_WriteMotorReverseRotation(motor->REGS.ui8ID, 0);
+				RS485_WriteSlaveReg8(motor->REGS.ui8ID, MOTORREG_REVERSE, 0);
 				motor->ui8FreshData = 0;
 			}
 		}
@@ -191,7 +317,7 @@ int16_t CheckMotor(RS485MOTOR* motor)
 		{
 			if(1 == FMotorData->ui8ReverseRotation)
 			{
-				RS485_WriteMotorReverseRotation(motor->REGS.ui8ID, 1);
+				RS485_WriteSlaveReg8(motor->REGS.ui8ID, MOTORREG_REVERSE, 1);
 				motor->ui8FreshData = 0;
 			}
 		}
@@ -207,7 +333,7 @@ int16_t CheckMotor(RS485MOTOR* motor)
 			// Check
 			if(FMotorData->i16SetRPM != motor->REGS.i16SetRPM)
 			{
-				RS485_WriteMotorSpeed(motor->REGS.ui8ID, FMotorData->i16SetRPM);
+				RS485_WriteSlaveReg16(motor->REGS.ui8ID, MOTORREG_SETRPM, FMotorData->i16SetRPM);
 				motor->ui8FreshData = 0;
 			}
 		}
@@ -221,7 +347,6 @@ int16_t CheckServo(RS485SERVO * servo)
 {
 	FLIGHT_SERVO* FServoData;
 	float32_t f32Temp = 0.0f;
-	float32_t f32Zero = 2048.0f;
 
 	// Get relevant data
 	if(servo->REGS.ui8ID == RS485Servo_FR.REGS.ui8ID)
@@ -261,7 +386,7 @@ int16_t CheckServo(RS485SERVO * servo)
 			// Check
 			if(0 == FServoData->ui8Enable)
 			{
-				RS485_WriteServoTorqueEnable(servo->REGS.ui8ID, 0);
+				RS485_WriteSlaveReg8(servo->REGS.ui8ID, SERVOREG_ENABLE_TORQUE, 0);
 				servo->ui8FreshData = 0;
 			}
 		}
@@ -269,7 +394,7 @@ int16_t CheckServo(RS485SERVO * servo)
 		{
 			if(1 == FServoData->ui8Enable)
 			{
-				RS485_WriteServoTorqueEnable(servo->REGS.ui8ID, 1);
+				RS485_WriteSlaveReg8(servo->REGS.ui8ID, SERVOREG_ENABLE_TORQUE, 1);
 				servo->ui8FreshData = 0;
 			}
 		}
@@ -283,7 +408,7 @@ int16_t CheckServo(RS485SERVO * servo)
 		if(FServoData->ui16RequestedPosition != servo->REGS.ui16GoalPosition)
 		{
 			// Set new position
-			RS485_WriteServoPosition(servo->REGS.ui8ID, FServoData->ui16RequestedPosition);
+			RS485_WriteSlaveReg16(servo->REGS.ui8ID, SERVOREG_POSITION, FServoData->ui16RequestedPosition);
 			servo->ui8FreshData = 0;
 		}
 	}

@@ -59,6 +59,7 @@ typedef struct tagRS485COMMAND
 #define RS485_TEST_RX_FULL					1//ioctl(SCI_0, SCI_GET_RX_FULL, NULL)
 
 // Define commands that we can queue
+/*
 #define RS485_POLL_SERVO					1
 #define RS485_POLL_MOTOR					2
 #define RS485_SERVO_TORQ_ON					3
@@ -85,6 +86,7 @@ typedef struct tagRS485COMMAND
 #define RS485_WRITE_MOTOR_PWM_ZERO_SPEED	24
 #define RS485_WRITE_MOTOR_USE_PWM			25
 #define RS485_WRITE_MOTOR_REVERSE_ROTATION	26
+*/
 
 // Commands macros
 #define RS485_COMMAND_NONE					0x00
@@ -313,7 +315,7 @@ typedef struct tagRS485WAITINGUNIT
 #define MOTORREG_PARKPOSITION		36
 #define MOTORREG_MIN_SPEED			42
 #define MOTORREG_MAX_SPEED			40
-#define MOTORREG_ENABLE_PWMIN		46
+#define MOTORREG_USE_PWMIN			46
 #define MOTORREG_MEAS_MIN_PWM		44
 #define MOTORREG_MEAS_MAX_PWM		45
 #define MOTORREG_ZERO_SPEED_PWM		52
@@ -340,16 +342,9 @@ typedef struct tagRS485WAITINGUNIT
 
 // Function declarations
 Int16 RS485_Timing();
-Int16 RS485_WriteServoPosition(UInt8 ID, UInt16 position);
-Int16 RS485_WriteServoTorqueEnable(UInt8 ID, UInt16 enable);
-Int16 RS485_WriteMotorEnable(UInt8 ID, UInt16 enable);
-Int16 RS485_WriteMotorPark(UInt8 ID, UInt16 enable);
-Int16 RS485_WriteMotorSpeed(UInt8 ID, UInt16 speed);
-Int16 RS485_WriteMotorMeasPWMMin(UInt8 ID, UInt16 enable);
-Int16 RS485_WriteMotorMeasPWMMax(UInt8 ID, UInt16 enable);
-Int16 RS485_WriteMotorZeroPWM(UInt8 ID, UInt16 value);
-Int16 RS485_WriteMotorUsePWM(UInt8 ID, UInt16 enable);
-Int16 RS485_WriteMotorReverseRotation(UInt8 ID, UInt16 enable);
+Int16 RS485_WriteSlaveReg16(UInt8 ID, UInt8 reg, UInt16 data);
+Int16 RS485_WriteSlaveReg8(UInt8 ID, UInt8 reg, UInt8 data);
+Int16 RS485_ReadSlave(UInt8 ID, UInt8 startReg, UInt8 count);
 Int16 RS485_MasterInitData(void);
 Int16 RS485_QueueCommand(RS485COMMAND cmdToExec);
 Int16 RS485_MasterState(int state);

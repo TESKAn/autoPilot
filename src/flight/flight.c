@@ -332,9 +332,9 @@ void flight_checkStates(FLIGHT_CORE *data, RCDATA * RCValues)
 							if(1 == data->TILT_SERVOS.FR.ui8Enabled)
 							{
 								// Set new position
-								data->f32NacelleTilt_FR = 90.0f;
-								data->f32NacelleTilt_FL = 90.0f;
-								data->f32NacelleTilt_R = 90.0f;
+								data->f32NacelleTilt_FR = 0.0f;
+								data->f32NacelleTilt_FL = 0.0f;
+								data->f32NacelleTilt_R = 0.0f;
 								// Wait
 								data->ui32FlightInitState = FINIT_WAIT_SPOS_DOWN;
 
@@ -345,19 +345,19 @@ void flight_checkStates(FLIGHT_CORE *data, RCDATA * RCValues)
 				}
 				case FINIT_WAIT_SPOS_DOWN:
 				{
-					if(88.0f < data->TILT_SERVOS.FR.f32ServoAngle)
+					if((-1.0f < data->TILT_SERVOS.FR.f32ServoAngle)||(1.0f > data->TILT_SERVOS.FR.f32ServoAngle))
 					{
-						if(88.0f < data->TILT_SERVOS.FR.f32ServoAngle)
+						if((-1.0f < data->TILT_SERVOS.FL.f32ServoAngle)||(1.0f > data->TILT_SERVOS.FL.f32ServoAngle))
 						{
-							if(88.0f < data->TILT_SERVOS.FR.f32ServoAngle)
+							if((-1.0f < data->TILT_SERVOS.R.f32ServoAngle)||(1.0f > data->TILT_SERVOS.R.f32ServoAngle))
 							{
 								// Motors ON
 
 
 								// Set new position
-								data->f32NacelleTilt_FR = 0.0f;
-								data->f32NacelleTilt_FL = 0.0f;
-								data->f32NacelleTilt_R = 0.0f;
+								data->f32NacelleTilt_FR = 90.0f;
+								data->f32NacelleTilt_FL = 90.0f;
+								data->f32NacelleTilt_R = 90.0f;
 								// Wait
 								data->ui32FlightInitState = FINIT_WAIT_MOTOR_ON;
 

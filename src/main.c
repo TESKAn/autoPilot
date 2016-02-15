@@ -148,6 +148,12 @@ int main(void)
     		UART_RcvData(RB_pop(&RB_USART2));
     	}
 
+    	if(COMM_SEND_DATA)
+    	{
+    		COMM_SEND_DATA = 0;
+    		SendCommData();
+    	}
+
     	// Main loop switch
     	switch(mainLoopState)
     	{

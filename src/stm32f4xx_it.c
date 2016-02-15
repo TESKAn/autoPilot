@@ -165,6 +165,7 @@ void SysTick_Handler(void)
   * @retval None
   * @services ADC
   */
+__attribute__ ((interrupt ("IRQ")))
 void ADC_IRQHandler(void)
 {
 	ADC_ISR_Handler();

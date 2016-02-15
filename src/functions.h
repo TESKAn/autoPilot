@@ -28,6 +28,7 @@ typedef struct
       int32_t size;
   }__attribute__((aligned(4),packed))  RING_BUFFER32;
 
+int16_t SendCommData();
 void calibrateI2CSensors(void);
 void Refresh485();
 int16_t CheckMotor(RS485MOTOR* motor);

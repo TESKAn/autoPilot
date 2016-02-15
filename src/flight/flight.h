@@ -25,7 +25,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 // Nacelle tilt speed in deg/iteration
 #define RC_DEFAULT_TILT_SPEED			0.1f;
 // Nacelle tilt in deg
-#define RC_DEFAULT_NACELLE_TILT			90.0f;
+#define RC_DEFAULT_NACELLE_TILT			0.0f;
 // Default transition tilt in deg
 #define RC_NACELLE_TRANSITION_TILT		45.0f;
 #define RC_NACELLE_HOVERTRANSITION_TILT	75.0f;

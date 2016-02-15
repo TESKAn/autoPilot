@@ -610,128 +610,8 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		{
 			LED_ToggleCount = 0;
 			// Send out data
-			// From sensors
-			UART_QueueMessagef(VAR_GYRO_X, fusionData._gyro.vector.x);
-			UART_QueueMessagef(VAR_GYRO_Y, fusionData._gyro.vector.y);
-			UART_QueueMessagef(VAR_GYRO_Z, fusionData._gyro.vector.z);
 
-			UART_QueueMessagef(VAR_ACC_X, fusionData._accelerometer.vector.x);
-			UART_QueueMessagef(VAR_ACC_Y, fusionData._accelerometer.vector.y);
-			UART_QueueMessagef(VAR_ACC_Z, fusionData._accelerometer.vector.z);
-
-			UART_QueueMessagef(VAR_MAG_X, fusionData._mag.vector.x);
-			UART_QueueMessagef(VAR_MAG_Y, fusionData._mag.vector.y);
-			UART_QueueMessagef(VAR_MAG_Z, fusionData._mag.vector.z);
-
-			// DCM matrix
-			UART_QueueMessagef(VAR_DCM_AX, fusionData._fusion_DCM.a.x);
-			UART_QueueMessagef(VAR_DCM_AY, fusionData._fusion_DCM.a.y);
-			UART_QueueMessagef(VAR_DCM_AZ, fusionData._fusion_DCM.a.z);
-
-			UART_QueueMessagef(VAR_DCM_BX, fusionData._fusion_DCM.b.x);
-			UART_QueueMessagef(VAR_DCM_BY, fusionData._fusion_DCM.b.y);
-			UART_QueueMessagef(VAR_DCM_BZ, fusionData._fusion_DCM.b.z);
-
-			UART_QueueMessagef(VAR_DCM_CX, fusionData._fusion_DCM.c.x);
-			UART_QueueMessagef(VAR_DCM_CY, fusionData._fusion_DCM.c.y);
-			UART_QueueMessagef(VAR_DCM_CZ, fusionData._fusion_DCM.c.z);
-			// 6*3*6=162
-
-			// PWM inputs
-
-			UART_QueueMessageui16(VAR_PWMIN_1, RCData.PWMIN_1);
-			UART_QueueMessageui16(VAR_PWMIN_2, RCData.PWMIN_2);
-			UART_QueueMessageui16(VAR_PWMIN_3, RCData.PWMIN_3);
-			UART_QueueMessageui16(VAR_PWMIN_4, RCData.PWMIN_4);
-			UART_QueueMessageui16(VAR_PWMIN_5, RCData.PWMIN_5);
-			UART_QueueMessageui16(VAR_PWMIN_6, RCData.PWMIN_6);
-			UART_QueueMessageui16(VAR_PWMIN_7, RCData.PWMIN_7);
-			UART_QueueMessageui16(VAR_PWMIN_8, RCData.PWMIN_8);
-			// 8*7=56
-
-			UART_QueueMessagef(VAR_PWMIN_1_ZERO, RCData.PWMIN_1_Zero);
-			UART_QueueMessagef(VAR_PWMIN_2_ZERO, RCData.PWMIN_2_Zero);
-			UART_QueueMessagef(VAR_PWMIN_3_ZERO, RCData.PWMIN_3_Zero);
-			UART_QueueMessagef(VAR_PWMIN_4_ZERO, RCData.PWMIN_4_Zero);
-			UART_QueueMessagef(VAR_PWMIN_5_ZERO, RCData.PWMIN_5_Zero);
-			UART_QueueMessagef(VAR_PWMIN_6_ZERO, RCData.PWMIN_6_Zero);
-			UART_QueueMessagef(VAR_PWMIN_7_ZERO, RCData.PWMIN_7_Zero);
-			UART_QueueMessagef(VAR_PWMIN_8_ZERO, RCData.PWMIN_8_Zero);
-			// 8*9=72
-
-			UART_QueueMessageui16(VAR_PWMOUT_1, RCData.PWMOUT_1);
-			UART_QueueMessageui16(VAR_PWMOUT_2, RCData.PWMOUT_2);
-			UART_QueueMessageui16(VAR_PWMOUT_3, RCData.PWMOUT_3);
-			UART_QueueMessageui16(VAR_PWMOUT_4, RCData.PWMOUT_4);
-			UART_QueueMessageui16(VAR_PWMOUT_5, RCData.PWMOUT_5);
-			UART_QueueMessageui16(VAR_PWMOUT_6, RCData.PWMOUT_6);
-			UART_QueueMessageui16(VAR_PWMOUT_7, RCData.PWMOUT_7);
-			UART_QueueMessageui16(VAR_PWMOUT_8, RCData.PWMOUT_8);
-			UART_QueueMessageui16(VAR_PWMOUT_9, RCData.PWMOUT_9);
-			UART_QueueMessageui16(VAR_PWMOUT_10, RCData.PWMOUT_10);
-			UART_QueueMessageui16(VAR_PWMOUT_11, RCData.PWMOUT_11);
-			UART_QueueMessageui16(VAR_PWMOUT_12, RCData.PWMOUT_12);
-			// 12*7=84
-			// 374
-			UART_QueueMessageui16(VAR_MOTOR_FR_ARMED, (UInt16)RS485Motor_FR.REGS.ui8Armed);
-			UART_QueueMessageui16(VAR_MOTOR_FR_USEPWM, (UInt16)RS485Motor_FR.REGS.ui8UsePWMIN);
-			UART_QueueMessageui16(VAR_MOTOR_FR_REVERSE, (UInt16)RS485Motor_FR.REGS.ui8ReverseRotation);
-			UART_QueueMessageui16(VAR_MOTOR_FR_PARK, (UInt16)RS485Motor_FR.REGS.ui8Park);
-			UART_QueueMessagei16(VAR_MOTOR_FR_PARKPOS, RS485Motor_FR.REGS.i16ParkPosition);
-			UART_QueueMessagei16(VAR_MOTOR_FR_PWMMIN, RS485Motor_FR.REGS.i16PWMMin);
-			UART_QueueMessagei16(VAR_MOTOR_FR_PWMMAX, RS485Motor_FR.REGS.i16PWMMax);
-			UART_QueueMessagei16(VAR_MOTOR_FR_CURRENTPWM, RS485Motor_FR.REGS.i16CurrentPWM);
-			UART_QueueMessagei16(VAR_MOTOR_FR_SETRPM, RS485Motor_FR.REGS.i16SetRPM);
-			UART_QueueMessagei16(VAR_MOTOR_FR_CURRENTRPM, RS485Motor_FR.REGS.i16RPM);
-			// 10*7 = 70
-			UART_QueueMessageui16(VAR_MOTOR_FL_ARMED, (UInt16)RS485Motor_FL.REGS.ui8Armed);
-			UART_QueueMessageui16(VAR_MOTOR_FL_USEPWM, (UInt16)RS485Motor_FL.REGS.ui8UsePWMIN);
-			UART_QueueMessageui16(VAR_MOTOR_FL_REVERSE, (UInt16)RS485Motor_FL.REGS.ui8ReverseRotation);
-			UART_QueueMessageui16(VAR_MOTOR_FL_PARK, (UInt16)RS485Motor_FL.REGS.ui8Park);
-			UART_QueueMessagei16(VAR_MOTOR_FL_PARKPOS, RS485Motor_FL.REGS.i16ParkPosition);
-			UART_QueueMessagei16(VAR_MOTOR_FL_PWMMIN, RS485Motor_FL.REGS.i16PWMMin);
-			UART_QueueMessagei16(VAR_MOTOR_FL_PWMMAX, RS485Motor_FL.REGS.i16PWMMax);
-			UART_QueueMessagei16(VAR_MOTOR_FL_CURRENTPWM, RS485Motor_FL.REGS.i16CurrentPWM);
-			UART_QueueMessagei16(VAR_MOTOR_FL_SETRPM, RS485Motor_FL.REGS.i16SetRPM);
-			UART_QueueMessagei16(VAR_MOTOR_FL_CURRENTRPM, RS485Motor_FL.REGS.i16RPM);
-			// 10*7 = 70
-			UART_QueueMessageui16(VAR_MOTOR_R_ARMED, (UInt16)RS485Motor_R.REGS.ui8Armed);
-			UART_QueueMessageui16(VAR_MOTOR_R_USEPWM, (UInt16)RS485Motor_R.REGS.ui8UsePWMIN);
-			UART_QueueMessageui16(VAR_MOTOR_R_REVERSE, (UInt16)RS485Motor_R.REGS.ui8ReverseRotation);
-			UART_QueueMessageui16(VAR_MOTOR_R_PARK, (UInt16)RS485Motor_R.REGS.ui8Park);
-			UART_QueueMessagei16(VAR_MOTOR_R_PARKPOS, RS485Motor_R.REGS.i16ParkPosition);
-			UART_QueueMessagei16(VAR_MOTOR_R_PWMMIN, RS485Motor_R.REGS.i16PWMMin);
-			UART_QueueMessagei16(VAR_MOTOR_R_PWMMAX, RS485Motor_R.REGS.i16PWMMax);
-			UART_QueueMessagei16(VAR_MOTOR_R_CURRENTPWM, RS485Motor_R.REGS.i16CurrentPWM);
-			UART_QueueMessagei16(VAR_MOTOR_R_SETRPM, RS485Motor_R.REGS.i16SetRPM);
-			UART_QueueMessagei16(VAR_MOTOR_R_CURRENTRPM, RS485Motor_R.REGS.i16RPM);
-			// 10*7 = 70
-			// 584
-			UART_QueueMessageui16(VAR_SERVO_FR_TORQ_ON, (UInt16)RS485Servo_FR.REGS.ui8TorqueEnabled);
-			UART_QueueMessageui16(VAR_SERVO_FR_GOAL_POS, RS485Servo_FR.REGS.ui16GoalPosition);
-			UART_QueueMessageui16(VAR_SERVO_FR_POS, RS485Servo_FR.REGS.ui16PresentPosition);
-			UART_QueueMessageui16(VAR_SERVO_FR_VOLTAGE, (UInt16)RS485Servo_FR.REGS.ui8PresentVoltage);
-			UART_QueueMessageui16(VAR_SERVO_FR_TEMPERATURE, (UInt16)RS485Servo_FR.REGS.ui8PresentTemperature);
-			// 5*7=35
-			UART_QueueMessageui16(VAR_SERVO_FL_TORQ_ON, (UInt16)RS485Servo_FL.REGS.ui8TorqueEnabled);
-			UART_QueueMessageui16(VAR_SERVO_FL_GOAL_POS, RS485Servo_FL.REGS.ui16GoalPosition);
-			UART_QueueMessageui16(VAR_SERVO_FL_POS, RS485Servo_FL.REGS.ui16PresentPosition);
-			UART_QueueMessageui16(VAR_SERVO_FL_VOLTAGE, (UInt16)RS485Servo_FL.REGS.ui8PresentVoltage);
-			UART_QueueMessageui16(VAR_SERVO_FL_TEMPERATURE, (UInt16)RS485Servo_FL.REGS.ui8PresentTemperature);
-			// 5*7=35
-			UART_QueueMessageui16(VAR_SERVO_R_TORQ_ON, (UInt16)RS485Servo_R.REGS.ui8TorqueEnabled);
-			UART_QueueMessageui16(VAR_SERVO_R_GOAL_POS, RS485Servo_R.REGS.ui16GoalPosition);
-			UART_QueueMessageui16(VAR_SERVO_R_POS, RS485Servo_R.REGS.ui16PresentPosition);
-			UART_QueueMessageui16(VAR_SERVO_R_VOLTAGE, (UInt16)RS485Servo_R.REGS.ui8PresentVoltage);
-			UART_QueueMessageui16(VAR_SERVO_R_TEMPERATURE, (UInt16)RS485Servo_R.REGS.ui8PresentTemperature);
-			// 5*7=35
-			// 689
-			UART_QueueMessageui32(VAR_UI32FLIGHTSTATEMACHINE, FCFlightData.ui32FlightStateMachine);
-			UART_QueueMessageui32(VAR_UI32FLIGHTINITSTATE, FCFlightData.ui32FlightInitState);
-
-			UART_QueueMessageui32(VAR_UI32TESTVAR, ui32TestVar);
-
-
+			COMM_SEND_DATA = 1;
 
 			// Event every second
 
@@ -812,6 +692,7 @@ void TIM1_CC_ISR_Handler(void)
   */
 void USART1_ISR_Handler(void)
 {
+	uint16_t reg;
 //	int iData = 0;
 	while ((USART1->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
 	{
@@ -820,6 +701,16 @@ void USART1_ISR_Handler(void)
 		RB_push(&RB_USART1, (uint8_t)(USART1->DR & (uint16_t)0x01FF));
 		//RS485_ReceiveMessage((uint8_t) USART_ReceiveData(USART1));
 		//RS485_ReceiveMessage((uint8_t)(USART1->DR & (uint16_t)0x01FF));
+		USART_ClearFlag(USART1, USART_FLAG_RXNE);
+	}
+
+	if((USART1->SR & USART_FLAG_ORE) != (u16)RESET)	//if transfer complete
+	{
+		// Disable transfer complete interrupt
+		USART_ITConfig(USART1, USART_IT_ORE, DISABLE);
+		// Clear interrupt flag
+		reg = USART1->SR;
+		reg = USART1->DR;
 	}
 
 	if((USART1->SR & USART_FLAG_TC) != (u16)RESET)	//if transfer complete
@@ -831,6 +722,8 @@ void USART1_ISR_Handler(void)
 		// Clear interrupt flag
 		USART_ClearFlag(USART1, USART_FLAG_TC);
 	}
+
+
 }
 
 
