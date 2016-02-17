@@ -736,8 +736,6 @@ void USART2_ISR_Handler(void)
 {
 	if ((USART2->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
 	{
-    	// Check freemaster
-    	//FMSTR_Poll();
 		//RB_push(&RB_USART2, (uint8_t)(USART2->DR & (uint16_t)0x01FF));
 		//UART_RcvData((uint8_t)(USART2->DR & (uint16_t)0x01FF));
 	}

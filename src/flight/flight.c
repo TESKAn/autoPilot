@@ -912,7 +912,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 	RCValues->PWMOUT_9 = (uint16_t)RCValues->PWMOUT_Val_9;
 	RCValues->PWMOUT_10 = (uint16_t)RCValues->PWMOUT_Val_10;
 	RCValues->PWMOUT_11 = (uint16_t)RCValues->PWMOUT_Val_11;
-	RCValues->PWMOUT_12 = (uint16_t)RCValues->PWMOUT_Val_12;
+	//RCValues->PWMOUT_12 = (uint16_t)RCValues->PWMOUT_Val_12;
 	//***********************************
 }
 

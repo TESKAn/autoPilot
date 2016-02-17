@@ -782,7 +782,8 @@ void init_USART2()
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2 | RCC_APB1Periph_USART3, ENABLE); //for USART2, USART3, UART4 or UART5.
 	//program port parameters
 	//set baud rate
-	USART_InitStructure.USART_BaudRate = 115200;//38400;
+	//USART_InitStructure.USART_BaudRate = 38400;
+	USART_InitStructure.USART_BaudRate = 115200;;
 	//flow control
 	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
 	//enable receiver and transmitter
@@ -798,9 +799,9 @@ void init_USART2()
 
 	//enable interrupt - RX not empty, transfer complete
 	//USART_ITConfig(USART2, USART_IT_RXNE | USART_IT_TC, ENABLE);
-//#ifndef USE_FREEMASTER
-	//USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
-//#endif
+#ifndef USE_FREEMASTER
+	USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
+#endif
 	//enable module 2
 	USART_Cmd(USART2, ENABLE);
 }
