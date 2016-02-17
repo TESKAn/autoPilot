@@ -20,6 +20,8 @@
 #include "arm_math.h"
 #include "math.h"
 
+#include "freemaster.h"
+
 #include "RS485/RS485comm.h"
 
 #include "uart_comm.h"

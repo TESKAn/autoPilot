@@ -350,7 +350,9 @@ void UART_Timeout()
 
 int32_t UART_SendBuffer()
 {
+#ifndef USE_FREEMASTER
 	int bytes = 0;
+
 	// If UART2 is not active
 	if(!UART2_Transferring)
 	{
@@ -366,6 +368,7 @@ int32_t UART_SendBuffer()
 		}
 		return -1;
 	}
+#endif
 	return -1;
 
 }

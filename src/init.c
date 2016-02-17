@@ -798,8 +798,9 @@ void init_USART2()
 
 	//enable interrupt - RX not empty, transfer complete
 	//USART_ITConfig(USART2, USART_IT_RXNE | USART_IT_TC, ENABLE);
-	USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
-
+//#ifndef USE_FREEMASTER
+	//USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
+//#endif
 	//enable module 2
 	USART_Cmd(USART2, ENABLE);
 }
@@ -1396,6 +1397,9 @@ void System_Config(void)
 	init_DMA();
 	// Enable interrupts - don't forget to enable specific interrupts
 	NVIC_EnableInterrupts(ENABLE);
+
+	// Disable USART2 interrupt
+
 	// Init ADC0 as GPIO with pull - down
 	init_swin();
 }

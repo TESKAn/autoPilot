@@ -62,6 +62,8 @@ int main(void)
 	unsigned int bytesWritten;
 	//float32_t temp = 0;
 
+	FMSTR_Init();
+
 	// Init sensor data structures
 	fusion_init(&fusionData, getSystemTime());
 
@@ -134,9 +136,14 @@ int main(void)
 	// Start servo poll
 	RS485_MasterState(1);
 
+
 	// Mount SD card
     while (1)
     {
+
+    	// Check freemaster
+    	FMSTR_Poll();
+
     	// Process RS485
     	if(0 != RB_USART1.count)
     	{
@@ -147,12 +154,13 @@ int main(void)
     	{
     		UART_RcvData(RB_pop(&RB_USART2));
     	}
-
+#ifndef USE_FREEMASTER
     	if(COMM_SEND_DATA)
     	{
     		COMM_SEND_DATA = 0;
     		SendCommData();
     	}
+#endif
 
     	// Main loop switch
     	switch(mainLoopState)

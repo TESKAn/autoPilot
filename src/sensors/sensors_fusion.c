@@ -60,35 +60,19 @@ ErrorStatus fusion_init(FUSION_CORE *coreData, uint32_t time)
 
 	// Init PIDs
 	// Gyro drift
-	math_PIDInit(&coreData->_gyroErrorPID.x, GYRO_PID_DRIFT_KP, GYRO_PID_DRIFT_KI, GYRO_PID_DRIFT_KD);
-	math_PIDInit(&coreData->_gyroErrorPID.y, GYRO_PID_DRIFT_KP, GYRO_PID_DRIFT_KI, GYRO_PID_DRIFT_KD);
-	math_PIDInit(&coreData->_gyroErrorPID.z, GYRO_PID_DRIFT_KP, GYRO_PID_DRIFT_KI, GYRO_PID_DRIFT_KD);
+	math_PIDInit(&coreData->_gyroErrorPID.x, GYRO_PID_DRIFT_KP, GYRO_PID_DRIFT_KI, GYRO_PID_DRIFT_KD, GYRO_PID_DRIFT_SMIN, GYRO_PID_DRIFT_SMAX);
+	math_PIDInit(&coreData->_gyroErrorPID.y, GYRO_PID_DRIFT_KP, GYRO_PID_DRIFT_KI, GYRO_PID_DRIFT_KD, GYRO_PID_DRIFT_SMIN, GYRO_PID_DRIFT_SMAX);
+	math_PIDInit(&coreData->_gyroErrorPID.z, GYRO_PID_DRIFT_KP, GYRO_PID_DRIFT_KI, GYRO_PID_DRIFT_KD, GYRO_PID_DRIFT_SMIN, GYRO_PID_DRIFT_SMAX);
 
-
-	coreData->_gyroErrorPID.x.outMax = GYRO_PID_DRIFT_SMAX;
-	coreData->_gyroErrorPID.x.outMin = GYRO_PID_DRIFT_SMIN;
-
-	coreData->_gyroErrorPID.y.outMax = GYRO_PID_DRIFT_SMAX;
-	coreData->_gyroErrorPID.y.outMin = GYRO_PID_DRIFT_SMIN;
-
-	coreData->_gyroErrorPID.z.outMax = GYRO_PID_DRIFT_SMAX;
-	coreData->_gyroErrorPID.z.outMin = GYRO_PID_DRIFT_SMIN;
 
 
 
 	// Gyro gain
-	math_PIDInit(&coreData->_gyroGainPID.x, GYRO_PID_GAIN_KP, GYRO_PID_GAIN_KI, GYRO_PID_GAIN_KD);
-	math_PIDInit(&coreData->_gyroGainPID.y, GYRO_PID_GAIN_KP, GYRO_PID_GAIN_KI, GYRO_PID_GAIN_KD);
-	math_PIDInit(&coreData->_gyroGainPID.z, GYRO_PID_GAIN_KP, GYRO_PID_GAIN_KI, GYRO_PID_GAIN_KD);
+	math_PIDInit(&coreData->_gyroGainPID.x, GYRO_PID_GAIN_KP, GYRO_PID_GAIN_KI, GYRO_PID_GAIN_KD, GYRO_PID_GAIN_SMIN, GYRO_PID_GAIN_SMAX);
+	math_PIDInit(&coreData->_gyroGainPID.y, GYRO_PID_GAIN_KP, GYRO_PID_GAIN_KI, GYRO_PID_GAIN_KD, GYRO_PID_GAIN_SMIN, GYRO_PID_GAIN_SMAX);
+	math_PIDInit(&coreData->_gyroGainPID.z, GYRO_PID_GAIN_KP, GYRO_PID_GAIN_KI, GYRO_PID_GAIN_KD, GYRO_PID_GAIN_SMIN, GYRO_PID_GAIN_SMAX);
 
-	coreData->_gyroGainPID.x.outMax = GYRO_PID_GAIN_SMAX;
-	coreData->_gyroGainPID.x.outMin = GYRO_PID_GAIN_SMIN;
 
-	coreData->_gyroGainPID.y.outMax = GYRO_PID_GAIN_SMAX;
-	coreData->_gyroGainPID.y.outMin = GYRO_PID_GAIN_SMIN;
-
-	coreData->_gyroGainPID.z.outMax = GYRO_PID_GAIN_SMAX;
-	coreData->_gyroGainPID.z.outMin = GYRO_PID_GAIN_SMIN;
 
 	// Create identity matrix
 	matrix3_init(1, &coreData->_fusion_DCM);

@@ -14,6 +14,8 @@
 // Define send debug messages over USB
 #define DEBUG_USB
 
+#define USE_FREEMASTER
+
 // APStatus flags macros
 #define LOG_ISOPEN	APStatus1.bits.BIT0
 

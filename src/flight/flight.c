@@ -32,6 +32,12 @@ void flight_init(FLIGHT_CORE *data, RCDATA * RCInputs)
 
 	data->ui32FlightInitState = FINIT_IDLE;
 
+	// Init PIDs
+	math_PIDInit(&data->PIDPitch, 0.1f, 0.1f, 0.0f, -1.0f, 1.0f);
+	math_PIDInit(&data->PIDRoll, 0.1f, 0.1f, 0.0f, -1.0f, 1.0f);
+	math_PIDInit(&data->PIDYaw, 0.1f, 0.1f, 0.0f, -1.0f, 1.0f);
+	math_PIDInit(&data->PIDAltitude, 0.1f, 0.1f, 0.0f, -1.0f, 1.0f);
+
 	data->f32MinPlaneSpeed = RC_DEFAULT_PLANE_MIN_SPEED;
 	data->f32MaxHoverSpeed = RC_DEFAULT_HOVER_MAX_SPEED;
 	data->f32NacelleTiltSpeed = RC_DEFAULT_TILT_SPEED;

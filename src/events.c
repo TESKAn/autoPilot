@@ -703,7 +703,7 @@ void USART1_ISR_Handler(void)
 		//RS485_ReceiveMessage((uint8_t)(USART1->DR & (uint16_t)0x01FF));
 		USART_ClearFlag(USART1, USART_FLAG_RXNE);
 	}
-
+	// RXNE enabled can trigger ORE interrupt
 	if((USART1->SR & USART_FLAG_ORE) != (u16)RESET)	//if transfer complete
 	{
 		// Disable transfer complete interrupt
@@ -736,7 +736,9 @@ void USART2_ISR_Handler(void)
 {
 	if ((USART2->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
 	{
-		RB_push(&RB_USART2, (uint8_t)(USART2->DR & (uint16_t)0x01FF));
+    	// Check freemaster
+    	//FMSTR_Poll();
+		//RB_push(&RB_USART2, (uint8_t)(USART2->DR & (uint16_t)0x01FF));
 		//UART_RcvData((uint8_t)(USART2->DR & (uint16_t)0x01FF));
 	}
 

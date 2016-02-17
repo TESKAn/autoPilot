@@ -15,7 +15,7 @@
 
 myMath_PID3 _gyroErrorPID;
 
-ErrorStatus math_PIDInit(myMath_PID* PID, float32_t kp, float32_t ki, float32_t kd)
+ErrorStatus math_PIDInit(myMath_PID* PID, float32_t kp, float32_t ki, float32_t kd, float32_t outMin, float32_t outMax)
 {
 	math_PIDReset(PID);
 	PID->Kp = kp;
@@ -24,17 +24,17 @@ ErrorStatus math_PIDInit(myMath_PID* PID, float32_t kp, float32_t ki, float32_t 
 
 	PID->limit = 0;
 
-	PID->outMax = 100;
-	PID->outMin = -100;
+	PID->outMax = outMax;
+	PID->outMin = outMin;
 
 	return SUCCESS;
 }
 
-ErrorStatus math_PID3Init(myMath_PID3* PID, float32_t kp, float32_t ki, float32_t kd)
+ErrorStatus math_PID3Init(myMath_PID3* PID, float32_t kp, float32_t ki, float32_t kd, float32_t outMin, float32_t outMax)
 {
-	math_PIDInit(&PID->x, kp, ki, kd);
-	math_PIDInit(&PID->y, kp, ki, kd);
-	math_PIDInit(&PID->z, kp, ki, kd);
+	math_PIDInit(&PID->x, kp, ki, kd, outMin, outMax);
+	math_PIDInit(&PID->y, kp, ki, kd, outMin, outMax);
+	math_PIDInit(&PID->z, kp, ki, kd, outMin, outMax);
 	return SUCCESS;
 }
 
