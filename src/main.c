@@ -61,8 +61,9 @@ int main(void)
 {
 	unsigned int bytesWritten;
 	//float32_t temp = 0;
-
+#ifdef USE_FREEMASTER
 	FMSTR_Init();
+#endif
 
 	// Init sensor data structures
 	fusion_init(&fusionData, getSystemTime());
@@ -141,25 +142,28 @@ int main(void)
     while (1)
     {
 
-    	// Check freemaster
-    	FMSTR_Poll();
+
 
     	// Process RS485
     	if(0 != RB_USART1.count)
     	{
     		RS485_ReceiveMessage(RB_pop(&RB_USART1));
     	}
+
+#ifndef USE_FREEMASTER
     	// Process serial comm
     	if(0 != RB_USART2.count)
     	{
     		UART_RcvData(RB_pop(&RB_USART2));
     	}
-#ifndef USE_FREEMASTER
     	if(COMM_SEND_DATA)
     	{
     		COMM_SEND_DATA = 0;
     		SendCommData();
     	}
+#else
+    	// Check freemaster
+    	FMSTR_Poll();
 #endif
 
     	// Main loop switch

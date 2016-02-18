@@ -122,6 +122,8 @@ typedef struct
 		float32_t f32Pitch;
 		float32_t f32Yaw;
 		float32_t f32Power;
+		float32_t f32Altitude;
+		float32_t f32Speed;
 	}ORIENTATION_REQUIRED_P;
 	// Required orientation - hover
 	struct
@@ -178,9 +180,6 @@ typedef struct
 	float32_t f32NacelleTilt_R;
 	// Engine nacelles tilt angle change for each iteration
 	float32_t f32NacelleTiltSpeed;
-
-
-
 }__attribute__((aligned(4),packed)) FLIGHT_CORE;
 
 // Structure that holds R/C signals

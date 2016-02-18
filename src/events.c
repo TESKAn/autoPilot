@@ -512,9 +512,10 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 
 		// Update system time
 		systemTime++;
+#ifndef USE_FREEMASTER
 		// UART2 timeout
 		UART_Timeout();
-
+#endif
 		// RS485 timing
 		RS485_Timing();
 
@@ -589,7 +590,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		{
 			ui32FlightCheckCounter = 0;
 			// Run flight check algorithms
-			flight_checkRCInputs(&RCData, &FCFlightData);
+			flight_checkRCInputs(&FCFlightData, &RCData);
 			// Check flight states
 			flight_checkStates(&FCFlightData, &RCData);
 			// Get new servo values
@@ -603,16 +604,15 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		// Call RS485 states
 		RS485_States_Master();
 
-
 		// LED counter
 		LED_ToggleCount++;
 		if(LED_ToggleCount >= 100)
 		{
 			LED_ToggleCount = 0;
 			// Send out data
-
+#ifndef USE_FREEMASTER
 			COMM_SEND_DATA = 1;
-
+#endif
 			// Event every second
 
 			// Write log
@@ -734,12 +734,13 @@ void USART1_ISR_Handler(void)
   */
 void USART2_ISR_Handler(void)
 {
+#ifndef USE_FREEMASTER
 	if ((USART2->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
 	{
-		//RB_push(&RB_USART2, (uint8_t)(USART2->DR & (uint16_t)0x01FF));
+
+		RB_push(&RB_USART2, (uint8_t)(USART2->DR & (uint16_t)0x01FF));
 		//UART_RcvData((uint8_t)(USART2->DR & (uint16_t)0x01FF));
 	}
-
 	if((USART2->SR & USART_FLAG_TC) != (u16)RESET)	//if transfer complete
 	{
 		// Clear TC
@@ -751,6 +752,7 @@ void USART2_ISR_Handler(void)
 		// Check to send data
 		UART_SendBuffer();
 	}
+#endif
 }
 
 /**

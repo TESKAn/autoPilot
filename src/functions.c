@@ -483,6 +483,10 @@ void storeAHRSAngles(FUSION_CORE *data)
 	fusionData.ROLLPITCHYAW.pitch = -asinf(data->_fusion_DCM.c.x);
 
 	fusionData.ROLLPITCHYAW.yaw = atan2f( data->_fusion_DCM.b.x, data->_fusion_DCM.a.x);
+
+	FCFlightData.ORIENTATION.f32Roll = fusionData.ROLLPITCHYAW.roll;
+	FCFlightData.ORIENTATION.f32Pitch = fusionData.ROLLPITCHYAW.pitch;
+	FCFlightData.ORIENTATION.f32Yaw = fusionData.ROLLPITCHYAW.yaw;
 }
 
 void openLog(void)

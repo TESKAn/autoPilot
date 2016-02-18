@@ -12,9 +12,9 @@
 #include "math/myMath_typedefs.h"
 
 // Functions
-void flight_init(FLIGHT_CORE *data, RCDATA * RCInputs);
-void flight_checkRCInputs(RCDATA * RCInputs, FLIGHT_CORE * FCFlightData);
-void flight_checkStates(FLIGHT_CORE *data, RCDATA * RCValues);
+void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCInputs);
+void flight_checkRCInputs(FLIGHT_CORE * FCFlightData, RCDATA * RCInputs);
+void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues);
 void flight_stabilizeHover(FLIGHT_CORE * FCFlightData);
 void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 
