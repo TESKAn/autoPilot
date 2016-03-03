@@ -114,75 +114,28 @@ ErrorStatus acc_updateSpeedCalculation(FUSION_CORE *coreData, uint32_t dataTime)
 {
 	Vectorf temporaryVector = vectorf_init(0);
 
-	float32_t result[3];
+	float32_t f32Temp;
+	float32_t f32Temp1;
 	int32_t fracCalc = 0;
 	// We have current accelerometer data, calculate speed in earth coordinates
-
-	// Transfer acceleration data to earth frame of reference
-
-	matrix3_vectorMultiply(&coreData->_fusion_DCM, &coreData->_accelerometer.vector, &temporaryVector);
-	// Next remove gravity from measurement
-	//**********************************************************
-	// !!!Check what to do with Z value to get correct result!!!
-	//**********************************************************
-	temporaryVector.z = temporaryVector.z - 1;
-	// Integrate x, y, z acceleration over time to get speed change
-	/*
-	temporaryVector.x = coreData->_accelerometer.deltaTime * temporaryVector.x;
-	temporaryVector.y = coreData->_accelerometer.deltaTime * temporaryVector.y;
-	temporaryVector.z = coreData->_accelerometer.deltaTime * temporaryVector.z;
-	*/
-	vectorf_scalarProduct(&temporaryVector, coreData->_accelerometer.deltaTime, &temporaryVector);
-	// First, add speed to fractional accumulator
-	vectorf_add(&temporaryVector, &coreData->_accelerometer.Speed_3D_Frac, &coreData->_accelerometer.Speed_3D_Frac);
-	// If speed values are over 0,001 m/s, add to main speed variable
-	// This is to be able to detect and use accelerations smaller than 0,1 m/s2
-	if(coreData->_accelerometer.Speed_3D_Frac.x > 0.001f)
-	{
-		result[0] = coreData->_accelerometer.Speed_3D_Frac.x * 1000;
-		fracCalc = (int32_t) result[0];
-		result[0] = (float32_t)fracCalc;
-		result[0] = result[0] / 1000;
-		coreData->_accelerometer.Speed_3D.x += result[0];
-		coreData->_accelerometer.Speed_3D_Frac.x -= result[0];
-	}
-
-	if(coreData->_accelerometer.Speed_3D_Frac.y > 0.001f)
-	{
-		result[0] = coreData->_accelerometer.Speed_3D_Frac.y * 1000;
-		fracCalc = (int32_t) result[0];
-		result[0] = (float32_t)fracCalc;
-		result[0] = result[0] / 1000;
-		coreData->_accelerometer.Speed_3D.y += result[0];
-		coreData->_accelerometer.Speed_3D_Frac.y -= result[0];
-	}
-
-	if(coreData->_accelerometer.Speed_3D_Frac.z > 0.001f)
-	{
-		result[0] = coreData->_accelerometer.Speed_3D_Frac.z * 1000;
-		fracCalc = (int32_t) result[0];
-		result[0] = (float32_t)fracCalc;
-		result[0] = result[0] / 1000;
-		coreData->_accelerometer.Speed_3D.z += result[0];
-		coreData->_accelerometer.Speed_3D_Frac.z -= result[0];
-	}
-
-
-
-
 
 	// Update speed integration
 	// Transform accelerometer data to earth frame
 	matrix3_vectorMultiply(&coreData->_fusion_DCM, &coreData->_accelerometer.vector, &temporaryVector);
+	// Remove gravity - check sign
+	temporaryVector.z += 1.0f;
 	// Calculate 3D speed gained, acceleration * time
-	// Do not worry about gravity acceleration, we remove that in GPS error update
-	vectorf_scalarProduct(&temporaryVector, coreData->_accelerometer.deltaTime, &temporaryVector);
+	// Calculate time
+	f32Temp = (float32_t)coreData->_accelerometer.deltaTime * 0.00001f;
+	// Accelerometer data is normalized to 9,81 m/s2
+	// Mul by gravity acceleration
+	f32Temp1 = f32Temp * 9.81f;
+	// Calculate speed change in dt
+	vectorf_scalarProduct(&temporaryVector, f32Temp1, &temporaryVector);
 	// Integrate speed and time
 	vectorf_add(&temporaryVector, &coreData->_accelerometer.Speed_3D, &coreData->_accelerometer.Speed_3D);
 	// Time integration can have problems after 2,77 hours because of 32 bit float representation
-	coreData->_accelerometer.speed_3D_dt = coreData->_accelerometer.speed_3D_dt + (float32_t)coreData->_accelerometer.deltaTime;
-
-
+	coreData->_accelerometer.speed_3D_dt = coreData->_accelerometer.speed_3D_dt + f32Temp;
 	return SUCCESS;
 }
 

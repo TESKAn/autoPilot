@@ -79,6 +79,11 @@ ErrorStatus math_PID(float32_t error, float32_t dt, myMath_PID * data)
 		// Add error * dt to integral
 		data->im = data->im + (error * dt);
 	}
+	else
+	{
+		// Else limit I sum as out max / Ki
+		data->im = data->outMax / data->Ki;
+	}
 	// Calculate I as im*Ki
 	data->i = data->im * data->Ki;
 
@@ -89,9 +94,9 @@ ErrorStatus math_PID(float32_t error, float32_t dt, myMath_PID * data)
 	// Check that dt is not 0
 	if(dt != 0)
 	{
-		data->ed = data->ed / dt;
-		// Then d
-		data->d = data->ed * data->Kd;
+		// Then dt
+		data->ed = data->ed * data->Kd;
+		data->d = data->ed / dt;
 	}
 	else
 	{

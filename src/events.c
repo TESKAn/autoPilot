@@ -169,11 +169,11 @@ void TIM4_ISR_Handler(void)
 		{
 			// Else transition from high to low
 			TIM4_IC1_HighWidth = result;
-			RCData.PWMIN_1 = (uint16_t)TIM4_IC1_HighWidth;
+			RCData.ch[0].PWMIN = (uint16_t)TIM4_IC1_HighWidth;
 			if(PWM_PASSTHROUGH)
 			{
-				TIM_SetCompare4(TIM1, RCData.PWMIN_1);
-				RCData.PWMOUT_1 = RCData.PWMIN_1;
+				TIM_SetCompare4(TIM1, RCData.ch[0].PWMIN);
+				RCData.ch[0].PWMOUT = RCData.ch[0].PWMIN;
 			}
 		}
 		TIM4_IC1_PreviousValue = dataTemp;
@@ -205,11 +205,11 @@ void TIM4_ISR_Handler(void)
 		{
 			// Else transition from high to low
 			TIM4_IC2_HighWidth = result;
-			RCData.PWMIN_2 = (uint16_t)TIM4_IC2_HighWidth;
+			RCData.ch[1].PWMIN = (uint16_t)TIM4_IC2_HighWidth;
 			if(PWM_PASSTHROUGH)
 			{
-				TIM_SetCompare3(TIM1, RCData.PWMIN_2);
-				RCData.PWMOUT_2 = RCData.PWMIN_2;
+				TIM_SetCompare3(TIM1, RCData.ch[1].PWMIN);
+				RCData.ch[1].PWMOUT = RCData.ch[1].PWMIN;
 			}
 		}
 		TIM4_IC2_PreviousValue = dataTemp;
@@ -241,11 +241,11 @@ void TIM4_ISR_Handler(void)
 		{
 			// Else transition from high to low
 			TIM4_IC3_HighWidth = result;
-			RCData.PWMIN_3 = (uint16_t)TIM4_IC3_HighWidth;
+			RCData.ch[2].PWMIN = (uint16_t)TIM4_IC3_HighWidth;
 			if(PWM_PASSTHROUGH)
 			{
-				TIM_SetCompare2(TIM1, RCData.PWMIN_3);
-				RCData.PWMOUT_3 = RCData.PWMIN_3;
+				TIM_SetCompare2(TIM1, RCData.ch[2].PWMIN);
+				RCData.ch[2].PWMOUT = RCData.ch[2].PWMIN;
 			}
 		}
 		TIM4_IC3_PreviousValue = dataTemp;
@@ -277,11 +277,11 @@ void TIM4_ISR_Handler(void)
 		{
 			// Else transition from high to low
 			TIM4_IC4_HighWidth = result;
-			RCData.PWMIN_4 = (uint16_t)TIM4_IC4_HighWidth;
+			RCData.ch[3].PWMIN = (uint16_t)TIM4_IC4_HighWidth;
 			if(PWM_PASSTHROUGH)
 			{
-				TIM_SetCompare1(TIM1, RCData.PWMIN_4);
-				RCData.PWMOUT_4 = RCData.PWMIN_4;
+				TIM_SetCompare1(TIM1, RCData.ch[3].PWMIN);
+				RCData.ch[3].PWMOUT = RCData.ch[3].PWMIN;
 			}
 		}
 		TIM4_IC4_PreviousValue = dataTemp;
@@ -318,11 +318,11 @@ void TIM8_CC_ISR_Handler(void)
 		{
 			// Else transition from high to low
 			TIM8_IC1_HighWidth = result;
-			RCData.PWMIN_5 = (uint16_t)TIM8_IC1_HighWidth;
+			RCData.ch[4].PWMIN = (uint16_t)TIM8_IC1_HighWidth;
 			if(PWM_PASSTHROUGH)
 			{
-				TIM_SetCompare4(TIM3, RCData.PWMIN_5);
-				RCData.PWMOUT_5 = RCData.PWMIN_5;
+				TIM_SetCompare4(TIM3, RCData.ch[4].PWMIN);
+				RCData.ch[4].PWMOUT = RCData.ch[4].PWMIN;
 			}
 		}
 		TIM8_IC1_PreviousValue = dataTemp;
@@ -353,11 +353,11 @@ void TIM8_CC_ISR_Handler(void)
 		{
 			// Else transition from high to low
 			TIM8_IC2_HighWidth = result;
-			RCData.PWMIN_6 = (uint16_t)TIM8_IC2_HighWidth;
+			RCData.ch[5].PWMIN = (uint16_t)TIM8_IC2_HighWidth;
 			if(PWM_PASSTHROUGH)
 			{
-				TIM_SetCompare3(TIM3, RCData.PWMIN_6);
-				RCData.PWMOUT_6 = RCData.PWMIN_6;
+				TIM_SetCompare3(TIM3, RCData.ch[5].PWMIN);
+				RCData.ch[5].PWMOUT = RCData.ch[5].PWMIN;
 			}
 		}
 		TIM8_IC2_PreviousValue = dataTemp;
@@ -389,11 +389,11 @@ void TIM8_CC_ISR_Handler(void)
 		{
 			// Else transition from high to low
 			TIM8_IC3_HighWidth = result;
-			RCData.PWMIN_7 = (uint16_t)TIM8_IC3_HighWidth;
+			RCData.ch[6].PWMIN = (uint16_t)TIM8_IC3_HighWidth;
 			if(PWM_PASSTHROUGH)
 			{
-				TIM_SetCompare2(TIM3, RCData.PWMIN_7);
-				RCData.PWMOUT_7 = RCData.PWMIN_7;
+				TIM_SetCompare2(TIM3, RCData.ch[6].PWMIN);
+				RCData.ch[6].PWMOUT = RCData.ch[6].PWMIN;
 			}
 		}
 		TIM8_IC3_PreviousValue = dataTemp;
@@ -425,11 +425,11 @@ void TIM8_CC_ISR_Handler(void)
 		{
 			// Else transition from high to low
 			TIM8_IC4_HighWidth = result;
-			RCData.PWMIN_8 = (uint16_t)TIM8_IC4_HighWidth;
+			RCData.ch[7].PWMIN = (uint16_t)TIM8_IC4_HighWidth;
 			if(PWM_PASSTHROUGH)
 			{
-				TIM_SetCompare1(TIM3, RCData.PWMIN_8);
-				RCData.PWMOUT_8 = RCData.PWMIN_8;
+				TIM_SetCompare1(TIM3, RCData.ch[7].PWMIN);
+				RCData.ch[7].PWMOUT = RCData.ch[7].PWMIN;
 			}
 		}
 		TIM8_IC4_PreviousValue = dataTemp;

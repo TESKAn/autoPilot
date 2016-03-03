@@ -126,6 +126,7 @@ typedef struct
 	uint32_t dataTime;
 	uint32_t deltaTime;
 	Vectorf speed3D;
+	Vectorf speed3D_m;
 	float32_t hdop;
 	float32_t gg;
 	float32_t magvar;

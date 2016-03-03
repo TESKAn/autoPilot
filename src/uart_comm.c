@@ -219,7 +219,7 @@ int32_t UART_RcvData(uint8_t data)
 						// Store var
 						UART_Conversion.ch[0] = UART2_RecBuffer[4];
 						UART_Conversion.ch[1] = UART2_RecBuffer[5];
-						RCData.PWMOUT_8 = UART_Conversion.i16[0];
+						RCData.ch[7].PWMOUT = UART_Conversion.i16[0];
 					}
 					UART2_RcvdBytes = 0;
 					UART2_RcvingVar = 0;
@@ -238,7 +238,7 @@ int32_t UART_RcvData(uint8_t data)
 						// Store var
 						UART_Conversion.ch[0] = UART2_RecBuffer[4];
 						UART_Conversion.ch[1] = UART2_RecBuffer[5];
-						RCData.PWMOUT_9 = UART_Conversion.i16[0];
+						RCData.ch[8].PWMOUT = UART_Conversion.i16[0];
 					}
 					UART2_RcvdBytes = 0;
 					UART2_RcvingVar = 0;
@@ -257,7 +257,7 @@ int32_t UART_RcvData(uint8_t data)
 						// Store var
 						UART_Conversion.ch[0] = UART2_RecBuffer[4];
 						UART_Conversion.ch[1] = UART2_RecBuffer[5];
-						RCData.PWMOUT_10 = UART_Conversion.i16[0];
+						RCData.ch[9].PWMOUT = UART_Conversion.i16[0];
 					}
 					UART2_RcvdBytes = 0;
 					UART2_RcvingVar = 0;
@@ -276,7 +276,7 @@ int32_t UART_RcvData(uint8_t data)
 						// Store var
 						UART_Conversion.ch[0] = UART2_RecBuffer[4];
 						UART_Conversion.ch[1] = UART2_RecBuffer[5];
-						RCData.PWMOUT_11 = UART_Conversion.i16[0];
+						RCData.ch[10].PWMOUT = UART_Conversion.i16[0];
 					}
 					UART2_RcvdBytes = 0;
 					UART2_RcvingVar = 0;
@@ -295,7 +295,7 @@ int32_t UART_RcvData(uint8_t data)
 						// Store var
 						UART_Conversion.ch[0] = UART2_RecBuffer[4];
 						UART_Conversion.ch[1] = UART2_RecBuffer[5];
-						RCData.PWMOUT_12 = UART_Conversion.i16[0];
+						RCData.ch[11].PWMOUT = UART_Conversion.i16[0];
 					}
 					UART2_RcvdBytes = 0;
 					UART2_RcvingVar = 0;
@@ -356,8 +356,8 @@ int32_t UART_SendBuffer()
 	// If UART2 is not active
 	if(!UART2_Transferring)
 	{
-		// If data in buffer
-		if(0 != UARTBuffer.count)
+		// If buffer is half full
+		if(512 < UARTBuffer.count)
 		{
 			// Copy data to transmit buffer
 			bytes = UART_CopyToTransmitBuf();

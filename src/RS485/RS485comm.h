@@ -221,10 +221,10 @@ typedef struct tagRS485MOTOR
 			Int16 i16IIn;				// 12
 			Int16 i16PIn;				// 14
 			Int16 i16RPM;				// 16
-
-			Int16 i16Empty;
+			Int16 i16Position;			// 18
+			UInt8 ui8PresentTemperature;	//19
 			// Future expansion
-			UInt8 uiEmpty1[12];			// 32 bytes total
+			UInt8 ui8Empty1[11];			// 32 bytes total
 
 			// Motor control
 			// Arm

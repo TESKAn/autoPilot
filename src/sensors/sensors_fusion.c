@@ -269,11 +269,23 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 
 		// Check if we have valid GPS and accelerometer data
 		// We need speed so do not use if below some value
-		/*
+
 		if((1 ==data->_gps.valid)&&(1 == data->_accelerometer.valid)&&(data->PARAMETERS.minGPSSpeed < GPSSpeed))
 		{
 			// Use GPS and accelerometer speed data to calculate DCM error in earth frame
+			// data->_accelerometer.speed_3D_dt is integration time of accelerometer. Should be time between two GPS readouts.
+			// Calculate change in GPS speed
+			vectorf_substract(&data->_gps.speed3D, &data->_gps.speed3D_m, &temporaryVector);
+			// Compare with acceleration speed
+			vectorf_crossProduct(&data->_accelerometer.Speed_3D, &temporaryVector, &error_gps_acc);
+			// Reset accelerometer speed change vector
+			data->_accelerometer.Speed_3D = vectorf_init(0);
+			// Save previous GPS speed.
+			vectorf_copy(&data->_gps.speed3D, &data->_gps.speed3D_m);
+
+
 			// Calculate 1/dt
+			/*
 			fTemp = 1 / data->_accelerometer.speed_3D_dt;
 			// Calculate average acceleration of accelerometer
 			status = vectorf_scalarProduct(&data->_accelerometer.Speed_3D, fTemp, &temporaryVector);
@@ -307,7 +319,7 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 
 			// Transform to plane frame with DCM transpose
 			status = matrix3_transposeVectorMultiply(&data->_fusion_DCM, &temporaryVector2, &error_gps_acc);
-
+*/
 			// Check if all was calculated OK
 			if(ERROR == status)
 			{
@@ -315,7 +327,7 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 				error_gps_acc = vectorf_init(0);
 			}
 
-		}*/
+		}
 		// Check if we have valid gyro and accelerometer data and calculate error
 		// Do only if speed below limit and acceleration is really low
 		if((data->PARAMETERS.minGPSSpeed > GPSSpeed)&&(1 == data->_accelerometer.valid))

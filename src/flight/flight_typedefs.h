@@ -65,6 +65,7 @@ typedef struct
 	uint8_t ui8Enabled;
 	uint8_t ui8Park;
 	uint8_t ui8Parked;
+	uint8_t ui8ParkPosition;
 	uint8_t ui8MeasPWMMin;
 	uint8_t ui8MeasPWMMax;
 	uint8_t ui8MeasuringPWMMin;
@@ -73,7 +74,7 @@ typedef struct
 	uint8_t ui8UsingPWM;
 	uint8_t ui8ReverseRotation;
 	uint8_t ui8Reversed;
-	uint8_t ui8Empty[3];
+	uint8_t ui8Empty[2];
 	int16_t i16PWMMin;
 	int16_t i16PWMMax;
 	int16_t i16SetRPM;
@@ -104,6 +105,7 @@ typedef struct
 	myMath_PID PIDRoll;
 	myMath_PID PIDYaw;
 	myMath_PID PIDAltitude;
+	myMath_PID PIDSpeed;
 
 	// Input data
 	// Current vehicle orientation
@@ -114,8 +116,9 @@ typedef struct
 		float32_t f32Yaw;
 		float32_t f32Altitude;
 		float32_t f32Speed;
+		float32_t f32ZeroAltitude;
 	}ORIENTATION;
-	// Required orientation - plane
+	// Required orientation
 	struct
 	{
 		float32_t f32Roll;
@@ -124,16 +127,14 @@ typedef struct
 		float32_t f32Power;
 		float32_t f32Altitude;
 		float32_t f32Speed;
-	}ORIENTATION_REQUIRED_P;
-	// Required orientation - hover
+	}ORIENTATION_REQUIRED;
+
 	struct
 	{
-		float32_t f32Roll;
-		float32_t f32Pitch;
-		float32_t f32Yaw;
-		float32_t f32Altitude;
-		float32_t f32Speed;
-	}ORIENTATION_REQUIRED_H;
+		float32_t f32RollLimit;
+		float32_t f32PitchLimit;
+		float32_t f32YawLimit;
+	}ORIENTATION_LIMITS;
 
 	// Output data
 	struct
@@ -182,6 +183,21 @@ typedef struct
 	float32_t f32NacelleTiltSpeed;
 }__attribute__((aligned(4),packed)) FLIGHT_CORE;
 
+
+typedef struct
+{
+	uint16_t PWMIN;
+	uint16_t PWMOUT;
+	float32_t PWMMax;
+	float32_t PWMMin;
+	float32_t PWMDiff;
+	float32_t PWMIN_Zero;
+	float32_t PWMIN_MID;
+	float32_t PWMOUT_Val;
+	float32_t PWMOUT_Offset;
+}__attribute__((aligned(4),packed)) RC_CHANNEL;
+
+
 // Structure that holds R/C signals
 // RC PWM in typedef
 typedef struct
@@ -195,79 +211,7 @@ typedef struct
 		float32_t f32RudderScale;
 	}SCALES;
 
-	// Input raw values
-	uint16_t PWMIN_1;
-	uint16_t PWMIN_2;
-	uint16_t PWMIN_3;
-	uint16_t PWMIN_4;
-	uint16_t PWMIN_5;
-	uint16_t PWMIN_6;
-	uint16_t PWMIN_7;
-	uint16_t PWMIN_8;
-
-	// Input value zeros
-	float32_t PWMIN_1_Zero;
-	float32_t PWMIN_2_Zero;
-	float32_t PWMIN_3_Zero;
-	float32_t PWMIN_4_Zero;
-	float32_t PWMIN_5_Zero;
-	float32_t PWMIN_6_Zero;
-	float32_t PWMIN_7_Zero;
-	float32_t PWMIN_8_Zero;
-
-	// Input values after removing offset
-	float32_t PWMIN_1_MID;
-	float32_t PWMIN_2_MID;
-	float32_t PWMIN_3_MID;
-	float32_t PWMIN_4_MID;
-	float32_t PWMIN_5_MID;
-	float32_t PWMIN_6_MID;
-	float32_t PWMIN_7_MID;
-	float32_t PWMIN_8_MID;
-
-	// Output values
-	float32_t PWMOUT_Val_1;
-	float32_t PWMOUT_Val_2;
-	float32_t PWMOUT_Val_3;
-	float32_t PWMOUT_Val_4;
-	float32_t PWMOUT_Val_5;
-	float32_t PWMOUT_Val_6;
-	float32_t PWMOUT_Val_7;
-	float32_t PWMOUT_Val_8;
-	float32_t PWMOUT_Val_9;
-	float32_t PWMOUT_Val_10;
-	float32_t PWMOUT_Val_11;
-	float32_t PWMOUT_Val_12;
-
-	// Output offsets - add this to required value
-	// to generate output centered around some zero value
-	float32_t PWMOUT_Offset_1;
-	float32_t PWMOUT_Offset_2;
-	float32_t PWMOUT_Offset_3;
-	float32_t PWMOUT_Offset_4;
-	float32_t PWMOUT_Offset_5;
-	float32_t PWMOUT_Offset_6;
-	float32_t PWMOUT_Offset_7;
-	float32_t PWMOUT_Offset_8;
-	float32_t PWMOUT_Offset_9;
-	float32_t PWMOUT_Offset_10;
-	float32_t PWMOUT_Offset_11;
-	float32_t PWMOUT_Offset_12;
-
-
-	// Output values
-	uint16_t PWMOUT_1;
-	uint16_t PWMOUT_2;
-	uint16_t PWMOUT_3;
-	uint16_t PWMOUT_4;
-	uint16_t PWMOUT_5;
-	uint16_t PWMOUT_6;
-	uint16_t PWMOUT_7;
-	uint16_t PWMOUT_8;
-	uint16_t PWMOUT_9;
-	uint16_t PWMOUT_10;
-	uint16_t PWMOUT_11;
-	uint16_t PWMOUT_12;
+	RC_CHANNEL ch[12];
 
 	uint16_t RSSI;
 	uint16_t ostanek;

@@ -73,9 +73,9 @@ ErrorStatus altimeter_update(FUSION_CORE *data, uint32_t rawData_P, int8_t temp_
 	data->_altimeter.temperature = data->_altimeter.temperature + (float32_t)temp_deg;
 
 	// Calculate altitude
-	float A = data->_altimeter.pressure/101325;
-	float B = 1/5.25588;
-	float C = powf(A,B);
+	float32_t A = data->_altimeter.pressure/101325;
+	float32_t B = 1/5.25588;
+	float32_t C = powf(A,B);
 	C = 1 - C;
 	C = C /0.0000225577;
 

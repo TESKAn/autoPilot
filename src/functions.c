@@ -12,6 +12,7 @@
 // Send data
 int16_t SendCommData()
 {
+	int i = 0;
 	// From sensors
 	UART_QueueMessagef(VAR_GYRO_X, fusionData._gyro.vector.x);
 	UART_QueueMessagef(VAR_GYRO_Y, fusionData._gyro.vector.y);
@@ -40,39 +41,22 @@ int16_t SendCommData()
 	// 6*3*6=162
 
 	// PWM inputs
-
-	UART_QueueMessageui16(VAR_PWMIN_1, RCData.PWMIN_1);
-	UART_QueueMessageui16(VAR_PWMIN_2, RCData.PWMIN_2);
-	UART_QueueMessageui16(VAR_PWMIN_3, RCData.PWMIN_3);
-	UART_QueueMessageui16(VAR_PWMIN_4, RCData.PWMIN_4);
-	UART_QueueMessageui16(VAR_PWMIN_5, RCData.PWMIN_5);
-	UART_QueueMessageui16(VAR_PWMIN_6, RCData.PWMIN_6);
-	UART_QueueMessageui16(VAR_PWMIN_7, RCData.PWMIN_7);
-	UART_QueueMessageui16(VAR_PWMIN_8, RCData.PWMIN_8);
+	for(i=0; i < 8; i++)
+	{
+		UART_QueueMessageui16(VAR_PWMIN_1 + i, RCData.ch[i].PWMIN);
+	}
 	// 8*7=56
 
-	UART_QueueMessagef(VAR_PWMIN_1_ZERO, RCData.PWMIN_1_Zero);
-	UART_QueueMessagef(VAR_PWMIN_2_ZERO, RCData.PWMIN_2_Zero);
-	UART_QueueMessagef(VAR_PWMIN_3_ZERO, RCData.PWMIN_3_Zero);
-	UART_QueueMessagef(VAR_PWMIN_4_ZERO, RCData.PWMIN_4_Zero);
-	UART_QueueMessagef(VAR_PWMIN_5_ZERO, RCData.PWMIN_5_Zero);
-	UART_QueueMessagef(VAR_PWMIN_6_ZERO, RCData.PWMIN_6_Zero);
-	UART_QueueMessagef(VAR_PWMIN_7_ZERO, RCData.PWMIN_7_Zero);
-	UART_QueueMessagef(VAR_PWMIN_8_ZERO, RCData.PWMIN_8_Zero);
+	for(i=0; i < 8; i++)
+	{
+		UART_QueueMessagef(VAR_PWMIN_1_ZERO + i, RCData.ch[i].PWMIN_Zero);
+	}
 	// 8*9=72
+	for(i=0; i < 12; i++)
+	{
+		UART_QueueMessageui16(VAR_PWMOUT_1 + i, RCData.ch[i].PWMOUT);
+	}
 
-	UART_QueueMessageui16(VAR_PWMOUT_1, RCData.PWMOUT_1);
-	UART_QueueMessageui16(VAR_PWMOUT_2, RCData.PWMOUT_2);
-	UART_QueueMessageui16(VAR_PWMOUT_3, RCData.PWMOUT_3);
-	UART_QueueMessageui16(VAR_PWMOUT_4, RCData.PWMOUT_4);
-	UART_QueueMessageui16(VAR_PWMOUT_5, RCData.PWMOUT_5);
-	UART_QueueMessageui16(VAR_PWMOUT_6, RCData.PWMOUT_6);
-	UART_QueueMessageui16(VAR_PWMOUT_7, RCData.PWMOUT_7);
-	UART_QueueMessageui16(VAR_PWMOUT_8, RCData.PWMOUT_8);
-	UART_QueueMessageui16(VAR_PWMOUT_9, RCData.PWMOUT_9);
-	UART_QueueMessageui16(VAR_PWMOUT_10, RCData.PWMOUT_10);
-	UART_QueueMessageui16(VAR_PWMOUT_11, RCData.PWMOUT_11);
-	UART_QueueMessageui16(VAR_PWMOUT_12, RCData.PWMOUT_12);
 	// 12*7=84
 	// 374
 	UART_QueueMessageui16(VAR_MOTOR_FR_ARMED, (UInt16)RS485Motor_FR.REGS.ui8Armed);
@@ -144,6 +128,7 @@ void calibrateI2CSensors(void)
 // Update RS485 data
 void Refresh485()
 {
+#ifndef RS485_DEBUG
 	//**************************************
 	// Check servos
 	CheckServo(&RS485Servo_FR);
@@ -155,11 +140,14 @@ void Refresh485()
 	CheckMotor(&RS485Motor_FL);
 	CheckMotor(&RS485Motor_R);
 	//**************************************
+#endif
 }
 
 int16_t CheckMotor(RS485MOTOR* motor)
 {
 	//float32_t f32Temp = 0.0f;
+
+	int16_t i16Temp;
 
 	FLIGHT_MOTOR* FMotorData;
 
@@ -187,6 +175,16 @@ int16_t CheckMotor(RS485MOTOR* motor)
 		FMotorData->ui8UsingPWM = motor->REGS.ui8UsePWMIN;
 		FMotorData->ui8MeasuringPWMMin = motor->REGS.ui8MeasurePWMMin;
 		FMotorData->ui8MeasuringPWMMax = motor->REGS.ui8MeasurePWMMax;
+		// Check park position
+		i16Temp = motor->REGS.i16ParkPosition - motor->REGS.i16Position;
+		if((60 > i16Temp)&&(-60 < i16Temp))
+		{
+			FMotorData->ui8ParkPosition = 1;
+		}
+		else
+		{
+			FMotorData->ui8ParkPosition = 0;
+		}
 	}
 
 	//***********************************
@@ -419,20 +417,21 @@ int16_t CheckServo(RS485SERVO * servo)
 // Update PWM out values
 void refreshPWMOutputs(void)
 {
-	TIM_SetCompare4(TIM1, RCData.PWMOUT_1);
-	TIM_SetCompare3(TIM1, RCData.PWMOUT_2);
-	TIM_SetCompare2(TIM1, RCData.PWMOUT_3);
-	TIM_SetCompare1(TIM1, RCData.PWMOUT_4);
-	TIM_SetCompare4(TIM3, RCData.PWMOUT_5);
-	TIM_SetCompare3(TIM3, RCData.PWMOUT_6);
-	TIM_SetCompare2(TIM3, RCData.PWMOUT_7);
-	TIM_SetCompare1(TIM3, RCData.PWMOUT_8);
-	TIM_SetCompare4(TIM2, RCData.PWMOUT_9);
-	TIM_SetCompare3(TIM2, RCData.PWMOUT_10);
-	TIM_SetCompare2(TIM2, RCData.PWMOUT_11);
-	TIM_SetCompare1(TIM2, RCData.PWMOUT_12);
+	TIM_SetCompare4(TIM1, RCData.ch[0].PWMOUT);
+	TIM_SetCompare3(TIM1, RCData.ch[1].PWMOUT);
+	TIM_SetCompare2(TIM1, RCData.ch[2].PWMOUT);
+	TIM_SetCompare1(TIM1, RCData.ch[3].PWMOUT);
+	TIM_SetCompare4(TIM3, RCData.ch[4].PWMOUT);
+	TIM_SetCompare3(TIM3, RCData.ch[5].PWMOUT);
+	TIM_SetCompare2(TIM3, RCData.ch[6].PWMOUT);
+	TIM_SetCompare1(TIM3, RCData.ch[7].PWMOUT);
+	TIM_SetCompare4(TIM2, RCData.ch[8].PWMOUT);
+	TIM_SetCompare3(TIM2, RCData.ch[9].PWMOUT);
+	TIM_SetCompare2(TIM2, RCData.ch[10].PWMOUT);
+	TIM_SetCompare1(TIM2, RCData.ch[11].PWMOUT);
 }
 
+// Returns system time, resolution is 10 usec
 uint32_t getSystemTime(void)
 {
 	uint32_t time = 0;
@@ -484,9 +483,6 @@ void storeAHRSAngles(FUSION_CORE *data)
 
 	fusionData.ROLLPITCHYAW.yaw = atan2f( data->_fusion_DCM.b.x, data->_fusion_DCM.a.x);
 
-	FCFlightData.ORIENTATION.f32Roll = fusionData.ROLLPITCHYAW.roll;
-	FCFlightData.ORIENTATION.f32Pitch = fusionData.ROLLPITCHYAW.pitch;
-	FCFlightData.ORIENTATION.f32Yaw = fusionData.ROLLPITCHYAW.yaw;
 }
 
 void openLog(void)

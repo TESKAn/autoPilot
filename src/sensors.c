@@ -263,12 +263,16 @@ void copySensorData(void)
 	I2C2_sensorBufRX.data.dataTakenTime = sensorAcquisitionTime;
 	// Call fusion update function
 	fusion_dataUpdate(&fusionData, &I2C2_sensorBufRX, currentTime);
-
 	// Mark end of sensor updating
 	SENSORS_UPDATING = 0;
-
 	// Store angles
 	storeAHRSAngles(&fusionData);
+
+	// Update flight data
+	FCFlightData.ORIENTATION.f32Roll = fusionData.ROLLPITCHYAW.roll;
+	FCFlightData.ORIENTATION.f32Pitch = fusionData.ROLLPITCHYAW.pitch;
+	FCFlightData.ORIENTATION.f32Yaw = fusionData.ROLLPITCHYAW.yaw;
+	FCFlightData.ORIENTATION.f32Altitude = fusionData._altimeter.altitude;
 
 	// Check if we are saving to log
 	if(SD_WRITE_LOG && SCR2_LOGOPEN)

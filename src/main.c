@@ -72,19 +72,6 @@ int main(void)
 	RB_Init(&RB_USART1, usart1_buf, 128);
 	RB_Init(&RB_USART2, usart2_buf, 128);
 
-	// Setup RC PWM outputs
-	RCData.PWMOUT_1 = 1500;
-	RCData.PWMOUT_2 = 1500;
-	RCData.PWMOUT_3 = 1500;
-	RCData.PWMOUT_4 = 1500;
-	RCData.PWMOUT_5 = 1500;
-	RCData.PWMOUT_6 = 1500;
-	RCData.PWMOUT_7 = 1500;
-	RCData.PWMOUT_8 = 1500;
-	RCData.PWMOUT_9 = 1500;
-	RCData.PWMOUT_10 = 1500;
-	RCData.PWMOUT_11 = 1500;
-	RCData.PWMOUT_12 = 1500;
 
 	//PWM_PASSTHROUGH = 1;
 
