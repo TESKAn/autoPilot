@@ -114,6 +114,15 @@ int16_t SendCommData()
 	// 689
 	UART_QueueMessageui32(VAR_UI32FLIGHTSTATEMACHINE, FCFlightData.ui32FlightStateMachine);
 	UART_QueueMessageui32(VAR_UI32FLIGHTINITSTATE, FCFlightData.ui32FlightInitState);
+	// 2*9=18
+
+	UART_QueueMessageui16(VAR_MOTOR_FR_TEMPERATURE, (UInt16)RS485Motor_FR.REGS.ui8PresentTemperature);
+	UART_QueueMessageui16(VAR_MOTOR_FL_TEMPERATURE, (UInt16)RS485Motor_FL.REGS.ui8PresentTemperature);
+	UART_QueueMessageui16(VAR_MOTOR_R_TEMPERATURE, (UInt16)RS485Motor_R.REGS.ui8PresentTemperature);
+	// 3*7=21
+	// 728
+
+	UART_QueueMessagei16(VAR_MOTOR_R_CURRENTRPM, RS485Motor_R.REGS.i16RPM);
 
 	UART_QueueMessageui32(VAR_UI32TESTVAR, ui32TestVar);
 	return 0;

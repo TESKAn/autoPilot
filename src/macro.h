@@ -16,7 +16,7 @@
 
 //#define USE_FREEMASTER		// Use freemaster instead of own comm
 #define RS485_DEBUG				// Disable sending commands over RS485
-#define RS485_DISABLE_POLL	// Disable RS485 slave polling
+//#define RS485_DISABLE_POLL	// Disable RS485 slave polling
 
 // APStatus flags macros
 #define LOG_ISOPEN	APStatus1.bits.BIT0
@@ -366,5 +366,9 @@
 #define VAR_UI32FLIGHTSTATEMACHINE      101
 #define VAR_UI32FLIGHTINITSTATE         102
 #define VAR_UI32TESTVAR                 103
+
+#define VAR_MOTOR_FR_TEMPERATURE        104
+#define VAR_MOTOR_FL_TEMPERATURE        105
+#define VAR_MOTOR_R_TEMPERATURE         106
 
 #endif /* MACRO_H_ */
