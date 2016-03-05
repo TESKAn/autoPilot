@@ -557,12 +557,21 @@ void RS485_States_Master()
 				// retries to send
 				RS485PollRetries = 5;
 			}
-			// Go to waiting for response state
-			RS485MasterState = RS485_M_STATE_WAITING_RESPONSE;
-			// Reset master waiting timer
-			RS485TimerCount = 0;
-			// Set no response received
-			RS485ResponseReceived = 0;
+			// Did we send data?
+			if(0 < bytesToSend)
+			{
+				// Go to waiting for response state
+				RS485MasterState = RS485_M_STATE_WAITING_RESPONSE;
+				// Reset master waiting timer
+				RS485TimerCount = 0;
+				// Set no response received
+				RS485ResponseReceived = 0;
+			}
+			else
+			{
+
+			}
+
 			break;
 		}
 
