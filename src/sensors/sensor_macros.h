@@ -56,10 +56,10 @@
 #define GYRO_PID_GAIN_KP						0.0f
 #define GYRO_PID_GAIN_KI						0.01f
 #define GYRO_PID_GAIN_KD						0.0f
-#define GYRO_PID_GAIN_IMAX						100.0f
-#define GYRO_PID_GAIN_IMIN						-100.0f
-#define GYRO_PID_GAIN_SMAX						100.0f
-#define GYRO_PID_GAIN_SMIN						-100.0f
+#define GYRO_PID_GAIN_IMAX						1.0f
+#define GYRO_PID_GAIN_IMIN						-1.0f
+#define GYRO_PID_GAIN_SMAX						1.0f
+#define GYRO_PID_GAIN_SMIN						-1.0f
 #define GYRO_PID_GAIN_EMAX						1.0f
 #define GYRO_PID_GAIN_EMIN						-1.0f
 

@@ -165,7 +165,7 @@ ErrorStatus fusion_dataUpdate(FUSION_CORE *data, FUSION_SENSORDATA *sensorData, 
 	altimeter_update(data, sensorData->arrays.pressure.statusPressure, sensorData->arrays.baroTemperatureDegrees, sensorData->arrays.baroTemperatureFrac, sensorData->data.dataTakenTime);
 
 	// Estimate gyro error
-	//fusion_updateGyroError(data);
+	fusion_updateGyroError(data);
 
 
 	return SUCCESS;
