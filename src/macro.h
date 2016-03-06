@@ -15,7 +15,7 @@
 #define DEBUG_USB
 
 //#define USE_FREEMASTER		// Use freemaster instead of own comm
-#define RS485_DEBUG				// Disable sending commands over RS485
+//#define RS485_DEBUG				// Disable sending commands over RS485
 //#define RS485_DISABLE_POLL	// Disable RS485 slave polling
 
 // APStatus flags macros
@@ -370,5 +370,8 @@
 #define VAR_MOTOR_FR_TEMPERATURE        104
 #define VAR_MOTOR_FL_TEMPERATURE        105
 #define VAR_MOTOR_R_TEMPERATURE         106
+
+#define VAR_RS485_NO_RESPONSE_ID        107
+
 
 #endif /* MACRO_H_ */

@@ -165,7 +165,7 @@ ErrorStatus fusion_dataUpdate(FUSION_CORE *data, FUSION_SENSORDATA *sensorData, 
 	altimeter_update(data, sensorData->arrays.pressure.statusPressure, sensorData->arrays.baroTemperatureDegrees, sensorData->arrays.baroTemperatureFrac, sensorData->data.dataTakenTime);
 
 	// Estimate gyro error
-	fusion_updateGyroError(data);
+	//fusion_updateGyroError(data);
 
 
 	return SUCCESS;
@@ -270,6 +270,7 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 		// Check if we have valid GPS and accelerometer data
 		// We need speed so do not use if below some value
 
+		/*
 		if((1 ==data->_gps.valid)&&(1 == data->_accelerometer.valid)&&(data->PARAMETERS.minGPSSpeed < GPSSpeed))
 		{
 			// Use GPS and accelerometer speed data to calculate DCM error in earth frame
@@ -283,43 +284,6 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 			// Save previous GPS speed.
 			vectorf_copy(&data->_gps.speed3D, &data->_gps.speed3D_m);
 
-
-			// Calculate 1/dt
-			/*
-			fTemp = 1 / data->_accelerometer.speed_3D_dt;
-			// Calculate average acceleration of accelerometer
-			status = vectorf_scalarProduct(&data->_accelerometer.Speed_3D, fTemp, &temporaryVector);
-			// Calculate [0,0,1] - average acceleration of GPS
-			status = vectorf_scalarProduct(&data->_gps.speed3D, -fTemp, &temporaryVector2);
-			temporaryVector2.z = temporaryVector2.z + 1;
-			// Calculate error
-			status = vectorf_crossProduct(&temporaryVector, &temporaryVector2, &error_gps_acc);
-			// Make yaw error z = 0 - we will calculate that error from heading
-			error_gps_acc.z = 0;
-
-			// GPS data is OK so calculate yaw error from GPS data -> temporaryVector
-			// Get plane X vector in earth coordinates - that's where we are pointing
-			// Take plane X in earth coordinates - that's column 1 (i think)
-			// Set Z to zero - we don't need it
-			temporaryVector.z = 0;
-			// Normalize vector to length 1
-			status = vectorf_normalize(&temporaryVector);
-
-			// Calculate GPS heading vector from GPS angle -> temporaryVector1
-			// x = cos(x)
-			// y = sin(y)
-			// Normalize this vector to length 1
-			status = vectorf_normalize(&temporaryVector1);
-
-			// Error is cross product between these two vectors
-			status = vectorf_crossProduct(&temporaryVector, &temporaryVector1, &temporaryVector2);
-			// We only need the Z component so copy x and y from total error
-			temporaryVector2.x = error_gps_acc.x;
-			temporaryVector2.y = error_gps_acc.y;
-
-			// Transform to plane frame with DCM transpose
-			status = matrix3_transposeVectorMultiply(&data->_fusion_DCM, &temporaryVector2, &error_gps_acc);
-*/
 			// Check if all was calculated OK
 			if(ERROR == status)
 			{
@@ -327,7 +291,7 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 				error_gps_acc = vectorf_init(0);
 			}
 
-		}
+		}*/
 		// Check if we have valid gyro and accelerometer data and calculate error
 		// Do only if speed below limit and acceleration is really low
 		if((data->PARAMETERS.minGPSSpeed > GPSSpeed)&&(1 == data->_accelerometer.valid))
@@ -341,11 +305,6 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 				//if(fTemp < data->maxGyroErrorAmplitude)
 				{
 					// Store estimated gravity vector
-					/*
-					temporaryVector.x = data->_fusion_DCM.c.x;
-					temporaryVector.y = data->_fusion_DCM.c.y;
-					temporaryVector.z = data->_fusion_DCM.c.z;
-					*/
 					status = vectorf_crossProduct(&data->_fusion_DCM.c, &data->_accelerometer.vectorNormalized, &error_acc_gravity);
 					// Check if there was calculation error
 					// If yes, set error to 0
@@ -387,7 +346,6 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 		data->_mag.vectorEarthFrame.x = error_mag.x;
 		data->_mag.vectorEarthFrame.y = error_mag.y;
 		data->_mag.vectorEarthFrame.z = error_mag.z;
-		// Check if we have valid GPS data and calculate yaw error
 
 		// Sum up all errors
 		status = vectorf_add(&error_acc_gravity, &error_gps_acc, &error);

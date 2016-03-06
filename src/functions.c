@@ -9,6 +9,37 @@
 #include <stdlib.h>
 #include "sensors/altimeter.h"
 
+// Check RC inputs timing
+int16_t CheckRCInputTimeouts()
+{
+	int i = 0;
+	int goodChannels = 0;
+	for(i=0; i<8;i++)
+	{
+		RCData.ch[i].PWM_Timeout++;
+		if(100 < RCData.ch[i].PWM_Timeout)
+		{
+			RCData.ch[i].PWM_Timeout = 100;
+			RCData.ch[i].PWM_Good = 0;
+		}
+		else
+		{
+			goodChannels++;
+		}
+	}
+
+	if(6 == goodChannels)
+	{
+		RCData.inputs_ok = 1;
+	}
+	else
+	{
+		RCData.inputs_ok = 0;
+	}
+
+	return 0;
+}
+
 // Send data
 int16_t SendCommData()
 {

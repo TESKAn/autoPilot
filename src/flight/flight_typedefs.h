@@ -90,7 +90,7 @@ typedef struct
 	uint8_t ui8ServoID;
 	uint8_t ui8Enable;
 	uint8_t ui8Enabled;
-	uint8_t ui8Empty1;
+	uint8_t ui8Reverse;
 }__attribute__((aligned(4),packed)) FLIGHT_SERVO;
 
 typedef struct
@@ -195,6 +195,9 @@ typedef struct
 	float32_t PWMIN_MID;
 	float32_t PWMOUT_Val;
 	float32_t PWMOUT_Offset;
+	uint8_t PWM_Good;
+	uint8_t PWM_Timeout;
+	uint8_t empty[2];
 }__attribute__((aligned(4),packed)) RC_CHANNEL;
 
 
@@ -215,6 +218,8 @@ typedef struct
 
 	uint16_t RSSI;
 	uint16_t ostanek;
+	uint8_t inputs_ok;
+	uint8_t ostanek1[3];
 
 }__attribute__((aligned(4),packed)) RCDATA, *PRCDATA;
 

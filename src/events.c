@@ -170,6 +170,8 @@ void TIM4_ISR_Handler(void)
 			// Else transition from high to low
 			TIM4_IC1_HighWidth = result;
 			RCData.ch[0].PWMIN = (uint16_t)TIM4_IC1_HighWidth;
+			RCData.ch[0].PWM_Good = 1;
+			RCData.ch[0].PWM_Timeout = 0;
 			if(PWM_PASSTHROUGH)
 			{
 				TIM_SetCompare4(TIM1, RCData.ch[0].PWMIN);
@@ -206,6 +208,8 @@ void TIM4_ISR_Handler(void)
 			// Else transition from high to low
 			TIM4_IC2_HighWidth = result;
 			RCData.ch[1].PWMIN = (uint16_t)TIM4_IC2_HighWidth;
+			RCData.ch[1].PWM_Good = 1;
+			RCData.ch[1].PWM_Timeout = 0;
 			if(PWM_PASSTHROUGH)
 			{
 				TIM_SetCompare3(TIM1, RCData.ch[1].PWMIN);
@@ -242,6 +246,8 @@ void TIM4_ISR_Handler(void)
 			// Else transition from high to low
 			TIM4_IC3_HighWidth = result;
 			RCData.ch[2].PWMIN = (uint16_t)TIM4_IC3_HighWidth;
+			RCData.ch[2].PWM_Good = 1;
+			RCData.ch[2].PWM_Timeout = 0;
 			if(PWM_PASSTHROUGH)
 			{
 				TIM_SetCompare2(TIM1, RCData.ch[2].PWMIN);
@@ -278,6 +284,8 @@ void TIM4_ISR_Handler(void)
 			// Else transition from high to low
 			TIM4_IC4_HighWidth = result;
 			RCData.ch[3].PWMIN = (uint16_t)TIM4_IC4_HighWidth;
+			RCData.ch[3].PWM_Good = 1;
+			RCData.ch[3].PWM_Timeout = 0;
 			if(PWM_PASSTHROUGH)
 			{
 				TIM_SetCompare1(TIM1, RCData.ch[3].PWMIN);
@@ -319,6 +327,8 @@ void TIM8_CC_ISR_Handler(void)
 			// Else transition from high to low
 			TIM8_IC1_HighWidth = result;
 			RCData.ch[4].PWMIN = (uint16_t)TIM8_IC1_HighWidth;
+			RCData.ch[4].PWM_Good = 1;
+			RCData.ch[4].PWM_Timeout = 0;
 			if(PWM_PASSTHROUGH)
 			{
 				TIM_SetCompare4(TIM3, RCData.ch[4].PWMIN);
@@ -354,6 +364,8 @@ void TIM8_CC_ISR_Handler(void)
 			// Else transition from high to low
 			TIM8_IC2_HighWidth = result;
 			RCData.ch[5].PWMIN = (uint16_t)TIM8_IC2_HighWidth;
+			RCData.ch[5].PWM_Good = 1;
+			RCData.ch[5].PWM_Timeout = 0;
 			if(PWM_PASSTHROUGH)
 			{
 				TIM_SetCompare3(TIM3, RCData.ch[5].PWMIN);
@@ -390,6 +402,8 @@ void TIM8_CC_ISR_Handler(void)
 			// Else transition from high to low
 			TIM8_IC3_HighWidth = result;
 			RCData.ch[6].PWMIN = (uint16_t)TIM8_IC3_HighWidth;
+			RCData.ch[6].PWM_Good = 1;
+			RCData.ch[6].PWM_Timeout = 0;
 			if(PWM_PASSTHROUGH)
 			{
 				TIM_SetCompare2(TIM3, RCData.ch[6].PWMIN);
@@ -426,6 +440,8 @@ void TIM8_CC_ISR_Handler(void)
 			// Else transition from high to low
 			TIM8_IC4_HighWidth = result;
 			RCData.ch[7].PWMIN = (uint16_t)TIM8_IC4_HighWidth;
+			RCData.ch[7].PWM_Good = 1;
+			RCData.ch[7].PWM_Timeout = 0;
 			if(PWM_PASSTHROUGH)
 			{
 				TIM_SetCompare1(TIM3, RCData.ch[7].PWMIN);
@@ -519,6 +535,9 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		// RS485 timing
 		RS485_Timing();
 
+		// Check RC inputs for timeouts
+		CheckRCInputTimeouts();
+
 		// Signal strength count
 		signalStrengthCount++;
 		if(signalStrengthCount > SIGNALSTRENGTH_MAXTIME)
@@ -590,7 +609,14 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		{
 			ui32FlightCheckCounter = 0;
 			// Run flight check algorithms
-			flight_checkRCInputs(&FCFlightData, &RCData);
+			if(1 == RCData.inputs_ok)
+			{
+				flight_checkRCInputs(&FCFlightData, &RCData);
+			}
+			else
+			{
+				flight_decideAction(&FCFlightData, &RCData);
+			}
 			// Check flight states
 			flight_checkStates(&FCFlightData, &RCData);
 			// Get new servo values

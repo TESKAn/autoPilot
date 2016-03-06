@@ -13,6 +13,7 @@
 
 // Functions
 void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCValues);
+int16_t flight_decideAction(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 void flight_checkRCInputs(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues);
 void flight_stabilize(FLIGHT_CORE * FCFlightData);
@@ -31,9 +32,9 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 #define RC_NACELLE_HOVERTRANSITION_TILT	75.0f;
 // Define nacelle zeros
 #define NACELLE_MAX_TILT_DEVIATION		2.0f
-#define NACELLE_FR_ZERO					175.78f
-#define NACELLE_FL_ZERO					188.97f
-#define NACELLE_R_ZERO					175.78f
+#define NACELLE_FR_ZERO					184.57f
+#define NACELLE_FL_ZERO					175.78f
+#define NACELLE_R_ZERO					184.57f
 
 // Macros that encode PWM inputs to specific channels
 #define RC_AILERON		1

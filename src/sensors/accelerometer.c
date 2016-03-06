@@ -116,7 +116,7 @@ ErrorStatus acc_updateSpeedCalculation(FUSION_CORE *coreData, uint32_t dataTime)
 
 	float32_t f32Temp;
 	float32_t f32Temp1;
-	int32_t fracCalc = 0;
+	//int32_t fracCalc = 0;
 	// We have current accelerometer data, calculate speed in earth coordinates
 
 	// Update speed integration
