@@ -237,21 +237,21 @@ void flight_checkRCInputs(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 	}
 	//***********************************
 	// Set gear
-	if(0 < RCValues->ch[RC_GEAR].PWMIN_MID)
+	if(0 < RCValues->ch[RC_GEAR_GYRO].PWMIN_Zero)
 	{
 		// Gear up
-		 RCValues->ch[RC_GEAR].PWMOUT = 1000;
+		 RCValues->ch[RC_GEAR].PWMOUT_Val = 1000;
 	}
 	else
 	{
 		// Gear down
-		RCValues->ch[RC_GEAR].PWMOUT = 2000;
+		RCValues->ch[RC_GEAR].PWMOUT_Val = 2000;
 	}
 	//***********************************
 
 	//***********************************
 	// Check arm
-	if(0 < RCValues->ch[RC_FLAPS_PITCH].PWMIN_MID)
+	if(0 < RCValues->ch[RC_FLAPS_PITCH].PWMIN_Zero)
 	{
 		RC_Flags.bits.ARMED = 1;
 		if(FLIGHT_IDLE == FCFlightData->ui32FlightStateMachine)
@@ -292,9 +292,9 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 				case FINIT_IDLE:
 				{
 					// Set motor PWMs to min
-					RCValues->ch[RC_MOTOR_FL].PWMOUT = 1000;
-					RCValues->ch[RC_MOTOR_FR].PWMOUT = 1000;
-					RCValues->ch[RC_MOTOR_R].PWMOUT = 1000;
+					RCValues->ch[RC_MOTOR_FL].PWMOUT_Val = 1000;
+					RCValues->ch[RC_MOTOR_FR].PWMOUT_Val = 1000;
+					RCValues->ch[RC_MOTOR_R].PWMOUT_Val = 1000;
 					// Reverse motor FR
 					FCFlightData->MOTORS.FR.ui8ReverseRotation = 1;
 					FCFlightData->MOTORS.FL.ui8ReverseRotation = 0;
@@ -357,9 +357,9 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 								FCFlightData->MOTORS.FL.ui8MeasPWMMax = 1;
 								FCFlightData->MOTORS.R.ui8MeasPWMMax = 1;
 								// Set motor PWMs to max
-								RCValues->ch[RC_MOTOR_FL].PWMOUT = 2000;
-								RCValues->ch[RC_MOTOR_FR].PWMOUT = 2000;
-								RCValues->ch[RC_MOTOR_R].PWMOUT = 2000;
+								RCValues->ch[RC_MOTOR_FL].PWMOUT_Val = 2000;
+								RCValues->ch[RC_MOTOR_FR].PWMOUT_Val = 2000;
+								RCValues->ch[RC_MOTOR_R].PWMOUT_Val = 2000;
 								FCFlightData->ui32FlightInitState = FINIT_MEAS_PWM_MAX;
 							}
 						}
@@ -401,9 +401,9 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 							if(0 == FCFlightData->MOTORS.R.ui8MeasuringPWMMax)
 							{
 								// Set motor PWMs to min
-								RCValues->ch[RC_MOTOR_FL].PWMOUT = 1000;
-								RCValues->ch[RC_MOTOR_FR].PWMOUT = 1000;
-								RCValues->ch[RC_MOTOR_R].PWMOUT = 1000;
+								RCValues->ch[RC_MOTOR_FL].PWMOUT_Val = 1000;
+								RCValues->ch[RC_MOTOR_FR].PWMOUT_Val = 1000;
+								RCValues->ch[RC_MOTOR_R].PWMOUT_Val = 1000;
 								// Send command enable servo torque
 								FCFlightData->TILT_SERVOS.FR.ui8Enable = 1;
 								FCFlightData->TILT_SERVOS.FL.ui8Enable = 1;
@@ -644,18 +644,18 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 		case FLIGHT_DISARM:
 		{
 			// Gear down
-			RCValues->ch[RC_GEAR].PWMOUT = 2000;
+			RCValues->ch[RC_GEAR].PWMOUT_Val = 2000;
 
 			// Ailerons to midpoint
-			RCValues->ch[RC_AILERON_L].PWMOUT = 1500;
-			RCValues->ch[RC_AILERON_R].PWMOUT = 1500;
+			RCValues->ch[RC_AILERON_L].PWMOUT_Val = 1500;
+			RCValues->ch[RC_AILERON_R].PWMOUT_Val = 1500;
 			// Motors to zero
-			RCValues->ch[RC_MOTOR_FL].PWMOUT = 1000;
-			RCValues->ch[RC_MOTOR_FR].PWMOUT = 1000;
-			RCValues->ch[RC_MOTOR_R].PWMOUT = 1000;
+			RCValues->ch[RC_MOTOR_FL].PWMOUT_Val = 1000;
+			RCValues->ch[RC_MOTOR_FR].PWMOUT_Val = 1000;
+			RCValues->ch[RC_MOTOR_R].PWMOUT_Val = 1000;
 
 			// Nacelle tilt to midpoint
-			RCValues->ch[RC_MOTOR_R_TILT].PWMOUT = 1500;
+			RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val = 1500;
 
 			// Send command disable servo torque
 			FCFlightData->TILT_SERVOS.FR.ui8Enable = 0;
@@ -723,8 +723,8 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 	else if(RC_Flags.bits.HOVER)
 	{
 		// We are in hover mode, all maneuvering is done with motors, flaps/ailerons to middle
-		RCValues->ch[RC_AILERON_L].PWMOUT = RCValues->ch[RC_AILERON_L].PWMIN_MID;
-		RCValues->ch[RC_AILERON_R].PWMOUT = RCValues->ch[RC_AILERON_L].PWMIN_MID;
+		RCValues->ch[RC_AILERON_L].PWMOUT_Val = RCValues->ch[RC_AILERON_L].PWMIN_MID;
+		RCValues->ch[RC_AILERON_R].PWMOUT_Val = RCValues->ch[RC_AILERON_L].PWMIN_MID;
 
 		// Power is altitude output
 		f32Power = FCFlightData->PIDAltitude.s;

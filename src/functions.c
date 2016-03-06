@@ -28,7 +28,7 @@ int16_t CheckRCInputTimeouts()
 		}
 	}
 
-	if(6 == goodChannels)
+	if(6 <= goodChannels)
 	{
 		RCData.inputs_ok = 1;
 	}
