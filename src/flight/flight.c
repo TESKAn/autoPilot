@@ -789,38 +789,39 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 	//***********************************
 	// Set tilt values
 	// Set new position
+	// Servo FR position*****************
+	f32Temp = FCFlightData->TILT_SERVOS.FR.f32ServoZero + FCFlightData->f32NacelleTilt_FR;
+	f32Temp *= 11.37777777777777;
 	if(0 == FCFlightData->TILT_SERVOS.FR.ui8Reverse)
 	{
-		f32Temp = FCFlightData->TILT_SERVOS.FR.f32ServoZero + FCFlightData->f32NacelleTilt_FR;
+		FCFlightData->TILT_SERVOS.FR.ui16RequestedPosition = (uint16_t)f32Temp;
 	}
 	else
 	{
-		f32Temp = FCFlightData->TILT_SERVOS.FR.f32ServoZero - FCFlightData->f32NacelleTilt_FR;
+		FCFlightData->TILT_SERVOS.FR.ui16RequestedPosition = 4096 - (uint16_t)f32Temp;
 	}
+	// Servo FL position*****************
+	f32Temp = FCFlightData->TILT_SERVOS.FL.f32ServoZero + FCFlightData->f32NacelleTilt_FL;
 	f32Temp *= 11.37777777777777;
-	FCFlightData->TILT_SERVOS.FR.ui16RequestedPosition = (uint16_t)f32Temp;
-
 	if(0 == FCFlightData->TILT_SERVOS.FL.ui8Reverse)
 	{
-		f32Temp = FCFlightData->TILT_SERVOS.FL.f32ServoZero + FCFlightData->f32NacelleTilt_FL;
+		FCFlightData->TILT_SERVOS.FL.ui16RequestedPosition = (uint16_t)f32Temp;
 	}
 	else
 	{
-		f32Temp = FCFlightData->TILT_SERVOS.FL.f32ServoZero - FCFlightData->f32NacelleTilt_FL;
+		FCFlightData->TILT_SERVOS.FL.ui16RequestedPosition = 4096 - (uint16_t)f32Temp;
 	}
+	// Servo R position*****************
+	f32Temp = FCFlightData->TILT_SERVOS.R.f32ServoZero + FCFlightData->f32NacelleTilt_R;
 	f32Temp *= 11.37777777777777;
-	FCFlightData->TILT_SERVOS.FL.ui16RequestedPosition = (uint16_t)f32Temp;
-
 	if(0 == FCFlightData->TILT_SERVOS.R.ui8Reverse)
 	{
-		f32Temp = FCFlightData->TILT_SERVOS.R.f32ServoZero + FCFlightData->f32NacelleTilt_R;
+		FCFlightData->TILT_SERVOS.R.ui16RequestedPosition = (uint16_t)f32Temp;
 	}
 	else
 	{
-		f32Temp = FCFlightData->TILT_SERVOS.R.f32ServoZero - FCFlightData->f32NacelleTilt_R;
+		FCFlightData->TILT_SERVOS.R.ui16RequestedPosition = 4096 - (uint16_t)f32Temp;
 	}
-	f32Temp *= 11.37777777777777;
-	FCFlightData->TILT_SERVOS.R.ui16RequestedPosition = (uint16_t)f32Temp;
 	//***********************************
 
 

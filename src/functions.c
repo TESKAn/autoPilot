@@ -408,7 +408,16 @@ int16_t CheckServo(RS485SERVO * servo)
 		FServoData->ui8Enabled = servo->REGS.ui8TorqueEnabled;
 		// Calculate position from current servo data
 		// 4096 = 360 deg
-		f32Temp = (float32_t)servo->REGS.ui16PresentPosition;
+		// Reverse position?
+		if(0 == FServoData->ui8Reverse)
+		{
+			f32Temp = (float32_t)servo->REGS.ui16PresentPosition;
+		}
+		else
+		{
+			f32Temp = 4096.0f - (float32_t)servo->REGS.ui16PresentPosition;
+		}
+
 		f32Temp *= 0.087890625;
 		f32Temp -= FServoData->f32ServoZero;
 		FServoData->f32ServoAngle = f32Temp;
@@ -1824,12 +1833,21 @@ uint8_t RB_pop(RING_BUFFER* rb)
 	{
 		uint8_t data = *rb->data_start;
 		rb->data_start++;
+		rb->count--;
 		if (rb->data_start == rb->buffer_end)
 		{
 			rb->data_start = rb->buffer;
 		}
-		rb->count--;
-
+		// Check buffer
+		if(0 == rb->count)
+		{
+			// start equal end?
+			if(rb->data_start != rb->data_end)
+			{
+				// If not, fix it.
+				rb->data_start = rb->data_end;
+			}
+		}
 		return data;
 	}
 	return 0;
@@ -1889,11 +1907,21 @@ uint32_t RB32_pop(RING_BUFFER32* rb)
 	{
 		uint32_t data = *rb->data_start;
 		rb->data_start++;
+		rb->count--;
 		if (rb->data_start == rb->buffer_end)
 		{
 			rb->data_start = rb->buffer;
 		}
-		rb->count--;
+		// Check buffer
+		if(0 == rb->count)
+		{
+			// start equal end?
+			if(rb->data_start != rb->data_end)
+			{
+				// If not, fix it.
+				rb->data_start = rb->data_end;
+			}
+		}
 		return data;
 	}
     return 0;
