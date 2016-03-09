@@ -78,7 +78,7 @@ typedef struct
 	int16_t i16PWMMin;
 	int16_t i16PWMMax;
 	int16_t i16SetRPM;
-	int16_t i16Empty;
+	int16_t i16CurrentRPM;
 }__attribute__((aligned(4),packed)) FLIGHT_MOTOR;
 
 typedef struct
@@ -99,6 +99,7 @@ typedef struct
 	uint32_t ui32FlightTransitionState;
 
 	uint32_t ui32FlightInitState;
+	uint32_t ui32FlightDeInitStates;
 
 	// PIDs
 	myMath_PID PIDPitch;
@@ -186,17 +187,17 @@ typedef struct
 
 typedef struct
 {
-	uint16_t PWMIN;
-	uint16_t PWMOUT;
-	float32_t PWMMax;
-	float32_t PWMMin;
-	float32_t PWMDiff;
-	float32_t PWMIN_Zero;
-	float32_t PWMIN_MID;
-	float32_t PWMOUT_Val;
-	float32_t PWMOUT_Offset;
-	uint8_t PWM_Good;
-	uint8_t PWM_Timeout;
+	uint16_t PWMIN;					// PWM value as read from timer
+	uint16_t PWMOUT;				// PWM out value as set to timer
+	float32_t PWMMax;				// Maximum measured PWM input value
+	float32_t PWMMin;				// Minimum measured PWM input value
+	float32_t PWMDiff;				// Difference between max and min value
+	float32_t PWMIN_Zero;			// Input PWM value after offset removal
+	float32_t PWMIN_MID;			// PWM input midpoint
+	float32_t PWMOUT_Val;			// Calculated PWM output value
+	float32_t PWMOUT_Offset;		// Output offset
+	uint8_t PWM_Good;				// PWM input is active (receiving signal)
+	uint8_t PWM_Timeout;			// PWM input timeout counter
 	uint8_t empty[2];
 }__attribute__((aligned(4),packed)) RC_CHANNEL;
 
@@ -213,6 +214,9 @@ typedef struct
 		float32_t f32ThrottleScale;
 		float32_t f32RudderScale;
 	}SCALES;
+
+	int16_t i16YawValue;
+	int16_t i16ostanek;
 
 	RC_CHANNEL ch[12];
 

@@ -373,5 +373,7 @@
 
 #define VAR_RS485_NO_RESPONSE_ID        107
 
+#define VAR_UI32FLIGHTDEINITSTATE       108
+
 
 #endif /* MACRO_H_ */

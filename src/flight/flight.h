@@ -33,7 +33,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 // Define nacelle zeros
 #define NACELLE_MAX_TILT_DEVIATION		2.0f
 #define NACELLE_FR_ZERO					184.57f
-#define NACELLE_FL_ZERO					175.78f
+#define NACELLE_FL_ZERO					184.57f
 #define NACELLE_R_ZERO					184.57f
 
 // Macros that encode PWM inputs to specific channels
@@ -104,6 +104,15 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 #define FINIT_WAIT_MPOS_PARK			6
 #define FINIT_WAIT_SPOS_LEVEL			7
 #define FINIT_WAIT_SPOS_VTOL			8
+
+// Flight deinit states
+#define FDEINIT_IDLE					0
+#define FDEINIT_WAIT_MOTOR_STOP			1
+#define FDEINIT_WAIT_PWM_DISABLED		2
+#define FDEINIT_WAIT_MOTORS_DISABLED	3
+#define FDEINIT_WAIT_TILT_PLANE			4
+#define FDEINIT_WAIT_SERVO_DISABLED		5
+
 
 
 
