@@ -323,6 +323,126 @@ int32_t UART_RcvData(uint8_t data)
 				}
 				break;
 			}
+			case VAR_UI16REQUESTEDPOSITION_FR:
+			{
+				// int16_t
+				if(UART2_RcvdBytes == 7)
+				{
+					// Check CRC
+					if(0 == UART_CRC)
+					{
+						// Store var
+						UART_Conversion.ch[0] = UART2_RecBuffer[4];
+						UART_Conversion.ch[1] = UART2_RecBuffer[5];
+						FCFlightData.TILT_SERVOS.FR.ui16RequestedPosition = UART_Conversion.ui16[0];
+					}
+					UART2_RcvdBytes = 0;
+					UART2_RcvingVar = 0;
+					UART_CRC = 0xff;
+				}
+				break;
+			}
+			case VAR_UI16REQUESTEDPOSITION_FL:
+			{
+				// int16_t
+				if(UART2_RcvdBytes == 7)
+				{
+					// Check CRC
+					if(0 == UART_CRC)
+					{
+						// Store var
+						UART_Conversion.ch[0] = UART2_RecBuffer[4];
+						UART_Conversion.ch[1] = UART2_RecBuffer[5];
+						FCFlightData.TILT_SERVOS.FL.ui16RequestedPosition = UART_Conversion.ui16[0];
+					}
+					UART2_RcvdBytes = 0;
+					UART2_RcvingVar = 0;
+					UART_CRC = 0xff;
+				}
+				break;
+			}
+			case VAR_UI16REQUESTEDPOSITION_R:
+			{
+				// int16_t
+				if(UART2_RcvdBytes == 7)
+				{
+					// Check CRC
+					if(0 == UART_CRC)
+					{
+						// Store var
+						UART_Conversion.ch[0] = UART2_RecBuffer[4];
+						UART_Conversion.ch[1] = UART2_RecBuffer[5];
+						FCFlightData.TILT_SERVOS.R.ui16RequestedPosition = UART_Conversion.ui16[0];
+					}
+					UART2_RcvdBytes = 0;
+					UART2_RcvingVar = 0;
+					UART_CRC = 0xff;
+				}
+				break;
+			}
+			case VAR_F32NACELLETILT_FR:
+			{
+				// Float32
+				if(UART2_RcvdBytes == 9)
+				{
+					// Check CRC
+					if(0 == UART_CRC)
+					{
+						// Store var
+						UART_Conversion.ch[0] = UART2_RecBuffer[4];
+						UART_Conversion.ch[1] = UART2_RecBuffer[5];
+						UART_Conversion.ch[2] = UART2_RecBuffer[6];
+						UART_Conversion.ch[3] = UART2_RecBuffer[7];
+						FCFlightData.f32NacelleTilt_FR = UART_Conversion.f32[0];
+					}
+					UART2_RcvdBytes = 0;
+					UART2_RcvingVar = 0;
+					UART_CRC = 0xff;
+				}
+				break;
+			}
+			case VAR_F32NACELLETILT_FL:
+			{
+				// Float32
+				if(UART2_RcvdBytes == 9)
+				{
+					// Check CRC
+					if(0 == UART_CRC)
+					{
+						// Store var
+						UART_Conversion.ch[0] = UART2_RecBuffer[4];
+						UART_Conversion.ch[1] = UART2_RecBuffer[5];
+						UART_Conversion.ch[2] = UART2_RecBuffer[6];
+						UART_Conversion.ch[3] = UART2_RecBuffer[7];
+						FCFlightData.f32NacelleTilt_FL = UART_Conversion.f32[0];
+					}
+					UART2_RcvdBytes = 0;
+					UART2_RcvingVar = 0;
+					UART_CRC = 0xff;
+				}
+				break;
+			}
+			case VAR_F32NACELLETILT_R:
+			{
+				// Float32
+				if(UART2_RcvdBytes == 9)
+				{
+					// Check CRC
+					if(0 == UART_CRC)
+					{
+						// Store var
+						UART_Conversion.ch[0] = UART2_RecBuffer[4];
+						UART_Conversion.ch[1] = UART2_RecBuffer[5];
+						UART_Conversion.ch[2] = UART2_RecBuffer[6];
+						UART_Conversion.ch[3] = UART2_RecBuffer[7];
+						FCFlightData.f32NacelleTilt_R = UART_Conversion.f32[0];
+					}
+					UART2_RcvdBytes = 0;
+					UART2_RcvingVar = 0;
+					UART_CRC = 0xff;
+				}
+				break;
+			}
 			default:
 			{
 				UART2_RcvdBytes = 0;

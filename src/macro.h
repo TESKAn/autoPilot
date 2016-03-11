@@ -375,5 +375,22 @@
 
 #define VAR_UI32FLIGHTDEINITSTATE       108
 
+#define VAR_UI16REQUESTEDPOSITION_FR    109
+#define VAR_UI16REQUESTEDPOSITION_FL    110
+#define VAR_UI16REQUESTEDPOSITION_R     111
+
+#define VAR_F32NACELLETILT_FR           112
+#define VAR_F32NACELLETILT_FL           113
+#define VAR_F32NACELLETILT_R            114
+
+#define VAR_PIDALTITUDE                 115
+#define VAR_PIDPITCH                    116
+#define VAR_PIDROLL                     117
+#define VAR_PIDYAW                      118
+
+#define VAR_ORIENTATIONALTITUDE         119
+#define VAR_ORIENTATIONZEROALTITUDE     120
+#define VAR_ORIENTATIONREQUIREDALTITUDE 121
+
 
 #endif /* MACRO_H_ */

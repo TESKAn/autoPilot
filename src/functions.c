@@ -154,11 +154,31 @@ int16_t SendCommData()
 	// 728
 
 	UART_QueueMessageui32(VAR_UI32FLIGHTDEINITSTATE, FCFlightData.ui32FlightDeInitStates);
-	// 1*7=7
-	// 735
+	// 1*9=9
+	// 737
+	UART_QueueMessageui16(VAR_UI16REQUESTEDPOSITION_FR, FCFlightData.TILT_SERVOS.FR.ui16RequestedPosition);
+	UART_QueueMessageui16(VAR_UI16REQUESTEDPOSITION_FL, FCFlightData.TILT_SERVOS.FL.ui16RequestedPosition);
+	UART_QueueMessageui16(VAR_UI16REQUESTEDPOSITION_R, FCFlightData.TILT_SERVOS.R.ui16RequestedPosition);
+	// 3*7 = 21
+	// 758
 
+	UART_QueueMessagef(VAR_F32NACELLETILT_FR, FCFlightData.f32NacelleTilt_FR);
+	UART_QueueMessagef(VAR_F32NACELLETILT_FL, FCFlightData.f32NacelleTilt_FL);
+	UART_QueueMessagef(VAR_F32NACELLETILT_R, FCFlightData.f32NacelleTilt_R);
+	// 3*9=27
+	// 785
+	UART_QueueMessagef(VAR_PIDALTITUDE, FCFlightData.PIDAltitude.s);
+	UART_QueueMessagef(VAR_PIDPITCH, FCFlightData.PIDPitch.s);
+	UART_QueueMessagef(VAR_PIDROLL, FCFlightData.PIDRoll.s);
+	UART_QueueMessagef(VAR_PIDYAW, FCFlightData.PIDYaw.s);
+	// 4*9=36
+	// 821
+	UART_QueueMessagef(VAR_ORIENTATIONALTITUDE, FCFlightData.ORIENTATION.f32Altitude);
+	UART_QueueMessagef(VAR_ORIENTATIONZEROALTITUDE, FCFlightData.ORIENTATION.f32ZeroAltitude);
+	UART_QueueMessagef(VAR_ORIENTATIONREQUIREDALTITUDE, FCFlightData.ORIENTATION_REQUIRED.f32Altitude);
+	// 3*9=27
+	// 848
 
-	UART_QueueMessagei16(VAR_MOTOR_R_CURRENTRPM, RS485Motor_R.REGS.i16RPM);
 
 	UART_QueueMessageui32(VAR_UI32TESTVAR, ui32TestVar);
 	return 0;
@@ -272,23 +292,26 @@ int16_t CheckMotor(RS485MOTOR* motor)
 		//***********************************
 
 		//***********************************
-		// Check enable
-
-		if(1 == motor->REGS.ui8Armed)
+		// Check enable - only if not working in PWM mode
+		// Check local reg and motor reg to be sure
+		if((0 == FMotorData->ui8UsePWM)&&(0 == motor->REGS.ui8UsePWMIN))
 		{
-			// Check
-			if(0 == FMotorData->ui8Enable)
+			if(1 == motor->REGS.ui8Armed)
 			{
-				RS485_WriteSlaveReg8(motor->REGS.ui8ID, MOTORREG_ARMED, 0);
-				motor->ui8FreshData = 0;
+				// Check
+				if(0 == FMotorData->ui8Enable)
+				{
+					RS485_WriteSlaveReg8(motor->REGS.ui8ID, MOTORREG_ARMED, 0);
+					motor->ui8FreshData = 0;
+				}
 			}
-		}
-		else
-		{
-			if(1 == FMotorData->ui8Enable)
+			else
 			{
-				RS485_WriteSlaveReg8(motor->REGS.ui8ID, MOTORREG_ARMED, 1);
-				motor->ui8FreshData = 0;
+				if(1 == FMotorData->ui8Enable)
+				{
+					RS485_WriteSlaveReg8(motor->REGS.ui8ID, MOTORREG_ARMED, 1);
+					motor->ui8FreshData = 0;
+				}
 			}
 		}
 

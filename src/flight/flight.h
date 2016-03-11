@@ -32,9 +32,12 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 #define RC_NACELLE_HOVERTRANSITION_TILT	75.0f;
 // Define nacelle zeros
 #define NACELLE_MAX_TILT_DEVIATION		2.0f
-#define NACELLE_FR_ZERO					184.57f
-#define NACELLE_FL_ZERO					184.57f
-#define NACELLE_R_ZERO					184.57f
+#define NACELLE_FR_ZERO					176.57f
+#define NACELLE_FL_ZERO					178.57f
+#define NACELLE_R_ZERO					182.57f
+
+// Define minimum motor PWM
+#define MOTOR_MIN_PWMOUT				1050
 
 // Macros that encode PWM inputs to specific channels
 #define RC_AILERON		1
@@ -108,10 +111,11 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 // Flight deinit states
 #define FDEINIT_IDLE					0
 #define FDEINIT_WAIT_MOTOR_STOP			1
-#define FDEINIT_WAIT_PWM_DISABLED		2
-#define FDEINIT_WAIT_MOTORS_DISABLED	3
-#define FDEINIT_WAIT_TILT_PLANE			4
-#define FDEINIT_WAIT_SERVO_DISABLED		5
+#define FDEINIT_WAIT_MOTOR_PARK			2
+#define FDEINIT_WAIT_PWM_DISABLED		3
+#define FDEINIT_WAIT_MOTORS_DISABLED	4
+#define FDEINIT_WAIT_TILT_PLANE			5
+#define FDEINIT_WAIT_SERVO_DISABLED		6
 
 
 

@@ -124,6 +124,12 @@ int main(void)
 	// Start servo poll
 	RS485_MasterState(1);
 
+	// Test enable servo torque
+	/*
+	FCFlightData.TILT_SERVOS.FR.ui8Enable = 1;
+	FCFlightData.TILT_SERVOS.FL.ui8Enable = 1;
+	FCFlightData.TILT_SERVOS.R.ui8Enable = 1;
+*/
 
 	// Mount SD card
     while (1)
