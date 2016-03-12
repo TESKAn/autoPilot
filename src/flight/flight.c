@@ -50,7 +50,7 @@ void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 	// Init PIDs
 	math_PIDInit(&FCFlightData->PIDPitch, 0.1f, 0.01f, 0.0f, -0.450f, 0.450f);
 	math_PIDInit(&FCFlightData->PIDRoll, 0.1f, 0.01f, 0.0f, -0.450f, 0.450f);
-	math_PIDInit(&FCFlightData->PIDYaw, 0.1f, 0.01f, 0.0f, -0.15f, 0.15f);
+	math_PIDInit(&FCFlightData->PIDYaw, 0.1f, 0.01f, 0.0f, -0.39f, 0.39f);
 	math_PIDInit(&FCFlightData->PIDAltitude, 0.1f, 0.01f, 0.0f, 0.0f, 1.0f);
 	math_PIDInit(&FCFlightData->PIDSpeed, 0.1f, 0.01f, 0.0f, 0.15f, 1.0f);
 
@@ -144,6 +144,7 @@ void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 	// Nacelle tilt to midpoint
 	RCValues->ch[RC_MOTOR_R_TILT].PWMOUT = 1500;
 	RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val = 1500;
+	RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Offset = RC_IN_DEFAULT_MIDPOINT;
 	RCValues->i16YawValue = 1500;
 
 
@@ -976,13 +977,13 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		// Control yaw with nacelle roll
 		// Let's assume that 1000 is 90 deg
 		// So 1 deg is 11.11 q
-		// Mult by 180 to get from rad to deg
-		f32Temp = FCFlightData->PIDYaw.s * 1999.8f;
+		// Mult by 57,324840764331210191082802547771 to get from rad to deg
+		f32Temp = FCFlightData->PIDYaw.s * 636.94267516f;
 		// Limit nacelle roll
 		if(MAX_NACELLE_ROLL < f32Temp) f32Temp = MAX_NACELLE_ROLL;
-		if(-MAX_NACELLE_ROLL > f32Temp) f32Temp = -MAX_NACELLE_ROLL;
+		else if(-MAX_NACELLE_ROLL > f32Temp) f32Temp = -MAX_NACELLE_ROLL;
 		// Add zero PWM
-		f32Temp += 1500;
+		f32Temp += RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Offset;
 		RCValues->i16YawValue = f32Temp;
 		if(RCValues->i16YawValue > RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val)
 		{
