@@ -179,6 +179,39 @@ int16_t SendCommData()
 	// 3*9=27
 	// 848
 
+	UART_QueueMessagef(VAR_PIDALTITUDEKP, FCFlightData.PIDAltitude.Kp);
+	UART_QueueMessagef(VAR_PIDALTITUDEKI, FCFlightData.PIDAltitude.Ki);
+	UART_QueueMessagef(VAR_PIDALTITUDEKD, FCFlightData.PIDAltitude.Kd);
+
+	UART_QueueMessagef(VAR_PIDROLLKP, FCFlightData.PIDRoll.Kp);
+	UART_QueueMessagef(VAR_PIDROLLKI, FCFlightData.PIDRoll.Ki);
+	UART_QueueMessagef(VAR_PIDROLLKD, FCFlightData.PIDRoll.Kd);
+
+	UART_QueueMessagef(VAR_PIDPITCHKP, FCFlightData.PIDPitch.Kp);
+	UART_QueueMessagef(VAR_PIDPITCHKI, FCFlightData.PIDPitch.Ki);
+	UART_QueueMessagef(VAR_PIDPITCHKD, FCFlightData.PIDPitch.Kd);
+
+	UART_QueueMessagef(VAR_PIDYAWKP, FCFlightData.PIDYaw.Kp);
+	UART_QueueMessagef(VAR_PIDYAWKI, FCFlightData.PIDYaw.Ki);
+	UART_QueueMessagef(VAR_PIDYAWKD, FCFlightData.PIDYaw.Kd);
+	// 12*9=108
+	// 956
+	UART_QueueMessagef(VAR_RC_AILERON_DIFF, RCData.ch[RC_AILERON].PWMDiff);
+	UART_QueueMessagef(VAR_RC_ELEVATOR_DIFF, RCData.ch[RC_ELEVATOR].PWMDiff);
+	UART_QueueMessagef(VAR_RC_THROTTLE_DIFF, RCData.ch[RC_THROTTLE].PWMDiff);
+	UART_QueueMessagef(VAR_RC_RUDDER_DIFF, RCData.ch[RC_RUDDER].PWMDiff);
+	// 4*9=36
+	// 992
+
+	UART_QueueMessagef(VAR_YAW_ACT, FCFlightData.ORIENTATION.f32Yaw);
+	UART_QueueMessagef(VAR_YAW_REQ, FCFlightData.ORIENTATION_REQUIRED.f32Yaw);
+	UART_QueueMessagef(VAR_YAW_ERR, FCFlightData.PIDYaw.em);
+
+	UART_QueueMessagei16(VAR_MOTOR_FR_DCLINK, RS485Motor_FR.REGS.i16UIn);
+	UART_QueueMessagei16(VAR_MOTOR_FL_DCLINK, RS485Motor_FL.REGS.i16UIn);
+	UART_QueueMessagei16(VAR_MOTOR_R_DCLINK, RS485Motor_R.REGS.i16UIn);
+
+
 
 	UART_QueueMessageui32(VAR_UI32TESTVAR, ui32TestVar);
 	return 0;

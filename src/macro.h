@@ -392,5 +392,33 @@
 #define VAR_ORIENTATIONZEROALTITUDE     120
 #define VAR_ORIENTATIONREQUIREDALTITUDE 121
 
+#define VAR_PIDALTITUDEKP               122
+#define VAR_PIDALTITUDEKI               123
+#define VAR_PIDALTITUDEKD               124
+#define VAR_PIDROLLKP                   125
+#define VAR_PIDROLLKI                   126
+#define VAR_PIDROLLKD                   127
+#define VAR_PIDPITCHKP                  128
+#define VAR_PIDPITCHKI                  129
+#define VAR_PIDPITCHKD                  130
+#define VAR_PIDYAWKP                    131
+#define VAR_PIDYAWKI                    132
+#define VAR_PIDYAWKD                    133
+
+#define VAR_RC_AILERON_DIFF             134
+#define VAR_RC_ELEVATOR_DIFF            135
+#define VAR_RC_THROTTLE_DIFF            136
+#define VAR_RC_RUDDER_DIFF              137
+
+#define VAR_YAW_ACT                     138
+#define VAR_YAW_REQ                     139
+#define VAR_YAW_ERR                     140
+
+#define VAR_MOTOR_FR_DCLINK             141
+#define VAR_MOTOR_FL_DCLINK             142
+#define VAR_MOTOR_R_DCLINK              143
+
+
+
 
 #endif /* MACRO_H_ */

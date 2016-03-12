@@ -192,6 +192,7 @@ typedef struct
 	float32_t PWMMax;				// Maximum measured PWM input value
 	float32_t PWMMin;				// Minimum measured PWM input value
 	float32_t PWMDiff;				// Difference between max and min value
+	float32_t PWMIN_DeadZone;		// Dead zone in center of channel
 	float32_t PWMIN_Zero;			// Input PWM value after offset removal
 	float32_t PWMIN_MID;			// PWM input midpoint
 	float32_t PWMOUT_Val;			// Calculated PWM output value

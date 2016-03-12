@@ -8,6 +8,17 @@
 #ifndef UART_COMM_H_
 #define UART_COMM_H_
 
+#define DATATYPE_UI8		1
+#define DATATYPE_I8			2
+#define DATATYPE_UI16		3
+#define DATATYPE_I16		4
+#define DATATYPE_UI32		5
+#define DATATYPE_I32		6
+#define DATATYPE_f			7
+
+
+
+
 extern uint8_t UART2_Transferring;
 
 void UART_Init();

@@ -75,6 +75,8 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 // Input values macros
 // Default midpoint
 #define RC_IN_DEFAULT_MIDPOINT		1500.0f
+// Dead zone in the middle
+#define RC_IN_DEADZONE				5.0f
 // We are counting in microseconds
 #define RC_IN_ZERO_VAL_OFFSET		10.0f
 // Macros for switches
@@ -85,7 +87,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 #define RC_IN_DEFAULT_SCALE_AILERON		1.0f
 #define RC_IN_DEFAULT_SCALE_ELEVATOR	1.0f
 #define RC_IN_DEFAULT_SCALE_THROTTLE	1.0f
-#define RC_IN_DEFAULT_SCALE_RUDDER		0.01f
+#define RC_IN_DEFAULT_SCALE_RUDDER		0.00005f
 
 
 // Macros

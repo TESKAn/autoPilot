@@ -44,6 +44,26 @@ RING_BUFFER UARTBuffer;
 
 CONVERTNUM UART_Conversion;
 
+// Data type
+uint8_t ui8DataType = 0;
+uint8_t* ui8Pointer;
+int8_t* i8Pointer;
+uint16_t* ui16Pointer;
+int16_t* i16Pointer;
+uint32_t* ui32Pointer;
+int32_t* i32Pointer;
+float32_t* fPointer;
+
+uint8_t ui8Pointerd;
+int8_t i8Pointerd;
+uint16_t ui16Pointerd;
+int16_t i16Pointerd;
+uint32_t ui32Pointerd;
+int32_t i32Pointerd;
+float32_t fPointerd;
+
+
+
 void UART_CalculateCRC(uint8_t data)
 {
 	UART_CRC = (uint8_t)crc8_ucTable[UART_CRC ^ data];
@@ -62,6 +82,15 @@ uint8_t UART_BufCRC(uint8_t *data, int16_t bytes)
 
 void UART_Init()
 {
+	// Init default pointers
+	ui8Pointer = &ui8Pointerd;
+	i8Pointer = &i8Pointerd;
+	ui16Pointer = &ui16Pointerd;
+	i16Pointer = &i16Pointerd;
+	ui32Pointer = &ui32Pointerd;
+	i32Pointer = &i32Pointerd;
+	fPointer = &fPointerd;
+
 	RB_Init(&UARTBuffer, UART2_transmittBuffer, 1024);
 	UART2_RcvdBytes = 0;
 	UART2_RcvingVar = 0;
@@ -70,6 +99,10 @@ void UART_Init()
 
 int32_t UART_RcvData(uint8_t data)
 {
+
+
+
+
 	// Reset timeout
 	UART2_TimeoutCounter = 0;
 	// Calc CRC on this data
@@ -89,281 +122,290 @@ int32_t UART_RcvData(uint8_t data)
 		}
 	}
 	// Check data pos
-	else if(4 == UART2_RcvdBytes)
+	else if(4 <= UART2_RcvdBytes)
 	{
 		// We have var ID. Store it.
 		UART_Conversion.ch[0] = UART2_RecBuffer[2];
 		UART_Conversion.ch[1] = UART2_RecBuffer[3];
 		UART2_RcvingVar = UART_Conversion.i16[0];
-	}
-	else if(UART2_RcvdBytes > 4)
-	{
-
+		// Get data type
 		switch(UART2_RcvingVar)
 		{
 			case 0:
 			case 1:
 			{
+				ui8DataType = 0;
 				UART2_RcvdBytes = 0;
 				UART2_RcvingVar = 0;
 				UART_CRC = 0xff;
+				// Reset pointers
+				ui8Pointer = &ui8Pointerd;
+				i8Pointer = &i8Pointerd;
+				ui16Pointer = &ui16Pointerd;
+				i16Pointer = &i16Pointerd;
+				ui32Pointer = &ui32Pointerd;
+				i32Pointer = &i32Pointerd;
+				fPointer = &fPointerd;
 				break;
 			}
 			case VAR_MAIN_LOOP_STATE:
 			{
-				// mainLoopState, uint16_t
-				if(UART2_RcvdBytes == 7)
-				{
-					// Check CRC
-					if(0 == UART_CRC)
-					{
-						// Store var
-						UART_Conversion.ch[0] = UART2_RecBuffer[4];
-						UART_Conversion.ch[1] = UART2_RecBuffer[5];
-						mainLoopState = UART_Conversion.i16[0];
-					}
-					UART2_RcvdBytes = 0;
-					UART2_RcvingVar = 0;
-					UART_CRC = 0xff;
-				}
+				ui8DataType = DATATYPE_UI16;
+				ui16Pointer = &mainLoopState;
 				break;
 			}
 			case VAR_RS485_SERVO_POSITION:
 			{
-				// servo position, uint16_t
-				if(UART2_RcvdBytes == 7)
-				{
-					// Check CRC
-					if(0 == UART_CRC)
-					{
-						// Store var
-						UART_Conversion.ch[0] = UART2_RecBuffer[4];
-						UART_Conversion.ch[1] = UART2_RecBuffer[5];
-						servoMovePosition = UART_Conversion.i16[0];
-					}
-					UART2_RcvdBytes = 0;
-					UART2_RcvingVar = 0;
-					UART_CRC = 0xff;
-				}
+				ui8DataType = DATATYPE_UI16;
+				ui16Pointer = &servoMovePosition;
 				break;
 			}
 			case VAR_MOTOR_FR_RPM:
 			{
-				// Motor RPM, float32
-				if(UART2_RcvdBytes == 9)
-				{
-					// Check CRC
-					if(0 == UART_CRC)
-					{
-						// Store var
-						UART_Conversion.ch[0] = UART2_RecBuffer[4];
-						UART_Conversion.ch[1] = UART2_RecBuffer[5];
-						UART_Conversion.ch[2] = UART2_RecBuffer[6];
-						UART_Conversion.ch[3] = UART2_RecBuffer[7];
-						motorFRSpeed = UART_Conversion.f32[0];
-					}
-					UART2_RcvdBytes = 0;
-					UART2_RcvingVar = 0;
-					UART_CRC = 0xff;
-				}
+				ui8DataType = DATATYPE_f;
+				fPointer = &motorFRSpeed;
 				break;
 			}
 			case VAR_RREADRS485DATA:
 			{
-				// readRS485Data, int16_t
-				if(UART2_RcvdBytes == 7)
-				{
-					// Check CRC
-					if(0 == UART_CRC)
-					{
-						// Store var
-						UART_Conversion.ch[0] = UART2_RecBuffer[4];
-						UART_Conversion.ch[1] = UART2_RecBuffer[5];
-						readRS485Data = UART_Conversion.i16[0];
-					}
-					UART2_RcvdBytes = 0;
-					UART2_RcvingVar = 0;
-					UART_CRC = 0xff;
-				}
+				ui8DataType = DATATYPE_UI16;
+				ui16Pointer = &readRS485Data;
 				break;
 			}
 			case VAR_RS485COMMAND:
 			{
-				// RS485 data, uint32
-				if(UART2_RcvdBytes == 9)
-				{
-					// Check CRC
-					if(0 == UART_CRC)
-					{
-						// Store var
-						UART_Conversion.ch[0] = UART2_RecBuffer[4];
-						UART_Conversion.ch[1] = UART2_RecBuffer[5];
-						UART_Conversion.ch[2] = UART2_RecBuffer[6];
-						UART_Conversion.ch[3] = UART2_RecBuffer[7];
-						RS485ExecuteCommand.ui32Packed = UART_Conversion.ui32[0];
-					}
-					UART2_RcvdBytes = 0;
-					UART2_RcvingVar = 0;
-					UART_CRC = 0xff;
-				}
+				ui8DataType = DATATYPE_UI32;
+				ui32Pointer = &RS485ExecuteCommand.ui32Packed;
 				break;
 			}
 			case VAR_PWMOUT_8:
 			{
-				// int16_t
-				if(UART2_RcvdBytes == 7)
-				{
-					// Check CRC
-					if(0 == UART_CRC)
-					{
-						// Store var
-						UART_Conversion.ch[0] = UART2_RecBuffer[4];
-						UART_Conversion.ch[1] = UART2_RecBuffer[5];
-						RCData.ch[7].PWMOUT = UART_Conversion.i16[0];
-					}
-					UART2_RcvdBytes = 0;
-					UART2_RcvingVar = 0;
-					UART_CRC = 0xff;
-				}
+				ui8DataType = DATATYPE_UI16;
+				ui16Pointer =&RCData.ch[7].PWMOUT;
 				break;
 			}
 			case VAR_PWMOUT_9:
 			{
-				// int16_t
-				if(UART2_RcvdBytes == 7)
-				{
-					// Check CRC
-					if(0 == UART_CRC)
-					{
-						// Store var
-						UART_Conversion.ch[0] = UART2_RecBuffer[4];
-						UART_Conversion.ch[1] = UART2_RecBuffer[5];
-						RCData.ch[8].PWMOUT = UART_Conversion.i16[0];
-					}
-					UART2_RcvdBytes = 0;
-					UART2_RcvingVar = 0;
-					UART_CRC = 0xff;
-				}
+				ui8DataType = DATATYPE_UI16;
+				ui16Pointer = &RCData.ch[8].PWMOUT;
 				break;
 			}
 			case VAR_PWMOUT_10:
 			{
-				// int16_t
-				if(UART2_RcvdBytes == 7)
-				{
-					// Check CRC
-					if(0 == UART_CRC)
-					{
-						// Store var
-						UART_Conversion.ch[0] = UART2_RecBuffer[4];
-						UART_Conversion.ch[1] = UART2_RecBuffer[5];
-						RCData.ch[9].PWMOUT = UART_Conversion.i16[0];
-					}
-					UART2_RcvdBytes = 0;
-					UART2_RcvingVar = 0;
-					UART_CRC = 0xff;
-				}
+				ui8DataType = DATATYPE_UI16;
+				ui16Pointer = &RCData.ch[9].PWMOUT;
 				break;
 			}
 			case VAR_PWMOUT_11:
 			{
-				// int16_t
-				if(UART2_RcvdBytes == 7)
-				{
-					// Check CRC
-					if(0 == UART_CRC)
-					{
-						// Store var
-						UART_Conversion.ch[0] = UART2_RecBuffer[4];
-						UART_Conversion.ch[1] = UART2_RecBuffer[5];
-						RCData.ch[10].PWMOUT = UART_Conversion.i16[0];
-					}
-					UART2_RcvdBytes = 0;
-					UART2_RcvingVar = 0;
-					UART_CRC = 0xff;
-				}
+				ui8DataType = DATATYPE_UI16;
+				ui16Pointer = &RCData.ch[10].PWMOUT;
 				break;
 			}
 			case VAR_PWMOUT_12:
 			{
-				// int16_t
-				if(UART2_RcvdBytes == 7)
-				{
-					// Check CRC
-					if(0 == UART_CRC)
-					{
-						// Store var
-						UART_Conversion.ch[0] = UART2_RecBuffer[4];
-						UART_Conversion.ch[1] = UART2_RecBuffer[5];
-						RCData.ch[11].PWMOUT = UART_Conversion.i16[0];
-					}
-					UART2_RcvdBytes = 0;
-					UART2_RcvingVar = 0;
-					UART_CRC = 0xff;
-				}
+				ui8DataType = DATATYPE_UI16;
+				ui16Pointer = &RCData.ch[11].PWMOUT;
 				break;
 			}
 			case VAR_UI32TESTVAR:
 			{
-				if(UART2_RcvdBytes == 9)
-				{
-					// Check CRC
-					if(0 == UART_CRC)
-					{
-						// Store var
-						UART_Conversion.ch[0] = UART2_RecBuffer[4];
-						UART_Conversion.ch[1] = UART2_RecBuffer[5];
-						UART_Conversion.ch[2] = UART2_RecBuffer[6];
-						UART_Conversion.ch[3] = UART2_RecBuffer[7];
-						ui32TestVar = UART_Conversion.ui32[0];
-					}
-					UART2_RcvdBytes = 0;
-					UART2_RcvingVar = 0;
-					UART_CRC = 0xff;
-				}
+				ui8DataType = DATATYPE_UI32;
+				ui32Pointer = &ui32TestVar;
 				break;
 			}
 			case VAR_UI16REQUESTEDPOSITION_FR:
 			{
-				// int16_t
-				if(UART2_RcvdBytes == 7)
-				{
-					// Check CRC
-					if(0 == UART_CRC)
-					{
-						// Store var
-						UART_Conversion.ch[0] = UART2_RecBuffer[4];
-						UART_Conversion.ch[1] = UART2_RecBuffer[5];
-						FCFlightData.TILT_SERVOS.FR.ui16RequestedPosition = UART_Conversion.ui16[0];
-					}
-					UART2_RcvdBytes = 0;
-					UART2_RcvingVar = 0;
-					UART_CRC = 0xff;
-				}
+				ui8DataType = DATATYPE_UI16;
+				ui16Pointer = &FCFlightData.TILT_SERVOS.FR.ui16RequestedPosition;
 				break;
 			}
 			case VAR_UI16REQUESTEDPOSITION_FL:
 			{
-				// int16_t
-				if(UART2_RcvdBytes == 7)
-				{
-					// Check CRC
-					if(0 == UART_CRC)
-					{
-						// Store var
-						UART_Conversion.ch[0] = UART2_RecBuffer[4];
-						UART_Conversion.ch[1] = UART2_RecBuffer[5];
-						FCFlightData.TILT_SERVOS.FL.ui16RequestedPosition = UART_Conversion.ui16[0];
-					}
-					UART2_RcvdBytes = 0;
-					UART2_RcvingVar = 0;
-					UART_CRC = 0xff;
-				}
+				ui8DataType = DATATYPE_UI16;
+				ui16Pointer = &FCFlightData.TILT_SERVOS.FL.ui16RequestedPosition;
 				break;
 			}
 			case VAR_UI16REQUESTEDPOSITION_R:
 			{
-				// int16_t
+				ui8DataType = DATATYPE_UI16;
+				ui16Pointer = &FCFlightData.TILT_SERVOS.R.ui16RequestedPosition;
+				break;
+			}
+			case VAR_F32NACELLETILT_FR:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.f32NacelleTilt_FR;
+				break;
+			}
+			case VAR_F32NACELLETILT_FL:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.f32NacelleTilt_FL;
+				break;
+			}
+			case VAR_F32NACELLETILT_R:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.f32NacelleTilt_R;
+				break;
+			}
+			case VAR_PIDALTITUDEKP:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.PIDAltitude.Kp;
+				break;
+			}
+			case VAR_PIDALTITUDEKI:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.PIDAltitude.Ki;
+				break;
+			}
+			case VAR_PIDALTITUDEKD:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.PIDAltitude.Kd;
+				break;
+			}
+			case VAR_PIDROLLKP:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.PIDRoll.Kp;
+				break;
+			}
+			case VAR_PIDROLLKI:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.PIDRoll.Ki;
+				break;
+			}
+			case VAR_PIDROLLKD:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.PIDRoll.Kd;
+				break;
+			}
+			case VAR_PIDPITCHKP:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.PIDPitch.Kp;
+				break;
+			}
+			case VAR_PIDPITCHKI:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.PIDPitch.Ki;
+				break;
+			}
+			case VAR_PIDPITCHKD:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.PIDPitch.Kd;
+				break;
+			}
+			case VAR_PIDYAWKP:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.PIDYaw.Kp;
+				break;
+			}
+			case VAR_PIDYAWKI:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.PIDYaw.Ki;
+				break;
+			}
+			case VAR_PIDYAWKD:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.PIDYaw.Kd;
+				break;
+			}
+			default:
+			{
+				ui8DataType = 0;
+				UART2_RcvdBytes = 0;
+				UART2_RcvingVar = 0;
+				UART_CRC = 0xff;
+				// Reset pointers
+				ui8Pointer = &ui8Pointerd;
+				i8Pointer = &i8Pointerd;
+				ui16Pointer = &ui16Pointerd;
+				i16Pointer = &i16Pointerd;
+				ui32Pointer = &ui32Pointerd;
+				i32Pointer = &i32Pointerd;
+				fPointer = &fPointerd;
+				break;
+			}
+		}
+		switch(ui8DataType)
+		{
+			case 0:
+			{
+				UART2_RcvdBytes = 0;
+				UART2_RcvingVar = 0;
+				UART_CRC = 0xff;
+				// Reset pointers
+				ui8Pointer = &ui8Pointerd;
+				i8Pointer = &i8Pointerd;
+				ui16Pointer = &ui16Pointerd;
+				i16Pointer = &i16Pointerd;
+				ui32Pointer = &ui32Pointerd;
+				i32Pointer = &i32Pointerd;
+				fPointer = &fPointerd;
+				break;
+			}
+			case DATATYPE_UI8:
+			{
+				if(UART2_RcvdBytes == 5)
+				{
+					// Check CRC
+					if(0 == UART_CRC)
+					{
+						// Store var
+						*ui8Pointer = UART2_RecBuffer[4];
+					}
+					UART2_RcvdBytes = 0;
+					UART2_RcvingVar = 0;
+					UART_CRC = 0xff;
+					// Reset pointers
+					ui8Pointer = &ui8Pointerd;
+					i8Pointer = &i8Pointerd;
+					ui16Pointer = &ui16Pointerd;
+					i16Pointer = &i16Pointerd;
+					ui32Pointer = &ui32Pointerd;
+					i32Pointer = &i32Pointerd;
+					fPointer = &fPointerd;
+				}
+				break;
+			}
+			case DATATYPE_I8:
+			{
+				if(UART2_RcvdBytes == 5)
+				{
+					// Check CRC
+					if(0 == UART_CRC)
+					{
+						// Store var
+						*i8Pointer = UART2_RecBuffer[4];
+					}
+					UART2_RcvdBytes = 0;
+					UART2_RcvingVar = 0;
+					UART_CRC = 0xff;
+					// Reset pointers
+					ui8Pointer = &ui8Pointerd;
+					i8Pointer = &i8Pointerd;
+					ui16Pointer = &ui16Pointerd;
+					i16Pointer = &i16Pointerd;
+					ui32Pointer = &ui32Pointerd;
+					i32Pointer = &i32Pointerd;
+					fPointer = &fPointerd;
+				}
+				break;
+			}
+			case DATATYPE_UI16:
+			{
 				if(UART2_RcvdBytes == 7)
 				{
 					// Check CRC
@@ -372,17 +414,50 @@ int32_t UART_RcvData(uint8_t data)
 						// Store var
 						UART_Conversion.ch[0] = UART2_RecBuffer[4];
 						UART_Conversion.ch[1] = UART2_RecBuffer[5];
-						FCFlightData.TILT_SERVOS.R.ui16RequestedPosition = UART_Conversion.ui16[0];
+						*ui16Pointer = UART_Conversion.ui16[0];
 					}
 					UART2_RcvdBytes = 0;
 					UART2_RcvingVar = 0;
 					UART_CRC = 0xff;
+					// Reset pointers
+					ui8Pointer = &ui8Pointerd;
+					i8Pointer = &i8Pointerd;
+					ui16Pointer = &ui16Pointerd;
+					i16Pointer = &i16Pointerd;
+					ui32Pointer = &ui32Pointerd;
+					i32Pointer = &i32Pointerd;
+					fPointer = &fPointerd;
 				}
 				break;
 			}
-			case VAR_F32NACELLETILT_FR:
+			case DATATYPE_I16:
 			{
-				// Float32
+				if(UART2_RcvdBytes == 7)
+				{
+					// Check CRC
+					if(0 == UART_CRC)
+					{
+						// Store var
+						UART_Conversion.ch[0] = UART2_RecBuffer[4];
+						UART_Conversion.ch[1] = UART2_RecBuffer[5];
+						*i16Pointer = UART_Conversion.i16[0];
+					}
+					UART2_RcvdBytes = 0;
+					UART2_RcvingVar = 0;
+					UART_CRC = 0xff;
+					// Reset pointers
+					ui8Pointer = &ui8Pointerd;
+					i8Pointer = &i8Pointerd;
+					ui16Pointer = &ui16Pointerd;
+					i16Pointer = &i16Pointerd;
+					ui32Pointer = &ui32Pointerd;
+					i32Pointer = &i32Pointerd;
+					fPointer = &fPointerd;
+				}
+				break;
+			}
+			case DATATYPE_UI32:
+			{
 				if(UART2_RcvdBytes == 9)
 				{
 					// Check CRC
@@ -393,17 +468,24 @@ int32_t UART_RcvData(uint8_t data)
 						UART_Conversion.ch[1] = UART2_RecBuffer[5];
 						UART_Conversion.ch[2] = UART2_RecBuffer[6];
 						UART_Conversion.ch[3] = UART2_RecBuffer[7];
-						FCFlightData.f32NacelleTilt_FR = UART_Conversion.f32[0];
+						*ui32Pointer = UART_Conversion.ui32[0];
 					}
 					UART2_RcvdBytes = 0;
 					UART2_RcvingVar = 0;
 					UART_CRC = 0xff;
+					// Reset pointers
+					ui8Pointer = &ui8Pointerd;
+					i8Pointer = &i8Pointerd;
+					ui16Pointer = &ui16Pointerd;
+					i16Pointer = &i16Pointerd;
+					ui32Pointer = &ui32Pointerd;
+					i32Pointer = &i32Pointerd;
+					fPointer = &fPointerd;
 				}
 				break;
 			}
-			case VAR_F32NACELLETILT_FL:
+			case DATATYPE_I32:
 			{
-				// Float32
 				if(UART2_RcvdBytes == 9)
 				{
 					// Check CRC
@@ -414,17 +496,25 @@ int32_t UART_RcvData(uint8_t data)
 						UART_Conversion.ch[1] = UART2_RecBuffer[5];
 						UART_Conversion.ch[2] = UART2_RecBuffer[6];
 						UART_Conversion.ch[3] = UART2_RecBuffer[7];
-						FCFlightData.f32NacelleTilt_FL = UART_Conversion.f32[0];
+						*i32Pointer = UART_Conversion.i32[0];
 					}
 					UART2_RcvdBytes = 0;
 					UART2_RcvingVar = 0;
 					UART_CRC = 0xff;
+					// Reset pointers
+					ui8Pointer = &ui8Pointerd;
+					i8Pointer = &i8Pointerd;
+					ui16Pointer = &ui16Pointerd;
+					i16Pointer = &i16Pointerd;
+					ui32Pointer = &ui32Pointerd;
+					i32Pointer = &i32Pointerd;
+					fPointer = &fPointerd;
 				}
 				break;
 			}
-			case VAR_F32NACELLETILT_R:
+			case DATATYPE_f:
 			{
-				// Float32
+				// float32
 				if(UART2_RcvdBytes == 9)
 				{
 					// Check CRC
@@ -435,21 +525,39 @@ int32_t UART_RcvData(uint8_t data)
 						UART_Conversion.ch[1] = UART2_RecBuffer[5];
 						UART_Conversion.ch[2] = UART2_RecBuffer[6];
 						UART_Conversion.ch[3] = UART2_RecBuffer[7];
-						FCFlightData.f32NacelleTilt_R = UART_Conversion.f32[0];
+						*fPointer = UART_Conversion.f32[0];
 					}
 					UART2_RcvdBytes = 0;
 					UART2_RcvingVar = 0;
 					UART_CRC = 0xff;
+					// Reset pointers
+					ui8Pointer = &ui8Pointerd;
+					i8Pointer = &i8Pointerd;
+					ui16Pointer = &ui16Pointerd;
+					i16Pointer = &i16Pointerd;
+					ui32Pointer = &ui32Pointerd;
+					i32Pointer = &i32Pointerd;
+					fPointer = &fPointerd;
 				}
 				break;
 			}
 			default:
 			{
+				ui8DataType = 0;
 				UART2_RcvdBytes = 0;
 				UART2_RcvingVar = 0;
 				UART_CRC = 0xff;
+				// Reset pointers
+				ui8Pointer = &ui8Pointerd;
+				i8Pointer = &i8Pointerd;
+				ui16Pointer = &ui16Pointerd;
+				i16Pointer = &i16Pointerd;
+				ui32Pointer = &ui32Pointerd;
+				i32Pointer = &i32Pointerd;
+				fPointer = &fPointerd;
 				break;
 			}
+
 		}
 	}
 	return 0;
@@ -476,8 +584,8 @@ int32_t UART_SendBuffer()
 	// If UART2 is not active
 	if(!UART2_Transferring)
 	{
-		// If buffer is half full
-		if(512 < UARTBuffer.count)
+		// Send when buffer has a lot of data
+		if(1000 < UARTBuffer.count)
 		{
 			// Copy data to transmit buffer
 			bytes = UART_CopyToTransmitBuf();

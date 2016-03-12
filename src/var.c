@@ -9,10 +9,10 @@
 
 // Variable for main loop state execution machine
 
-volatile uint16_t mainLoopState = 0;
-volatile uint16_t servoMovePosition = 0;
-volatile float32_t motorFRSpeed = 0.0f;
-volatile uint16_t readRS485Data = 0;
+ uint16_t mainLoopState = 0;
+ uint16_t servoMovePosition = 0;
+ float32_t motorFRSpeed = 0.0f;
+ uint16_t readRS485Data = 0;
 
 // Ring buffers for serial communications
 RING_BUFFER RB_USART1;

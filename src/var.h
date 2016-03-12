@@ -75,10 +75,10 @@ typedef union
 }__attribute__((aligned(4),packed)) CONVERTNUM;
 
 
-extern volatile uint16_t mainLoopState;
-extern volatile uint16_t servoMovePosition;
-extern volatile float32_t motorFRSpeed;
-extern volatile uint16_t readRS485Data;
+extern uint16_t mainLoopState;
+extern uint16_t servoMovePosition;
+extern float32_t motorFRSpeed;
+extern uint16_t readRS485Data;
 
 // Ring buffers for serial communications
 extern RING_BUFFER RB_USART1;
