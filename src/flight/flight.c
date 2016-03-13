@@ -124,8 +124,8 @@ void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 	// Set default PWM outputs
 
 	// Gear down
-	RCValues->ch[RC_GEAR].PWMOUT_Val = 2000;
-	RCValues->ch[RC_GEAR].PWMOUT = 2000;
+	RCValues->ch[RC_GEAR].PWMOUT_Val = 1000;
+	RCValues->ch[RC_GEAR].PWMOUT = 1000;
 
 	// Ailerons to midpoint
 	RCValues->ch[RC_AILERON_L].PWMOUT = 1500;
@@ -158,8 +158,8 @@ void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 // What to do if there is no RC input
 int16_t flight_decideAction(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 {
-	// Gear up
-	RCValues->ch[RC_GEAR].PWMOUT = 2000;
+	// Gear down
+	RCValues->ch[RC_GEAR].PWMOUT = 1000;
 
 	// Disarm
 	RC_Flags.bits.ARMED = 0;
@@ -698,7 +698,7 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 			RC_Flags.bits.PLANE = 0;
 
 			// Gear down
-			RCValues->ch[RC_GEAR].PWMOUT_Val = 2000;
+			RCValues->ch[RC_GEAR].PWMOUT_Val = 1000;
 			// Ailerons to midpoint
 			RCValues->ch[RC_AILERON_L].PWMOUT_Val = 1500;
 			RCValues->ch[RC_AILERON_R].PWMOUT_Val = 1500;
@@ -914,8 +914,8 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 	else if(RC_Flags.bits.HOVER)
 	{
 		// We are in hover mode, all maneuvering is done with motors, flaps/ailerons to middle
-		RCValues->ch[RC_AILERON_L].PWMOUT_Val = RCValues->ch[RC_AILERON_L].PWMIN_MID;
-		RCValues->ch[RC_AILERON_R].PWMOUT_Val = RCValues->ch[RC_AILERON_L].PWMIN_MID;
+		RCValues->ch[RC_AILERON_L].PWMOUT_Val = RCValues->ch[RC_AILERON_L].PWMOUT_Offset;
+		RCValues->ch[RC_AILERON_R].PWMOUT_Val = RCValues->ch[RC_AILERON_R].PWMOUT_Offset;
 
 		// Power is altitude output
 		f32Power = FCFlightData->PIDAltitude.outMax;
