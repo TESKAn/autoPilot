@@ -79,6 +79,8 @@ typedef struct
 	int16_t i16PWMMax;
 	int16_t i16SetRPM;
 	int16_t i16CurrentRPM;
+	int16_t i16SetParkPosition;
+	int16_t i16Empty;
 }__attribute__((aligned(4),packed)) FLIGHT_MOTOR;
 
 typedef struct

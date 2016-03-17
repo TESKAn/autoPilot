@@ -31,6 +31,8 @@ const int crc8_ucTable[ ] =
 
 // Variables
 uint8_t UART2_transmittBuffer[1024];
+uint8_t UART2_transmittStoreBuffer[1024];
+uint16_t ui16transmittStoreBufferCount = 0;
 uint8_t UART2_RecBuffer[16];
 uint8_t UART2_Transferring = 0;
 volatile uint8_t UART_CRC;
@@ -322,6 +324,26 @@ int32_t UART_RcvData(uint8_t data)
 				fPointer = &FCFlightData.PIDYaw.Kd;
 				break;
 			}
+
+			case VAR_MOTOR_FR_SETPARKPOSITION:
+			{
+				ui8DataType = DATATYPE_I16;
+				i16Pointer = &FCFlightData.MOTORS.FR.i16SetParkPosition;
+				break;
+			}
+			case VAR_MOTOR_FL_SETPARKPOSITION:
+			{
+				ui8DataType = DATATYPE_I16;
+				i16Pointer = &FCFlightData.MOTORS.FL.i16SetParkPosition;
+				break;
+			}
+			case VAR_MOTOR_R_SETPARKPOSITION:
+			{
+				ui8DataType = DATATYPE_I16;
+				i16Pointer = &FCFlightData.MOTORS.R.i16SetParkPosition;
+				break;
+			}
+
 			default:
 			{
 				ui8DataType = 0;

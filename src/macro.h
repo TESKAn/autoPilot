@@ -418,6 +418,12 @@
 #define VAR_MOTOR_FL_DCLINK             142
 #define VAR_MOTOR_R_DCLINK              143
 
+#define VAR_MOTOR_FR_POSITION           144
+#define VAR_MOTOR_FL_POSITION           145
+#define VAR_MOTOR_R_POSITION            146
+#define VAR_MOTOR_FR_SETPARKPOSITION    147
+#define VAR_MOTOR_FL_SETPARKPOSITION    148
+#define VAR_MOTOR_R_SETPARKPOSITION     149
 
 
 

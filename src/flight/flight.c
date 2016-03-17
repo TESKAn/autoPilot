@@ -76,6 +76,11 @@ void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 	FCFlightData->MOTORS.R.ui8Park = 0;
 	FCFlightData->MOTORS.R.ui8UsePWM = 0;
 
+	// Set motor park positions
+	FCFlightData->MOTORS.FR.i16SetParkPosition = 2294;
+	FCFlightData->MOTORS.FL.i16SetParkPosition = 2402;
+	FCFlightData->MOTORS.R.i16SetParkPosition = 1998;
+
 	FCFlightData->f32MinPlaneSpeed = RC_DEFAULT_PLANE_MIN_SPEED;
 	FCFlightData->f32MaxHoverSpeed = RC_DEFAULT_HOVER_MAX_SPEED;
 	FCFlightData->f32NacelleTiltSpeed = RC_DEFAULT_TILT_SPEED;
@@ -281,12 +286,12 @@ void flight_checkRCInputs(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 	// Set gear
 	if(0 < RCValues->ch[RC_GEAR_GYRO].PWMIN_Zero)
 	{
-		// Gear up
+		// Gear down
 		 RCValues->ch[RC_GEAR].PWMOUT_Val = 1000;
 	}
 	else
 	{
-		// Gear down
+		// Gear up
 		RCValues->ch[RC_GEAR].PWMOUT_Val = 2000;
 	}
 	//***********************************
@@ -341,7 +346,7 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 					// Reverse motor FR
 					FCFlightData->MOTORS.FR.ui8ReverseRotation = 1;
 					FCFlightData->MOTORS.FL.ui8ReverseRotation = 0;
-					FCFlightData->MOTORS.R.ui8ReverseRotation = 0;
+					FCFlightData->MOTORS.R.ui8ReverseRotation = 1;
 					// Enable motors
 					FCFlightData->MOTORS.FR.ui8Enable = 1;
 					FCFlightData->MOTORS.FL.ui8Enable = 1;
@@ -996,7 +1001,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 			if(RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val < RCValues->i16YawValue) RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val = RCValues->i16YawValue;
 		}
 
-		//RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val = f32Temp;
+		RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val = 1500.0f;
 
 	}
 	else

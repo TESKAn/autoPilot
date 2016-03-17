@@ -24,6 +24,7 @@ int16_t CheckRCInputTimeouts()
 		}
 		else
 		{
+			RCData.ch[i].PWM_Good = 1;
 			goodChannels++;
 		}
 	}
@@ -143,8 +144,8 @@ int16_t SendCommData()
 	UART_QueueMessageui16(VAR_SERVO_R_TEMPERATURE, (UInt16)RS485Servo_R.REGS.ui8PresentTemperature);
 	// 5*7=35
 	// 689
-	UART_QueueMessageui32(VAR_UI32FLIGHTSTATEMACHINE, FCFlightData.ui32FlightStateMachine);
-	UART_QueueMessageui32(VAR_UI32FLIGHTINITSTATE, FCFlightData.ui32FlightInitState);
+	//UART_QueueMessageui32(VAR_UI32FLIGHTSTATEMACHINE, FCFlightData.ui32FlightStateMachine);
+	//UART_QueueMessageui32(VAR_UI32FLIGHTINITSTATE, FCFlightData.ui32FlightInitState);
 	// 2*9=18
 
 	UART_QueueMessageui16(VAR_MOTOR_FR_TEMPERATURE, (UInt16)RS485Motor_FR.REGS.ui8PresentTemperature);
@@ -153,7 +154,7 @@ int16_t SendCommData()
 	// 3*7=21
 	// 728
 
-	UART_QueueMessageui32(VAR_UI32FLIGHTDEINITSTATE, FCFlightData.ui32FlightDeInitStates);
+	//UART_QueueMessageui32(VAR_UI32FLIGHTDEINITSTATE, FCFlightData.ui32FlightDeInitStates);
 	// 1*9=9
 	// 737
 	UART_QueueMessageui16(VAR_UI16REQUESTEDPOSITION_FR, FCFlightData.TILT_SERVOS.FR.ui16RequestedPosition);
@@ -211,6 +212,13 @@ int16_t SendCommData()
 	UART_QueueMessagei16(VAR_MOTOR_FL_DCLINK, RS485Motor_FL.REGS.i16UIn);
 	UART_QueueMessagei16(VAR_MOTOR_R_DCLINK, RS485Motor_R.REGS.i16UIn);
 
+	UART_QueueMessagei16(VAR_MOTOR_FR_POSITION, RS485Motor_FR.REGS.i16Position);
+	UART_QueueMessagei16(VAR_MOTOR_FL_POSITION, RS485Motor_FL.REGS.i16Position);
+	UART_QueueMessagei16(VAR_MOTOR_R_POSITION, RS485Motor_R.REGS.i16Position);
+
+	//UART_QueueMessagei16(VAR_MOTOR_FR_SETPARKPOSITION, FCFlightData.MOTORS.FR.i16SetParkPosition);
+	//UART_QueueMessagei16(VAR_MOTOR_FL_SETPARKPOSITION, FCFlightData.MOTORS.FL.i16SetParkPosition);
+	//UART_QueueMessagei16(VAR_MOTOR_R_SETPARKPOSITION, FCFlightData.MOTORS.R.i16SetParkPosition);
 
 
 	UART_QueueMessageui32(VAR_UI32TESTVAR, ui32TestVar);
@@ -431,6 +439,19 @@ int16_t CheckMotor(RS485MOTOR* motor)
 				motor->ui8FreshData = 0;
 			}
 		}
+		//***********************************
+
+		//***********************************
+		// Check park position
+
+		// Check
+		if(FMotorData->i16SetParkPosition != motor->REGS.i16ParkPosition)
+		{
+			RS485_WriteSlaveReg16(motor->REGS.ui8ID, MOTORREG_PARKPOSITION, FMotorData->i16SetParkPosition);
+			motor->ui8FreshData = 0;
+		}
+
+		//***********************************
 	}
 	//***********************************
 
