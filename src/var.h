@@ -207,6 +207,7 @@ extern char FSBuffer[FATFS_BUFF_SIZE];	// Pointer to buffer for file write
 
 // UART2 buffer
 extern uint8_t UART2Buffer[1024];
+extern uint8_t ui8BufferToSend;
 
 extern volatile CONVERTNUM convertNumFormat;
 

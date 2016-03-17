@@ -144,8 +144,8 @@ int16_t SendCommData()
 	UART_QueueMessageui16(VAR_SERVO_R_TEMPERATURE, (UInt16)RS485Servo_R.REGS.ui8PresentTemperature);
 	// 5*7=35
 	// 689
-	//UART_QueueMessageui32(VAR_UI32FLIGHTSTATEMACHINE, FCFlightData.ui32FlightStateMachine);
-	//UART_QueueMessageui32(VAR_UI32FLIGHTINITSTATE, FCFlightData.ui32FlightInitState);
+	UART_QueueMessageui32(VAR_UI32FLIGHTSTATEMACHINE, FCFlightData.ui32FlightStateMachine);
+	UART_QueueMessageui32(VAR_UI32FLIGHTINITSTATE, FCFlightData.ui32FlightInitState);
 	// 2*9=18
 
 	UART_QueueMessageui16(VAR_MOTOR_FR_TEMPERATURE, (UInt16)RS485Motor_FR.REGS.ui8PresentTemperature);
@@ -154,7 +154,7 @@ int16_t SendCommData()
 	// 3*7=21
 	// 728
 
-	//UART_QueueMessageui32(VAR_UI32FLIGHTDEINITSTATE, FCFlightData.ui32FlightDeInitStates);
+	UART_QueueMessageui32(VAR_UI32FLIGHTDEINITSTATE, FCFlightData.ui32FlightDeInitStates);
 	// 1*9=9
 	// 737
 	UART_QueueMessageui16(VAR_UI16REQUESTEDPOSITION_FR, FCFlightData.TILT_SERVOS.FR.ui16RequestedPosition);
@@ -204,6 +204,22 @@ int16_t SendCommData()
 	// 4*9=36
 	// 992
 
+
+
+
+	UART_QueueMessageui32(VAR_UI32TESTVAR, ui32TestVar);
+
+	while(0 != UART2_Transferring)
+	{
+
+	}
+	UART_SendBuffer();
+	return 0;
+}
+
+
+int16_t SendCommData1()
+{
 	UART_QueueMessagef(VAR_YAW_ACT, FCFlightData.ORIENTATION.f32Yaw);
 	UART_QueueMessagef(VAR_YAW_REQ, FCFlightData.ORIENTATION_REQUIRED.f32Yaw);
 	UART_QueueMessagef(VAR_YAW_ERR, FCFlightData.PIDYaw.em);
@@ -216,12 +232,15 @@ int16_t SendCommData()
 	UART_QueueMessagei16(VAR_MOTOR_FL_POSITION, RS485Motor_FL.REGS.i16Position);
 	UART_QueueMessagei16(VAR_MOTOR_R_POSITION, RS485Motor_R.REGS.i16Position);
 
-	//UART_QueueMessagei16(VAR_MOTOR_FR_SETPARKPOSITION, FCFlightData.MOTORS.FR.i16SetParkPosition);
-	//UART_QueueMessagei16(VAR_MOTOR_FL_SETPARKPOSITION, FCFlightData.MOTORS.FL.i16SetParkPosition);
-	//UART_QueueMessagei16(VAR_MOTOR_R_SETPARKPOSITION, FCFlightData.MOTORS.R.i16SetParkPosition);
+	UART_QueueMessagei16(VAR_MOTOR_FR_SETPARKPOSITION, FCFlightData.MOTORS.FR.i16SetParkPosition);
+	UART_QueueMessagei16(VAR_MOTOR_FL_SETPARKPOSITION, FCFlightData.MOTORS.FL.i16SetParkPosition);
+	UART_QueueMessagei16(VAR_MOTOR_R_SETPARKPOSITION, FCFlightData.MOTORS.R.i16SetParkPosition);
 
+	while(0 != UART2_Transferring)
+	{
 
-	UART_QueueMessageui32(VAR_UI32TESTVAR, ui32TestVar);
+	}
+	UART_SendBuffer();
 	return 0;
 }
 

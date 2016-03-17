@@ -152,7 +152,26 @@ int main(void)
     	if(COMM_SEND_DATA)
     	{
     		COMM_SEND_DATA = 0;
-    		SendCommData();
+    		switch(ui8BufferToSend)
+    		{
+				case 0:
+				{
+					SendCommData();
+					ui8BufferToSend = 1;
+					break;
+				}
+				case 1:
+				{
+					SendCommData1();
+					ui8BufferToSend = 0;
+					break;
+				}
+				default:
+				{
+					ui8BufferToSend = 0;
+					break;
+				}
+    		}
     	}
 #else
     	// Check freemaster

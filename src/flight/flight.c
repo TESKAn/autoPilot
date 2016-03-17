@@ -286,13 +286,13 @@ void flight_checkRCInputs(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 	// Set gear
 	if(0 < RCValues->ch[RC_GEAR_GYRO].PWMIN_Zero)
 	{
-		// Gear down
-		 RCValues->ch[RC_GEAR].PWMOUT_Val = 1000;
+		// Gear up
+		RCValues->ch[RC_GEAR].PWMOUT_Val = 2000;
 	}
 	else
 	{
-		// Gear up
-		RCValues->ch[RC_GEAR].PWMOUT_Val = 2000;
+		// Gear down
+		 RCValues->ch[RC_GEAR].PWMOUT_Val = 1000;
 	}
 	//***********************************
 

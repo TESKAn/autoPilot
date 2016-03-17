@@ -30,6 +30,7 @@ typedef struct
 
   int16_t CheckRCInputTimeouts();
 int16_t SendCommData();
+int16_t SendCommData1();
 void calibrateI2CSensors(void);
 void Refresh485();
 int16_t CheckMotor(RS485MOTOR* motor);
