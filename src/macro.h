@@ -425,6 +425,25 @@
 #define VAR_MOTOR_FL_SETPARKPOSITION    148
 #define VAR_MOTOR_R_SETPARKPOSITION     149
 
+#define VAR_THROTTLE_INPUT              150
+
+#define VAR_RC_AILERON_MAX              151
+#define VAR_RC_ELEVATOR_MAX             152
+#define VAR_RC_THROTTLE_MAX             153
+#define VAR_RC_RUDDER_MAX               154
+#define VAR_RC_AILERON_MIN              155
+#define VAR_RC_ELEVATOR_MIN             156
+#define VAR_RC_THROTTLE_MIN             157
+#define VAR_RC_RUDDER_MIN               158
+
+#define VAR_ROLL_REQ                    159
+#define VAR_PITCH_REQ                   160
+
+#define VAR_PWM_FR                      161
+#define VAR_PWM_FL                      162
+#define VAR_PWM_R                       163
+
+
 
 
 #endif /* MACRO_H_ */

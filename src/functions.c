@@ -236,6 +236,31 @@ int16_t SendCommData1()
 	UART_QueueMessagei16(VAR_MOTOR_FL_SETPARKPOSITION, FCFlightData.MOTORS.FL.i16SetParkPosition);
 	UART_QueueMessagei16(VAR_MOTOR_R_SETPARKPOSITION, FCFlightData.MOTORS.R.i16SetParkPosition);
 
+	UART_QueueMessagef(VAR_THROTTLE_INPUT, RCData.f32ThrottleValue);
+
+	UART_QueueMessagef(VAR_RC_AILERON_MAX, RCData.ch[RC_AILERON].PWMMax);
+	UART_QueueMessagef(VAR_RC_AILERON_MIN, RCData.ch[RC_AILERON].PWMMin);
+
+	UART_QueueMessagef(VAR_RC_ELEVATOR_MAX, RCData.ch[RC_ELEVATOR].PWMMax);
+	UART_QueueMessagef(VAR_RC_ELEVATOR_MIN, RCData.ch[RC_ELEVATOR].PWMMin);
+
+	UART_QueueMessagef(VAR_RC_THROTTLE_MAX, RCData.ch[RC_THROTTLE].PWMMax);
+	UART_QueueMessagef(VAR_RC_THROTTLE_MIN, RCData.ch[RC_THROTTLE].PWMMin);
+
+	UART_QueueMessagef(VAR_RC_RUDDER_MAX, RCData.ch[RC_RUDDER].PWMMax);
+	UART_QueueMessagef(VAR_RC_RUDDER_MIN, RCData.ch[RC_RUDDER].PWMMin);
+
+	UART_QueueMessagef(VAR_ROLL_REQ, FCFlightData.ORIENTATION_REQUIRED.f32Roll);
+	UART_QueueMessagef(VAR_PITCH_REQ, FCFlightData.ORIENTATION_REQUIRED.f32Pitch);
+
+	UART_QueueMessagef(VAR_PWM_FR, RCData.ch[RC_MOTOR_FR].PWMOUT_Val);
+	UART_QueueMessagef(VAR_PWM_FL, RCData.ch[RC_MOTOR_FL].PWMOUT_Val);
+	UART_QueueMessagef(VAR_PWM_R, RCData.ch[RC_MOTOR_R].PWMOUT_Val);
+
+
+
+
+
 	while(0 != UART2_Transferring)
 	{
 

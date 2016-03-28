@@ -61,9 +61,10 @@ void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 	FCFlightData->ORIENTATION_REQUIRED.f32Speed = 0.0f;
 	FCFlightData->ORIENTATION_REQUIRED.f32Power = 0.0f;
 
-	FCFlightData->ORIENTATION_LIMITS.f32RollLimit = 2.0f;
-	FCFlightData->ORIENTATION_LIMITS.f32PitchLimit = 2.0f;
-	FCFlightData->ORIENTATION_LIMITS.f32YawLimit = 360.0f;
+	// Limits in radians
+	FCFlightData->ORIENTATION_LIMITS.f32RollLimit = 30.0f / 57.2957795f;
+	FCFlightData->ORIENTATION_LIMITS.f32PitchLimit = 30.0f / 57.2957795f;
+	FCFlightData->ORIENTATION_LIMITS.f32YawLimit = 360.0f / 57.2957795f;
 
 	// Disable motors
 	FCFlightData->MOTORS.FR.ui8Enable = 0;
@@ -77,7 +78,7 @@ void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 	FCFlightData->MOTORS.R.ui8UsePWM = 0;
 
 	// Set motor park positions
-	FCFlightData->MOTORS.FR.i16SetParkPosition = 2294;
+	FCFlightData->MOTORS.FR.i16SetParkPosition = 2330;
 	FCFlightData->MOTORS.FL.i16SetParkPosition = 2402;
 	FCFlightData->MOTORS.R.i16SetParkPosition = 1998;
 
@@ -153,8 +154,8 @@ void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 	RCValues->i16YawValue = 1500;
 
 
-	RCValues->SCALES.f32AileronScale = RCValues->ch[RC_AILERON].PWMDiff / FCFlightData->ORIENTATION_LIMITS.f32RollLimit;
-	RCValues->SCALES.f32ElevatorScale = RCValues->ch[RC_ELEVATOR].PWMDiff / FCFlightData->ORIENTATION_LIMITS.f32PitchLimit;
+	RCValues->SCALES.f32AileronScale =  FCFlightData->ORIENTATION_LIMITS.f32RollLimit / RCValues->ch[RC_AILERON].PWMDiff;
+	RCValues->SCALES.f32ElevatorScale = FCFlightData->ORIENTATION_LIMITS.f32PitchLimit / RCValues->ch[RC_ELEVATOR].PWMDiff;
 
 	RCValues->SCALES.f32RudderScale = RC_IN_DEFAULT_SCALE_RUDDER;
 	RCValues->SCALES.f32ThrottleScale = RC_IN_DEFAULT_SCALE_THROTTLE;
@@ -194,6 +195,8 @@ void flight_checkRCInputs(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		}
 		// Store current altitude as zero altitude
 		FCFlightData->ORIENTATION.f32ZeroAltitude = FCFlightData->ORIENTATION.f32Altitude;
+		// Store current heading as zero heading
+		FCFlightData->ORIENTATION_REQUIRED.f32Yaw = FCFlightData->ORIENTATION.f32Yaw;
 	}
 
 	// Check input limits
@@ -201,42 +204,45 @@ void flight_checkRCInputs(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 	{
 		f32Temp = (float32_t)RCValues->ch[i].PWMIN;
 		// Over max, under min
-		if(f32Temp < RCValues->ch[i].PWMMin)
+		// PWM value makes sense?
+		if((2300 > RCValues->ch[i].PWMIN)&&(700 < RCValues->ch[i].PWMIN))
 		{
-			RCValues->ch[i].PWMMin = f32Temp;
-			RCValues->ch[i].PWMDiff = RCValues->ch[i].PWMMax - RCValues->ch[i].PWMMin;
-			// Recalculate scales
-			if(RC_AILERON == i)
+			if(f32Temp < RCValues->ch[i].PWMMin)
 			{
-				RCValues->SCALES.f32AileronScale = FCFlightData->ORIENTATION_LIMITS.f32RollLimit / RCValues->ch[RC_AILERON].PWMDiff;
+				RCValues->ch[i].PWMMin = f32Temp;
+				RCValues->ch[i].PWMDiff = RCValues->ch[i].PWMMax - RCValues->ch[i].PWMMin;
+				// Recalculate scales
+				if(RC_AILERON == i)
+				{
+					RCValues->SCALES.f32AileronScale =  FCFlightData->ORIENTATION_LIMITS.f32RollLimit / RCValues->ch[RC_AILERON].PWMDiff;
+				}
+				else if(RC_ELEVATOR == i)
+				{
+					RCValues->SCALES.f32ElevatorScale = FCFlightData->ORIENTATION_LIMITS.f32PitchLimit / RCValues->ch[RC_ELEVATOR].PWMDiff;
+				}
 			}
-			else if(RC_ELEVATOR == i)
+			if(f32Temp > RCValues->ch[i].PWMMax)
 			{
-				RCValues->SCALES.f32ElevatorScale = FCFlightData->ORIENTATION_LIMITS.f32PitchLimit / RCValues->ch[RC_ELEVATOR].PWMDiff;
+				RCValues->ch[i].PWMMax = f32Temp;
+				RCValues->ch[i].PWMDiff = RCValues->ch[i].PWMMax - RCValues->ch[i].PWMMin;
+				// Recalculate scales
+				if(RC_AILERON == i)
+				{
+					RCValues->SCALES.f32AileronScale = FCFlightData->ORIENTATION_LIMITS.f32RollLimit / RCValues->ch[RC_AILERON].PWMDiff;
+				}
+				else if(RC_ELEVATOR == i)
+				{
+					RCValues->SCALES.f32ElevatorScale = FCFlightData->ORIENTATION_LIMITS.f32PitchLimit / RCValues->ch[RC_ELEVATOR].PWMDiff;
+				}
+			}
+			// Calculate current value
+			RCValues->ch[i].PWMIN_Zero = (float32_t)RCValues->ch[i].PWMIN - RCValues->ch[i].PWMIN_MID;
+			// Remove deadzone
+			if((RCValues->ch[i].PWMIN_DeadZone > RCValues->ch[i].PWMIN_Zero) && (-RCValues->ch[i].PWMIN_DeadZone < RCValues->ch[i].PWMIN_Zero))
+			{
+				RCValues->ch[i].PWMIN_Zero = 0.0f;
 			}
 		}
-		if(f32Temp > RCValues->ch[i].PWMMax)
-		{
-			RCValues->ch[i].PWMMax = f32Temp;
-			RCValues->ch[i].PWMDiff = RCValues->ch[i].PWMMax - RCValues->ch[i].PWMMin;
-			// Recalculate scales
-			if(RC_AILERON == i)
-			{
-				RCValues->SCALES.f32AileronScale = FCFlightData->ORIENTATION_LIMITS.f32RollLimit / RCValues->ch[RC_AILERON].PWMDiff;
-			}
-			else if(RC_ELEVATOR == i)
-			{
-				RCValues->SCALES.f32ElevatorScale = FCFlightData->ORIENTATION_LIMITS.f32PitchLimit / RCValues->ch[RC_ELEVATOR].PWMDiff;
-			}
-		}
-		// Calculate current value
-		RCValues->ch[i].PWMIN_Zero = (float32_t)RCValues->ch[i].PWMIN - RCValues->ch[i].PWMIN_MID;
-		// Remove deadzone
-		if((RCValues->ch[i].PWMIN_DeadZone > RCValues->ch[i].PWMIN_Zero) && (-RCValues->ch[i].PWMIN_DeadZone < RCValues->ch[i].PWMIN_Zero))
-		{
-			RCValues->ch[i].PWMIN_Zero = 0.0f;
-		}
-
 	}
 	// Decode RC inputs and turn them into flight data commands
 
@@ -244,11 +250,16 @@ void flight_checkRCInputs(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 	if(RC_Flags.bits.HOVER)
 	{
 		// Turn throttle to limit for altitude reg.
-		FCFlightData->PIDAltitude.outMax = (RCValues->ch[RC_THROTTLE].PWMIN_Zero / RCValues->ch[RC_THROTTLE].PWMDiff) * 2.0f;
-		// Throttle is allways positive
-		if(0 > FCFlightData->PIDAltitude.outMax) FCFlightData->PIDAltitude.outMax = -FCFlightData->PIDAltitude.outMax;
-		// Max throttle is 1
-		if(1.0f < FCFlightData->PIDAltitude.outMax) FCFlightData->PIDAltitude.outMax = 1.0f;
+		f32Temp = (float32_t)RCValues->ch[RC_THROTTLE].PWMIN;
+		f32Temp -= RCValues->ch[RC_THROTTLE].PWMMin;
+		f32Temp /= RCValues->ch[RC_THROTTLE].PWMDiff;
+		f32Temp = 1 - f32Temp;
+		f32Temp -= 0.05f;
+		if(0.0f > f32Temp) f32Temp = 0.0f;
+
+		RCValues->f32ThrottleValue = f32Temp;
+
+		FCFlightData->PIDAltitude.outMax = f32Temp;//(RCValues->ch[RC_THROTTLE].PWMIN_Zero / RCValues->ch[RC_THROTTLE].PWMDiff) * 2.0f;
 
 		// And use it for altitude adjust
 		FCFlightData->ORIENTATION_REQUIRED.f32Altitude += 0.0001f*(RCValues->ch[RC_THROTTLE].PWMIN_Zero);
@@ -281,6 +292,17 @@ void flight_checkRCInputs(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		{
 			FCFlightData->ORIENTATION_REQUIRED.f32Yaw = -3.141593f;
 		}
+	}
+	else
+	{
+		// Turn throttle to limit for altitude reg.
+		f32Temp = (float32_t)RCValues->ch[RC_THROTTLE].PWMIN;
+		f32Temp -= RCValues->ch[RC_THROTTLE].PWMMin;
+		f32Temp /= RCValues->ch[RC_THROTTLE].PWMDiff;
+		f32Temp = 1 - f32Temp;
+		f32Temp -= 0.05f;
+		if(0.0f > f32Temp) f32Temp = 0.0f;
+		RCValues->f32ThrottleValue = f32Temp;
 	}
 	//***********************************
 	// Set gear
@@ -510,7 +532,7 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 							{
 								// Set new position
 								FCFlightData->f32NacelleTilt_FR = 94.0f;
-								FCFlightData->f32NacelleTilt_FL = 96.0f;
+								FCFlightData->f32NacelleTilt_FL = 94.0f;
 								FCFlightData->f32NacelleTilt_R = 100.0f;
 								// Wait
 								FCFlightData->ui32FlightInitState = FINIT_WAIT_SPOS_VTOL;
@@ -527,21 +549,32 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 						{
 							if((ANGLE_DEV_VTOL_N < FCFlightData->TILT_SERVOS.R.f32ServoAngle)&&(ANGLE_DEV_VTOL_P > FCFlightData->TILT_SERVOS.R.f32ServoAngle))
 							{
-								// Go out of park and enable PWM in
-								FCFlightData->MOTORS.FR.ui8Park = 0;
-								FCFlightData->MOTORS.FL.ui8Park = 0;
-								FCFlightData->MOTORS.R.ui8Park = 0;
-								FCFlightData->MOTORS.FR.ui8UsePWM = 1;
-								FCFlightData->MOTORS.FL.ui8UsePWM = 1;
-								FCFlightData->MOTORS.R.ui8UsePWM = 1;
-								// End init, go to hover stabilize
-								FCFlightData->ui32FlightInitState = FINIT_IDLE;
-								FCFlightData->ui32FlightStateMachine = FLIGHT_STABILIZE_HOVER;
-								RC_Flags.bits.HOVER = 1;
-								RC_Flags.bits.PLANE = 0;
-								RC_Flags.bits.TRANSITION = 0;
+								// Wait throttle null
+								FCFlightData->ui32FlightInitState = FINIT_WAIT_THROTTLE_NULL;
 							}
 						}
+					}
+					break;
+				}
+				case FINIT_WAIT_THROTTLE_NULL:
+				{
+					if(0.05f > RCValues->f32ThrottleValue)
+					{
+						// Go out of park and enable PWM in
+						// Disable PWM inputs for testinf
+						FCFlightData->MOTORS.FR.ui8Park = 0;
+						FCFlightData->MOTORS.FL.ui8Park = 0;
+						FCFlightData->MOTORS.R.ui8Park = 0;
+						FCFlightData->MOTORS.FR.ui8UsePWM = 1;
+						FCFlightData->MOTORS.FL.ui8UsePWM = 1;
+						FCFlightData->MOTORS.R.ui8UsePWM = 1;
+
+						// End init, go to hover stabilize
+						FCFlightData->ui32FlightInitState = FINIT_IDLE;
+						FCFlightData->ui32FlightStateMachine = FLIGHT_STABILIZE_HOVER;
+						RC_Flags.bits.HOVER = 1;
+						RC_Flags.bits.PLANE = 0;
+						RC_Flags.bits.TRANSITION = 0;
 					}
 					break;
 				}
@@ -983,6 +1016,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		// Let's assume that 1000 is 90 deg
 		// So 1 deg is 11.11 q
 		// Mult by 57,324840764331210191082802547771 to get from rad to deg
+		// Together 636,942...
 		f32Temp = FCFlightData->PIDYaw.s * 636.94267516f;
 		// Limit nacelle roll
 		if(MAX_NACELLE_ROLL < f32Temp) f32Temp = MAX_NACELLE_ROLL;
@@ -1001,7 +1035,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 			if(RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val < RCValues->i16YawValue) RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val = RCValues->i16YawValue;
 		}
 
-		RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val = 1500.0f;
+		//RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val = 1500.0f;
 
 	}
 	else

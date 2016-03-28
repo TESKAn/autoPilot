@@ -223,6 +223,9 @@ typedef struct
 
 	RC_CHANNEL ch[12];
 
+	// Throttle input
+	float32_t f32ThrottleValue;
+
 	uint16_t RSSI;
 	uint16_t ostanek;
 	uint8_t inputs_ok;
