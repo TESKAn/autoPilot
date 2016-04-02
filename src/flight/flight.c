@@ -963,7 +963,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		// Calculate motor power ratios
 		// Motor FR
 		f32Temp = 0.5f+FCFlightData->PIDPitch.s;
-		f32Temp1 = 0.5f+FCFlightData->PIDRoll.s;
+		f32Temp1 = 0.5f-FCFlightData->PIDRoll.s;
 		f32Temp *= f32Temp1;
 		// Get power
 		f32Temp *= f32Power;
@@ -980,7 +980,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 
 		// Motor FL
 		f32Temp = 0.5f+FCFlightData->PIDPitch.s;
-		f32Temp1 = 0.5f-FCFlightData->PIDRoll.s;
+		f32Temp1 = 0.5f+FCFlightData->PIDRoll.s;
 		f32Temp *= f32Temp1;
 		// Get power
 		f32Temp *= f32Power;

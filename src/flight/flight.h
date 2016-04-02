@@ -52,8 +52,8 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 #define RC_AILERON_R	1
 
 #define RC_MOTOR_R_TILT	7
-#define RC_MOTOR_FL		8
-#define RC_MOTOR_FR		9
+#define RC_MOTOR_FR		8
+#define RC_MOTOR_FL		9
 #define RC_MOTOR_R		10
 
 #define RC_GEAR			11
