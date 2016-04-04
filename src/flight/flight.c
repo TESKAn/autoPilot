@@ -961,9 +961,17 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		//f32Power = 0.215f;
 
 		// Calculate motor power ratios
+
+
+		// Use RC inputs to control roll and pitch
+		//FCFlightData->ORIENTATION_REQUIRED.f32Pitch
+		//FCFlightData->ORIENTATION_REQUIRED.f32Roll
+
+
 		// Motor FR
-		f32Temp = 0.5f+FCFlightData->PIDPitch.s;
-		f32Temp1 = 0.5f-FCFlightData->PIDRoll.s;
+		f32Temp = 0.5f + FCFlightData->ORIENTATION_REQUIRED.f32Pitch;//FCFlightData->PIDPitch.s;
+		f32Temp1 = 0.5f - FCFlightData->ORIENTATION_REQUIRED.f32Roll;//FCFlightData->PIDRoll.s;
+
 		f32Temp *= f32Temp1;
 		// Get power
 		f32Temp *= f32Power;
@@ -979,8 +987,8 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		RCValues->ch[RC_MOTOR_FR].PWMOUT_Val = f32Temp;
 
 		// Motor FL
-		f32Temp = 0.5f+FCFlightData->PIDPitch.s;
-		f32Temp1 = 0.5f+FCFlightData->PIDRoll.s;
+		f32Temp = 0.5f + FCFlightData->ORIENTATION_REQUIRED.f32Pitch;//FCFlightData->PIDPitch.s;
+		f32Temp1 = 0.5f + FCFlightData->ORIENTATION_REQUIRED.f32Roll;//FCFlightData->PIDRoll.s;
 		f32Temp *= f32Temp1;
 		// Get power
 		f32Temp *= f32Power;
@@ -996,7 +1004,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		RCValues->ch[RC_MOTOR_FL].PWMOUT_Val = f32Temp;
 
 		// Motor R
-		f32Temp = 0.5f-FCFlightData->PIDPitch.s;
+		f32Temp = 0.5f - FCFlightData->ORIENTATION_REQUIRED.f32Pitch;//FCFlightData->PIDPitch.s;
 		f32Temp1 = cosf(FCFlightData->PIDYaw.s);
 		f32Temp /= f32Temp1;
 		// Get power
