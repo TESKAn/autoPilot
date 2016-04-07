@@ -62,8 +62,8 @@ void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 	FCFlightData->ORIENTATION_REQUIRED.f32Power = 0.0f;
 
 	// Limits in radians
-	FCFlightData->ORIENTATION_LIMITS.f32RollLimit = 30.0f / 57.2957795f;
-	FCFlightData->ORIENTATION_LIMITS.f32PitchLimit = 30.0f / 57.2957795f;
+	FCFlightData->ORIENTATION_LIMITS.f32RollLimit = 10.0f / 57.2957795f;
+	FCFlightData->ORIENTATION_LIMITS.f32PitchLimit = 10.0f / 57.2957795f;
 	FCFlightData->ORIENTATION_LIMITS.f32YawLimit = 360.0f / 57.2957795f;
 
 	// Disable motors
@@ -962,7 +962,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 
 		// Calculate motor power ratios
 		// Motor FR
-		f32Temp = 0.5f+FCFlightData->PIDPitch.s;
+		f32Temp = 0.6f+FCFlightData->PIDPitch.s;
 		f32Temp1 = 0.5f-FCFlightData->PIDRoll.s;
 		f32Temp *= f32Temp1;
 		// Get power
@@ -979,7 +979,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		RCValues->ch[RC_MOTOR_FR].PWMOUT_Val = f32Temp;
 
 		// Motor FL
-		f32Temp = 0.5f+FCFlightData->PIDPitch.s;
+		f32Temp = 0.6f+FCFlightData->PIDPitch.s;
 		f32Temp1 = 0.5f+FCFlightData->PIDRoll.s;
 		f32Temp *= f32Temp1;
 		// Get power
@@ -996,7 +996,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		RCValues->ch[RC_MOTOR_FL].PWMOUT_Val = f32Temp;
 
 		// Motor R
-		f32Temp = 0.5f-FCFlightData->PIDPitch.s;
+		f32Temp = 0.4f-FCFlightData->PIDPitch.s;
 		f32Temp1 = cosf(FCFlightData->PIDYaw.s);
 		f32Temp /= f32Temp1;
 		// Get power
