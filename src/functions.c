@@ -257,7 +257,9 @@ int16_t SendCommData1()
 	UART_QueueMessagef(VAR_PWM_FL, RCData.ch[RC_MOTOR_FL].PWMOUT_Val);
 	UART_QueueMessagef(VAR_PWM_R, RCData.ch[RC_MOTOR_R].PWMOUT_Val);
 
-
+	UART_QueueMessagei16(VAR_MOTOR_FR_IIN, RS485Motor_FR.REGS.i16IIn);
+	UART_QueueMessagei16(VAR_MOTOR_FL_IIN, RS485Motor_FL.REGS.i16IIn);
+	UART_QueueMessagei16(VAR_MOTOR_R_IIN, RS485Motor_R.REGS.i16IIn);
 
 
 

@@ -316,7 +316,6 @@ int32_t UART_RcvData(uint8_t data)
 				fPointer = &FCFlightData.PIDYaw.Kd;
 				break;
 			}
-
 			case VAR_MOTOR_FR_SETPARKPOSITION:
 			{
 				ui8DataType = DATATYPE_I16;

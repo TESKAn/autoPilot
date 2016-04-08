@@ -443,6 +443,9 @@
 #define VAR_PWM_FL                      162
 #define VAR_PWM_R                       163
 
+#define VAR_MOTOR_FR_IIN                164
+#define VAR_MOTOR_FL_IIN                165
+#define VAR_MOTOR_R_IIN                 166
 
 
 

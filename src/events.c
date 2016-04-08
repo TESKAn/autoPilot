@@ -601,31 +601,33 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 					// Store system time
 					fusionData.deltaTime = systemTime - fusionData.dataTime;
 					fusionData.dataTime = systemTime;
+					// Check flight
+					ui32FlightCheckCounter++;
+					if(ui32FlightCheckCounter > ui32FlightCheckInterval)
+					{
+						ui32FlightCheckCounter = 0;
+						// Run flight check algorithms
+						if(1 == RCData.inputs_ok)
+						{
+							flight_checkRCInputs(&FCFlightData, &RCData);
+						}
+						else
+						{
+							flight_decideAction(&FCFlightData, &RCData);
+						}
+						// Check flight states
+						flight_checkStates(&FCFlightData, &RCData);
+						// Get new servo values
+						flight_decodeServos(&FCFlightData, &RCData);
+						// Refresh PWM outputs
+						refreshPWMOutputs();
+					}
+					// Update RS485
+					Refresh485();
 				}
 			}
 		}
-		ui32FlightCheckCounter++;
-		if(ui32FlightCheckCounter > ui32FlightCheckInterval)
-		{
-			ui32FlightCheckCounter = 0;
-			// Run flight check algorithms
-			if(1 == RCData.inputs_ok)
-			{
-				flight_checkRCInputs(&FCFlightData, &RCData);
-			}
-			else
-			{
-				flight_decideAction(&FCFlightData, &RCData);
-			}
-			// Check flight states
-			flight_checkStates(&FCFlightData, &RCData);
-			// Get new servo values
-			flight_decodeServos(&FCFlightData, &RCData);
-			// Refresh PWM outputs
-			refreshPWMOutputs();
-			// Update RS485
-			Refresh485();
-		}
+
 
 		// Call RS485 states
 		RS485_States_Master();

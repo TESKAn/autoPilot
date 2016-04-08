@@ -110,6 +110,9 @@ typedef struct
 	myMath_PID PIDAltitude;
 	myMath_PID PIDSpeed;
 
+	// Value for weight distribution between front and back motors. Value is length from front motor to COG / length between motors
+	float32_t f32COGDistribution;
+
 	// Input data
 	// Current vehicle orientation
 	struct

@@ -48,11 +48,13 @@ void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 	FCFlightData->ui32FlightDeInitStates = FDEINIT_IDLE;
 
 	// Init PIDs
-	math_PIDInit(&FCFlightData->PIDPitch, 0.1f, 0.01f, 0.0f, -0.450f, 0.450f);
-	math_PIDInit(&FCFlightData->PIDRoll, 0.1f, 0.01f, 0.0f, -0.450f, 0.450f);
-	math_PIDInit(&FCFlightData->PIDYaw, 0.1f, 0.01f, 0.0f, -0.39f, 0.39f);
+	math_PIDInit(&FCFlightData->PIDPitch, 0.1f, 0.01f, 0.0f, -0.2f, 0.2f);
+	math_PIDInit(&FCFlightData->PIDRoll, 0.1f, 0.01f, 0.0f, -0.2f, 0.2f);
+	math_PIDInit(&FCFlightData->PIDYaw, 0.1f, 0.01f, 0.0f, -0.2f, 0.2f);
 	math_PIDInit(&FCFlightData->PIDAltitude, 0.1f, 0.01f, 0.0f, 0.0f, 1.0f);
 	math_PIDInit(&FCFlightData->PIDSpeed, 0.1f, 0.01f, 0.0f, 0.15f, 1.0f);
+
+	FCFlightData->f32COGDistribution = 0.6f;
 
 	FCFlightData->ORIENTATION_REQUIRED.f32Roll = 0.0f;
 	FCFlightData->ORIENTATION_REQUIRED.f32Pitch = 0.0f;
@@ -281,16 +283,16 @@ void flight_checkRCInputs(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		FCFlightData->ORIENTATION_REQUIRED.f32Roll = f32Temp;
 		// Rudder controls yaw
 		f32Temp = RCValues->ch[RC_RUDDER].PWMIN_Zero * RCValues->SCALES.f32RudderScale;
-		// Add to req
+		// Add to required yaw
 		FCFlightData->ORIENTATION_REQUIRED.f32Yaw += f32Temp;
 		// Limit yaw to +/- 180
 		if(3.141593f < FCFlightData->ORIENTATION_REQUIRED.f32Yaw)
 		{
-			FCFlightData->ORIENTATION_REQUIRED.f32Yaw = 3.141593f;
+			FCFlightData->ORIENTATION_REQUIRED.f32Yaw = -3.141593f;
 		}
 		else if(-3.141593f > FCFlightData->ORIENTATION_REQUIRED.f32Yaw)
 		{
-			FCFlightData->ORIENTATION_REQUIRED.f32Yaw = -3.141593f;
+			FCFlightData->ORIENTATION_REQUIRED.f32Yaw = 3.141593f;
 		}
 	}
 	else
@@ -910,28 +912,29 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 void flight_stabilize(FLIGHT_CORE * FCFlightData)
 {
 	float32_t f32Error = 0.0f;
+	float32_t f32IntegrationInterval = 0.04f;
 	// Use PID regulator to stabilize vehicle
 	// Stabilize roll - calculate error
 	f32Error = FCFlightData->ORIENTATION_REQUIRED.f32Roll - FCFlightData->ORIENTATION.f32Roll;
 	// Run PID
-	math_PID(f32Error, 0.01f, &FCFlightData->PIDRoll);
+	math_PID(f32Error, f32IntegrationInterval, &FCFlightData->PIDRoll);
 
 	// Stabilize pitch - calculate error
 	f32Error = FCFlightData->ORIENTATION_REQUIRED.f32Pitch - FCFlightData->ORIENTATION.f32Pitch;
 	// Run PID
-	math_PID(f32Error, 0.01f, &FCFlightData->PIDPitch);
+	math_PID(f32Error, f32IntegrationInterval, &FCFlightData->PIDPitch);
 
 	// Stabilize yaw - calculate error
 	f32Error = FCFlightData->ORIENTATION_REQUIRED.f32Yaw - FCFlightData->ORIENTATION.f32Yaw;
 	// Run PID
-	math_PID(f32Error, 0.01f, &FCFlightData->PIDYaw);
+	math_PID(f32Error, f32IntegrationInterval, &FCFlightData->PIDYaw);
 
 	// Run altitude PID
 	// Calculate altitude diff from start
 	f32Error = FCFlightData->ORIENTATION.f32Altitude - FCFlightData->ORIENTATION.f32ZeroAltitude;
 	// error is required altitude - alt difference from start point
 	f32Error = FCFlightData->ORIENTATION_REQUIRED.f32Altitude - f32Error;
-	math_PID(f32Error, 0.01f, &FCFlightData->PIDAltitude);
+	math_PID(f32Error, f32IntegrationInterval, &FCFlightData->PIDAltitude);
 
 	// Run speed PID
 
@@ -958,11 +961,11 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		// Power is altitude output
 		f32Power = FCFlightData->PIDAltitude.outMax;
 		// Set throttle to some value
-		//f32Power = 0.215f;
+
 
 		// Calculate motor power ratios
 		// Motor FR
-		f32Temp = 0.6f+FCFlightData->PIDPitch.s;
+		f32Temp = 0.55f+FCFlightData->PIDPitch.s;
 		f32Temp1 = 0.5f-FCFlightData->PIDRoll.s;
 		f32Temp *= f32Temp1;
 		// Get power
@@ -979,7 +982,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		RCValues->ch[RC_MOTOR_FR].PWMOUT_Val = f32Temp;
 
 		// Motor FL
-		f32Temp = 0.6f+FCFlightData->PIDPitch.s;
+		f32Temp = 0.55f+FCFlightData->PIDPitch.s;
 		f32Temp1 = 0.5f+FCFlightData->PIDRoll.s;
 		f32Temp *= f32Temp1;
 		// Get power
@@ -996,7 +999,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		RCValues->ch[RC_MOTOR_FL].PWMOUT_Val = f32Temp;
 
 		// Motor R
-		f32Temp = 0.4f-FCFlightData->PIDPitch.s;
+		f32Temp = 0.45f-FCFlightData->PIDPitch.s;
 		f32Temp1 = cosf(FCFlightData->PIDYaw.s);
 		f32Temp /= f32Temp1;
 		// Get power
@@ -1011,6 +1014,38 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		if(MOTOR_MIN_PWMOUT > f32Temp)f32Temp = MOTOR_MIN_PWMOUT;
 		// Store
 		RCValues->ch[RC_MOTOR_R].PWMOUT_Val = f32Temp;
+
+/*
+		// Distribute power from RC command
+		f32Temp = RCValues->ch[RC_ELEVATOR].PWMIN_Zero / 4000;
+		RCValues->ch[RC_MOTOR_FR].PWMOUT_Val = 0.55f + f32Temp;
+		RCValues->ch[RC_MOTOR_FL].PWMOUT_Val = 0.55f + f32Temp;
+		RCValues->ch[RC_MOTOR_R].PWMOUT_Val = 0.45f - f32Temp;
+
+		f32Temp = RCValues->ch[RC_AILERON].PWMIN_Zero / 4000;
+		RCValues->ch[RC_MOTOR_FR].PWMOUT_Val -= f32Temp;
+		RCValues->ch[RC_MOTOR_FL].PWMOUT_Val += f32Temp;
+
+		RCValues->ch[RC_MOTOR_FR].PWMOUT_Val *= f32Power;
+		RCValues->ch[RC_MOTOR_FL].PWMOUT_Val *= f32Power;
+		RCValues->ch[RC_MOTOR_R].PWMOUT_Val *= f32Power;
+
+		RCValues->ch[RC_MOTOR_FR].PWMOUT_Val = sqrtf(RCValues->ch[RC_MOTOR_FR].PWMOUT_Val);
+		RCValues->ch[RC_MOTOR_FL].PWMOUT_Val = sqrtf(RCValues->ch[RC_MOTOR_FL].PWMOUT_Val);
+		RCValues->ch[RC_MOTOR_R].PWMOUT_Val = sqrtf(RCValues->ch[RC_MOTOR_R].PWMOUT_Val);
+
+		RCValues->ch[RC_MOTOR_FR].PWMOUT_Val *= 1000;
+		RCValues->ch[RC_MOTOR_FL].PWMOUT_Val *= 1000;
+		RCValues->ch[RC_MOTOR_R].PWMOUT_Val *= 1000;
+
+		RCValues->ch[RC_MOTOR_FR].PWMOUT_Val += 1000;
+		RCValues->ch[RC_MOTOR_FL].PWMOUT_Val += 1000;
+		RCValues->ch[RC_MOTOR_R].PWMOUT_Val += 1000;
+
+		if(MOTOR_MIN_PWMOUT > RCValues->ch[RC_MOTOR_FR].PWMOUT_Val)RCValues->ch[RC_MOTOR_FR].PWMOUT_Val = MOTOR_MIN_PWMOUT;
+		if(MOTOR_MIN_PWMOUT > RCValues->ch[RC_MOTOR_FL].PWMOUT_Val)RCValues->ch[RC_MOTOR_FL].PWMOUT_Val = MOTOR_MIN_PWMOUT;
+		if(MOTOR_MIN_PWMOUT > RCValues->ch[RC_MOTOR_R].PWMOUT_Val)RCValues->ch[RC_MOTOR_R].PWMOUT_Val = MOTOR_MIN_PWMOUT;
+*/
 
 		// Control yaw with nacelle roll
 		// Let's assume that 1000 is 90 deg
