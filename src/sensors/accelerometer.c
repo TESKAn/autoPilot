@@ -39,12 +39,6 @@ ErrorStatus acc_initDataStructure(AccelerometerData *data, uint32_t time)
 	data->valid = 1;
 	status = SUCCESS;
 
-	// Init filter
-	math_filterInit(&data->filter.X, 0.0f, 5.0f);
-	math_filterInit(&data->filter.Y, 0.0f, 5.0f);
-	math_filterInit(&data->filter.Z, 1.0f, 5.0f);
-
-
 	// Init offsets
 	data->offsets.x = 0.047f;
 	data->offsets.y = 0.006f;

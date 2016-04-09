@@ -46,10 +46,14 @@ int16_t SendCommData()
 {
 	int i = 0;
 	// From sensors
+	/*
 	UART_QueueMessagef(VAR_GYRO_X, fusionData._gyro.vector.x);
 	UART_QueueMessagef(VAR_GYRO_Y, fusionData._gyro.vector.y);
 	UART_QueueMessagef(VAR_GYRO_Z, fusionData._gyro.vector.z);
-
+*/
+	UART_QueueMessagef(VAR_GYRO_X, fusionData._gyro.vectorRaw.x);
+	UART_QueueMessagef(VAR_GYRO_Y, fusionData._gyro.vectorRaw.y);
+	UART_QueueMessagef(VAR_GYRO_Z, fusionData._gyro.vectorRaw.z);
 
 	UART_QueueMessagef(VAR_ACC_X, fusionData._accelerometer.vector.x);
 	UART_QueueMessagef(VAR_ACC_Y, fusionData._accelerometer.vector.y);
@@ -287,8 +291,11 @@ int16_t SendCommData1()
 	// 6*9=54
 	// 291
 
-
-
+	UART_QueueMessagef(VAR_PIDGYROX, fusionData._gyroErrorPID.x.s);
+	UART_QueueMessagef(VAR_PIDGYROY, fusionData._gyroErrorPID.y.s);
+	UART_QueueMessagef(VAR_PIDGYROZ, fusionData._gyroErrorPID.z.s);
+	// 3*9=27
+	// 318
 
 
 

@@ -454,7 +454,9 @@
 #define VAR_PIDPITCHMIN                 171
 #define VAR_PIDYAWMIN                   172
 
-
+#define VAR_PIDGYROX                    173
+#define VAR_PIDGYROY                    174
+#define VAR_PIDGYROZ                    175
 
 
 #endif /* MACRO_H_ */

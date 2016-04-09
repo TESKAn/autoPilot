@@ -324,7 +324,7 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 					// temporaryVector - normalized mag with subtracted offsets
 					status = vectorf_normalizeAToB(&data->_mag.vector, &temporaryVector);
 					// Get where earth's Y axis is supposed to be
-					status = vectorf_crossProduct(&temporaryVector, &data->_accelerometer.vectorNormalized, &data->_mag.earthYAxis);
+					status = vectorf_crossProduct(&data->_accelerometer.vectorNormalized, &temporaryVector, &data->_mag.earthYAxis);
 					// Normalize
 					vectorf_normalize(&data->_mag.earthYAxis);
 					// Get error - rotate DCM B axis to our calculated Y axis
@@ -545,13 +545,6 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 	Matrixf updateMatrix;									// Update matrix
 	Matrixf newMatrix;										// Place to store new DCM matrix
 	float32_t dt = 0;
-	//float32_t f32Temp = 0.0f;
-	//Vectorf coning = vectorf_init(0);
-	Vectorf rotation = vectorf_init(0);
-	Vectorf rotationCorrection = vectorf_init(0);
-	int vecm0 = 0;;
-	int vecm1 = 0;
-	int vecm2 = 0;
 
 	// Calculate delta time
 	dt = (float32_t)data->_gyro.deltaTime;
@@ -562,42 +555,7 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 	// Calculate current rotation angle
 	// Part 1
 	// Is gyro value * delta time in seconds
-	//status = vectorf_scalarProduct(&data->_gyro.vector, dt, &data->updateRotation);
-
-	// Update vector
-	data->ROTATIONS.Phi0Index++;
-	// Get index where to store fresh matrix
-	if(2 < data->ROTATIONS.Phi0Index) data->ROTATIONS.Phi0Index = 0;
-	vecm0 = data->ROTATIONS.Phi0Index;
-	vecm1 = data->ROTATIONS.Phi0Index - 1;
-	if(vecm1 < 0) vecm1 += 3;
-	vecm2 = data->ROTATIONS.Phi0Index - 2;
-	if(vecm2 < 0) vecm2 += 3;
-
-	// Get vector
-	// Just rotation, no position correction (I term without P term)
-
-	rotation.x = data->_gyro.vectorRaw.x - data->_gyroErrorPID.x.i;
-	rotation.y = data->_gyro.vectorRaw.y - data->_gyroErrorPID.y.i;
-	rotation.z = data->_gyro.vectorRaw.z - data->_gyroErrorPID.z.i;
-
-
-	// 1. rotation update from raw vector - PID I term, offset
-	status = vectorf_scalarProduct(&rotation, dt, &data->updateRotation);
-
-	// Store current vector
-	status = vectorf_copy(&rotation, &data->ROTATIONS.Wi[vecm0]);
-
-	// Add P term correction - orientation
-	// Calculate rotation update from PID P term
-	rotation.x = -data->_gyroErrorPID.x.p;
-	rotation.y = -data->_gyroErrorPID.y.p;
-	rotation.z = -data->_gyroErrorPID.z.p;
-
-	status = vectorf_scalarProduct(&rotation, dt, &rotationCorrection);
-
-	// Add orientation correction term to update rotation
-	status = vectorf_add(&data->updateRotation, &rotationCorrection, &data->updateRotation);
+	status = vectorf_scalarProduct(&data->_gyro.vector, dt, &data->updateRotation);
 
 	// Generate update matrix
 	status = fusion_generateUpdateMatrix(&data->updateRotation, &updateMatrix, 1);
@@ -613,6 +571,8 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 	{
 		matrix3_copy(&newMatrix, &data->_fusion_DCM);
 	}
+
+	//fusion_generateDCM(data);
 
 	return status;
 }

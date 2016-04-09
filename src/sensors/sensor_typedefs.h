@@ -178,7 +178,6 @@ typedef struct
 	Vectorf vectorKFiltered;
 	Vectorf vectorNormalized;
 	KALMAN3 kFilter;				// Kalman filter data
-	myMath_filter3 filter;			// Math filter
 	Vectorf filterAccum;
 	Vectorf gains;
 	Vectorf offsets;
@@ -256,14 +255,6 @@ typedef struct
 		uint32_t gyroErrorUpdateInterval;
 		uint32_t gyroIErrorUpdateInterval;
 	}PARAMETERS;
-
-	// Stored data from previous rotation updates
-	struct
-	{
-		// Last three rotations
-		Vectorf Wi[3];
-		uint32_t Phi0Index;
-	}ROTATIONS;
 
 	// Time
 	uint32_t dataTime;

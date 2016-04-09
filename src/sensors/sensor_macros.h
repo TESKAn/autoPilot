@@ -23,7 +23,7 @@
 #define SENSOR_MIN_ROTATION						0.000f
 #define SENSOR_MIN_GPS_SPEED					2.0f
 #define ERROR_IS_SMALL							0.01f
-#define GYRO_ERROR_UPDATE_INTERVAL				10			// Update PID every n cycles
+#define GYRO_ERROR_UPDATE_INTERVAL				20			// Update PID every n cycles
 #define GYRO_I_UPDATE_INTERVAL					100			// When to update error integral
 #define GYRO_MAX_ERROR_AMPLITUDE				0.5f		// Not sure if useful
 #define GYRO_FAST_ROTATION						0.5f		// When do we consider gyro to be rotating fast
@@ -41,15 +41,11 @@
 
 // PID macros
 // Drift compensation
-#define GYRO_PID_DRIFT_KP						100.0f	// Kp compensates orientation errors. Larger value gets faster correction.
-#define GYRO_PID_DRIFT_KI						0.05f	// Ki compensates gyro drift errors. Can be small as drift is small.
+#define GYRO_PID_DRIFT_KP						0.3f	// Kp compensates orientation errors. Larger value gets faster correction.
+#define GYRO_PID_DRIFT_KI						0.01f	// Ki compensates gyro drift errors. Can be small as drift is small.
 #define GYRO_PID_DRIFT_KD						0.0f
-#define GYRO_PID_DRIFT_IMAX						2.0f
-#define GYRO_PID_DRIFT_IMIN						-2.0f
-#define GYRO_PID_DRIFT_SMAX						1.0f
-#define GYRO_PID_DRIFT_SMIN						-1.0f
-#define GYRO_PID_DRIFT_EMAX						1.0f
-#define GYRO_PID_DRIFT_EMIN						-1.0f
+#define GYRO_PID_DRIFT_SMAX						0.30f
+#define GYRO_PID_DRIFT_SMIN						-0.30f
 
 // Gyro gain compensation
 // Only use I term
