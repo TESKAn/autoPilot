@@ -334,6 +334,43 @@ int32_t UART_RcvData(uint8_t data)
 				i16Pointer = &FCFlightData.MOTORS.R.i16SetParkPosition;
 				break;
 			}
+			case VAR_PIDROLLMAX:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.PIDRoll.outMax;
+				break;
+			}
+			case VAR_PIDPITCHMAX:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.PIDPitch.outMax;
+				break;
+			}
+			case VAR_PIDYAWMAX:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.PIDYaw.outMax;
+				break;
+			}
+
+			case VAR_PIDROLLMIN:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.PIDRoll.outMin;
+				break;
+			}
+			case VAR_PIDPITCHMIN:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.PIDPitch.outMin;
+				break;
+			}
+			case VAR_PIDYAWMIN:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.PIDYaw.outMin;
+				break;
+			}
 
 			default:
 			{

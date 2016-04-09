@@ -27,3 +27,4 @@ float32_t math_absF(float32_t val)
 	if(0 < val) return val;
 	else return -val;
 }
+

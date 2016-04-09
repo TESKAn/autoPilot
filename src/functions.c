@@ -50,9 +50,11 @@ int16_t SendCommData()
 	UART_QueueMessagef(VAR_GYRO_Y, fusionData._gyro.vector.y);
 	UART_QueueMessagef(VAR_GYRO_Z, fusionData._gyro.vector.z);
 
+
 	UART_QueueMessagef(VAR_ACC_X, fusionData._accelerometer.vector.x);
 	UART_QueueMessagef(VAR_ACC_Y, fusionData._accelerometer.vector.y);
 	UART_QueueMessagef(VAR_ACC_Z, fusionData._accelerometer.vector.z);
+
 
 	UART_QueueMessagef(VAR_MAG_X, fusionData._mag.vector.x);
 	UART_QueueMessagef(VAR_MAG_Y, fusionData._mag.vector.y);
@@ -223,20 +225,29 @@ int16_t SendCommData1()
 	UART_QueueMessagef(VAR_YAW_ACT, FCFlightData.ORIENTATION.f32Yaw);
 	UART_QueueMessagef(VAR_YAW_REQ, FCFlightData.ORIENTATION_REQUIRED.f32Yaw);
 	UART_QueueMessagef(VAR_YAW_ERR, FCFlightData.PIDYaw.em);
+	// 3*9=27
 
 	UART_QueueMessagei16(VAR_MOTOR_FR_DCLINK, RS485Motor_FR.REGS.i16UIn);
 	UART_QueueMessagei16(VAR_MOTOR_FL_DCLINK, RS485Motor_FL.REGS.i16UIn);
 	UART_QueueMessagei16(VAR_MOTOR_R_DCLINK, RS485Motor_R.REGS.i16UIn);
+	// 3*7=21
+	// 48
 
 	UART_QueueMessagei16(VAR_MOTOR_FR_POSITION, RS485Motor_FR.REGS.i16Position);
 	UART_QueueMessagei16(VAR_MOTOR_FL_POSITION, RS485Motor_FL.REGS.i16Position);
 	UART_QueueMessagei16(VAR_MOTOR_R_POSITION, RS485Motor_R.REGS.i16Position);
+	// 3*7=21
+	// 69
 
 	UART_QueueMessagei16(VAR_MOTOR_FR_SETPARKPOSITION, FCFlightData.MOTORS.FR.i16SetParkPosition);
 	UART_QueueMessagei16(VAR_MOTOR_FL_SETPARKPOSITION, FCFlightData.MOTORS.FL.i16SetParkPosition);
 	UART_QueueMessagei16(VAR_MOTOR_R_SETPARKPOSITION, FCFlightData.MOTORS.R.i16SetParkPosition);
+	// 3*7=21
+	// 90
 
 	UART_QueueMessagef(VAR_THROTTLE_INPUT, RCData.f32ThrottleValue);
+	// 9
+	// 99
 
 	UART_QueueMessagef(VAR_RC_AILERON_MAX, RCData.ch[RC_AILERON].PWMMax);
 	UART_QueueMessagef(VAR_RC_AILERON_MIN, RCData.ch[RC_AILERON].PWMMin);
@@ -256,10 +267,30 @@ int16_t SendCommData1()
 	UART_QueueMessagef(VAR_PWM_FR, RCData.ch[RC_MOTOR_FR].PWMOUT_Val);
 	UART_QueueMessagef(VAR_PWM_FL, RCData.ch[RC_MOTOR_FL].PWMOUT_Val);
 	UART_QueueMessagef(VAR_PWM_R, RCData.ch[RC_MOTOR_R].PWMOUT_Val);
+	// 13*9=117
+	// 216
+
 
 	UART_QueueMessagei16(VAR_MOTOR_FR_IIN, RS485Motor_FR.REGS.i16IIn);
 	UART_QueueMessagei16(VAR_MOTOR_FL_IIN, RS485Motor_FL.REGS.i16IIn);
 	UART_QueueMessagei16(VAR_MOTOR_R_IIN, RS485Motor_R.REGS.i16IIn);
+	// 3*7=21
+	// 237
+
+	UART_QueueMessagef(VAR_PIDROLLMAX, FCFlightData.PIDRoll.outMax);
+	UART_QueueMessagef(VAR_PIDPITCHMAX, FCFlightData.PIDPitch.outMax);
+	UART_QueueMessagef(VAR_PIDYAWMAX, FCFlightData.PIDYaw.outMax);
+
+	UART_QueueMessagef(VAR_PIDROLLMIN, FCFlightData.PIDRoll.outMin);
+	UART_QueueMessagef(VAR_PIDPITCHMIN, FCFlightData.PIDPitch.outMin);
+	UART_QueueMessagef(VAR_PIDYAWMIN, FCFlightData.PIDYaw.outMin);
+	// 6*9=54
+	// 291
+
+
+
+
+
 
 
 

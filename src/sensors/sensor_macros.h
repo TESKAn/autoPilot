@@ -23,7 +23,7 @@
 #define SENSOR_MIN_ROTATION						0.000f
 #define SENSOR_MIN_GPS_SPEED					2.0f
 #define ERROR_IS_SMALL							0.01f
-#define GYRO_ERROR_UPDATE_INTERVAL				0			// Update PID every n cycles
+#define GYRO_ERROR_UPDATE_INTERVAL				10			// Update PID every n cycles
 #define GYRO_I_UPDATE_INTERVAL					100			// When to update error integral
 #define GYRO_MAX_ERROR_AMPLITUDE				0.5f		// Not sure if useful
 #define GYRO_FAST_ROTATION						0.5f		// When do we consider gyro to be rotating fast

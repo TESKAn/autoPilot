@@ -447,6 +447,14 @@
 #define VAR_MOTOR_FL_IIN                165
 #define VAR_MOTOR_R_IIN                 166
 
+#define VAR_PIDROLLMAX                  167
+#define VAR_PIDPITCHMAX                 168
+#define VAR_PIDYAWMAX                   169
+#define VAR_PIDROLLMIN                  170
+#define VAR_PIDPITCHMIN                 171
+#define VAR_PIDYAWMIN                   172
+
+
 
 
 #endif /* MACRO_H_ */

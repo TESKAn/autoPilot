@@ -69,4 +69,19 @@ typedef struct
 	myMath_PID z;
 }__attribute__((aligned(4),packed)) myMath_PID3;
 
+typedef struct
+{
+	float32_t filter_acc;
+	float32_t filter_result;
+	float32_t window;
+}__attribute__((aligned(4),packed)) myMath_filter;
+
+typedef struct
+{
+	myMath_filter X;
+	myMath_filter Y;
+	myMath_filter Z;
+	Vectorf result;
+}__attribute__((aligned(4),packed)) myMath_filter3;
+
 #endif /* MYMATH_TYPEDEFS_H_ */

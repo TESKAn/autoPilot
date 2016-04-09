@@ -430,6 +430,7 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 			if(data->_gyroErrorUpdateCount > data->PARAMETERS.gyroErrorUpdateInterval)
 			{
 				data->_gyroErrorUpdateCount = 0;
+				/*
 				// Check when to update I error
 				data->_gyroIErrorUpdateCount ++;
 				if(data->_gyroIErrorUpdateCount > data->PARAMETERS.gyroIErrorUpdateInterval)
@@ -442,6 +443,7 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 					// If dt is 0, so is I error update
 					dt = 0;
 				}
+				*/
 				// Update PID
 				status = math_PID3(&error, dt, &data->_gyroErrorPID);
 			}
@@ -464,7 +466,7 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 			// If rotating fast, and flag is not set, mark update gyro gains and set hysteresis
 			if((fTemp > data->gyroFastRotation)&&(!data->sFlag.bits.FLAG_FAST_ROTATION))
 			{
-				data->sFlag.bits.FLAG_FAST_ROTATION = 1;
+				//data->sFlag.bits.FLAG_FAST_ROTATION = 1;
 				// Mark rotation directions
 				if(0 < data->_gyro.vector.x)
 				{
@@ -574,9 +576,11 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 
 	// Get vector
 	// Just rotation, no position correction (I term without P term)
+
 	rotation.x = data->_gyro.vectorRaw.x - data->_gyroErrorPID.x.i;
 	rotation.y = data->_gyro.vectorRaw.y - data->_gyroErrorPID.y.i;
 	rotation.z = data->_gyro.vectorRaw.z - data->_gyroErrorPID.z.i;
+
 
 	// 1. rotation update from raw vector - PID I term, offset
 	status = vectorf_scalarProduct(&rotation, dt, &data->updateRotation);
@@ -584,16 +588,6 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 	// Store current vector
 	status = vectorf_copy(&rotation, &data->ROTATIONS.Wi[vecm0]);
 
-	/*
-	// 2.rotation update as result of coning
-	// Calculate coning
-	// Cross product of current update rotation and previous rotation
-	status = vectorf_crossProduct(&data->updateRotation, &data->ROTATIONS.Wi[vecm1], &coning);
-	status = vectorf_scalarProduct(&coning, 0.5f, &coning);
-
-	// Sum
-	status = vectorf_add(&data->updateRotation, &coning, &data->updateRotation);
-*/
 	// Add P term correction - orientation
 	// Calculate rotation update from PID P term
 	rotation.x = -data->_gyroErrorPID.x.p;
@@ -602,14 +596,8 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 
 	status = vectorf_scalarProduct(&rotation, dt, &rotationCorrection);
 
-	/*
-	data->updateRotation.x = data->updateRotation.x - data->_gyroErrorPID.x.p;
-	data->updateRotation.y = data->updateRotation.y - data->_gyroErrorPID.y.p;
-	data->updateRotation.z = data->updateRotation.z - data->_gyroErrorPID.z.p;
-*/
 	// Add orientation correction term to update rotation
 	status = vectorf_add(&data->updateRotation, &rotationCorrection, &data->updateRotation);
-
 
 	// Generate update matrix
 	status = fusion_generateUpdateMatrix(&data->updateRotation, &updateMatrix, 1);

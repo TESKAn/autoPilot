@@ -178,6 +178,8 @@ typedef struct
 	Vectorf vectorKFiltered;
 	Vectorf vectorNormalized;
 	KALMAN3 kFilter;				// Kalman filter data
+	myMath_filter3 filter;			// Math filter
+	Vectorf filterAccum;
 	Vectorf gains;
 	Vectorf offsets;
 	Vectorf Speed_3D;

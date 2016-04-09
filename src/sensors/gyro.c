@@ -115,26 +115,7 @@ ErrorStatus gyro_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 	// Copy filtered data for further
 	vectorf_copy(&data->_gyro.vectorRaw, &data->_gyro.vector);
 
-
-	// Set gyros to 0 - perfect sensors
-/*
-	data->_gyro.vector.x = 0;
-	data->_gyro.vector.y = 0;
-	data->_gyro.vector.z = 0;
-*/
-	// Remove offsets
-/*
-	data->_gyro.vector.x -= data->_gyro.offsets.x;
-	data->_gyro.vector.y -= data->_gyro.offsets.y;
-	data->_gyro.vector.z -= data->_gyro.offsets.z;
-*/
-	// Remove drift error
-	// Drift error is calculated in different .c/.h file
-/*
-	data->_gyro.vector.x -= data->_gyroErrorPID.x.s;
-	data->_gyro.vector.y -= data->_gyroErrorPID.y.s;
-	data->_gyro.vector.z -= data->_gyroErrorPID.z.s;
-*/
+	// Remove offset
 	data->_gyro.vector.x -= data->_gyroErrorPID.x.s;
 	data->_gyro.vector.y -= data->_gyroErrorPID.y.s;
 	data->_gyro.vector.z -= data->_gyroErrorPID.z.s;

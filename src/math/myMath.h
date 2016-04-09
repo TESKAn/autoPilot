@@ -9,6 +9,7 @@
 #define MYMATH_H_
 
 #include "myMath_typedefs.h"
+#include "myMath_filters.h"
 #include "myMath_matrix3.h"
 #include "myMath_pid.h"
 #include "myMath_vec3.h"

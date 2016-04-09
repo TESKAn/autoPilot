@@ -39,6 +39,12 @@ ErrorStatus acc_initDataStructure(AccelerometerData *data, uint32_t time)
 	data->valid = 1;
 	status = SUCCESS;
 
+	// Init filter
+	math_filterInit(&data->filter.X, 0.0f, 5.0f);
+	math_filterInit(&data->filter.Y, 0.0f, 5.0f);
+	math_filterInit(&data->filter.Z, 1.0f, 5.0f);
+
+
 	// Init offsets
 	data->offsets.x = 0.047f;
 	data->offsets.y = 0.006f;
@@ -154,10 +160,32 @@ ErrorStatus acc_update(FUSION_CORE *coreData, int16_t *rawData, uint32_t dataTim
 	coreData->_accelerometer.vectorRaw.z = (float32_t)rawData[2] * -coreData->_accelerometer.accRate;
 
 	// Filter
-	coreData->_accelerometer.vectorKFiltered.x = Kalman_Update(&coreData->_accelerometer.kFilter.X, coreData->_accelerometer.vectorRaw.x);
-	coreData->_accelerometer.vectorKFiltered.y = Kalman_Update(&coreData->_accelerometer.kFilter.Y, coreData->_accelerometer.vectorRaw.y);
-	coreData->_accelerometer.vectorKFiltered.z = Kalman_Update(&coreData->_accelerometer.kFilter.Z, coreData->_accelerometer.vectorRaw.z);
+	//coreData->_accelerometer.vectorKFiltered.x = Kalman_Update(&coreData->_accelerometer.kFilter.X, coreData->_accelerometer.vectorRaw.x);
+	//coreData->_accelerometer.vectorKFiltered.y = Kalman_Update(&coreData->_accelerometer.kFilter.Y, coreData->_accelerometer.vectorRaw.y);
+	//coreData->_accelerometer.vectorKFiltered.z = Kalman_Update(&coreData->_accelerometer.kFilter.Z, coreData->_accelerometer.vectorRaw.z);
 
+//	math_filter3Update(&coreData->_accelerometer.filter, coreData->_accelerometer.vectorRaw.x);
+//	vectorf_copy(&coreData->_accelerometer.filter.result, &coreData->_accelerometer.vectorKFiltered);
+
+	// Filter
+	coreData->_accelerometer.filterAccum.x += coreData->_accelerometer.vectorRaw.x;
+	coreData->_accelerometer.vectorKFiltered.x = coreData->_accelerometer.filterAccum.x / 5.0f;
+	coreData->_accelerometer.filterAccum.x -= coreData->_accelerometer.vectorKFiltered.x;
+
+	coreData->_accelerometer.filterAccum.y += coreData->_accelerometer.vectorRaw.y;
+	coreData->_accelerometer.vectorKFiltered.y = coreData->_accelerometer.filterAccum.y / 5.0f;
+	coreData->_accelerometer.filterAccum.y -= coreData->_accelerometer.vectorKFiltered.y;
+
+	coreData->_accelerometer.filterAccum.z += coreData->_accelerometer.vectorRaw.z;
+	coreData->_accelerometer.vectorKFiltered.z = coreData->_accelerometer.filterAccum.z / 5.0f;
+	coreData->_accelerometer.filterAccum.z -= coreData->_accelerometer.vectorKFiltered.z;
+
+
+/*
+	coreData->_accelerometer.vectorKFiltered.x = coreData->_accelerometer.vectorRaw.x;
+	coreData->_accelerometer.vectorKFiltered.y = coreData->_accelerometer.vectorRaw.y;
+	coreData->_accelerometer.vectorKFiltered.z = coreData->_accelerometer.vectorRaw.z;
+*/
 	// Remove offset
 	vectorf_add(&coreData->_accelerometer.vectorKFiltered, &coreData->_accelerometer.offsets, &coreData->_accelerometer.vector);
 	/*
