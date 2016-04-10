@@ -104,6 +104,27 @@ ErrorStatus vectorf_scalarProduct(Vectorf * vecA, float32_t scalar, Vectorf * ve
 	return status;
 }
 
+ErrorStatus vectorf_scalarDivide(Vectorf * vecA, float32_t scalar, Vectorf * vecB)
+{
+	ErrorStatus status = ERROR;
+	// Set FPU exception bit to 0
+	FPU_EXCEPTION = 0;
+
+	vecB->x = vecA->x / scalar;
+	vecB->y = vecA->y / scalar;
+	vecB->z = vecA->z / scalar;
+
+	// Check if FPU result is OK
+	if(!FPU_EXCEPTION)
+	{
+		status = SUCCESS;
+	}
+
+	return status;
+}
+
+
+
 ErrorStatus vectorf_substract(Vectorf * vecA, Vectorf * vecB, Vectorf * vecC)
 {
 	ErrorStatus status = ERROR;

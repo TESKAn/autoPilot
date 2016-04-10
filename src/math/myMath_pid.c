@@ -38,6 +38,21 @@ ErrorStatus math_PID3Init(myMath_PID3* PID, float32_t kp, float32_t ki, float32_
 	return SUCCESS;
 }
 
+ErrorStatus math_PIDSet(myMath_PID * PID, float32_t f32Value)
+{
+	ErrorStatus status = ERROR;
+	// Set PID values so that it will produce desired value - set I part to value / ki
+	PID->p = 0;
+	PID->i = f32Value;
+	PID->d = 0;
+	PID->s = f32Value;
+	PID->im = f32Value / PID->Ki;
+	PID->em = 0;
+	PID->ed = 0;
+	status = SUCCESS;
+	return status;
+}
+
 ErrorStatus math_PIDReset(myMath_PID * PID)
 {
 	ErrorStatus status = ERROR;

@@ -15,7 +15,7 @@
 #include "accelerometer.h"
 
 
-ErrorStatus fusion_init(FUSION_CORE *coreData, uint32_t time);
+ErrorStatus fusion_init(FUSION_CORE *data, uint32_t time);
 ErrorStatus fusion_initGyroDriftPID(FUSION_CORE *data);
 ErrorStatus fusion_initGyroGainPID(FUSION_CORE *data);
 ErrorStatus fusion_dataUpdate(FUSION_CORE *data, FUSION_SENSORDATA *sensorData, uint32_t time);

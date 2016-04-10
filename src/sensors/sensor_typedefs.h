@@ -193,6 +193,33 @@ typedef struct
 	uint8_t nerabim;
 }__attribute__((aligned(4),packed)) AccelerometerData, *PAccelerometerData;
 
+// Structure that holds data for gyro error calculations
+typedef struct
+{
+
+	// How many samples to average
+	float32_t f32SampleWindow;
+	// Time since collection started
+	uint32_t ui32SamplingTime;
+	uint32_t ui32DeltaTime;
+	Vectorf AccelerometerData;
+	Vectorf MagData;
+	Vectorf GyroData;
+	// Vectors that hold earth axes as seen from plane
+	Vectorf DCMNorth;
+	Vectorf DCMEast;
+	Vectorf DCMDown;
+	// Vectors that hold plane axes as seen from earth
+	Vectorf DCMX;
+	Vectorf DCMY;
+	Vectorf DCMZ;
+
+	uint8_t ui8SamplesAcc;
+	uint8_t ui8SamplesMag;
+	uint8_t ui8SamplesGyro;
+	uint8_t ui8SampleWindow;
+}__attribute__((aligned(4),packed)) GyroErrorData, *PGyroErrorData;
+
 // Core structure for sensor fusion data
 typedef struct
 {
@@ -203,6 +230,8 @@ typedef struct
 	airSpeedData _airSpeed;
 	AltimeterData _altimeter;
 	GPSData _gps;
+	// Data for calculating gyro error
+	GyroErrorData _gyroError;
 
 	// Maximum gyro amplitude when updating gyro error PID
 	float32_t maxGyroErrorAmplitude;

@@ -636,7 +636,7 @@ int32_t UART_SendBuffer()
 	{
 		// Send when buffer has a lot of data
 
-		if(1000 < ui16transmittStoreBufferCount)
+		if(64 < ui16transmittStoreBufferCount)
 		{
 			// Copy data to transmit buffer
 			bytes = UART_CopyToTransmitBuf();
@@ -675,6 +675,8 @@ int32_t UART_QueueMessagei16(int16_t var, int16_t data)
 {
 	int i = 0;
 	uint8_t messageBuffer[7];
+	// Check buffer index
+	if(1016 <= ui16transmittStoreBufferCount) return -1;
 	messageBuffer[0] = 0xff;
 	messageBuffer[1] = 0xff;
 	UART_Conversion.i16[0] = var;
@@ -689,6 +691,8 @@ int32_t UART_QueueMessagei16(int16_t var, int16_t data)
 	{
 		UART2_transmittStoreBuffer[ui16transmittStoreBufferCount] = messageBuffer[i];
 		ui16transmittStoreBufferCount++;
+		// Check buffer index
+		if(1023 <= ui16transmittStoreBufferCount) return -1;
 	}
 	return 0;
 }
@@ -697,6 +701,8 @@ int32_t UART_QueueMessagei32(int16_t var, int32_t data)
 {
 	int i = 0;
 	uint8_t messageBuffer[9];
+	// Check buffer index
+	if(1014 <= ui16transmittStoreBufferCount) return -1;
 	messageBuffer[0] = 0xff;
 	messageBuffer[1] = 0xff;
 	UART_Conversion.i16[0] = var;
@@ -712,6 +718,8 @@ int32_t UART_QueueMessagei32(int16_t var, int32_t data)
 	{
 		UART2_transmittStoreBuffer[ui16transmittStoreBufferCount] = messageBuffer[i];
 		ui16transmittStoreBufferCount++;
+		// Check buffer index
+		if(1023 <= ui16transmittStoreBufferCount) return -1;
 	}
 	return 0;
 }
@@ -720,6 +728,8 @@ int32_t UART_QueueMessagef(int16_t var, float data)
 {
 	int i = 0;
 	uint8_t messageBuffer[9];
+	// Check buffer index
+	if(1014 <= ui16transmittStoreBufferCount) return -1;
 	messageBuffer[0] = 0xff;
 	messageBuffer[1] = 0xff;
 	UART_Conversion.i16[0] = var;
@@ -735,6 +745,8 @@ int32_t UART_QueueMessagef(int16_t var, float data)
 	{
 		UART2_transmittStoreBuffer[ui16transmittStoreBufferCount] = messageBuffer[i];
 		ui16transmittStoreBufferCount++;
+		// Check buffer index
+		if(1023 <= ui16transmittStoreBufferCount) return -1;
 	}
 	return 0;
 }
@@ -743,6 +755,8 @@ int32_t UART_QueueMessageui16(int16_t var, uint16_t data)
 {
 	int i = 0;
 	uint8_t messageBuffer[7];
+	// Check buffer index
+	if(1016 <= ui16transmittStoreBufferCount) return -1;
 	messageBuffer[0] = 0xff;
 	messageBuffer[1] = 0xff;
 	UART_Conversion.i16[0] = var;
@@ -757,6 +771,8 @@ int32_t UART_QueueMessageui16(int16_t var, uint16_t data)
 	{
 		UART2_transmittStoreBuffer[ui16transmittStoreBufferCount] = messageBuffer[i];
 		ui16transmittStoreBufferCount++;
+		// Check buffer index
+		if(1023 <= ui16transmittStoreBufferCount) return -1;
 	}
 	return 0;
 }
@@ -765,6 +781,8 @@ int32_t UART_QueueMessageui32(int16_t var, uint32_t data)
 {
 	int i = 0;
 	uint8_t messageBuffer[9];
+	// Check buffer index
+	if(1014 <= ui16transmittStoreBufferCount) return -1;
 	messageBuffer[0] = 0xff;
 	messageBuffer[1] = 0xff;
 	UART_Conversion.i16[0] = var;
@@ -780,6 +798,8 @@ int32_t UART_QueueMessageui32(int16_t var, uint32_t data)
 	{
 		UART2_transmittStoreBuffer[ui16transmittStoreBufferCount] = messageBuffer[i];
 		ui16transmittStoreBufferCount++;
+		// Check buffer index
+		if(1023 <= ui16transmittStoreBufferCount) return -1;
 	}
 	return 0;
 }
@@ -788,6 +808,8 @@ int32_t UART_QueueMessagei8(int16_t var, int8_t data)
 {
 	int i = 0;
 	uint8_t messageBuffer[7];
+	// Check buffer index
+	if(1016 <= ui16transmittStoreBufferCount) return -1;
 	messageBuffer[0] = 0xff;
 	messageBuffer[1] = 0xff;
 	UART_Conversion.i16[0] = var;
@@ -801,6 +823,8 @@ int32_t UART_QueueMessagei8(int16_t var, int8_t data)
 	{
 		UART2_transmittStoreBuffer[ui16transmittStoreBufferCount] = messageBuffer[i];
 		ui16transmittStoreBufferCount++;
+		// Check buffer index
+		if(1023 <= ui16transmittStoreBufferCount) return -1;
 	}
 	return 0;
 }
@@ -809,6 +833,8 @@ int32_t UART_QueueMessageui8(int16_t var, uint8_t data)
 {
 	int i = 0;
 	uint8_t messageBuffer[7];
+	// Check buffer index
+	if(1016 <= ui16transmittStoreBufferCount) return -1;
 	messageBuffer[0] = 0xff;
 	messageBuffer[1] = 0xff;
 	UART_Conversion.i16[0] = var;
@@ -821,6 +847,8 @@ int32_t UART_QueueMessageui8(int16_t var, uint8_t data)
 	{
 		UART2_transmittStoreBuffer[ui16transmittStoreBufferCount] = messageBuffer[i];
 		ui16transmittStoreBufferCount++;
+		// Check buffer index
+		if(1023 <= ui16transmittStoreBufferCount) return -1;
 	}
 	return 0;
 }

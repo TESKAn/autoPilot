@@ -15,8 +15,6 @@
 #include "accelerometer.h"
 
 #define ACC_DEFAULT_RATE					0.000244140625f			// 8/32768 -> g
-// Use gains correction
-#define ACC_USE_GAIN_CORRECTION
 
 
 // Init accelerometer data structure
@@ -158,8 +156,6 @@ ErrorStatus acc_update(FUSION_CORE *coreData, int16_t *rawData, uint32_t dataTim
 	//coreData->_accelerometer.vectorKFiltered.y = Kalman_Update(&coreData->_accelerometer.kFilter.Y, coreData->_accelerometer.vectorRaw.y);
 	//coreData->_accelerometer.vectorKFiltered.z = Kalman_Update(&coreData->_accelerometer.kFilter.Z, coreData->_accelerometer.vectorRaw.z);
 
-//	math_filter3Update(&coreData->_accelerometer.filter, coreData->_accelerometer.vectorRaw.x);
-//	vectorf_copy(&coreData->_accelerometer.filter.result, &coreData->_accelerometer.vectorKFiltered);
 
 	// Filter
 	coreData->_accelerometer.filterAccum.x += coreData->_accelerometer.vectorRaw.x;
@@ -180,20 +176,14 @@ ErrorStatus acc_update(FUSION_CORE *coreData, int16_t *rawData, uint32_t dataTim
 	coreData->_accelerometer.vectorKFiltered.y = coreData->_accelerometer.vectorRaw.y;
 	coreData->_accelerometer.vectorKFiltered.z = coreData->_accelerometer.vectorRaw.z;
 */
+
 	// Remove offset
 	vectorf_add(&coreData->_accelerometer.vectorKFiltered, &coreData->_accelerometer.offsets, &coreData->_accelerometer.vector);
-	/*
-	coreData->_accelerometer.vector.x -= coreData->_accelerometer.offsets.x;
-	coreData->_accelerometer.vector.y -= coreData->_accelerometer.offsets.y;
-	coreData->_accelerometer.vector.z -= coreData->_accelerometer.offsets.z;
-*/
+
 	// Use gain correction on outputs?
-#ifdef ACC_USE_GAIN_CORRECTION
 	coreData->_accelerometer.vector.x *= coreData->_accelerometer.gains.x;
 	coreData->_accelerometer.vector.y *= coreData->_accelerometer.gains.y;
 	coreData->_accelerometer.vector.z *= coreData->_accelerometer.gains.z;
-#endif
-
 
 	// Calculate time difference
 	deltaTime = dataTime - coreData->_accelerometer.dataTime;

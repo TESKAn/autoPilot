@@ -15,6 +15,7 @@ Vectori16 vectori16_init(int16_t value);
 ErrorStatus vectorf_dotProduct(Vectorf * vecA, Vectorf * vecB, float32_t * res);
 ErrorStatus vectorf_crossProduct(Vectorf * vecA, Vectorf * vecB, Vectorf * vecC);
 ErrorStatus vectorf_scalarProduct(Vectorf * vecA, float32_t scalar, Vectorf * vecB);
+ErrorStatus vectorf_scalarDivide(Vectorf * vecA, float32_t scalar, Vectorf * vecB);
 ErrorStatus vectorf_substract(Vectorf * vecA, Vectorf * vecB, Vectorf * vecC);
 ErrorStatus vectorf_add(Vectorf * vecA, Vectorf * vecB, Vectorf * vecC);
 ErrorStatus vectorf_normalize(Vectorf * vectorA);

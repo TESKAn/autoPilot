@@ -46,15 +46,15 @@ int16_t SendCommData()
 {
 	int i = 0;
 	// From sensors
-	/*
+
 	UART_QueueMessagef(VAR_GYRO_X, fusionData._gyro.vector.x);
 	UART_QueueMessagef(VAR_GYRO_Y, fusionData._gyro.vector.y);
 	UART_QueueMessagef(VAR_GYRO_Z, fusionData._gyro.vector.z);
-*/
+/*
 	UART_QueueMessagef(VAR_GYRO_X, fusionData._gyro.vectorRaw.x);
 	UART_QueueMessagef(VAR_GYRO_Y, fusionData._gyro.vectorRaw.y);
 	UART_QueueMessagef(VAR_GYRO_Z, fusionData._gyro.vectorRaw.z);
-
+*/
 	UART_QueueMessagef(VAR_ACC_X, fusionData._accelerometer.vector.x);
 	UART_QueueMessagef(VAR_ACC_Y, fusionData._accelerometer.vector.y);
 	UART_QueueMessagef(VAR_ACC_Z, fusionData._accelerometer.vector.z);
@@ -215,10 +215,7 @@ int16_t SendCommData()
 
 	UART_QueueMessageui32(VAR_UI32TESTVAR, ui32TestVar);
 
-	while(0 != UART2_Transferring)
-	{
 
-	}
 	UART_SendBuffer();
 	return 0;
 }
@@ -296,6 +293,14 @@ int16_t SendCommData1()
 	UART_QueueMessagef(VAR_PIDGYROZ, fusionData._gyroErrorPID.z.s);
 	// 3*9=27
 	// 318
+
+	UART_QueueMessagef(VAR_GYROERRORX, fusionData._gyro.gyroError.x);
+	UART_QueueMessagef(VAR_GYROERRORY, fusionData._gyro.gyroError.y);
+	UART_QueueMessagef(VAR_GYROERRORZ, fusionData._gyro.gyroError.z);
+	// 3*9=27
+	// 345
+
+
 
 
 

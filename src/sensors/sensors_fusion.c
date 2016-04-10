@@ -22,73 +22,86 @@
 #include "gps.h"
 #include "altimeter.h"
 
-ErrorStatus fusion_init(FUSION_CORE *coreData, uint32_t time)
+ErrorStatus fusion_init(FUSION_CORE *data, uint32_t time)
 {
 
-	if(ERROR == AirSpeed_initDataStructure(&coreData->_airSpeed, time))
+	if(ERROR == AirSpeed_initDataStructure(&data->_airSpeed, time))
 	{
 		return ERROR;
 	}
-	if(ERROR == altimeter_initDataStructure(&coreData->_altimeter, time))
+	if(ERROR == altimeter_initDataStructure(&data->_altimeter, time))
 	{
 		return ERROR;
 	}
-	if(ERROR == gyro_initDataStructure(&coreData->_gyro, time))
-	{
-		return ERROR;
-	}
-
-	if(ERROR == mag_initDataStructure(&coreData->_mag, time))
+	if(ERROR == gyro_initDataStructure(&data->_gyro, time))
 	{
 		return ERROR;
 	}
 
-	if(ERROR == acc_initDataStructure(&coreData->_accelerometer, time))
+	if(ERROR == mag_initDataStructure(&data->_mag, time))
 	{
 		return ERROR;
 	}
 
-	if(ERROR == gps_initData(&coreData->_gps, time))
+	if(ERROR == acc_initDataStructure(&data->_accelerometer, time))
 	{
 		return ERROR;
 	}
+
+	if(ERROR == gps_initData(&data->_gps, time))
+	{
+		return ERROR;
+	}
+
+	// Init errors
+	data->_gyroError.f32SampleWindow = 10.0f;
+	data->_gyroError.ui8SampleWindow = 10;
+	data->_gyroError.AccelerometerData = vectorf_init(0);
+	data->_gyroError.DCMDown = vectorf_init(0);
+	data->_gyroError.DCMEast = vectorf_init(0);
+	data->_gyroError.DCMNorth = vectorf_init(0);
+	data->_gyroError.DCMX = vectorf_init(0);
+	data->_gyroError.DCMY = vectorf_init(0);
+	data->_gyroError.DCMZ = vectorf_init(0);
+	data->_gyroError.GyroData = vectorf_init(0);
+	data->_gyroError.MagData = vectorf_init(0);
+	data->_gyroError.ui8SamplesAcc = 0;
+	data->_gyroError.ui8SamplesMag = 0;
+	data->_gyroError.ui8SamplesGyro = 0;
 
 	// Init maximum gyro amplitude when updating error
-	coreData->maxGyroErrorAmplitude = GYRO_MAX_ERROR_AMPLITUDE;
-	coreData->gyroFastRotation = GYRO_FAST_ROTATION;
-	coreData->maxGyroErrorUpdateRate = GYRO_MAX_ERROR_UPDATE_RATE;
+	data->maxGyroErrorAmplitude = GYRO_MAX_ERROR_AMPLITUDE;
+	data->gyroFastRotation = GYRO_FAST_ROTATION;
+	data->maxGyroErrorUpdateRate = GYRO_MAX_ERROR_UPDATE_RATE;
 
 	// Init PIDs
 	// Gyro drift
-	math_PIDInit(&coreData->_gyroErrorPID.x, GYRO_PID_DRIFT_KP, GYRO_PID_DRIFT_KI, GYRO_PID_DRIFT_KD, GYRO_PID_DRIFT_SMIN, GYRO_PID_DRIFT_SMAX);
-	math_PIDInit(&coreData->_gyroErrorPID.y, GYRO_PID_DRIFT_KP, GYRO_PID_DRIFT_KI, GYRO_PID_DRIFT_KD, GYRO_PID_DRIFT_SMIN, GYRO_PID_DRIFT_SMAX);
-	math_PIDInit(&coreData->_gyroErrorPID.z, GYRO_PID_DRIFT_KP, GYRO_PID_DRIFT_KI, GYRO_PID_DRIFT_KD, GYRO_PID_DRIFT_SMIN, GYRO_PID_DRIFT_SMAX);
-
-
-
+	math_PIDInit(&data->_gyroErrorPID.x, GYRO_PID_DRIFT_KP, GYRO_PID_DRIFT_KI, GYRO_PID_DRIFT_KD, GYRO_PID_DRIFT_SMIN, GYRO_PID_DRIFT_SMAX);
+	math_PIDInit(&data->_gyroErrorPID.y, GYRO_PID_DRIFT_KP, GYRO_PID_DRIFT_KI, GYRO_PID_DRIFT_KD, GYRO_PID_DRIFT_SMIN, GYRO_PID_DRIFT_SMAX);
+	math_PIDInit(&data->_gyroErrorPID.z, GYRO_PID_DRIFT_KP, GYRO_PID_DRIFT_KI, GYRO_PID_DRIFT_KD, GYRO_PID_DRIFT_SMIN, GYRO_PID_DRIFT_SMAX);
 
 	// Gyro gain
-	math_PIDInit(&coreData->_gyroGainPID.x, GYRO_PID_GAIN_KP, GYRO_PID_GAIN_KI, GYRO_PID_GAIN_KD, GYRO_PID_GAIN_SMIN, GYRO_PID_GAIN_SMAX);
-	math_PIDInit(&coreData->_gyroGainPID.y, GYRO_PID_GAIN_KP, GYRO_PID_GAIN_KI, GYRO_PID_GAIN_KD, GYRO_PID_GAIN_SMIN, GYRO_PID_GAIN_SMAX);
-	math_PIDInit(&coreData->_gyroGainPID.z, GYRO_PID_GAIN_KP, GYRO_PID_GAIN_KI, GYRO_PID_GAIN_KD, GYRO_PID_GAIN_SMIN, GYRO_PID_GAIN_SMAX);
+	math_PIDInit(&data->_gyroGainPID.x, GYRO_PID_GAIN_KP, GYRO_PID_GAIN_KI, GYRO_PID_GAIN_KD, GYRO_PID_GAIN_SMIN, GYRO_PID_GAIN_SMAX);
+	math_PIDInit(&data->_gyroGainPID.y, GYRO_PID_GAIN_KP, GYRO_PID_GAIN_KI, GYRO_PID_GAIN_KD, GYRO_PID_GAIN_SMIN, GYRO_PID_GAIN_SMAX);
+	math_PIDInit(&data->_gyroGainPID.z, GYRO_PID_GAIN_KP, GYRO_PID_GAIN_KI, GYRO_PID_GAIN_KD, GYRO_PID_GAIN_SMIN, GYRO_PID_GAIN_SMAX);
 
 
 
 	// Create identity matrix
-	matrix3_init(1, &coreData->_fusion_DCM);
+	matrix3_init(1, &data->_fusion_DCM);
 
-	matrix3_init(1, &coreData->_GPS_DCM);
+	matrix3_init(1, &data->_GPS_DCM);
 
 	// Init temperature
-	coreData->MPUTemperature = 0;
+	data->MPUTemperature = 0;
 
 	// Init system parameters
-	coreData->PARAMETERS.systimeToSeconds = SENSOR_SYSTIME_TO_SECONDS;
-	coreData->PARAMETERS.minRotation = SENSOR_MIN_ROTATION;
-	coreData->PARAMETERS.minRotError = SENSOR_MIN_ROT_ERROR;
-	coreData->PARAMETERS.minGPSSpeed = SENSOR_MIN_GPS_SPEED;
-	coreData->PARAMETERS.gyroErrorUpdateInterval = GYRO_ERROR_UPDATE_INTERVAL;
-	coreData->PARAMETERS.gyroIErrorUpdateInterval = GYRO_I_UPDATE_INTERVAL;
+	data->PARAMETERS.systimeToSeconds = SENSOR_SYSTIME_TO_SECONDS;
+	data->PARAMETERS.minRotation = SENSOR_MIN_ROTATION;
+	data->PARAMETERS.minRotError = SENSOR_MIN_ROT_ERROR;
+	data->PARAMETERS.minGPSSpeed = SENSOR_MIN_GPS_SPEED;
+	data->PARAMETERS.gyroErrorUpdateInterval = GYRO_ERROR_UPDATE_INTERVAL;
+	data->PARAMETERS.gyroIErrorUpdateInterval = GYRO_I_UPDATE_INTERVAL;
 
 
 	// Set PID for first run
@@ -96,23 +109,20 @@ ErrorStatus fusion_init(FUSION_CORE *coreData, uint32_t time)
 	fusion_initGyroGainPID(&fusionData);
 
 	// Mark wait for valid sensor signals
-	coreData->sFlag.bits.SFLAG_DO_DCM_UPDATE = 0;
+	data->sFlag.bits.SFLAG_DO_DCM_UPDATE = 0;
 	// Store initial time
-	coreData->ui32SensorInitTime = time;
+	data->ui32SensorInitTime = time;
 
 	return SUCCESS;
 }
 
 ErrorStatus fusion_initGyroDriftPID(FUSION_CORE *data)
 {
-	data->_gyroErrorPID.x.im = 0.023f / data->_gyroErrorPID.x.Ki;
-	data->_gyroErrorPID.y.im = 0.01f / data->_gyroErrorPID.y.Ki;
-	data->_gyroErrorPID.z.im = -0.023f / data->_gyroErrorPID.z.Ki;
+	// Set initial PID values
+	math_PIDSet(&data->_gyroErrorPID.x, 0.045f);
+	math_PIDSet(&data->_gyroErrorPID.y, -0.009f);
+	math_PIDSet(&data->_gyroErrorPID.z, 0.017f);
 
-	// And default output
-	data->_gyroErrorPID.x.s = 0.023;
-	data->_gyroErrorPID.y.s = 0.01;
-	data->_gyroErrorPID.z.s = -0.023;
 	return SUCCESS;
 }
 
@@ -144,6 +154,9 @@ ErrorStatus fusion_dataUpdate(FUSION_CORE *data, FUSION_SENSORDATA *sensorData, 
 	}
 	else
 	{
+		// Store gyro vector
+		vectorf_add(&data->_gyro.vectorRaw, &data->_gyroError.GyroData, &data->_gyroError.GyroData);
+		data->_gyroError.ui8SamplesGyro++;
 		// Check time
 		if(SENSOR_INVALID_TIME < (time - data->ui32SensorInitTime))
 		{
@@ -152,6 +165,12 @@ ErrorStatus fusion_dataUpdate(FUSION_CORE *data, FUSION_SENSORDATA *sensorData, 
 			{
 				// And if successful do matrix update
 				data->sFlag.bits.SFLAG_DO_DCM_UPDATE = 1;
+				// Also store current gyro values as initial PID values
+				vectorf_scalarDivide(&data->_gyroError.GyroData, (float32_t)data->_gyroError.ui8SamplesGyro, &data->_gyroError.GyroData);
+				// Set initial PID values
+				math_PIDSet(&data->_gyroErrorPID.x, data->_gyroError.GyroData.x);
+				math_PIDSet(&data->_gyroErrorPID.y, data->_gyroError.GyroData.y);
+				math_PIDSet(&data->_gyroErrorPID.z, data->_gyroError.GyroData.z);
 			}
 		}
 	}
@@ -251,286 +270,266 @@ ErrorStatus fusion_generateUpdateMatrix(Vectorf * omega, Matrixf * updateMatrix,
 // Function uses sensor data to calculate error in DCM estimation
 ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 {
-		ErrorStatus status;
-		status = SUCCESS;
-		Vectorf temporaryVector = vectorf_init(0);
-		//Vectorf temporaryVector1 = vectorf_init(0);
-		//Vectorf temporaryVector2 = vectorf_init(0);
-		Vectorf error_gps_acc = vectorf_init(0);				// Error from GPS and accelerometer data
-		Vectorf error_acc_gravity = vectorf_init(0);			// Error from acceleration and gravity
-		Vectorf error_mag = vectorf_init(0);					// Error from compass
-		Vectorf error = vectorf_init(0);						// Cumulative error
-		float32_t fTemp = 0;
-		float32_t dt = 0;
-		float32_t GPSSpeed = 0;
+	ErrorStatus status;
+	status = SUCCESS;
+	Vectorf temporaryVector = vectorf_init(0);
+	//Vectorf temporaryVector1 = vectorf_init(0);
+	//Vectorf temporaryVector2 = vectorf_init(0);
+	Vectorf error_gps_acc = vectorf_init(0);				// Error from GPS and accelerometer data
+	Vectorf error_acc_gravity = vectorf_init(0);			// Error from acceleration and gravity
+	Vectorf error_mag = vectorf_init(0);					// Error from compass
+	Vectorf error = vectorf_init(0);						// Cumulative error
+	float32_t fTemp = 0;
+	float32_t dt = 0;
+	float32_t GPSSpeed = 0;
+	// Calculate GPS speed
+	GPSSpeed = vectorf_getNorm(&data->_gps.speed3D);
 
-		// Calculate GPS speed
-		GPSSpeed = vectorf_getNorm(&data->_gps.speed3D);
-
-		// Check if we have valid GPS and accelerometer data
-		// We need speed so do not use if below some value
-
-		/*
-		if((1 ==data->_gps.valid)&&(1 == data->_accelerometer.valid)&&(data->PARAMETERS.minGPSSpeed < GPSSpeed))
+	// Check if we have valid gyro and accelerometer data and calculate error
+	// Do only if speed below limit and acceleration is really low
+	if((data->PARAMETERS.minGPSSpeed > GPSSpeed)&&(1 == data->_accelerometer.valid))
+	{
+		// Check that we have only gravity - acc. magnitude is 1 +- 0.05
+		fTemp = vectorf_getNorm(&data->_accelerometer.vector);
+		if((0.95 < fTemp)&&(1.05 > fTemp))
 		{
-			// Use GPS and accelerometer speed data to calculate DCM error in earth frame
-			// data->_accelerometer.speed_3D_dt is integration time of accelerometer. Should be time between two GPS readouts.
-			// Calculate change in GPS speed
-			vectorf_substract(&data->_gps.speed3D, &data->_gps.speed3D_m, &temporaryVector);
-			// Compare with acceleration speed
-			vectorf_crossProduct(&data->_accelerometer.Speed_3D, &temporaryVector, &error_gps_acc);
-			// Reset accelerometer speed change vector
-			data->_accelerometer.Speed_3D = vectorf_init(0);
-			// Save previous GPS speed.
-			vectorf_copy(&data->_gps.speed3D, &data->_gps.speed3D_m);
-
-			// Check if all was calculated OK
-			if(ERROR == status)
+			// Store errors
+			// Store acc reading
+			vectorf_add(&data->_accelerometer.vectorNormalized, &data->_gyroError.AccelerometerData, &data->_gyroError.AccelerometerData);
+			// Store DCM estimation of acc reading
+			vectorf_add(&data->_fusion_DCM.c, &data->_gyroError.DCMDown, &data->_gyroError.DCMDown);
+			// Store number of samples
+			data->_gyroError.ui8SamplesAcc++;
+			// Store mag?
+			if(data->_mag.valid)
 			{
-				// There was error, so reset error vector
-				error_gps_acc = vectorf_init(0);
+				vectorf_add(&data->_mag.vector, &data->_gyroError.MagData, &data->_gyroError.MagData);
+				vectorf_add(&data->_fusion_DCM.b, &data->_gyroError.DCMEast, &data->_gyroError.DCMEast);
+				data->_gyroError.ui8SamplesMag++;
+			}
+			else
+			{
+				data->_gyroError.MagData = vectorf_init(0);
+				data->_gyroError.DCMEast = vectorf_init(0);
+				data->_gyroError.ui8SamplesMag = 0;
 			}
 
-		}*/
-		// Check if we have valid gyro and accelerometer data and calculate error
-		// Do only if speed below limit and acceleration is really low
-		if((data->PARAMETERS.minGPSSpeed > GPSSpeed)&&(1 == data->_accelerometer.valid))
-		{
-			// Check that we have only gravity - acc. magnitude is 1 +- 0.05
-			fTemp = vectorf_getNorm(&data->_accelerometer.vector);
-			if((0.95 < fTemp)&&(1.05 > fTemp))
+			// Enough samples?
+			if(data->_gyroError.ui8SampleWindow < data->_gyroError.ui8SamplesAcc)
 			{
-				// Check that gyro amplitude is less than set limit for updating gyro error
-				//fTemp = vectorf_getNorm(&data->_gyro.vector);
-				//if(fTemp < data->maxGyroErrorAmplitude)
+				// Calculate errors
+				// Average data
+				// Accelerometer
+				fTemp = (float32_t)data->_gyroError.ui8SamplesAcc;
+				vectorf_scalarDivide(&data->_gyroError.AccelerometerData, fTemp, &data->_gyroError.AccelerometerData);
+				vectorf_scalarDivide(&data->_gyroError.DCMDown, fTemp, &data->_gyroError.DCMDown);
+				// Do mag if we have samples
+				if(0 != data->_gyroError.ui8SamplesMag)
 				{
-					// Store estimated gravity vector
-					status = vectorf_crossProduct(&data->_fusion_DCM.c, &data->_accelerometer.vectorNormalized, &error_acc_gravity);
-					// Check if there was calculation error
-					// If yes, set error to 0
-					if(ERROR == status)
-					{
-						error_acc_gravity = vectorf_init(0);
-					}
-				}
-				// Check if we have valid magnetometer data and calculate yaw error
-				// Do only if we have valid accelerometer data, as we are using that to calculate error
-				if(data->_mag.valid)
-				{
+					// Mag
+					fTemp = (float32_t)data->_gyroError.ui8SamplesMag;
+					vectorf_scalarDivide(&data->_gyroError.MagData, fTemp, &data->_gyroError.MagData);
+					vectorf_scalarDivide(&data->_gyroError.DCMEast, fTemp, &data->_gyroError.DCMEast);
+					// Calculate mag error
 					// Calculate heading error in body frame
 					// Use gravity from accelerometer
 					// grav X raw mag = earth Y axis
 					// earth Y axis X DCM line b is yaw error in body frame
 					// temporaryVector - normalized mag with subtracted offsets
-					status = vectorf_normalizeAToB(&data->_mag.vector, &temporaryVector);
+					status = vectorf_normalizeAToB(&data->_gyroError.MagData, &temporaryVector);
 					// Get where earth's Y axis is supposed to be
-					status = vectorf_crossProduct(&data->_accelerometer.vectorNormalized, &temporaryVector, &data->_mag.earthYAxis);
+					status = vectorf_crossProduct(&data->_gyroError.AccelerometerData, &temporaryVector, &data->_mag.earthYAxis);
 					// Normalize
 					vectorf_normalize(&data->_mag.earthYAxis);
 					// Get error - rotate DCM B axis to our calculated Y axis
-					status = vectorf_crossProduct(&data->_fusion_DCM.b, &data->_mag.earthYAxis, &error_mag);
+					status = vectorf_crossProduct(&data->_gyroError.DCMEast, &data->_mag.earthYAxis, &error_mag);
 				}
-				else
+
+				// Calculate gravity error
+				status = vectorf_crossProduct(&data->_gyroError.DCMDown, &data->_gyroError.AccelerometerData, &error_acc_gravity);
+				// Check if there was calculation error
+				// If yes, set error to 0
+				if(ERROR == status)
 				{
-					error_mag = vectorf_init(0);
+					error_acc_gravity = vectorf_init(0);
 				}
-			}
-			else
-			{
-				error_acc_gravity = vectorf_init(0);
-				error_mag = vectorf_init(0);
-			}
-		}
 
+				// Store time
+				data->_gyroError.ui32DeltaTime =  data->dataTime - data->_gyroError.ui32SamplingTime;
+				data->_gyroError.ui32SamplingTime = data->dataTime;
 
-		data->_mag.vectorEarthFrame.x = error_mag.x;
-		data->_mag.vectorEarthFrame.y = error_mag.y;
-		data->_mag.vectorEarthFrame.z = error_mag.z;
+				// Calculate delta time
+				dt = (float32_t)data->_gyroError.ui32DeltaTime;
+				dt = dt * data->PARAMETERS.systimeToSeconds;
 
-		// Sum up all errors
-		status = vectorf_add(&error_acc_gravity, &error_gps_acc, &error);
+				// Zero
+				data->_gyroError.AccelerometerData = vectorf_init(0);
+				data->_gyroError.DCMDown = vectorf_init(0);
+				data->_gyroError.DCMEast = vectorf_init(0);
+				data->_gyroError.DCMNorth = vectorf_init(0);
+				data->_gyroError.DCMX = vectorf_init(0);
+				data->_gyroError.DCMY = vectorf_init(0);
+				data->_gyroError.DCMZ = vectorf_init(0);
+				data->_gyroError.MagData = vectorf_init(0);
+				data->_gyroError.ui8SamplesAcc = 0;
+				data->_gyroError.ui8SamplesMag = 0;
 
-		status = vectorf_add(&error_mag, &error, &error);
+				// Sum up all errors
+				status = vectorf_add(&error_acc_gravity, &error_gps_acc, &error);
+				status = vectorf_add(&error_mag, &error, &error);
+				// Scale error
+				//vectorf_scalarProduct(&error, data->_gyro.errorScale, &error);
+				// Store errors
+				vectorf_copy(&error, &data->_gyro.gyroError);
 
-		// Scale error
-		vectorf_scalarProduct(&error, data->_gyro.errorScale, &error);
-
-		// Store errors
-		vectorf_copy(&error, &data->_gyro.gyroError);
-
-		// Calculate delta time
-		dt = (float32_t)data->_gyro.deltaTime;
-		dt = dt * data->PARAMETERS.systimeToSeconds;
-
-		// Check rotation magnitude. If too large, do not calculate error, but set P part to 0 - update PID with zeroes.
-		fTemp = vectorf_getNorm(&data->_gyro.vector);
-
-		if(fTemp < data->maxGyroErrorUpdateRate)
-		{
-			// Check if we update gains
-			if(data->sFlag.bits.FLAG_FAST_ROTATION)
-			{
-				data->sFlag.bits.FLAG_FAST_ROTATION = 0;
-				// Update gyro gains
-				// Store error used
-				data->_gyro.gyroGainError.x = error.x;
-				data->_gyro.gyroGainError.y = error.y;
-				data->_gyro.gyroGainError.z = error.z;
-				// Use calculated error to determine if gain is off
-				// X axis was rotating fast?
-				if(data->sFlag.bits.SFLAG_X_FAST_ROTATING)
-				{
-					data->sFlag.bits.SFLAG_X_FAST_ROTATING = 0;
-					// Check X axis
-					if(data->sFlag.bits.SFLAG_X_ROTATION_DIRECTION)
-					{
-						// X rotation was positive
-						// Update data->_gyro.gyroRateXP
-						data->_gyro.gyroRateXP -= error.x * GYRO_GAIN_ADJUSTMENT_FACTOR;
-					}
-					else
-					{
-						data->_gyro.gyroRateXN += error.x * GYRO_GAIN_ADJUSTMENT_FACTOR;
-					}
-				}
-				// Check Y axis
-				// Y axis was rotating fast?
-				if(data->sFlag.bits.SFLAG_Y_FAST_ROTATING)
-				{
-					data->sFlag.bits.SFLAG_Y_FAST_ROTATING = 0;
-					if(data->sFlag.bits.SFLAG_Y_ROTATION_DIRECTION)
-					{
-						// Y rotation was positive
-						data->_gyro.gyroRateYP -= error.y * GYRO_GAIN_ADJUSTMENT_FACTOR;
-					}
-					else
-					{
-						data->_gyro.gyroRateYN += error.y * GYRO_GAIN_ADJUSTMENT_FACTOR;
-					}
-				}
-				// Check Z axis
-				// Z axis was rotating fast?
-				if(data->sFlag.bits.SFLAG_Z_FAST_ROTATING)
-				{
-					data->sFlag.bits.SFLAG_Z_FAST_ROTATING = 0;
-					if(data->sFlag.bits.SFLAG_Z_ROTATION_DIRECTION)
-					{
-						// Z rotation was positive
-						data->_gyro.gyroRateZP += error.z * GYRO_GAIN_ADJUSTMENT_FACTOR;
-					}
-					else
-					{
-						data->_gyro.gyroRateZN -= error.z * GYRO_GAIN_ADJUSTMENT_FACTOR;
-					}
-				}
-				//status = math_PID3(&error, dt, &data->_gyroGainPID);
-			}
-			// Check update interval
-			data->_gyroErrorUpdateCount ++;
-			if(data->_gyroErrorUpdateCount > data->PARAMETERS.gyroErrorUpdateInterval)
-			{
-				data->_gyroErrorUpdateCount = 0;
-				/*
-				// Check when to update I error
-				data->_gyroIErrorUpdateCount ++;
-				if(data->_gyroIErrorUpdateCount > data->PARAMETERS.gyroIErrorUpdateInterval)
-				{
-					// Update gyro I drift error
-					data->_gyroIErrorUpdateCount = 0;
-				}
-				else
-				{
-					// If dt is 0, so is I error update
-					dt = 0;
-				}
-				*/
 				// Update PID
 				status = math_PID3(&error, dt, &data->_gyroErrorPID);
-			}
-			else
-			{
-				// If error ~= 0, update PID with 0
-				//fTemp = vectorf_getNorm(&error);
-				//if(ERROR_IS_SMALL > fTemp)
-				{
-					// Update PID with error = 0
-					error.x = 0;
-					error.y = 0;
-					error.z = 0;
-					status = math_PID3(&error, 0, &data->_gyroErrorPID);
-				}
+
+
 			}
 		}
 		else
 		{
-			// If rotating fast, and flag is not set, mark update gyro gains and set hysteresis
-			if((fTemp > data->gyroFastRotation)&&(!data->sFlag.bits.FLAG_FAST_ROTATION))
-			{
-				//data->sFlag.bits.FLAG_FAST_ROTATION = 1;
-				// Mark rotation directions
-				if(0 < data->_gyro.vector.x)
-				{
-					data->sFlag.bits.SFLAG_X_ROTATION_DIRECTION = 1;
-					// Rotating fast?
-					if(GYRO_FAST_ROTATION < data->_gyro.vector.x)
-					{
-						data->sFlag.bits.SFLAG_X_FAST_ROTATING = 1;
-					}
-				}
-				else
-				{
-					data->sFlag.bits.SFLAG_X_ROTATION_DIRECTION = 0;
-					// Rotating fast?
-					if(-GYRO_FAST_ROTATION > data->_gyro.vector.x)
-					{
-						data->sFlag.bits.SFLAG_X_FAST_ROTATING = 1;
-					}
-				}
-				if(0 < data->_gyro.vector.y)
-				{
-					data->sFlag.bits.SFLAG_Y_ROTATION_DIRECTION = 1;
-					// Rotating fast?
-					if(GYRO_FAST_ROTATION < data->_gyro.vector.y)
-					{
-						data->sFlag.bits.SFLAG_Y_FAST_ROTATING = 1;
-					}
-				}
-				else
-				{
-					data->sFlag.bits.SFLAG_Y_ROTATION_DIRECTION = 0;
-					// Rotating fast?
-					if(-GYRO_FAST_ROTATION > data->_gyro.vector.y)
-					{
-						data->sFlag.bits.SFLAG_Y_FAST_ROTATING = 1;
-					}
-				}
-				if(0 < data->_gyro.vector.z)
-				{
-					data->sFlag.bits.SFLAG_Z_ROTATION_DIRECTION = 1;
-					// Rotating fast?
-					if(GYRO_FAST_ROTATION < data->_gyro.vector.z)
-					{
-						data->sFlag.bits.SFLAG_Z_FAST_ROTATING = 1;
-					}
-				}
-				else
-				{
-					data->sFlag.bits.SFLAG_Z_ROTATION_DIRECTION = 0;
-					// Rotating fast?
-					if(-GYRO_FAST_ROTATION > data->_gyro.vector.z)
-					{
-						data->sFlag.bits.SFLAG_Z_FAST_ROTATING = 1;
-					}
-				}
-
-			}
-			// Update drift PID with error = 0
-			error.x = 0;
-			error.y = 0;
-			error.z = 0;
-			status = math_PID3(&error, dt, &data->_gyroErrorPID);
+			error_acc_gravity = vectorf_init(0);
+			error_mag = vectorf_init(0);
 		}
-
+	}
+/*
+	// Calculate delta time
+	dt = (float32_t)data->_gyro.deltaTime;
+	dt = dt * data->PARAMETERS.systimeToSeconds;
+	// Check rotation magnitude. If too large, do not calculate error, but set P part to 0 - update PID with zeroes.
+	fTemp = vectorf_getNorm(&data->_gyro.vector);
+	if(fTemp < data->maxGyroErrorUpdateRate)
+	{
+		// Check if we update gains
+		if(data->sFlag.bits.FLAG_FAST_ROTATION)
+		{
+			data->sFlag.bits.FLAG_FAST_ROTATION = 0;
+			// Update gyro gains
+			// Store error used
+			data->_gyro.gyroGainError.x = error.x;
+			data->_gyro.gyroGainError.y = error.y;
+			data->_gyro.gyroGainError.z = error.z;
+			// Use calculated error to determine if gain is off
+			// X axis was rotating fast?
+			if(data->sFlag.bits.SFLAG_X_FAST_ROTATING)
+			{
+				data->sFlag.bits.SFLAG_X_FAST_ROTATING = 0;
+				// Check X axis
+				if(data->sFlag.bits.SFLAG_X_ROTATION_DIRECTION)
+				{
+					// X rotation was positive
+					// Update data->_gyro.gyroRateXP
+					data->_gyro.gyroRateXP -= error.x * GYRO_GAIN_ADJUSTMENT_FACTOR;
+				}
+				else
+				{
+					data->_gyro.gyroRateXN += error.x * GYRO_GAIN_ADJUSTMENT_FACTOR;
+				}
+			}
+			// Check Y axis
+			// Y axis was rotating fast?
+			if(data->sFlag.bits.SFLAG_Y_FAST_ROTATING)
+			{
+				data->sFlag.bits.SFLAG_Y_FAST_ROTATING = 0;
+				if(data->sFlag.bits.SFLAG_Y_ROTATION_DIRECTION)
+				{
+					// Y rotation was positive
+					data->_gyro.gyroRateYP -= error.y * GYRO_GAIN_ADJUSTMENT_FACTOR;
+				}
+				else
+				{
+					data->_gyro.gyroRateYN += error.y * GYRO_GAIN_ADJUSTMENT_FACTOR;
+				}
+			}
+			// Check Z axis
+			// Z axis was rotating fast?
+			if(data->sFlag.bits.SFLAG_Z_FAST_ROTATING)
+			{
+				data->sFlag.bits.SFLAG_Z_FAST_ROTATING = 0;
+				if(data->sFlag.bits.SFLAG_Z_ROTATION_DIRECTION)
+				{
+					// Z rotation was positive
+					data->_gyro.gyroRateZP += error.z * GYRO_GAIN_ADJUSTMENT_FACTOR;
+				}
+				else
+				{
+					data->_gyro.gyroRateZN -= error.z * GYRO_GAIN_ADJUSTMENT_FACTOR;
+				}
+			}
+			//status = math_PID3(&error, dt, &data->_gyroGainPID);
+		}
+	}
+	else
+	{
+		// If rotating fast, and flag is not set, mark update gyro gains and set hysteresis
+		if((fTemp > data->gyroFastRotation)&&(!data->sFlag.bits.FLAG_FAST_ROTATION))
+		{
+			//data->sFlag.bits.FLAG_FAST_ROTATION = 1;
+			// Mark rotation directions
+			if(0 < data->_gyro.vector.x)
+			{
+				data->sFlag.bits.SFLAG_X_ROTATION_DIRECTION = 1;
+				// Rotating fast?
+				if(GYRO_FAST_ROTATION < data->_gyro.vector.x)
+				{
+					data->sFlag.bits.SFLAG_X_FAST_ROTATING = 1;
+				}
+			}
+			else
+			{
+				data->sFlag.bits.SFLAG_X_ROTATION_DIRECTION = 0;
+				// Rotating fast?
+				if(-GYRO_FAST_ROTATION > data->_gyro.vector.x)
+				{
+					data->sFlag.bits.SFLAG_X_FAST_ROTATING = 1;
+				}
+			}
+			if(0 < data->_gyro.vector.y)
+			{
+				data->sFlag.bits.SFLAG_Y_ROTATION_DIRECTION = 1;
+				// Rotating fast?
+				if(GYRO_FAST_ROTATION < data->_gyro.vector.y)
+				{
+					data->sFlag.bits.SFLAG_Y_FAST_ROTATING = 1;
+				}
+			}
+			else
+			{
+				data->sFlag.bits.SFLAG_Y_ROTATION_DIRECTION = 0;
+				// Rotating fast?
+				if(-GYRO_FAST_ROTATION > data->_gyro.vector.y)
+				{
+					data->sFlag.bits.SFLAG_Y_FAST_ROTATING = 1;
+				}
+			}
+			if(0 < data->_gyro.vector.z)
+			{
+				data->sFlag.bits.SFLAG_Z_ROTATION_DIRECTION = 1;
+				// Rotating fast?
+				if(GYRO_FAST_ROTATION < data->_gyro.vector.z)
+				{
+					data->sFlag.bits.SFLAG_Z_FAST_ROTATING = 1;
+				}
+			}
+			else
+			{
+				data->sFlag.bits.SFLAG_Z_ROTATION_DIRECTION = 0;
+				// Rotating fast?
+				if(-GYRO_FAST_ROTATION > data->_gyro.vector.z)
+				{
+					data->sFlag.bits.SFLAG_Z_FAST_ROTATING = 1;
+				}
+			}
+		}
+		// Update drift PID with error = 0
+		error.x = 0;
+		error.y = 0;
+		error.z = 0;
+		status = math_PID3(&error, dt, &data->_gyroErrorPID);
+	}
+*/
 
 	return SUCCESS;
 }

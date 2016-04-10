@@ -107,9 +107,14 @@ ErrorStatus gyro_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 	vectorf_copy(&data->_gyro.vectorRaw, &data->_gyro.vector);
 
 	// Remove offset
+	data->_gyro.vector.x -= data->_gyroErrorPID.x.s;
+	data->_gyro.vector.y -= data->_gyroErrorPID.y.s;
+	data->_gyro.vector.z -= data->_gyroErrorPID.z.s;
+	/*
 	data->_gyro.vector.x -= 0.045f;//data->_gyroErrorPID.x.s;
 	data->_gyro.vector.y -= -0.01f;//data->_gyroErrorPID.y.s;
 	data->_gyro.vector.z -= 0.02f;//data->_gyroErrorPID.z.s;
+	*/
 	// Calculate time difference
 	deltaTime = dataTime - data->_gyro.dataTime;
 	// Do checks on time passed...
