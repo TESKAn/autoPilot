@@ -214,6 +214,9 @@ typedef struct
 	Vectorf DCMY;
 	Vectorf DCMZ;
 
+	// Limit gyro for error calculation
+	float32_t f32GyroErrorUpdateMaxRate;
+
 	uint8_t ui8SamplesAcc;
 	uint8_t ui8SamplesMag;
 	uint8_t ui8SamplesGyro;
