@@ -15,8 +15,8 @@
 #define DEBUG_USB
 
 //#define USE_FREEMASTER		// Use freemaster instead of own comm
-#define RS485_DEBUG				// Disable sending commands over RS485
-#define RS485_DISABLE_POLL	// Disable RS485 slave polling
+//#define RS485_DEBUG				// Disable sending commands over RS485
+//#define RS485_DISABLE_POLL	// Disable RS485 slave polling
 
 // APStatus flags macros
 #define LOG_ISOPEN	APStatus1.bits.BIT0
