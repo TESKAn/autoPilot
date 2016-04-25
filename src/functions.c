@@ -300,10 +300,9 @@ int16_t SendCommData1()
 	// 3*9=27
 	// 345
 
-
-
-
-
+	UART_QueueMessagef(VAR_PIDROLLIM, FCFlightData.PIDRoll.im);
+	UART_QueueMessagef(VAR_PIDPITCHIM, FCFlightData.PIDPitch.im);
+	UART_QueueMessagef(VAR_PIDYAWIM, FCFlightData.PIDYaw.im);
 
 
 	while(0 != UART2_Transferring)

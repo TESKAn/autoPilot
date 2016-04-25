@@ -462,4 +462,8 @@
 #define VAR_GYROERRORY                  177
 #define VAR_GYROERRORZ                  178
 
+#define VAR_PIDROLLIM                   179
+#define VAR_PIDPITCHIM                  180
+#define VAR_PIDYAWIM                    181
+
 #endif /* MACRO_H_ */

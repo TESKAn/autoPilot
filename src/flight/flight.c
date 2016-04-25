@@ -64,8 +64,8 @@ void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 	FCFlightData->ORIENTATION_REQUIRED.f32Power = 0.0f;
 
 	// Limits in radians
-	FCFlightData->ORIENTATION_LIMITS.f32RollLimit = 10.0f / 57.2957795f;
-	FCFlightData->ORIENTATION_LIMITS.f32PitchLimit = 10.0f / 57.2957795f;
+	FCFlightData->ORIENTATION_LIMITS.f32RollLimit = 20.0f / 57.2957795f;
+	FCFlightData->ORIENTATION_LIMITS.f32PitchLimit = 20.0f / 57.2957795f;
 	FCFlightData->ORIENTATION_LIMITS.f32YawLimit = 360.0f / 57.2957795f;
 
 	// Disable motors
@@ -962,6 +962,8 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		f32Power = FCFlightData->PIDAltitude.outMax;
 		// Set throttle to some value
 
+		//.65
+		//.35
 
 		// Calculate motor power ratios
 		// Motor FR
