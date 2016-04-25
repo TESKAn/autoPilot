@@ -590,8 +590,22 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 		}
 		case FLIGHT_STABILIZE_HOVER:
 		{
-			// Run stabilising algorithm
-			flight_stabilize(FCFlightData);
+			// Check that we have throttle
+			// -50
+			if(-50.0f > RCValues->ch[RC_THROTTLE].PWMIN_Zero)
+			{
+				// Run stabilising algorithm
+				flight_stabilize(FCFlightData);
+			}
+			else
+			{
+				// Else reset integrators in PID control
+				FCFlightData->PIDRoll.im = 0.0f;
+				FCFlightData->PIDPitch.im = 0.0f;
+				FCFlightData->PIDYaw.im = 0.0f;
+				FCFlightData->PIDAltitude.im = 0.0f;
+			}
+
 			break;
 		}
 		case FLIGHT_STABILIZE_PLANE:

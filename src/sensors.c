@@ -274,6 +274,28 @@ void copySensorData(void)
 	FCFlightData.ORIENTATION.f32Yaw = fusionData.ROLLPITCHYAW.yaw;
 	FCFlightData.ORIENTATION.f32Altitude = fusionData._altimeter.altitude;
 
+	// Check flight
+	//ui32FlightCheckCounter++;
+	//if(ui32FlightCheckCounter > ui32FlightCheckInterval)
+	{
+		ui32FlightCheckCounter = 0;
+		// Run flight check algorithms
+		if(1 == RCData.inputs_ok)
+		{
+			flight_checkRCInputs(&FCFlightData, &RCData);
+		}
+		else
+		{
+			flight_decideAction(&FCFlightData, &RCData);
+		}
+		// Check flight states
+		flight_checkStates(&FCFlightData, &RCData);
+		// Get new servo values
+		flight_decodeServos(&FCFlightData, &RCData);
+		// Refresh PWM outputs
+		refreshPWMOutputs();
+	}
+
 	// Check if we are saving to log
 	if(SD_WRITE_LOG && SCR2_LOGOPEN)
 	{
