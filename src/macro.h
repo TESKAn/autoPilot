@@ -465,5 +465,19 @@
 #define VAR_PIDROLLIM                   179
 #define VAR_PIDPITCHIM                  180
 #define VAR_PIDYAWIM                    181
+#define VAR_UI32SENSACQELAPSTIME        182
+
+#define VAR_PIDROLLD                    183
+#define VAR_PIDPITCHD                   184
+#define VAR_PIDYAWD                     185
+
+#define VAR_PIDROLLI                    186
+#define VAR_PIDPITCHI                   187
+#define VAR_PIDYAWI                     188
+#define VAR_PIDROLLP                    189
+#define VAR_PIDPITCHP                   190
+#define VAR_PIDYAWP                     191
+
+
 
 #endif /* MACRO_H_ */

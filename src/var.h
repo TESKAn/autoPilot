@@ -74,6 +74,11 @@ typedef union
 	} parts;
 }__attribute__((aligned(4),packed)) CONVERTNUM;
 
+// Timing variables
+extern uint32_t ui32StartTime;
+extern uint32_t ui32EndTime;
+extern uint32_t ui32ElapsedTime;
+
 
 extern uint16_t mainLoopState;
 extern uint16_t servoMovePosition;

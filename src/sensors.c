@@ -301,6 +301,9 @@ void copySensorData(void)
 	{
 		write_toLog();
 	}
+
+	ui32EndTime = getSystemTime();
+	ui32ElapsedTime = ui32EndTime - ui32StartTime;
 }
 
 ErrorStatus MPU6000_ReadFTValues(void)

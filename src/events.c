@@ -580,6 +580,9 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 				I2C2_PollTimer = I2C2_POLLTIME;
 				if(!I2C2_WAITINGDATA && I2C2_INITDONE && MPU_COMM_ENABLED)
 				{
+
+					// Store start time
+					ui32StartTime = getSystemTime();
 					I2C2_PollTimer = 0;
 					for(retriesCount = I2C2_ERROR_RETRIESCOUNT; retriesCount > 0; retriesCount --)
 					{

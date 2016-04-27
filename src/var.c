@@ -7,6 +7,11 @@
 
 #include "allinclude.h"
 
+// Timing variables
+uint32_t ui32StartTime = 0;
+uint32_t ui32EndTime = 0;
+uint32_t ui32ElapsedTime = 0;
+
 // Variable for main loop state execution machine
 
  uint16_t mainLoopState = 0;

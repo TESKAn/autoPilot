@@ -304,6 +304,22 @@ int16_t SendCommData1()
 	UART_QueueMessagef(VAR_PIDPITCHIM, FCFlightData.PIDPitch.im);
 	UART_QueueMessagef(VAR_PIDYAWIM, FCFlightData.PIDYaw.im);
 
+	UART_QueueMessageui32(VAR_UI32SENSACQELAPSTIME, ui32ElapsedTime);
+
+	UART_QueueMessagef(VAR_PIDROLLD, FCFlightData.PIDRoll.d);
+	UART_QueueMessagef(VAR_PIDPITCHD, FCFlightData.PIDPitch.d);
+	UART_QueueMessagef(VAR_PIDYAWD, FCFlightData.PIDYaw.d);
+
+	UART_QueueMessagef(VAR_PIDROLLI, FCFlightData.PIDRoll.i);
+	UART_QueueMessagef(VAR_PIDPITCHI, FCFlightData.PIDPitch.i);
+	UART_QueueMessagef(VAR_PIDYAWI, FCFlightData.PIDYaw.i);
+
+	UART_QueueMessagef(VAR_PIDROLLP, FCFlightData.PIDRoll.p);
+	UART_QueueMessagef(VAR_PIDPITCHP, FCFlightData.PIDPitch.p);
+	UART_QueueMessagef(VAR_PIDYAWP, FCFlightData.PIDYaw.p);
+
+
+
 
 	while(0 != UART2_Transferring)
 	{
