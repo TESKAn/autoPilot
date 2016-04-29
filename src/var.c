@@ -11,6 +11,8 @@
 uint32_t ui32StartTime = 0;
 uint32_t ui32EndTime = 0;
 uint32_t ui32ElapsedTime = 0;
+uint32_t ui32LastSensorUpdateTime = 0;
+uint32_t ui32SensorUpdateInterval = 0;
 
 // Variable for main loop state execution machine
 

@@ -318,6 +318,7 @@ int16_t SendCommData1()
 	UART_QueueMessagef(VAR_PIDPITCHP, FCFlightData.PIDPitch.p);
 	UART_QueueMessagef(VAR_PIDYAWP, FCFlightData.PIDYaw.p);
 
+	UART_QueueMessageui32(VAR_UI32SENSORUPDATEINTERVAL, ui32SensorUpdateInterval);
 
 
 

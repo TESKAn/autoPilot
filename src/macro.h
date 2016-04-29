@@ -478,6 +478,8 @@
 #define VAR_PIDPITCHP                   190
 #define VAR_PIDYAWP                     191
 
+#define VAR_UI32SENSORUPDATEINTERVAL    192
+
 
 
 #endif /* MACRO_H_ */

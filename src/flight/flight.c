@@ -926,7 +926,7 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 void flight_stabilize(FLIGHT_CORE * FCFlightData)
 {
 	float32_t f32Error = 0.0f;
-	float32_t f32IntegrationInterval = 0.04f;
+	float32_t f32IntegrationInterval = 0.01f;
 	// Use PID regulator to stabilize vehicle
 	// Stabilize roll - calculate error
 	f32Error = FCFlightData->ORIENTATION_REQUIRED.f32Roll - FCFlightData->ORIENTATION.f32Roll;

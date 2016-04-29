@@ -301,9 +301,14 @@ void copySensorData(void)
 	{
 		write_toLog();
 	}
-
+	// Calculate update duration
 	ui32EndTime = getSystemTime();
 	ui32ElapsedTime = ui32EndTime - ui32StartTime;
+	// Calculate sensor update interval
+	ui32SensorUpdateInterval = ui32EndTime - ui32LastSensorUpdateTime;
+	ui32LastSensorUpdateTime = ui32EndTime;
+
+
 }
 
 ErrorStatus MPU6000_ReadFTValues(void)
@@ -453,16 +458,29 @@ ErrorStatus MPU6000_Enable(FunctionalState newState)
 		// Configure sensors
 		// Register 25
 		I2C2_DMABufTX[0] = 25;
+
+		// Reg 25 = sample rate divider = 8000(filter)/(1+7) = 1000 Hz
+		I2C2_DMABufTX[1] = 7;
+		// Reg 26 = 0000 0000	Set low pass filter off
+		I2C2_DMABufTX[2] = 0x00;
+		// Reg 27 = 0000 1000	Set gyro maximum rate at 500 °/sec
+		I2C2_DMABufTX[3] = 0x08;
+		// Reg 28 = 0001 0000	Set accel maximum rate at 8g
+		I2C2_DMABufTX[4] = 0x10;
+		/*
 		// Reg 25 = sample rate divider = 1000(filter)/(1+0) = 1000 Hz
 		I2C2_DMABufTX[1] = 0;
 		// Reg 26 = 0000 0001	Set low pass filter to 94/98 Hz
 		I2C2_DMABufTX[1] = 0x02;
 		// Try no LP filter
-		//I2C2_DMABufTX[2] = 0x00;
+		I2C2_DMABufTX[2] = 0x00;
 		// Reg 27 = 0000 1000	Set gyro maximum rate at 500 °/sec
 		I2C2_DMABufTX[3] = 0x08;
 		// Reg 28 = 0001 0000	Set accel maximum rate at 8g
 		I2C2_DMABufTX[4] = 0x10;
+		*/
+
+
 		for(retriesCount = I2C2_ERROR_RETRIESCOUNT; retriesCount > 0; retriesCount --)
 		{
 			error = masterSend(MPU6000_ADDRESS, I2C2_DMABufTX, 5);

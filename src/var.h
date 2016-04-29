@@ -78,6 +78,8 @@ typedef union
 extern uint32_t ui32StartTime;
 extern uint32_t ui32EndTime;
 extern uint32_t ui32ElapsedTime;
+extern uint32_t ui32LastSensorUpdateTime;
+extern uint32_t ui32SensorUpdateInterval;
 
 
 extern uint16_t mainLoopState;
