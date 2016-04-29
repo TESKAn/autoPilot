@@ -48,8 +48,8 @@ void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 	FCFlightData->ui32FlightDeInitStates = FDEINIT_IDLE;
 
 	// Init PIDs
-	math_PIDInit(&FCFlightData->PIDPitch, 0.3f, 0.01f, 0.0f, -0.1f, 0.1f);
-	math_PIDInit(&FCFlightData->PIDRoll, 0.3f, 0.01f, 0.0f, -0.1f, 0.1f);
+	math_PIDInit(&FCFlightData->PIDPitch, 0.3f, 0.005f, 0.3f, -0.1f, 0.1f);
+	math_PIDInit(&FCFlightData->PIDRoll, 1.0f, 0.005f, 0.3f, -0.1f, 0.1f);
 	math_PIDInit(&FCFlightData->PIDYaw, 0.1f, 0.01f, 0.0f, -0.1f, 0.1f);
 	math_PIDInit(&FCFlightData->PIDAltitude, 0.1f, 0.01f, 0.0f, 0.0f, 1.0f);
 	math_PIDInit(&FCFlightData->PIDSpeed, 0.1f, 0.01f, 0.0f, 0.15f, 1.0f);
