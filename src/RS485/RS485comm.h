@@ -332,7 +332,7 @@ typedef struct tagRS485WAITINGUNIT
 #define SERVOREG_DGAIN				26
 #define SERVOREG_MIN_ANGLE_REG		6
 #define SERVOREG_MAX_ANGLE_REG		8
-#define SERVOREG_
+#define SERVOREG_MAX_TORQUE_REG		14
 #define SERVOREG_
 #define SERVOREG_
 #define SERVOREG_

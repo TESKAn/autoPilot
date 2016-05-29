@@ -25,8 +25,8 @@ RCFlag RC_Flags;
 uint16_t ui16CheckStatesDelay = 0;
 
 // Angle deviation for level and vtol
-#define ANGLE_DEV_LEVEL_P		2.0f
-#define ANGLE_DEV_LEVEL_N		-2.0f
+#define ANGLE_DEV_LEVEL_P		5.0f
+#define ANGLE_DEV_LEVEL_N		-5.0f
 
 #define ANGLE_DEV_VTOL_P		104.0f
 #define ANGLE_DEV_VTOL_N		90.0f
@@ -403,6 +403,12 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 									FCFlightData->MOTORS.FR.ui8MeasPWMMin = 0;
 									FCFlightData->MOTORS.FL.ui8MeasPWMMin = 0;
 									FCFlightData->MOTORS.R.ui8MeasPWMMin = 0;
+
+									// Set servo max torque
+									FCFlightData->TILT_SERVOS.FR.ui16MaxTorque = 6000;
+									FCFlightData->TILT_SERVOS.FL.ui16MaxTorque = 6000;
+									FCFlightData->TILT_SERVOS.R.ui16MaxTorque = 6000;
+
 									// Next state
 									FCFlightData->ui32FlightInitState = FINIT_WAIT_MEAS_PWMMIN;
 									ui16CheckStatesDelay = 50;

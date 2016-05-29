@@ -23,8 +23,8 @@
 #define MOTOR_START_READ_REG	10
 #define MOTOR_COUNT_READ_REG	45
 
-#define SERVO_START_READ_REG	24
-#define SERVO_COUNT_READ_REG	25
+#define SERVO_START_READ_REG	10
+#define SERVO_COUNT_READ_REG	40
 
 
 UInt8 servoFRID = SERVO_FR_ID;
@@ -182,7 +182,7 @@ Int16 RS485_MasterInitData(void)
 	RS485Data->ui16RXCommTimeout = 500;
 
 	// Init command buffer
-	RB32_Init(&RS485CommandBuffer, RS485_CommandBuffer, 16);
+	RB32_Init(&RS485CommandBuffer, RS485_CommandBuffer, 32);
 
 	RS485Motor_R.REGS.i16ParkPosition = 2048;
 	RS485Motor_R.REGS.i16ZeroSpeedPWM = 50;

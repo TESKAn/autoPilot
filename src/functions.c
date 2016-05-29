@@ -631,6 +631,15 @@ int16_t CheckServo(RS485SERVO * servo)
 		//***********************************
 
 		//***********************************
+		// Max torque?
+		if(FServoData->ui16MaxTorque != servo->REGS.ui16MaxTorque)
+		{
+			RS485_WriteSlaveReg16(servo->REGS.ui8ID, SERVOREG_MAX_TORQUE_REG, FServoData->ui16MaxTorque);
+			servo->ui8FreshData = 0;
+		}
+		//***********************************
+
+		//***********************************
 		// Check position
 
 		if(FServoData->ui16RequestedPosition != servo->REGS.ui16GoalPosition)
