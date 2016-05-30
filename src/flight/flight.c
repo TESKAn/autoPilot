@@ -405,9 +405,9 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 									FCFlightData->MOTORS.R.ui8MeasPWMMin = 0;
 
 									// Set servo max torque
-									FCFlightData->TILT_SERVOS.FR.ui16MaxTorque = 6000;
-									FCFlightData->TILT_SERVOS.FL.ui16MaxTorque = 6000;
-									FCFlightData->TILT_SERVOS.R.ui16MaxTorque = 6000;
+									FCFlightData->TILT_SERVOS.FR.ui16RequestedMaxTorque = 6000;
+									FCFlightData->TILT_SERVOS.FL.ui16RequestedMaxTorque = 6000;
+									FCFlightData->TILT_SERVOS.R.ui16RequestedMaxTorque = 6000;
 
 									// Next state
 									FCFlightData->ui32FlightInitState = FINIT_WAIT_MEAS_PWMMIN;
@@ -557,11 +557,35 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 						{
 							if((ANGLE_DEV_VTOL_N < FCFlightData->TILT_SERVOS.R.f32ServoAngle)&&(ANGLE_DEV_VTOL_P > FCFlightData->TILT_SERVOS.R.f32ServoAngle))
 							{
-								// Wait throttle null
-								FCFlightData->ui32FlightInitState = FINIT_WAIT_THROTTLE_NULL;
+								// Set servo max torque
+								FCFlightData->TILT_SERVOS.FR.ui16RequestedMaxTorque = 2000;
+								FCFlightData->TILT_SERVOS.FL.ui16RequestedMaxTorque = 2000;
+								FCFlightData->TILT_SERVOS.R.ui16RequestedMaxTorque = 2000;
+								FCFlightData->ui32FlightInitState = FINIT_WAIT_IMAX_SET;
 							}
 						}
 					}
+					break;
+				}
+				case FINIT_WAIT_IMAX_SET:
+				{
+					if(FCFlightData->TILT_SERVOS.FR.ui16MaxTorque == FCFlightData->TILT_SERVOS.FR.ui16RequestedMaxTorque)
+					{
+						if(FCFlightData->TILT_SERVOS.FL.ui16MaxTorque == FCFlightData->TILT_SERVOS.FL.ui16RequestedMaxTorque)
+						{
+							if(FCFlightData->TILT_SERVOS.R.ui16MaxTorque == FCFlightData->TILT_SERVOS.R.ui16RequestedMaxTorque)
+							{
+								// Wait throttle null
+								FCFlightData->ui32FlightInitState = FINIT_WAIT_THROTTLE_NULL;
+
+								// Set servos to holding position
+								FCFlightData->f32NacelleTilt_FR = 100.0f;
+								FCFlightData->f32NacelleTilt_FL = 100.0f;
+								FCFlightData->f32NacelleTilt_R = 106.0f;
+							}
+						}
+					}
+
 					break;
 				}
 				case FINIT_WAIT_THROTTLE_NULL:
@@ -868,6 +892,11 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 								FCFlightData->f32NacelleTilt_FR = 0.0f;
 								FCFlightData->f32NacelleTilt_FL = 0.0f;
 								FCFlightData->f32NacelleTilt_R = 0.0f;
+
+								// Set servo max torque
+								FCFlightData->TILT_SERVOS.FR.ui16RequestedMaxTorque = 6000;
+								FCFlightData->TILT_SERVOS.FL.ui16RequestedMaxTorque = 6000;
+								FCFlightData->TILT_SERVOS.R.ui16RequestedMaxTorque = 6000;
 
 								FCFlightData->ui32FlightDeInitStates = FDEINIT_WAIT_TILT_PLANE;
 							}

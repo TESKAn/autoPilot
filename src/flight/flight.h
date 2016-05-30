@@ -109,7 +109,8 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 #define FINIT_WAIT_MPOS_PARK			6
 #define FINIT_WAIT_SPOS_LEVEL			7
 #define FINIT_WAIT_SPOS_VTOL			8
-#define FINIT_WAIT_THROTTLE_NULL		9
+#define FINIT_WAIT_IMAX_SET				9
+#define FINIT_WAIT_THROTTLE_NULL		10
 
 // Flight deinit states
 #define FDEINIT_IDLE					0

@@ -89,6 +89,8 @@ typedef struct
 	float32_t f32ServoAngle;
 	uint16_t ui16RequestedPosition;
 	uint16_t ui16MaxTorque;
+	uint16_t ui16RequestedMaxTorque;
+	uint16_t ui16Temp;
 	uint8_t ui8ServoID;
 	uint8_t ui8Enable;
 	uint8_t ui8Enabled;

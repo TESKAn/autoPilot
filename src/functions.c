@@ -605,6 +605,8 @@ int16_t CheckServo(RS485SERVO * servo)
 		f32Temp -= FServoData->f32ServoZero;
 		FServoData->f32ServoAngle = f32Temp;
 
+		FServoData->ui16MaxTorque = servo->REGS.ui16MaxTorque;
+
 		//***********************************
 
 		//***********************************
@@ -632,9 +634,9 @@ int16_t CheckServo(RS485SERVO * servo)
 
 		//***********************************
 		// Max torque?
-		if(FServoData->ui16MaxTorque != servo->REGS.ui16MaxTorque)
+		if(FServoData->ui16RequestedMaxTorque != servo->REGS.ui16MaxTorque)
 		{
-			RS485_WriteSlaveReg16(servo->REGS.ui8ID, SERVOREG_MAX_TORQUE_REG, FServoData->ui16MaxTorque);
+			RS485_WriteSlaveReg16(servo->REGS.ui8ID, SERVOREG_MAX_TORQUE_REG, FServoData->ui16RequestedMaxTorque);
 			servo->ui8FreshData = 0;
 		}
 		//***********************************
