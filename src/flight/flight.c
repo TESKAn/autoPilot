@@ -32,7 +32,7 @@ uint16_t ui16CheckStatesDelay = 0;
 #define ANGLE_DEV_VTOL_N		90.0f
 
 // Max nacelle roll
-#define MAX_NACELLE_ROLL		300.0f
+#define MAX_NACELLE_ROLL		150.0f
 
 
 
@@ -49,8 +49,8 @@ void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 
 	// Init PIDs
 	math_PIDInit(&FCFlightData->PIDPitch, 0.3f, 0.005f, 0.3f, -0.1f, 0.1f);
-	math_PIDInit(&FCFlightData->PIDRoll, 1.0f, 0.005f, 0.3f, -0.1f, 0.1f);
-	math_PIDInit(&FCFlightData->PIDYaw, 0.1f, 0.01f, 0.0f, -0.1f, 0.1f);
+	math_PIDInit(&FCFlightData->PIDRoll, 0.3f, 0.005f, 0.3f, -0.1f, 0.1f);
+	math_PIDInit(&FCFlightData->PIDYaw, 0.1f, 0.005f, 0.1f, -0.26f, 0.26f);
 	math_PIDInit(&FCFlightData->PIDAltitude, 0.1f, 0.01f, 0.0f, 0.0f, 1.0f);
 	math_PIDInit(&FCFlightData->PIDSpeed, 0.1f, 0.01f, 0.0f, 0.15f, 1.0f);
 
@@ -1016,7 +1016,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 
 		// Calculate motor power ratios
 		// Motor FR
-		f32Temp = 0.6076f + FCFlightData->PIDPitch.s;
+		f32Temp = 0.615f + FCFlightData->PIDPitch.s;
 		f32Temp1 = 0.5f - FCFlightData->PIDRoll.s;
 		f32Temp *= f32Temp1;
 		// Get power
@@ -1033,7 +1033,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		RCValues->ch[RC_MOTOR_FR].PWMOUT_Val = f32Temp;
 
 		// Motor FL
-		f32Temp = 0.6076f + FCFlightData->PIDPitch.s;
+		f32Temp = 0.615f + FCFlightData->PIDPitch.s;
 		f32Temp1 = 0.5f + FCFlightData->PIDRoll.s;
 		f32Temp *= f32Temp1;
 		// Get power
@@ -1050,7 +1050,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		RCValues->ch[RC_MOTOR_FL].PWMOUT_Val = f32Temp;
 
 		// Motor R
-		f32Temp = 0.3924f - FCFlightData->PIDPitch.s;
+		f32Temp = 0.385f - FCFlightData->PIDPitch.s;
 		f32Temp1 = cosf(FCFlightData->PIDYaw.s);
 		f32Temp /= f32Temp1;
 		// Get power
@@ -1110,6 +1110,10 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		// Add zero PWM
 		f32Temp += RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Offset;
 		RCValues->i16YawValue = f32Temp;
+
+		RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val = RCValues->i16YawValue;
+		/*
+
 		if(RCValues->i16YawValue > RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val)
 		{
 			RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val += 5.0f;
@@ -1122,7 +1126,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		}
 
 		RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val = 1500.0f;
-
+*/
 	}
 	else
 	{
