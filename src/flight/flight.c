@@ -48,9 +48,9 @@ void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 	FCFlightData->ui32FlightDeInitStates = FDEINIT_IDLE;
 
 	// Init PIDs
-	math_PIDInit(&FCFlightData->PIDPitch, 0.3f, 0.005f, 0.3f, -0.1f, 0.1f);
-	math_PIDInit(&FCFlightData->PIDRoll, 0.3f, 0.005f, 0.3f, -0.1f, 0.1f);
-	math_PIDInit(&FCFlightData->PIDYaw, 0.1f, 0.005f, 0.1f, -0.26f, 0.26f);
+	math_PIDInit(&FCFlightData->PIDPitch, 0.25f, 0.005f, 0.2f, -0.1f, 0.1f);
+	math_PIDInit(&FCFlightData->PIDRoll, 0.25f, 0.005f, 0.2f, -0.1f, 0.1f);
+	math_PIDInit(&FCFlightData->PIDYaw, 0.5f, 0.005f, 0.0f, -0.26f, 0.26f);
 	math_PIDInit(&FCFlightData->PIDAltitude, 0.1f, 0.01f, 0.0f, 0.0f, 1.0f);
 	math_PIDInit(&FCFlightData->PIDSpeed, 0.1f, 0.01f, 0.0f, 0.15f, 1.0f);
 
@@ -1112,6 +1112,9 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		RCValues->i16YawValue = f32Temp;
 
 		RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val = RCValues->i16YawValue;
+
+		//RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val = 1500.0f + RCValues->ch[RC_RUDDER].PWMIN_Zero;
+
 		/*
 
 		if(RCValues->i16YawValue > RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val)

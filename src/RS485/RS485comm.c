@@ -21,7 +21,7 @@
 
 // Motor read regs
 #define MOTOR_START_READ_REG	10
-#define MOTOR_COUNT_READ_REG	45
+#define MOTOR_COUNT_READ_REG	47
 
 #define SERVO_START_READ_REG	10
 #define SERVO_COUNT_READ_REG	40
