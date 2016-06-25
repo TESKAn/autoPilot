@@ -99,6 +99,14 @@ typedef struct
 
 typedef struct
 {
+	uint8_t ui8OutEnable;
+	uint8_t ui8OutEnabled;
+	uint8_t ui8CountReset;
+	uint8_t ui8CountWasReset;
+}__attribute__((aligned(4),packed)) FLIGHT_BATMON;
+
+typedef struct
+{
 	uint32_t ui32FlightStateMachine;
 	uint32_t ui32FlightTransitionState;
 
@@ -166,6 +174,8 @@ typedef struct
 		FLIGHT_MOTOR FL;
 		FLIGHT_MOTOR R;
 	}MOTORS;
+
+	FLIGHT_BATMON batMon;
 
 	struct
 	{

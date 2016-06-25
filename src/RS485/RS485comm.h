@@ -117,6 +117,7 @@ typedef struct tagRS485COMMAND
 #define RS485_POLL_STATE_MOTOR_FR			3
 #define RS485_POLL_STATE_MOTOR_FL			4
 #define RS485_POLL_STATE_MOTOR_R			5
+#define RS485_POLL_STATE_BATMON				6
 
 // Transmitter states
 #define RS485_M_TX_IDLE				0
@@ -258,6 +259,56 @@ typedef struct tagRS485MOTOR
 
 }__attribute__((aligned(4),packed)) RS485MOTOR;
 
+typedef struct tagRS485BATMON
+{
+	UInt8 errStatus;
+	UInt8 ui8FreshData;
+	// Registers
+	union
+	{
+		struct
+		{
+			UInt8 ui8REGSData[48];				// Main data structure
+		};
+		struct
+		{
+			UInt16 ui16ModelNumber;			// 0
+			UInt8 ui8FirmwareVersion;		// 2
+			UInt8 ui8ID;					// 3
+			UInt8 ui8BaudRate;				// 4
+			UInt8 ui8ReturnDelayTime;		// 5
+			UInt16 ui16CellVoltage0;		// 6
+			UInt16 ui16CellVoltage1;		// 8
+			UInt16 ui16CellVoltage2;		// 10
+			UInt16 ui16CellVoltage3;		// 12
+			UInt16 ui16CellVoltage4;		// 14
+			UInt16 ui16CellVoltage5;		// 16
+			UInt16 ui16CellVoltage6;		// 18
+			UInt16 ui16CellVoltage7;		// 20
+			UInt16 ui16CellVoltage8;		// 22
+			UInt16 ui16CellVoltage9;		// 24
+			UInt16 ui16CellVoltage10;		// 26
+			UInt16 ui16CellVoltage11;		// 28
+			UInt16 ui16StackVoltage;		// 30
+			UInt16 ui16OutputVoltage;		// 32
+			Int16 i16OutputCurrent;			// 34
+			UInt8 ui8OutputEnabled;			// 36
+			UInt8 ui8PCBTemperature;		// 37
+			UInt8 ui8NTCTemperature0;		// 38
+			UInt8 ui8NTCTemperature1;		// 39
+			UInt8 ui8NTCTemperature2;		// 40
+			UInt8 ui8Registered;			// 41
+			UInt8 ui8EnableOutput;			// 42
+			UInt8 ui8ResetCounters;			// 43
+			UInt16 ui16MAhUsed;				// 44
+			UInt16 ui16Empty;				// 46
+		}REGS;
+	};
+}__attribute__((aligned(4),packed)) RS485BATMON;
+
+
+
+
 typedef struct tagRS485RXDATA
 {
 	UInt8 ui8RXState;
@@ -339,6 +390,8 @@ typedef struct tagRS485WAITINGUNIT
 #define SERVOREG_
 #define SERVOREG_
 
+#define BATMONREG_ENABLE_OUTPUT		42
+#define BATMONREG_RESET_COUNTERS	43
 
 // Function declarations
 Int16 RS485_Timing();
@@ -371,6 +424,8 @@ extern RS485SERVO RS485Servo_R;
 extern RS485MOTOR RS485Motor_FL;
 extern RS485MOTOR RS485Motor_FR;
 extern RS485MOTOR RS485Motor_R;
+
+extern RS485BATMON RS485BatMon;
 
 
 #endif /* RS485COMM_H_ */

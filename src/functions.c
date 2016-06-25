@@ -322,6 +322,26 @@ int16_t SendCommData1()
 	// 14*9=126
 	// 471
 
+	UART_QueueMessageui16(VAR_BATMON_CV0, RS485BatMon.REGS.ui16CellVoltage0);
+	UART_QueueMessageui16(VAR_BATMON_CV1, RS485BatMon.REGS.ui16CellVoltage1);
+	UART_QueueMessageui16(VAR_BATMON_CV2, RS485BatMon.REGS.ui16CellVoltage2);
+	UART_QueueMessageui16(VAR_BATMON_CV3, RS485BatMon.REGS.ui16CellVoltage3);
+	UART_QueueMessageui16(VAR_BATMON_CV4, RS485BatMon.REGS.ui16CellVoltage4);
+	UART_QueueMessageui16(VAR_BATMON_CV5, RS485BatMon.REGS.ui16CellVoltage5);
+	UART_QueueMessageui16(VAR_BATMON_CV6, RS485BatMon.REGS.ui16CellVoltage6);
+	UART_QueueMessageui16(VAR_BATMON_CV7, RS485BatMon.REGS.ui16CellVoltage7);
+	UART_QueueMessageui16(VAR_BATMON_CV8, RS485BatMon.REGS.ui16CellVoltage8);
+	UART_QueueMessageui16(VAR_BATMON_CV9, RS485BatMon.REGS.ui16CellVoltage9);
+	UART_QueueMessageui16(VAR_BATMON_CV10, RS485BatMon.REGS.ui16CellVoltage10);
+	UART_QueueMessageui16(VAR_BATMON_CV11, RS485BatMon.REGS.ui16CellVoltage11);
+
+	UART_QueueMessageui16(VAR_BATMON_STACKVOLTAGE, RS485BatMon.REGS.ui16StackVoltage);
+	UART_QueueMessageui16(VAR_BATMON_OUTPUTVOLTAGE, RS485BatMon.REGS.ui16OutputVoltage);
+	UART_QueueMessagei16(VAR_BATMON_OUTPUTCURRENT, RS485BatMon.REGS.i16OutputCurrent);
+	UART_QueueMessageui16(VAR_BATMON_PCBTEMPERATURE, (uint16_t)RS485BatMon.REGS.ui8PCBTemperature);
+	UART_QueueMessageui16(VAR_BATMON_MAHUSED, RS485BatMon.REGS.ui16MAhUsed);
+	// 17*7 = 119
+	// 590
 
 	while(0 != UART2_Transferring)
 	{
@@ -351,6 +371,9 @@ void Refresh485()
 	CheckMotor(&RS485Motor_FR);
 	CheckMotor(&RS485Motor_FL);
 	CheckMotor(&RS485Motor_R);
+	//**************************************
+	// Check batmon
+	CheckBatmon(&RS485BatMon);
 	//**************************************
 #endif
 }
@@ -650,6 +673,47 @@ int16_t CheckServo(RS485SERVO * servo)
 			RS485_WriteSlaveReg16(servo->REGS.ui8ID, SERVOREG_POSITION, FServoData->ui16RequestedPosition);
 			servo->ui8FreshData = 0;
 		}
+	}
+	//***********************************
+	return 0;
+}
+
+int16_t CheckBatmon(RS485BATMON * batmon)
+{
+	float32_t f32Temp = 0.0f;
+	FLIGHT_BATMON * FBatMon = &FCFlightData.batMon;
+
+	//***********************************
+	// Check servos
+	// Fresh data?
+	if(1 == batmon->ui8FreshData)
+	{
+		FBatMon->ui8OutEnabled = batmon->REGS.ui8OutputEnabled;
+		//***********************************
+
+		//***********************************
+		// Out enabled?
+
+		if(1 == batmon->REGS.ui8OutputEnabled)
+		{
+			// Check
+			if(0 == FBatMon->ui8OutEnable)
+			{
+				RS485_WriteSlaveReg8(batmon->REGS.ui8ID, BATMONREG_ENABLE_OUTPUT, 0);
+				batmon->ui8FreshData = 0;
+			}
+		}
+		else
+		{
+			if(1 == FBatMon->ui8OutEnabled)
+			{
+				RS485_WriteSlaveReg8(batmon->REGS.ui8ID, BATMONREG_ENABLE_OUTPUT, 1);
+				batmon->ui8FreshData = 0;
+			}
+		}
+
+		//***********************************
+
 	}
 	//***********************************
 	return 0;

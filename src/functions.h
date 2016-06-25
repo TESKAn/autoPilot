@@ -35,6 +35,7 @@ void calibrateI2CSensors(void);
 void Refresh485();
 int16_t CheckMotor(RS485MOTOR* motor);
 int16_t CheckServo(RS485SERVO * servo);
+int16_t CheckBatmon(RS485BATMON * batmon);
 void refreshPWMOutputs(void);
 uint32_t getSystemTime(void);
 float32_t getFTime(void);

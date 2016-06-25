@@ -480,6 +480,24 @@
 
 #define VAR_UI32SENSORUPDATEINTERVAL    192
 
+#define VAR_BATMON_CV0                  193
+#define VAR_BATMON_CV1                  194
+#define VAR_BATMON_CV2                  195
+#define VAR_BATMON_CV3                  196
+#define VAR_BATMON_CV4                  197
+#define VAR_BATMON_CV5                  198
+#define VAR_BATMON_CV6                  199
+#define VAR_BATMON_CV7                  200
+#define VAR_BATMON_CV8                  201
+#define VAR_BATMON_CV9                  202
+#define VAR_BATMON_CV10                 203
+#define VAR_BATMON_CV11                 204
+#define VAR_BATMON_STACKVOLTAGE         205
+#define VAR_BATMON_OUTPUTVOLTAGE        206
+#define VAR_BATMON_OUTPUTCURRENT        207
+#define VAR_BATMON_PCBTEMPERATURE       208
+#define VAR_BATMON_MAHUSED              209
+
 
 
 #endif /* MACRO_H_ */

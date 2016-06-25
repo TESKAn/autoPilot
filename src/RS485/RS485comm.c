@@ -18,6 +18,7 @@
 #define MOTOR_FR_ID		0x23
 #define MOTOR_FL_ID		0x22
 #define MOTOR_R_ID		0x21
+#define BATMON_ID		0x31
 
 // Motor read regs
 #define MOTOR_START_READ_REG	10
@@ -25,6 +26,9 @@
 
 #define SERVO_START_READ_REG	10
 #define SERVO_COUNT_READ_REG	40
+
+#define BATMON_START_READ_REG	6
+#define BATMON_COUNT_READ_REG	40
 
 
 UInt8 servoFRID = SERVO_FR_ID;
@@ -34,6 +38,8 @@ UInt8 servoRID = SERVO_R_ID;
 UInt8 motorFRID = MOTOR_FR_ID;
 UInt8 motorFLID = MOTOR_FL_ID;
 UInt8 motorRID = MOTOR_R_ID;
+
+UInt8 batmonID = BATMON_ID;
 
 Int8 RS485PollInterval = 10;
 Int8 RS485PollDelay = 120;
@@ -45,6 +51,8 @@ RS485SERVO RS485Servo_R;
 RS485MOTOR RS485Motor_FL;
 RS485MOTOR RS485Motor_FR;
 RS485MOTOR RS485Motor_R;
+
+RS485BATMON RS485BatMon;
 
 // Struct for receiving data
 RS485RXDATA RS485DataStruct;
@@ -175,6 +183,8 @@ Int16 RS485_MasterInitData(void)
 	RS485Motor_FR.REGS.ui8ID = motorFRID;
 	RS485Motor_FL.REGS.ui8ID = motorFLID;
 	RS485Motor_R.REGS.ui8ID = motorRID;
+
+	RS485BatMon.REGS.ui8ID = batmonID;
 
 	RS485Data = &RS485DataStruct;
 
@@ -544,6 +554,24 @@ void RS485_States_Master()
 							// Send data with DMA
 							RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
 							// Set next
+							RS485MasterPollState = RS485_POLL_STATE_BATMON;
+							RS485MasterState = RS485_M_STATE_WAITING_RESPONSE;
+							readRS485Data = 0;
+							break;
+						}
+						case RS485_POLL_STATE_BATMON:
+						{
+							// Store req bytes in tx buffer
+							RS485CommandDecoder.VARS.ui8Address = batmonID | 0x80;
+							RS485CommandDecoder.VARS.ui8Command = BATMON_START_READ_REG;
+							RS485CommandDecoder.VARS.ui16Data = BATMON_COUNT_READ_REG;
+							// Store polling ID
+							RS485CurrentCommand.VARS.ui8Address = RS485CommandDecoder.VARS.ui8Address;
+							// Store req bytes in tx buffer
+							bytesToSend = RS485_BufferQueuedCommand(RS485CommandDecoder);
+							// Send data with DMA
+							RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
+							// Set next
 							RS485MasterPollState = RS485_POLL_STATE_SERVO_FR;
 							RS485MasterState = RS485_M_STATE_WAITING_RESPONSE;
 							readRS485Data = 0;
@@ -847,6 +875,12 @@ Int16 RS485_DecodeMessage()
 			ui8DestRegAddress = RS485CurrentUnit.ui16RegAddress + RS485Motor_R.ui8REGSData;
 			ui8FreshData = &RS485Motor_R.ui8FreshData;
 			break;
+		}
+		case BATMON_ID:
+		{
+			//RS485BatMon.errStatus = RS485Data->RXDATA.ui8Parameters[]
+			ui8DestRegAddress = RS485CurrentUnit.ui16RegAddress + RS485BatMon.ui8REGSData;
+			ui8FreshData = &RS485BatMon.ui8FreshData;
 		}
 	}
 
