@@ -28,7 +28,7 @@
 #define SERVO_COUNT_READ_REG	40
 
 #define BATMON_START_READ_REG	6
-#define BATMON_COUNT_READ_REG	40
+#define BATMON_COUNT_READ_REG	41
 
 
 UInt8 servoFRID = SERVO_FR_ID;
@@ -452,136 +452,157 @@ void RS485_States_Master()
 				{
 					RS485PollDelay = 120;
 					// Go through RS485 slaves and request data
-					switch(RS485MasterPollState)
+					// Check batmon - if output is ON, poll, else don't poll
+					if(0 == RS485BatMon.REGS.ui8OutputEnabled)
 					{
-						case RS485_POLL_STATE_SERVO_FR:
+						// Store req bytes in tx buffer
+						RS485CommandDecoder.VARS.ui8Address = batmonID | 0x80;
+						RS485CommandDecoder.VARS.ui8Command = BATMON_START_READ_REG;
+						RS485CommandDecoder.VARS.ui16Data = BATMON_COUNT_READ_REG;
+						// Store polling ID
+						RS485CurrentCommand.VARS.ui8Address = RS485CommandDecoder.VARS.ui8Address;
+						// Store req bytes in tx buffer
+						bytesToSend = RS485_BufferQueuedCommand(RS485CommandDecoder);
+						// Send data with DMA
+						RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
+						// Set next
+						RS485MasterPollState = RS485_POLL_STATE_SERVO_FR;
+						RS485MasterState = RS485_M_STATE_WAITING_RESPONSE;
+						readRS485Data = 0;
+					}
+					else
+					{
+						switch(RS485MasterPollState)
 						{
-							RS485CommandDecoder.VARS.ui8Address = servoFRID | 0x80;
-							RS485CommandDecoder.VARS.ui8Command = SERVO_START_READ_REG;
-							RS485CommandDecoder.VARS.ui16Data = SERVO_COUNT_READ_REG;
-							// Store polling ID
-							RS485CurrentCommand.VARS.ui8Address = RS485CommandDecoder.VARS.ui8Address;
-							// Store req bytes in tx buffer
-							bytesToSend = RS485_BufferQueuedCommand(RS485CommandDecoder);
-							// Send data with DMA
-							RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
-							// Set next
-							RS485MasterPollState = RS485_POLL_STATE_SERVO_FL;
-							RS485MasterState = RS485_M_STATE_WAITING_RESPONSE;
-							break;
-						}
-						case RS485_POLL_STATE_SERVO_FL:
-						{
-							// Store req bytes in tx buffer
-							RS485CommandDecoder.VARS.ui8Address = servoFLID | 0x80;
-							RS485CommandDecoder.VARS.ui8Command = SERVO_START_READ_REG;
-							RS485CommandDecoder.VARS.ui16Data = SERVO_COUNT_READ_REG;
-							// Store polling ID
-							RS485CurrentCommand.VARS.ui8Address = RS485CommandDecoder.VARS.ui8Address;
-							// Store req bytes in tx buffer
-							bytesToSend = RS485_BufferQueuedCommand(RS485CommandDecoder);
-							// Send data with DMA
-							RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
-							// Set next
-							RS485MasterPollState = RS485_POLL_STATE_SERVO_R;
-							RS485MasterState = RS485_M_STATE_WAITING_RESPONSE;
-							break;
-						}
-						case RS485_POLL_STATE_SERVO_R:
-						{
-							// Store req bytes in tx buffer
-							RS485CommandDecoder.VARS.ui8Address = servoRID | 0x80;
-							RS485CommandDecoder.VARS.ui8Command = SERVO_START_READ_REG;
-							RS485CommandDecoder.VARS.ui16Data = SERVO_COUNT_READ_REG;
-							// Store polling ID
-							RS485CurrentCommand.VARS.ui8Address = RS485CommandDecoder.VARS.ui8Address;
-							// Store req bytes in tx buffer
-							bytesToSend = RS485_BufferQueuedCommand(RS485CommandDecoder);
-							// Send data with DMA
-							RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
-							// Set next
-							RS485MasterPollState = RS485_POLL_STATE_MOTOR_FR;
-							//readRS485Data = 0;
-							//RS485MasterPollState = RS485_POLL_STATE_SERVO_FR;
-							RS485MasterState = RS485_M_STATE_WAITING_RESPONSE;
+							case RS485_POLL_STATE_SERVO_FR:
+							{
+								RS485CommandDecoder.VARS.ui8Address = servoFRID | 0x80;
+								RS485CommandDecoder.VARS.ui8Command = SERVO_START_READ_REG;
+								RS485CommandDecoder.VARS.ui16Data = SERVO_COUNT_READ_REG;
+								// Store polling ID
+								RS485CurrentCommand.VARS.ui8Address = RS485CommandDecoder.VARS.ui8Address;
+								// Store req bytes in tx buffer
+								bytesToSend = RS485_BufferQueuedCommand(RS485CommandDecoder);
+								// Send data with DMA
+								RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
+								// Set next
+								RS485MasterPollState = RS485_POLL_STATE_SERVO_FL;
+								RS485MasterState = RS485_M_STATE_WAITING_RESPONSE;
+								break;
+							}
+							case RS485_POLL_STATE_SERVO_FL:
+							{
+								// Store req bytes in tx buffer
+								RS485CommandDecoder.VARS.ui8Address = servoFLID | 0x80;
+								RS485CommandDecoder.VARS.ui8Command = SERVO_START_READ_REG;
+								RS485CommandDecoder.VARS.ui16Data = SERVO_COUNT_READ_REG;
+								// Store polling ID
+								RS485CurrentCommand.VARS.ui8Address = RS485CommandDecoder.VARS.ui8Address;
+								// Store req bytes in tx buffer
+								bytesToSend = RS485_BufferQueuedCommand(RS485CommandDecoder);
+								// Send data with DMA
+								RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
+								// Set next
+								RS485MasterPollState = RS485_POLL_STATE_SERVO_R;
+								RS485MasterState = RS485_M_STATE_WAITING_RESPONSE;
+								break;
+							}
+							case RS485_POLL_STATE_SERVO_R:
+							{
+								// Store req bytes in tx buffer
+								RS485CommandDecoder.VARS.ui8Address = servoRID | 0x80;
+								RS485CommandDecoder.VARS.ui8Command = SERVO_START_READ_REG;
+								RS485CommandDecoder.VARS.ui16Data = SERVO_COUNT_READ_REG;
+								// Store polling ID
+								RS485CurrentCommand.VARS.ui8Address = RS485CommandDecoder.VARS.ui8Address;
+								// Store req bytes in tx buffer
+								bytesToSend = RS485_BufferQueuedCommand(RS485CommandDecoder);
+								// Send data with DMA
+								RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
+								// Set next
+								RS485MasterPollState = RS485_POLL_STATE_MOTOR_FR;
+								//readRS485Data = 0;
+								//RS485MasterPollState = RS485_POLL_STATE_SERVO_FR;
+								RS485MasterState = RS485_M_STATE_WAITING_RESPONSE;
 
-							break;
-						}
-						case RS485_POLL_STATE_MOTOR_FR:
-						{
-							// Store req bytes in tx buffer
-							RS485CommandDecoder.VARS.ui8Address = motorFRID | 0x80;
-							RS485CommandDecoder.VARS.ui8Command = MOTOR_START_READ_REG;
-							RS485CommandDecoder.VARS.ui16Data = MOTOR_COUNT_READ_REG;
-							// Store polling ID
-							RS485CurrentCommand.VARS.ui8Address = RS485CommandDecoder.VARS.ui8Address;
-							// Store req bytes in tx buffer
-							bytesToSend = RS485_BufferQueuedCommand(RS485CommandDecoder);
-							// Send data with DMA
-							RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
-							// Set next
-							RS485MasterPollState = RS485_POLL_STATE_MOTOR_FL;
-							RS485MasterState = RS485_M_STATE_WAITING_RESPONSE;
-							break;
-						}
-						case RS485_POLL_STATE_MOTOR_FL:
-						{
-							// Store req bytes in tx buffer
-							RS485CommandDecoder.VARS.ui8Address = motorFLID | 0x80;
-							RS485CommandDecoder.VARS.ui8Command = MOTOR_START_READ_REG;
-							RS485CommandDecoder.VARS.ui16Data = MOTOR_COUNT_READ_REG;
-							// Store polling ID
-							RS485CurrentCommand.VARS.ui8Address = RS485CommandDecoder.VARS.ui8Address;
-							// Store req bytes in tx buffer
-							bytesToSend = RS485_BufferQueuedCommand(RS485CommandDecoder);
-							// Send data with DMA
-							RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
-							// Set next
-							RS485MasterPollState = RS485_POLL_STATE_MOTOR_R;
-							RS485MasterState = RS485_M_STATE_WAITING_RESPONSE;
-							break;
-						}
-						case RS485_POLL_STATE_MOTOR_R:
-						{
-							// Store req bytes in tx buffer
-							RS485CommandDecoder.VARS.ui8Address = motorRID | 0x80;
-							RS485CommandDecoder.VARS.ui8Command = MOTOR_START_READ_REG;
-							RS485CommandDecoder.VARS.ui16Data = MOTOR_COUNT_READ_REG;
-							// Store polling ID
-							RS485CurrentCommand.VARS.ui8Address = RS485CommandDecoder.VARS.ui8Address;
-							// Store req bytes in tx buffer
-							bytesToSend = RS485_BufferQueuedCommand(RS485CommandDecoder);
-							// Send data with DMA
-							RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
-							// Set next
-							RS485MasterPollState = RS485_POLL_STATE_BATMON;
-							RS485MasterState = RS485_M_STATE_WAITING_RESPONSE;
-							readRS485Data = 0;
-							break;
-						}
-						case RS485_POLL_STATE_BATMON:
-						{
-							// Store req bytes in tx buffer
-							RS485CommandDecoder.VARS.ui8Address = batmonID | 0x80;
-							RS485CommandDecoder.VARS.ui8Command = BATMON_START_READ_REG;
-							RS485CommandDecoder.VARS.ui16Data = BATMON_COUNT_READ_REG;
-							// Store polling ID
-							RS485CurrentCommand.VARS.ui8Address = RS485CommandDecoder.VARS.ui8Address;
-							// Store req bytes in tx buffer
-							bytesToSend = RS485_BufferQueuedCommand(RS485CommandDecoder);
-							// Send data with DMA
-							RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
-							// Set next
-							RS485MasterPollState = RS485_POLL_STATE_SERVO_FR;
-							RS485MasterState = RS485_M_STATE_WAITING_RESPONSE;
-							readRS485Data = 0;
-							break;
-						}
-						default:
-						{
-							RS485MasterPollState = RS485_POLL_STATE_SERVO_FR;
-							readRS485Data = 0;
-							break;
+								break;
+							}
+							case RS485_POLL_STATE_MOTOR_FR:
+							{
+								// Store req bytes in tx buffer
+								RS485CommandDecoder.VARS.ui8Address = motorFRID | 0x80;
+								RS485CommandDecoder.VARS.ui8Command = MOTOR_START_READ_REG;
+								RS485CommandDecoder.VARS.ui16Data = MOTOR_COUNT_READ_REG;
+								// Store polling ID
+								RS485CurrentCommand.VARS.ui8Address = RS485CommandDecoder.VARS.ui8Address;
+								// Store req bytes in tx buffer
+								bytesToSend = RS485_BufferQueuedCommand(RS485CommandDecoder);
+								// Send data with DMA
+								RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
+								// Set next
+								RS485MasterPollState = RS485_POLL_STATE_MOTOR_FL;
+								RS485MasterState = RS485_M_STATE_WAITING_RESPONSE;
+								break;
+							}
+							case RS485_POLL_STATE_MOTOR_FL:
+							{
+								// Store req bytes in tx buffer
+								RS485CommandDecoder.VARS.ui8Address = motorFLID | 0x80;
+								RS485CommandDecoder.VARS.ui8Command = MOTOR_START_READ_REG;
+								RS485CommandDecoder.VARS.ui16Data = MOTOR_COUNT_READ_REG;
+								// Store polling ID
+								RS485CurrentCommand.VARS.ui8Address = RS485CommandDecoder.VARS.ui8Address;
+								// Store req bytes in tx buffer
+								bytesToSend = RS485_BufferQueuedCommand(RS485CommandDecoder);
+								// Send data with DMA
+								RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
+								// Set next
+								RS485MasterPollState = RS485_POLL_STATE_MOTOR_R;
+								RS485MasterState = RS485_M_STATE_WAITING_RESPONSE;
+								break;
+							}
+							case RS485_POLL_STATE_MOTOR_R:
+							{
+								// Store req bytes in tx buffer
+								RS485CommandDecoder.VARS.ui8Address = motorRID | 0x80;
+								RS485CommandDecoder.VARS.ui8Command = MOTOR_START_READ_REG;
+								RS485CommandDecoder.VARS.ui16Data = MOTOR_COUNT_READ_REG;
+								// Store polling ID
+								RS485CurrentCommand.VARS.ui8Address = RS485CommandDecoder.VARS.ui8Address;
+								// Store req bytes in tx buffer
+								bytesToSend = RS485_BufferQueuedCommand(RS485CommandDecoder);
+								// Send data with DMA
+								RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
+								// Set next
+								RS485MasterPollState = RS485_POLL_STATE_BATMON;
+								RS485MasterState = RS485_M_STATE_WAITING_RESPONSE;
+								readRS485Data = 0;
+								break;
+							}
+							case RS485_POLL_STATE_BATMON:
+							{
+								// Store req bytes in tx buffer
+								RS485CommandDecoder.VARS.ui8Address = batmonID | 0x80;
+								RS485CommandDecoder.VARS.ui8Command = BATMON_START_READ_REG;
+								RS485CommandDecoder.VARS.ui16Data = BATMON_COUNT_READ_REG;
+								// Store polling ID
+								RS485CurrentCommand.VARS.ui8Address = RS485CommandDecoder.VARS.ui8Address;
+								// Store req bytes in tx buffer
+								bytesToSend = RS485_BufferQueuedCommand(RS485CommandDecoder);
+								// Send data with DMA
+								RS485_MasterWriteByte(RS485TransmittBuffer, bytesToSend);
+								// Set next
+								RS485MasterPollState = RS485_POLL_STATE_SERVO_FR;
+								RS485MasterState = RS485_M_STATE_WAITING_RESPONSE;
+								readRS485Data = 0;
+								break;
+							}
+							default:
+							{
+								RS485MasterPollState = RS485_POLL_STATE_SERVO_FR;
+								readRS485Data = 0;
+								break;
+							}
 						}
 					}
 				}

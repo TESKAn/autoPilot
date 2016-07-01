@@ -87,7 +87,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 #define RC_IN_DEFAULT_SCALE_AILERON		1.0f
 #define RC_IN_DEFAULT_SCALE_ELEVATOR	1.0f
 #define RC_IN_DEFAULT_SCALE_THROTTLE	1.0f
-#define RC_IN_DEFAULT_SCALE_RUDDER		0.00005f
+#define RC_IN_DEFAULT_SCALE_RUDDER		0.3f
 
 
 // Macros

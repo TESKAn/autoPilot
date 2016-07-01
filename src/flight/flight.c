@@ -106,8 +106,6 @@ void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 
 	RCValues->SCALES.f32ElevatorScale = 0.1;
 	RCValues->SCALES.f32AileronScale = 0.1;
-	RCValues->SCALES.f32RudderScale = 0.00005f;
-	RCValues->SCALES.f32ThrottleScale = 0.1;
 
 	RCValues->inputs_ok = 0;
 
@@ -281,8 +279,20 @@ void flight_checkRCInputs(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		// Aileron controls roll
 		f32Temp = RCValues->ch[RC_AILERON].PWMIN_Zero * RCValues->SCALES.f32AileronScale;
 		FCFlightData->ORIENTATION_REQUIRED.f32Roll = f32Temp;
+
+
 		// Rudder controls yaw
-		f32Temp = RCValues->ch[RC_RUDDER].PWMIN_Zero * RCValues->SCALES.f32RudderScale;
+		f32Temp = RCValues->ch[RC_RUDDER].PWMIN_Zero;
+		if((5.0f > f32Temp)&&(-5.0f < f32Temp))
+		{
+			FCFlightData->f32YawCommand = 0;
+		}
+		else
+		{
+			FCFlightData->f32YawCommand = f32Temp * RCValues->SCALES.f32RudderScale;
+		}
+
+		/*
 		// Add to required yaw
 		FCFlightData->ORIENTATION_REQUIRED.f32Yaw += f32Temp;
 		// Limit yaw to +/- 180
@@ -293,7 +303,7 @@ void flight_checkRCInputs(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		else if(-3.141593f > FCFlightData->ORIENTATION_REQUIRED.f32Yaw)
 		{
 			FCFlightData->ORIENTATION_REQUIRED.f32Yaw = 3.141593f;
-		}
+		}*/
 	}
 	else
 	{
@@ -1104,6 +1114,13 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		// Mult by 57,324840764331210191082802547771 to get from rad to deg
 		// Together 636,942...
 		f32Temp = FCFlightData->PIDYaw.s * 636.94267516f;
+		// Check command
+		if(0 != FCFlightData->f32YawCommand)
+		{
+			// Command input, set required yaw to current yaw and add command
+			FCFlightData->ORIENTATION_REQUIRED.f32Yaw = FCFlightData->ORIENTATION.f32Yaw;
+			f32Temp += FCFlightData->f32YawCommand;
+		}
 		// Limit nacelle roll
 		if(MAX_NACELLE_ROLL < f32Temp) f32Temp = MAX_NACELLE_ROLL;
 		else if(-MAX_NACELLE_ROLL > f32Temp) f32Temp = -MAX_NACELLE_ROLL;

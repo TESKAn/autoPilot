@@ -184,6 +184,8 @@ typedef struct
 	}GEAR;
 
 	// Variables
+	// How much to add to yaw control
+	float32_t f32YawCommand;
 	// Minimal plane speed to be considered as flying
 	float32_t f32MinPlaneSpeed;
 	// Maximum speed for hover transition
