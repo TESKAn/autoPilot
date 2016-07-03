@@ -715,7 +715,7 @@ void init_USART1()
 	//configure module 1 - current/voltage/temperature sensor
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE); //for USART1 and USART6
 	//set baud rate
-	USART_InitStructure.USART_BaudRate = 115200;	//500000
+	USART_InitStructure.USART_BaudRate = 38400;	//500000
 	//flow control
 	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
 	//enable receiver and transmitter

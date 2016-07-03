@@ -13,19 +13,25 @@
 #include "sensor_typedefs.h"
 #include "gps.h"
 
+#define DMA_GPS				DMA2_Stream7
+#define DMA_GPS_CH			DMA_Channel_4
+
+
 void GPSTransferDMA(uint8_t *data, int length)
 {
 	// Mark GPS is sending data
 	GPS_Sending(1);
+
 	DMA_InitTypeDef DMAInitStructure;
-	// Configure USART3 DMA
+
+	// Configure USART1 DMA
 	//deinit DMA channel
-	DMA_DeInit(DMA1_Stream4);
+	DMA_DeInit(DMA_GPS);
 	//set init structure
 	//channel to use
-	DMAInitStructure.DMA_Channel = DMA_Channel_7;
+	DMAInitStructure.DMA_Channel = DMA_GPS_CH;
 	//peripheral data address
-	DMAInitStructure.DMA_PeripheralBaseAddr = (uint32_t)&USART3->DR;//    USART3_DR_ADDRESS;
+	DMAInitStructure.DMA_PeripheralBaseAddr = (uint32_t)&USART1->DR;//    USART1_DR_ADDRESS;
 	// DMA buffer address
 	DMAInitStructure.DMA_Memory0BaseAddr = (uint32_t)data;
 	DMAInitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
@@ -41,14 +47,14 @@ void GPSTransferDMA(uint8_t *data, int length)
 	DMAInitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
 	DMAInitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
 	//configure peripheral
-	DMA_Init(DMA1_Stream4, &DMAInitStructure);
+	DMA_Init(DMA_GPS, &DMAInitStructure);
 
-	//Enable DMA1 stream 4 - USART3 TX
-	DMA_Cmd(DMA1_Stream4, ENABLE);
+	//Enable DMA2 stream 7 - USART1 TX
+	DMA_Cmd(DMA_GPS, ENABLE);
 	//configure to use DMA
-	USART_DMACmd(USART3, USART_DMAReq_Tx, ENABLE);
+	USART_DMACmd(USART1, USART_DMAReq_Tx, ENABLE);
 	// Configure end of transfer interrupt
-	DMA_ITConfig(DMA1_Stream4, DMA_IT_TC, ENABLE);
+	DMA_ITConfig(DMA_GPS, DMA_IT_TC, ENABLE);
 }
 
 void GPS_Sending(int state)

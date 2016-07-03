@@ -292,8 +292,7 @@ void flight_checkRCInputs(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		{
 			FCFlightData->f32YawCommand = f32Temp;
 		}
-
-
+		/*
 		// Add to required yaw
 		FCFlightData->ORIENTATION_REQUIRED.f32Yaw += f32Temp;
 		// Limit yaw to +/- 180
@@ -305,6 +304,8 @@ void flight_checkRCInputs(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		{
 			FCFlightData->ORIENTATION_REQUIRED.f32Yaw = 3.141593f;
 		}
+		*/
+
 	}
 	else
 	{

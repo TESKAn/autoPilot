@@ -2101,7 +2101,8 @@ uint8_t RB_pop(RING_BUFFER* rb)
 			if(rb->data_start != rb->data_end)
 			{
 				// If not, fix it.
-				rb->data_start = rb->data_end;
+				rb->count++;
+				//rb->data_start = rb->data_end;
 			}
 		}
 		return data;
@@ -2175,7 +2176,8 @@ uint32_t RB32_pop(RING_BUFFER32* rb)
 			if(rb->data_start != rb->data_end)
 			{
 				// If not, fix it.
-				rb->data_start = rb->data_end;
+				rb->count++;
+				//rb->data_start = rb->data_end;
 			}
 		}
 		return data;
