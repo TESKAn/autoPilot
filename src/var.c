@@ -22,8 +22,8 @@ uint32_t ui32SensorUpdateInterval = 0;
  uint16_t readRS485Data = 0;
 
 // Ring buffers for serial communications
-RING_BUFFER RB_USART1;
-uint8_t usart1_buf[128];
+RING_BUFFER RB_USART3;
+uint8_t usart3_buf[128];
 RING_BUFFER RB_USART2;
 uint8_t usart2_buf[128];
 

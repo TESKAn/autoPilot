@@ -282,17 +282,18 @@ void flight_checkRCInputs(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 
 
 		// Rudder controls yaw
-		f32Temp = RCValues->ch[RC_RUDDER].PWMIN_Zero;
+		f32Temp = RCValues->ch[RC_RUDDER].PWMIN_Zero  * RCValues->SCALES.f32RudderScale;
+
 		if((5.0f > f32Temp)&&(-5.0f < f32Temp))
 		{
 			FCFlightData->f32YawCommand = 0;
 		}
 		else
 		{
-			FCFlightData->f32YawCommand = f32Temp * RCValues->SCALES.f32RudderScale;
+			FCFlightData->f32YawCommand = f32Temp;
 		}
 
-		/*
+
 		// Add to required yaw
 		FCFlightData->ORIENTATION_REQUIRED.f32Yaw += f32Temp;
 		// Limit yaw to +/- 180
@@ -303,7 +304,7 @@ void flight_checkRCInputs(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		else if(-3.141593f > FCFlightData->ORIENTATION_REQUIRED.f32Yaw)
 		{
 			FCFlightData->ORIENTATION_REQUIRED.f32Yaw = 3.141593f;
-		}*/
+		}
 	}
 	else
 	{
@@ -1114,6 +1115,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		// Mult by 57,324840764331210191082802547771 to get from rad to deg
 		// Together 636,942...
 		f32Temp = FCFlightData->PIDYaw.s * 636.94267516f;
+
 		// Check command
 		if(0 != FCFlightData->f32YawCommand)
 		{
@@ -1121,6 +1123,9 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 			FCFlightData->ORIENTATION_REQUIRED.f32Yaw = FCFlightData->ORIENTATION.f32Yaw;
 			f32Temp += FCFlightData->f32YawCommand;
 		}
+
+
+
 		// Limit nacelle roll
 		if(MAX_NACELLE_ROLL < f32Temp) f32Temp = MAX_NACELLE_ROLL;
 		else if(-MAX_NACELLE_ROLL > f32Temp) f32Temp = -MAX_NACELLE_ROLL;
@@ -1130,6 +1135,12 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 
 		RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val = RCValues->i16YawValue;
 
+		// Disable motor PWM
+		/*
+		RCValues->ch[RC_MOTOR_FR].PWMOUT_Val = 1000;
+		RCValues->ch[RC_MOTOR_FL].PWMOUT_Val = 1000;
+		RCValues->ch[RC_MOTOR_R].PWMOUT_Val = 1000;
+*/
 		//RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val = 1500.0f + RCValues->ch[RC_RUDDER].PWMIN_Zero;
 
 		/*

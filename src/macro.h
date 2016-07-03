@@ -230,8 +230,8 @@
 */
 
 // RS485 dir macros
-#define RS485_TXEN			GPIO_WriteBit(GPIOA, GPIO_Pin_5, 1)
-#define RS485_RXEN			GPIO_WriteBit(GPIOA, GPIO_Pin_5, 0)
+#define RS485_TXEN			GPIO_WriteBit(GPIOC, GPIO_Pin_12, 1)
+#define RS485_RXEN			GPIO_WriteBit(GPIOC, GPIO_Pin_12, 0)
 
 // PWM enable macro
 #define PWMEN_PIN_TOGGLE	GPIO_ToggleBits(GPIOE, GPIO_Pin_15)

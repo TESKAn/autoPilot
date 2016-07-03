@@ -118,14 +118,14 @@ Int16 RS485_Timing()
 			uint16_t reg5 = USART1->DR;
 			uint8_t bit5 = GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_5);
 			*/
-			uint16_t reg1 = USART1->DR;
+			uint16_t reg1 = USART3->DR;
 			RS485_ReceiveMessage((uint8_t)reg1);
 			if(1 != RS485ResponseReceived)
 			{
 				RS485Data->ui16RXTimeoutCounter = 0;
 				RS485Data->ui8RXState = RS485_RX_IDLE;
 				RS485Data->ui8RXCounter = 0;
-				RB_flush(&RB_USART1);
+				RB_flush(&RB_USART3);
 			}
 
 		}
@@ -423,11 +423,11 @@ Int16 RS485_MasterWriteByte(uint8_t *data, int length)
 {
 	// Transmit data
 	// Flush RX buffer
-	RB_flush(&RB_USART1);
+	RB_flush(&RB_USART3);
 	// Enable transmit
 	RS485_TXEN;
 	// Send
-	transferDMA_USART1(data, length);
+	transferDMA_USART3(data, length);
 	return 0;
 }
 

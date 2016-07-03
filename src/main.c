@@ -69,7 +69,7 @@ int main(void)
 	fusion_init(&fusionData, getSystemTime());
 
 	// Init serial port data structure
-	RB_Init(&RB_USART1, usart1_buf, 128);
+	RB_Init(&RB_USART3, usart3_buf, 128);
 	RB_Init(&RB_USART2, usart2_buf, 128);
 
 
@@ -138,9 +138,9 @@ int main(void)
 
 
     	// Process RS485
-    	if(0 != RB_USART1.count)
+    	if(0 != RB_USART3.count)
     	{
-    		RS485_ReceiveMessage(RB_pop(&RB_USART1));
+    		RS485_ReceiveMessage(RB_pop(&RB_USART3));
     	}
 
 #ifndef USE_FREEMASTER

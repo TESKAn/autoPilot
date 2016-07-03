@@ -88,8 +88,8 @@ extern float32_t motorFRSpeed;
 extern uint16_t readRS485Data;
 
 // Ring buffers for serial communications
-extern RING_BUFFER RB_USART1;
-extern uint8_t usart1_buf[128];
+extern RING_BUFFER RB_USART3;
+extern uint8_t usart3_buf[128];
 
 extern RING_BUFFER RB_USART2;
 extern uint8_t usart2_buf[128];

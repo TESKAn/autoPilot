@@ -79,11 +79,14 @@ void DMA1_Stream6_ISR_Handler(void)
 
 void DMA1_Stream4_ISR_Handler(void)
 {
-	// Clear GPS is sending data
-	GPS_Sending(0);
-	//GPS_SENDING = 0;
+	// Clear interrupt flag
+	USART_ClearFlag(USART3, USART_FLAG_TC);
+	// Enable USART1 TC interrupt
+	USART_ITConfig(USART3, USART_IT_TC, ENABLE);
+	// Clear DMA interrupt
 	DMA_ClearITPendingBit(DMA_USART3, DMA_IT_TC);
 	DMA_ITConfig(DMA_USART3, DMA_IT_TC, DISABLE);
+
 }
 
 /**
@@ -125,11 +128,9 @@ void DMA1_Stream3_ISR_Handler(void)
 
 void DMA2_Stream7_ISR_Handler(void)
 {
-	// Clear interrupt flag
-	USART_ClearFlag(USART1, USART_FLAG_TC);
-	// Enable USART1 TC interrupt
-	USART_ITConfig(USART1, USART_IT_TC, ENABLE);
-	// Clear DMA interrupt
+	// Clear GPS is sending data
+	GPS_Sending(0);
+	//GPS_SENDING = 0;
 	DMA_ClearITPendingBit(DMA_USART1, DMA_IT_TC);
 	DMA_ITConfig(DMA_USART1, DMA_IT_TC, DISABLE);
 }
@@ -702,38 +703,17 @@ void TIM1_CC_ISR_Handler(void)
   */
 void USART1_ISR_Handler(void)
 {
-	uint16_t reg;
-//	int iData = 0;
-	while ((USART1->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
+	int iData = 0;
+	if ((USART1->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
 	{
-		// Store data to buffer
-		//RB_push(&RB_USART1, (uint8_t) USART_ReceiveData(USART1));
-		RB_push(&RB_USART1, (uint8_t)(USART1->DR & (uint16_t)0x01FF));
-		//RS485_ReceiveMessage((uint8_t) USART_ReceiveData(USART1));
-		//RS485_ReceiveMessage((uint8_t)(USART1->DR & (uint16_t)0x01FF));
-		USART_ClearFlag(USART1, USART_FLAG_RXNE);
-	}
-	// RXNE enabled can trigger ORE interrupt
-	if((USART1->SR & USART_FLAG_ORE) != (u16)RESET)	//if transfer complete
-	{
-		// Disable transfer complete interrupt
-		USART_ITConfig(USART1, USART_IT_ORE, DISABLE);
-		// Clear interrupt flag
-		reg = USART1->SR;
-		reg = USART1->DR;
+		iData = USART_ReceiveData(USART1);
+		GPS_ReceiveProcess((uint8_t)iData, getSystemTime());
 	}
 
 	if((USART1->SR & USART_FLAG_TC) != (u16)RESET)	//if transfer complete
 	{
-		// Disable transfer complete interrupt
-		USART_ITConfig(USART1, USART_IT_TC, DISABLE);
-		// Enable RX
-		RS485_RXEN;
-		// Clear interrupt flag
-		USART_ClearFlag(USART1, USART_FLAG_TC);
+		USART1->SR = USART1->SR & !USART_FLAG_TC;
 	}
-
-
 }
 
 
@@ -772,16 +752,34 @@ void USART2_ISR_Handler(void)
   */
 void USART3_ISR_Handler(void)
 {
-	int iData = 0;
-	if ((USART3->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
+	uint16_t reg;
+//	int iData = 0;
+	while ((USART3->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
 	{
-		iData = USART_ReceiveData(USART3);
-		GPS_ReceiveProcess((uint8_t)iData, getSystemTime());
+		// Store data to buffer
+		RB_push(&RB_USART3, (uint8_t)(USART3->DR & (uint16_t)0x01FF));
+		//RS485_ReceiveMessage((uint8_t) USART_ReceiveData(USART1));
+		//RS485_ReceiveMessage((uint8_t)(USART1->DR & (uint16_t)0x01FF));
+		USART_ClearFlag(USART3, USART_FLAG_RXNE);
+	}
+	// RXNE enabled can trigger ORE interrupt
+	if((USART3->SR & USART_FLAG_ORE) != (u16)RESET)	//if transfer complete
+	{
+		// Disable transfer complete interrupt
+		USART_ITConfig(USART3, USART_IT_ORE, DISABLE);
+		// Clear interrupt flag
+		reg = USART3->SR;
+		reg = USART3->DR;
 	}
 
 	if((USART3->SR & USART_FLAG_TC) != (u16)RESET)	//if transfer complete
 	{
-		USART3->SR = USART3->SR & !USART_FLAG_TC;
+		// Disable transfer complete interrupt
+		USART_ITConfig(USART3, USART_IT_TC, DISABLE);
+		// Enable RX
+		RS485_RXEN;
+		// Clear interrupt flag
+		USART_ClearFlag(USART3, USART_FLAG_TC);
 	}
 }
 

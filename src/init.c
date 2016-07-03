@@ -695,23 +695,6 @@ void init_USART1()
 	//make structure for configuring USART
 	USART_InitTypeDef USART_InitStructure;
 
-	// Config GPIO
-	//GPIO A
-	// A5 - RS485 dir
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
-	//set output type
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// push/pull
-	//set pull-up
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
-	//set pin mode to alternate function
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	//set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-	//write mode to selected pins and selected port
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-	GPIO_WriteBit(GPIOA, GPIO_Pin_5, 0);
-
 	// Init GPIO
 	//connect pins B6 and B7 to USART
 	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_USART1);
@@ -813,6 +796,23 @@ void init_USART3()
 	//make structure for configuring pins
 	GPIO_InitTypeDef  GPIO_InitStructure;
 
+	// Config GPIO
+	//GPIO C
+	// C12 - RS485 dir
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
+	//set output type
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// push/pull
+	//set pull-up
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
+	//set pin mode to alternate function
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	//set pin speed
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	//write mode to selected pins and selected port
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+	GPIO_WriteBit(GPIOC, GPIO_Pin_12, 0);
+
 	// Init GPIO
 	//connect pins C10 and C11 to USART
 	GPIO_PinAFConfig(GPIOC, GPIO_PinSource10, GPIO_AF_USART3);
@@ -853,7 +853,7 @@ void init_USART3()
 
 	//configure module 3 - GPS
 	//set baud rate
-	USART_InitStructure.USART_BaudRate = 9600;
+	USART_InitStructure.USART_BaudRate = 115200;
 	//flow control
 	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
 	//enable receiver and transmitter
@@ -998,7 +998,7 @@ void init_GPIO()
 
 	//GPIO C
 
-	// Set C12 as input, GPS PPS pulse
+	// Set C12 as output, RS485 enable
 	// Select C12
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
 	//set output type
@@ -1006,7 +1006,7 @@ void init_GPIO()
 	//set pull-up
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
 	//set pin mode to alternate function
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
 	//set pin speed
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	//write mode to selected pins and selected port
@@ -1185,7 +1185,7 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	//set IRQ channel
 	NVCInitStructure.NVIC_IRQChannel = USART1_IRQn;
 	//set priority 0 - 15
-	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 13;
+	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
 	//set priority 0 - 15
 	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
 	//enable IRQ channel
@@ -1207,7 +1207,7 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	//set IRQ channel
 	NVCInitStructure.NVIC_IRQChannel = USART3_IRQn;
 	//set priority 0 - 15
-	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 13;
 	//set priority 0 - 15
 	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
 	//enable IRQ channel
