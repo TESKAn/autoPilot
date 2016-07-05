@@ -498,6 +498,10 @@
 #define VAR_BATMON_PCBTEMPERATURE       208
 #define VAR_BATMON_MAHUSED              209
 
+#define VAR_SERVO_FR_TORQ               210
+#define VAR_SERVO_FL_TORQ               211
+#define VAR_SERVO_R_TORQ                212
+
 
 
 #endif /* MACRO_H_ */

@@ -34,7 +34,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 #define NACELLE_MAX_TILT_DEVIATION		2.0f
 #define NACELLE_FR_ZERO					176.57f
 #define NACELLE_FL_ZERO					178.57f
-#define NACELLE_R_ZERO					182.57f
+#define NACELLE_R_ZERO					175.78f
 
 // Define minimum motor PWM
 #define MOTOR_MIN_PWMOUT				1050

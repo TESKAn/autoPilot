@@ -553,7 +553,7 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 								// Set new position
 								FCFlightData->f32NacelleTilt_FR = 94.0f;
 								FCFlightData->f32NacelleTilt_FL = 94.0f;
-								FCFlightData->f32NacelleTilt_R = 100.0f;
+								FCFlightData->f32NacelleTilt_R = 97.0f;
 								// Wait
 								FCFlightData->ui32FlightInitState = FINIT_WAIT_SPOS_VTOL;
 							}
@@ -593,7 +593,7 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 								// Set servos to holding position
 								FCFlightData->f32NacelleTilt_FR = 100.0f;
 								FCFlightData->f32NacelleTilt_FL = 100.0f;
-								FCFlightData->f32NacelleTilt_R = 106.0f;
+								FCFlightData->f32NacelleTilt_R = 103.0f;
 							}
 						}
 					}

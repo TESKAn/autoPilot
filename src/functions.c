@@ -342,6 +342,11 @@ int16_t SendCommData1()
 	UART_QueueMessageui16(VAR_BATMON_MAHUSED, RS485BatMon.REGS.ui16MAhUsed);
 	// 17*7 = 119
 	// 590
+	UART_QueueMessageui16(VAR_SERVO_FR_TORQ, RS485Servo_FR.REGS.ui16PresentLoad);
+	UART_QueueMessageui16(VAR_SERVO_FL_TORQ, RS485Servo_FL.REGS.ui16PresentLoad);
+	UART_QueueMessageui16(VAR_SERVO_R_TORQ, RS485Servo_R.REGS.ui16PresentLoad);
+
+
 
 	while(0 != UART2_Transferring)
 	{
