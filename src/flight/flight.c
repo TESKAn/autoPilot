@@ -47,10 +47,15 @@ void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 
 	FCFlightData->ui32FlightDeInitStates = FDEINIT_IDLE;
 
+	// Init offsets
+	FCFlightData->ORIENTATION.f32RollOffset = 0.0f;
+	FCFlightData->ORIENTATION.f32PitchOffset = -0.0175f;
+	FCFlightData->ORIENTATION.f32YawOffset = 0.0f;
+
 	// Init PIDs
-	math_PIDInit(&FCFlightData->PIDPitch, 0.25f, 0.005f, 0.2f, -0.1f, 0.1f);
-	math_PIDInit(&FCFlightData->PIDRoll, 0.25f, 0.005f, 0.2f, -0.1f, 0.1f);
-	math_PIDInit(&FCFlightData->PIDYaw, 0.5f, 0.005f, 0.0f, -0.26f, 0.26f);
+	math_PIDInit(&FCFlightData->PIDPitch, 0.3f, 0.005f, 0.25f, -0.15f, 0.15f);
+	math_PIDInit(&FCFlightData->PIDRoll, 0.3f, 0.005f, 0.25f, -0.15f, 0.15f);
+	math_PIDInit(&FCFlightData->PIDYaw, 2.0f, 0.0f, 0.0f, -0.26f, 0.26f);
 	math_PIDInit(&FCFlightData->PIDAltitude, 0.1f, 0.01f, 0.0f, 0.0f, 1.0f);
 	math_PIDInit(&FCFlightData->PIDSpeed, 0.1f, 0.01f, 0.0f, 0.15f, 1.0f);
 
@@ -148,10 +153,12 @@ void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 
 
 	// Nacelle tilt to midpoint
-	RCValues->ch[RC_MOTOR_R_TILT].PWMOUT = 1500;
-	RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val = 1500;
-	RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Offset = RC_IN_DEFAULT_MIDPOINT;
-	RCValues->i16YawValue = 1500;
+	RCValues->ch[RC_MOTOR_R_TILT].PWMOUT = RC_OUT_YAW_MIDPOINT;
+	RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val = RC_OUT_YAW_MIDPOINT;
+	RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Offset = RC_OUT_YAW_MIDPOINT;
+	RCValues->i16YawValue = RC_OUT_YAW_MIDPOINT;
+	// Mark run yaw PID
+	FCFlightData->ORIENTATION_REQUIRED.ui8CalculatePID = 1;
 
 
 	RCValues->SCALES.f32AileronScale =  FCFlightData->ORIENTATION_LIMITS.f32RollLimit / RCValues->ch[RC_AILERON].PWMDiff;
@@ -254,6 +261,7 @@ void flight_checkRCInputs(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		f32Temp -= RCValues->ch[RC_THROTTLE].PWMMin;
 		f32Temp /= RCValues->ch[RC_THROTTLE].PWMDiff;
 		f32Temp = 1 - f32Temp;
+		f32Temp = f32Temp * 1.5;
 		f32Temp -= 0.05f;
 		if(0.0f > f32Temp) f32Temp = 0.0f;
 
@@ -591,9 +599,9 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 								FCFlightData->ui32FlightInitState = FINIT_WAIT_THROTTLE_NULL;
 
 								// Set servos to holding position
-								FCFlightData->f32NacelleTilt_FR = 100.0f;
+								FCFlightData->f32NacelleTilt_FR = 95.0f;
 								FCFlightData->f32NacelleTilt_FL = 100.0f;
-								FCFlightData->f32NacelleTilt_R = 103.0f;
+								FCFlightData->f32NacelleTilt_R = 100.0f;
 							}
 						}
 					}
@@ -807,11 +815,11 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 			FCFlightData->MOTORS.FL.i16SetRPM = 0;
 			FCFlightData->MOTORS.R.i16SetRPM = 0;
 			// Nacelle tilt to midpoint
-			if(1500 > RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val)
+			if(RC_OUT_YAW_MIDPOINT > RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val)
 			{
 				RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val += 1.0f;
 			}
-			else if(1500 < RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val)
+			else if(RC_OUT_YAW_MIDPOINT < RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val)
 			{
 				RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val -= 1.0f;
 			}
@@ -985,17 +993,21 @@ void flight_stabilize(FLIGHT_CORE * FCFlightData)
 	// Run PID
 	math_PID(f32Error, f32IntegrationInterval, &FCFlightData->PIDPitch);
 
-	// Stabilize yaw - calculate error
-	f32Error = FCFlightData->ORIENTATION_REQUIRED.f32Yaw - FCFlightData->ORIENTATION.f32Yaw;
-	// Run PID
-	math_PID(f32Error, f32IntegrationInterval, &FCFlightData->PIDYaw);
+	if(1 == FCFlightData->ORIENTATION_REQUIRED.ui8CalculatePID)
+	{
+		// Stabilize yaw - calculate error
+		f32Error = FCFlightData->ORIENTATION_REQUIRED.f32Yaw - FCFlightData->ORIENTATION.f32Yaw;
+		// Run PID
+		math_PID(f32Error, f32IntegrationInterval, &FCFlightData->PIDYaw);
 
-	// Run altitude PID
-	// Calculate altitude diff from start
-	f32Error = FCFlightData->ORIENTATION.f32Altitude - FCFlightData->ORIENTATION.f32ZeroAltitude;
-	// error is required altitude - alt difference from start point
-	f32Error = FCFlightData->ORIENTATION_REQUIRED.f32Altitude - f32Error;
-	math_PID(f32Error, f32IntegrationInterval, &FCFlightData->PIDAltitude);
+		// Run altitude PID
+		// Calculate altitude diff from start
+		f32Error = FCFlightData->ORIENTATION.f32Altitude - FCFlightData->ORIENTATION.f32ZeroAltitude;
+		// error is required altitude - alt difference from start point
+		f32Error = FCFlightData->ORIENTATION_REQUIRED.f32Altitude - f32Error;
+		math_PID(f32Error, f32IntegrationInterval, &FCFlightData->PIDAltitude);
+
+	}
 
 	// Run speed PID
 
@@ -1123,9 +1135,17 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 			// Command input, set required yaw to current yaw and add command
 			FCFlightData->ORIENTATION_REQUIRED.f32Yaw = FCFlightData->ORIENTATION.f32Yaw;
 			f32Temp += FCFlightData->f32YawCommand;
+			FCFlightData->ORIENTATION_REQUIRED.ui8CalculatePID = 0;
 		}
-
-
+		else
+		{
+			if(0 == FCFlightData->ORIENTATION_REQUIRED.ui8CalculatePID)
+			{
+				FCFlightData->ORIENTATION_REQUIRED.f32Yaw += FCFlightData->f32YawCommandStartError;
+			}
+			FCFlightData->ORIENTATION_REQUIRED.ui8CalculatePID = 1;
+			FCFlightData->f32YawCommandStartError = FCFlightData->ORIENTATION_REQUIRED.f32Yaw - FCFlightData->ORIENTATION.f32Yaw;
+		}
 
 		// Limit nacelle roll
 		if(MAX_NACELLE_ROLL < f32Temp) f32Temp = MAX_NACELLE_ROLL;
@@ -1137,7 +1157,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val = RCValues->i16YawValue;
 
 		// Disable motor PWM
-		/*
+/*
 		RCValues->ch[RC_MOTOR_FR].PWMOUT_Val = 1000;
 		RCValues->ch[RC_MOTOR_FL].PWMOUT_Val = 1000;
 		RCValues->ch[RC_MOTOR_R].PWMOUT_Val = 1000;

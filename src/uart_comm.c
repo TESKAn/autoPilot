@@ -372,6 +372,28 @@ int32_t UART_RcvData(uint8_t data)
 				break;
 			}
 
+			case VAR_ROLL_OFFSET:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.ORIENTATION.f32RollOffset;
+				break;
+			}
+			case VAR_PITCH_OFFSET:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.ORIENTATION.f32PitchOffset;
+				break;
+			}
+			case VAR_YAW_OFFSET:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.ORIENTATION.f32YawOffset;
+				break;
+			}
+
+
+
+
 			default:
 			{
 				ui8DataType = 0;

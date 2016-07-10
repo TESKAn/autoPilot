@@ -345,6 +345,21 @@ int16_t SendCommData1()
 	UART_QueueMessageui16(VAR_SERVO_FR_TORQ, RS485Servo_FR.REGS.ui16PresentLoad);
 	UART_QueueMessageui16(VAR_SERVO_FL_TORQ, RS485Servo_FL.REGS.ui16PresentLoad);
 	UART_QueueMessageui16(VAR_SERVO_R_TORQ, RS485Servo_R.REGS.ui16PresentLoad);
+	// 3*7 = 21
+	// 611
+
+	UART_QueueMessagef(VAR_SERVO_FR_ANGLE, FCFlightData.TILT_SERVOS.FR.f32ServoAngle);
+	UART_QueueMessagef(VAR_SERVO_FL_ANGLE, FCFlightData.TILT_SERVOS.FL.f32ServoAngle);
+	UART_QueueMessagef(VAR_SERVO_R_ANGLE, FCFlightData.TILT_SERVOS.R.f32ServoAngle);
+	// 3*9 = 27
+	// 638
+
+	UART_QueueMessagef(VAR_ROLL_OFFSET, FCFlightData.ORIENTATION.f32RollOffset);
+	UART_QueueMessagef(VAR_PITCH_OFFSET, FCFlightData.ORIENTATION.f32PitchOffset);
+	UART_QueueMessagef(VAR_YAW_OFFSET, FCFlightData.ORIENTATION.f32YawOffset);
+
+	UART_QueueMessagef(VAR_ROLL_ACT, FCFlightData.ORIENTATION.f32Roll);
+	UART_QueueMessagef(VAR_PITCH_ACT, FCFlightData.ORIENTATION.f32Pitch);
 
 
 

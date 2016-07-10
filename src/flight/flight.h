@@ -82,6 +82,8 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 // Macros for switches
 // Macro that defines midpoint for gear/gyro switch
 #define RC_IN_GEAR_GYRO_MIDPOINT	1500.0f
+// Yaw midpoint
+#define RC_OUT_YAW_MIDPOINT			1540
 
 // Default scales for RC inputs
 #define RC_IN_DEFAULT_SCALE_AILERON		1.0f

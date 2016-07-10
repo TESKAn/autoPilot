@@ -502,6 +502,15 @@
 #define VAR_SERVO_FL_TORQ               211
 #define VAR_SERVO_R_TORQ                212
 
+#define VAR_SERVO_FR_ANGLE              213
+#define VAR_SERVO_FL_ANGLE              214
+#define VAR_SERVO_R_ANGLE               215
 
+#define VAR_ROLL_OFFSET                 216
+#define VAR_PITCH_OFFSET                217
+#define VAR_YAW_OFFSET                  218
+
+#define VAR_ROLL_ACT                    219
+#define VAR_PITCH_ACT                   220
 
 #endif /* MACRO_H_ */

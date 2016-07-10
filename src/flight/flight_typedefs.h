@@ -133,6 +133,10 @@ typedef struct
 		float32_t f32Altitude;
 		float32_t f32Speed;
 		float32_t f32ZeroAltitude;
+		// Offsets
+		float32_t f32RollOffset;
+		float32_t f32PitchOffset;
+		float32_t f32YawOffset;
 	}ORIENTATION;
 	// Required orientation
 	struct
@@ -143,6 +147,8 @@ typedef struct
 		float32_t f32Power;
 		float32_t f32Altitude;
 		float32_t f32Speed;
+		uint8_t ui8CalculatePID;
+		uint8_t ui8Empty[3];
 	}ORIENTATION_REQUIRED;
 
 	struct
@@ -186,6 +192,8 @@ typedef struct
 	// Variables
 	// How much to add to yaw control
 	float32_t f32YawCommand;
+	// Yaw error from when yaw command was activated
+	float32_t f32YawCommandStartError;
 	// Minimal plane speed to be considered as flying
 	float32_t f32MinPlaneSpeed;
 	// Maximum speed for hover transition

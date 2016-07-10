@@ -269,9 +269,9 @@ void copySensorData(void)
 	storeAHRSAngles(&fusionData);
 
 	// Update flight data
-	FCFlightData.ORIENTATION.f32Roll = fusionData.ROLLPITCHYAW.roll;
-	FCFlightData.ORIENTATION.f32Pitch = fusionData.ROLLPITCHYAW.pitch;
-	FCFlightData.ORIENTATION.f32Yaw = fusionData.ROLLPITCHYAW.yaw;
+	FCFlightData.ORIENTATION.f32Roll = fusionData.ROLLPITCHYAW.roll - FCFlightData.ORIENTATION.f32RollOffset;
+	FCFlightData.ORIENTATION.f32Pitch = fusionData.ROLLPITCHYAW.pitch - FCFlightData.ORIENTATION.f32PitchOffset;
+	FCFlightData.ORIENTATION.f32Yaw = fusionData.ROLLPITCHYAW.yaw - FCFlightData.ORIENTATION.f32YawOffset;
 	FCFlightData.ORIENTATION.f32Altitude = fusionData._altimeter.altitude;
 
 	// Check flight
