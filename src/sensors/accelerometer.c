@@ -38,9 +38,9 @@ ErrorStatus acc_initDataStructure(AccelerometerData *data, uint32_t time)
 	status = SUCCESS;
 
 	// Init offsets
-	data->offsets.x = 0.047f;
-	data->offsets.y = 0.006f;
-	data->offsets.z = -0.119f;
+	data->offsets.x = 0.010282576f;
+	data->offsets.y = 0.003120095f;
+	data->offsets.z = -0.137751132f;
 
 	// And scale
 	data->gains.x = 0.996f;

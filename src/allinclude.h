@@ -20,6 +20,8 @@
 #include "arm_math.h"
 #include "math.h"
 
+#include"sensors/ubx.h"
+
 #include "freemaster.h"
 
 #include "RS485/RS485comm.h"

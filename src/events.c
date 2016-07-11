@@ -707,7 +707,9 @@ void USART1_ISR_Handler(void)
 	if ((USART1->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
 	{
 		iData = USART_ReceiveData(USART1);
-		GPS_ReceiveProcess((uint8_t)iData, getSystemTime());
+		//GPS_ReceiveProcess((uint8_t)iData, getSystemTime());
+
+		ubx_parser((uint8_t)iData);
 	}
 
 	if((USART1->SR & USART_FLAG_TC) != (u16)RESET)	//if transfer complete
