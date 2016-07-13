@@ -106,6 +106,36 @@ volatile uint8_t GPS_Digits_Count = 0;
 // Flag variable
 volatile FlagGPS GPSFlag;
 
+int16_t GPSEnableUBXProtocol()
+{
+
+	int numbytes = 0;
+	int i = 0;
+	uint8_t checksum = 0;
+	// Fill data
+	GPS_DataBuffer[0] = 0xb5;	// Header
+	GPS_DataBuffer[1] = 0x62;
+	GPS_DataBuffer[2] = 0x06;	// ID
+	GPS_DataBuffer[3] = 0x00;
+	GPS_DataBuffer[4] = 20;		// Length
+	GPS_DataBuffer[5] = 0x01;	// Port ID
+	GPS_DataBuffer[6] = 0x00;
+	GPS_DataBuffer[7] = 0x00;	// tx ready
+	GPS_DataBuffer[8] = 0x00;
+
+	GPS_DataBuffer[9] = 0x00;	// Mode
+	GPS_DataBuffer[10] = 0x00;
+	GPS_DataBuffer[11] = 0x00;
+	GPS_DataBuffer[12] = 0x00;
+
+
+	// Send to DMA
+	GPSTransferDMA(GPS_DataBuffer, numbytes);
+
+
+	return 0;
+}
+
 void GPSStopOutput(void)
 {
 	int numbytes = 0;
