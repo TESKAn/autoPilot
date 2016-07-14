@@ -284,7 +284,9 @@ typedef struct
 	airSpeedData _airSpeed;
 	AltimeterData _altimeter;
 	GPSData _gps;
-	//UBX_SOL_t *_ubx;
+	UBX_SOL *_ubxSol;
+	UBX_POSLLH *_ubxPOSLLH;
+	UBX_VELNED *_ubxVelNED;
 	// Data for calculating gyro error
 	GyroErrorData _gyroError;
 

@@ -32,45 +32,47 @@
 
 
 
-UBX_SOL_t		UbxSol	  = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, INVALID};
-UBX_POSLLH_t    UbxPosLlh = {0,0,0,0,0,0,0, INVALID};
-UBX_VELNED_t    UbxVelNed = {0,0,0,0,0,0,0,0,0, INVALID};
+UBX_SOL_t		*UbxSol;//	  = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, INVALID};
+UBX_POSLLH_t    *UbxPosLlh;// = {0,0,0,0,0,0,0, INVALID};
+UBX_VELNED_t    *UbxVelNed;// = {0,0,0,0,0,0,0,0,0, INVALID};
 GPS_INFO_t      GPSInfo   = {0,0,0,0,0,0,0,0,0,0, INVALID};
 
 volatile uint8_t GPSTimeout = 0;
 
+void GPSInit()
+
 void UpdateGPSInfo (void)
 {
 
-	if ((UbxSol.Status == NEWDATA) && (UbxPosLlh.Status == NEWDATA) && (UbxVelNed.Status == NEWDATA))
+	if ((UbxSol->Status == NEWDATA) && (UbxPosLlh->Status == NEWDATA) && (UbxVelNed->Status == NEWDATA))
 	{
 		//RED_FLASH;
 		if(GPSInfo.status != NEWDATA)
 		{
 			GPSInfo.status = INVALID;
 			// NAV SOL
-			GPSInfo.flags = UbxSol.Flags;
-			GPSInfo.satfix = UbxSol.GPSfix;
-			GPSInfo.satnum = UbxSol.numSV;
-			GPSInfo.PAcc = UbxSol.PAcc;
-			GPSInfo.VAcc = UbxSol.SAcc;
+			GPSInfo.flags = UbxSol->Flags;
+			GPSInfo.satfix = UbxSol->GPSfix;
+			GPSInfo.satnum = UbxSol->numSV;
+			GPSInfo.PAcc = UbxSol->PAcc;
+			GPSInfo.VAcc = UbxSol->SAcc;
 			// NAV POSLLH
-			GPSInfo.longitude = UbxPosLlh.LON;
-			GPSInfo.latitude = UbxPosLlh.LAT;
-			GPSInfo.altitude = UbxPosLlh.HEIGHT;
+			GPSInfo.longitude = UbxPosLlh->LON;
+			GPSInfo.latitude = UbxPosLlh->LAT;
+			GPSInfo.altitude = UbxPosLlh->HEIGHT;
 
-			GPSInfo.veleast = UbxVelNed.VEL_E;
-			GPSInfo.velnorth = UbxVelNed.VEL_N;
-			GPSInfo.veltop = -UbxVelNed.VEL_D;
-			GPSInfo.velground = UbxVelNed.GSpeed;
+			GPSInfo.veleast = UbxVelNed->VEL_E;
+			GPSInfo.velnorth = UbxVelNed->VEL_N;
+			GPSInfo.veltop = -UbxVelNed->VEL_D;
+			GPSInfo.velground = UbxVelNed->GSpeed;
 
 			GPSInfo.status = NEWDATA;
 
 		}
 		// set state to collect new data
-		UbxSol.Status = PROCESSED;			// never update old data
-		UbxPosLlh.Status = PROCESSED;		// never update old data
-		UbxVelNed.Status = PROCESSED;		// never update old data
+		UbxSol->Status = PROCESSED;			// never update old data
+		UbxPosLlh->Status = PROCESSED;		// never update old data
+		UbxVelNed->Status = PROCESSED;		// never update old data
 	}
 
 
@@ -108,19 +110,19 @@ void ubx_parser(uint8_t c)
 				case UBX_ID_POSLLH: // geodetic position
 					ubxP =  (int8_t *)&UbxPosLlh; // data start pointer
 					ubxEp = (int8_t *)(&UbxPosLlh + 1); // data end pointer
-					ubxSp = (int8_t *)&UbxPosLlh.Status; // status pointer
+					ubxSp = (int8_t *)&UbxPosLlh->Status; // status pointer
 					break;
 
 				case UBX_ID_SOL: // navigation solution
 					ubxP =  (int8_t *)&UbxSol; // data start pointer
 					ubxEp = (int8_t *)(&UbxSol + 1); // data end pointer
-					ubxSp = (int8_t *)&UbxSol.Status; // status pointer
+					ubxSp = (int8_t *)&UbxSol->Status; // status pointer
 					break;
 
 				case UBX_ID_VELNED: // velocity vector in tangent plane
 					ubxP =  (int8_t *)&UbxVelNed; // data start pointer
 					ubxEp = (int8_t *)(&UbxVelNed + 1); // data end pointer
-					ubxSp = (int8_t *)&UbxVelNed.Status; // status pointer
+					ubxSp = (int8_t *)&UbxVelNed->Status; // status pointer
 					break;
 
 				default:			// unsupported identifier
