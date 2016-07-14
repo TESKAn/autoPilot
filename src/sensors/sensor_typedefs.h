@@ -223,6 +223,57 @@ typedef struct
 	uint8_t ui8SampleWindow;
 }__attribute__((aligned(4),packed)) GyroErrorData, *PGyroErrorData;
 
+
+
+typedef struct {
+	uint32_t		ITOW;		// ms GPS Millisecond Time of Week
+	int32_t			Frac;		// ns remainder of rounded ms above
+	int16_t			week;		// GPS week
+	uint8_t			GPSfix;		// GPSfix Type, range 0..6
+	uint8_t			Flags;		// Navigation Status Flags
+	int32_t			ECEF_X;		// cm ECEF X coordinate
+	int32_t			ECEF_Y;		// cm ECEF Y coordinate
+	int32_t			ECEF_Z;		// cm ECEF Z coordinate
+	uint32_t		PAcc;		// cm 3D Position Accuracy Estimate
+	int32_t			ECEFVX;		// cm/s ECEF X velocity
+	int32_t			ECEFVY;		// cm/s ECEF Y velocity
+	int32_t			ECEFVZ;		// cm/s ECEF Z velocity
+	uint32_t		SAcc;		// cm/s Speed Accuracy Estimate
+	uint16_t		PDOP;		// 0.01 Position DOP
+	uint8_t			res1;		// reserved
+	uint8_t			numSV;		// Number of SVs used in navigation solution
+	uint32_t		res2;		// reserved
+	uint32_t		Status;
+}__attribute__((aligned(4),packed)) UBX_SOL;
+
+typedef struct {
+	uint32_t		ITOW;		// ms GPS Millisecond Time of Week
+	int32_t			LON;		// 1e-07 deg Longitude
+	int32_t			LAT;		// 1e-07 deg Latitude
+	int32_t			HEIGHT;		// mm Height above Ellipsoid
+	int32_t			HMSL;		// mm Height above mean sea level
+	uint32_t		Hacc;		// mm Horizontal Accuracy Estimate
+	uint32_t		Vacc;		// mm Vertical Accuracy Estimate
+	uint32_t		Status;
+}__attribute__((aligned(4),packed)) UBX_POSLLH;
+
+typedef struct {
+	uint32_t		ITOW;  		// ms  GPS Millisecond Time of Week
+	int32_t			VEL_N; 		// cm/s  NED north velocity
+	int32_t			VEL_E; 		// cm/s  NED east velocity
+	int32_t			VEL_D; 		// cm/s  NED down velocity
+	uint32_t		Speed; 		// cm/s  Speed (3-D)
+	uint32_t		GSpeed; 	// cm/s  Ground Speed (2-D)
+	int32_t			Heading; 	// 1e-05 deg  Heading 2-D
+	uint32_t		SAcc;		// cm/s  Speed Accuracy Estimate
+	uint32_t		CAcc; 		// deg  Course / Heading Accuracy Estimate
+	uint32_t		Status;
+}__attribute__((aligned(4),packed)) UBX_VELNED;
+
+
+
+
+
 // Core structure for sensor fusion data
 typedef struct
 {
@@ -233,6 +284,7 @@ typedef struct
 	airSpeedData _airSpeed;
 	AltimeterData _altimeter;
 	GPSData _gps;
+	//UBX_SOL_t *_ubx;
 	// Data for calculating gyro error
 	GyroErrorData _gyroError;
 

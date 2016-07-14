@@ -1883,7 +1883,7 @@ void extPeripheralInit(void)
 	FS_Initialize();
 
 	// Setup GPS
-	GPSSetDataOutput(getSystemTime());
+	//GPSSetDataOutput(getSystemTime());
 
 	Delayms(100);
 	// Setup sensors
@@ -2013,8 +2013,6 @@ void transferDMA_USART2(uint8_t *data, int length)
 
 void transferDMA_USART3(uint8_t *data, int length)
 {
-	// Mark GPS is sending data
-	GPS_Sending(1);
 	DMA_InitTypeDef DMAInitStructure;
 	// Configure USART3 DMA
 	//deinit DMA channel

@@ -708,7 +708,6 @@ void USART1_ISR_Handler(void)
 	{
 		iData = USART_ReceiveData(USART1);
 		//GPS_ReceiveProcess((uint8_t)iData, getSystemTime());
-
 		ubx_parser((uint8_t)iData);
 	}
 

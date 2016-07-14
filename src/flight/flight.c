@@ -48,8 +48,8 @@ void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 	FCFlightData->ui32FlightDeInitStates = FDEINIT_IDLE;
 
 	// Init offsets
-	FCFlightData->ORIENTATION.f32RollOffset = 0.0f;
-	FCFlightData->ORIENTATION.f32PitchOffset = -0.0175f;
+	FCFlightData->ORIENTATION.f32RollOffset = -0.0264f;
+	FCFlightData->ORIENTATION.f32PitchOffset = 0.0224f;
 	FCFlightData->ORIENTATION.f32YawOffset = 0.0f;
 
 	// Init PIDs

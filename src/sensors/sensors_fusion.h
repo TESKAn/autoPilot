@@ -12,6 +12,7 @@
 #include "math/myMath_typedefs.h"
 #include "sensor_typedefs.h"
 #include "gps.h"
+#include "ubx.h"
 #include "accelerometer.h"
 
 

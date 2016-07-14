@@ -12,6 +12,7 @@
 #include "math/myMath_vec3.h"
 #include "math/myMath_matrix3.h"
 #include "math/myMath_pid.h"
+#include "ubx.h"
 #include "sensor_macros.h"
 #include "sensor_typedefs.h"
 #include "sensors_fusion.h"
@@ -20,6 +21,7 @@
 #include "mag.h"
 #include "airSpeed.h"
 #include "gps.h"
+
 #include "altimeter.h"
 
 ErrorStatus fusion_init(FUSION_CORE *data, uint32_t time)
