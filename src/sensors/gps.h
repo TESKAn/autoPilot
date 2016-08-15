@@ -153,7 +153,6 @@ extern volatile FlagGPS GPSFlag;
 
 
 void GPSTransferDMA(uint8_t *data, int length);
-int16_t GPSEnableUBXProtocol();
 void GPS_Sending(int state);
 float32_t GPSIntToFloat(uint16_t whole, uint16_t frac);
 ErrorStatus gps_initData(GPSData *data, uint32_t time);

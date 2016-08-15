@@ -5,7 +5,14 @@
  *      Author: jmoc
  */
 
+
+#include "stm32f4xx.h"
+#include "arm_math.h"
+#include "math/myMath_typedefs.h"
+#include "math/myMath_vec3.h"
+
 #include <inttypes.h>
+#include "sensor_typedefs.h"
 #include "ubx.h"
 
 
@@ -32,14 +39,19 @@
 
 
 
-UBX_SOL_t		*UbxSol;//	  = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, INVALID};
-UBX_POSLLH_t    *UbxPosLlh;// = {0,0,0,0,0,0,0, INVALID};
-UBX_VELNED_t    *UbxVelNed;// = {0,0,0,0,0,0,0,0,0, INVALID};
+UBX_SOL		*UbxSol;//	  = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, INVALID};
+UBX_POSLLH    *UbxPosLlh;// = {0,0,0,0,0,0,0, INVALID};
+UBX_VELNED    *UbxVelNed;// = {0,0,0,0,0,0,0,0,0, INVALID};
 GPS_INFO_t      GPSInfo   = {0,0,0,0,0,0,0,0,0,0, INVALID};
 
 volatile uint8_t GPSTimeout = 0;
 
-void GPSInit()
+void ubx_initData()
+{
+	UbxSol = fusionData._ubxSol;
+	UbxPosLlh = fusionData._ubxPOSLLH;
+	UbxVelNed = fusionData._ubxVelNED;
+}
 
 void UpdateGPSInfo (void)
 {

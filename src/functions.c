@@ -182,7 +182,7 @@ int16_t SendCommData()
 	// 821
 	UART_QueueMessagef(VAR_ORIENTATIONALTITUDE, FCFlightData.ORIENTATION.f32Altitude);
 	UART_QueueMessagef(VAR_ORIENTATIONZEROALTITUDE, FCFlightData.ORIENTATION.f32ZeroAltitude);
-	UART_QueueMessagef(VAR_ORIENTATIONREQUIREDALTITUDE, FCFlightData.ORIENTATION_REQUIRED.f32Altitude);
+	UART_QueueMessagef(VAR_ORIENTATIONREQUIREDALTITUDE, FCFlightData.ORIENTATION_REQUIRED.f32AltitudeAboveStart);
 	// 3*9=27
 	// 848
 
@@ -360,6 +360,30 @@ int16_t SendCommData1()
 
 	UART_QueueMessagef(VAR_ROLL_ACT, FCFlightData.ORIENTATION.f32Roll);
 	UART_QueueMessagef(VAR_PITCH_ACT, FCFlightData.ORIENTATION.f32Pitch);
+
+	UART_QueueMessagef(VAR_COG_FRONT_FACTOR, FCFlightData.f32COGFrontFactor);
+	UART_QueueMessagef(VAR_COG_REAR_FACTOR, FCFlightData.f32COGRearFactor);
+
+	UART_QueueMessagef(VAR_BARO_ALTITUDE, fusionData._altimeter.altitude);
+
+	UART_QueueMessagef(VAR_REQ_ALT_ABOVE_GROUND, FCFlightData.ORIENTATION_REQUIRED.f32AltitudeAboveStart);
+	// 9*9 = 81
+	// 719
+
+	UART_QueueMessagef(VAR_THROTTLE_POWER, RCData.f32ThrottleValue);
+	UART_QueueMessagef(VAR_MOTOR_POWER, FCFlightData.MOTORS.f32TotalPower);
+	// 2*9=18
+	// 737
+
+	UART_QueueMessagef(VAR_ALT_ABOVE_GROUND, FCFlightData.ORIENTATION.f32AltitudeAboveStart);
+	UART_QueueMessagef(VAR_ALT_ABOVE_GROUND_FILTERED, FCFlightData.ORIENTATION.f32AltitudeAboveStartFiltered);
+
+	UART_QueueMessagef(VAR_ALT_FILTER_WINDOW, FCFlightData.ORIENTATION.ui32AltitudeFilterWindow);
+
+
+	UART_QueueMessagef(VAR_PIDALTITUDEMAX, FCFlightData.PIDAltitude.outMax);
+	UART_QueueMessagef(VAR_PIDALTITUDEMIN, FCFlightData.PIDAltitude.outMin);
+
 
 
 
@@ -700,7 +724,7 @@ int16_t CheckServo(RS485SERVO * servo)
 
 int16_t CheckBatmon(RS485BATMON * batmon)
 {
-	float32_t f32Temp = 0.0f;
+	//float32_t f32Temp = 0.0f;
 	FLIGHT_BATMON * FBatMon = &FCFlightData.batMon;
 
 	//***********************************

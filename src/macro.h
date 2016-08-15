@@ -513,4 +513,22 @@
 #define VAR_ROLL_ACT                    219
 #define VAR_PITCH_ACT                   220
 
+#define VAR_COG_FRONT_FACTOR            221
+#define VAR_COG_REAR_FACTOR             222
+
+#define VAR_BARO_ALTITUDE               223
+
+#define VAR_REQ_ALT_ABOVE_GROUND       224
+#define VAR_ALT_ABOVE_GROUND           225
+#define VAR_ALT_ABOVE_GROUND_FILTERED  226
+#define VAR_THROTTLE_POWER             227
+#define VAR_MOTOR_POWER                228
+
+#define VAR_ALT_FILTER_WINDOW          229
+
+#define VAR_PIDALTITUDEMAX				230
+#define VAR_PIDALTITUDEMIN				231
+
+
+
 #endif /* MACRO_H_ */

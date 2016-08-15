@@ -123,6 +123,9 @@ typedef struct
 	// Value for weight distribution between front and back motors. Value is length from front motor to COG / length between motors
 	float32_t f32COGDistribution;
 
+	float32_t f32COGFrontFactor;
+	float32_t f32COGRearFactor;
+
 	// Input data
 	// Current vehicle orientation
 	struct
@@ -131,6 +134,10 @@ typedef struct
 		float32_t f32Pitch;
 		float32_t f32Yaw;
 		float32_t f32Altitude;
+		float32_t f32AltitudeAboveStart;
+		float32_t f32AltitudeAboveStartFiltered;
+		float32_t f32AltitudeAboveStartFilteredAcc;
+		float32_t ui32AltitudeFilterWindow;
 		float32_t f32Speed;
 		float32_t f32ZeroAltitude;
 		// Offsets
@@ -145,7 +152,7 @@ typedef struct
 		float32_t f32Pitch;
 		float32_t f32Yaw;
 		float32_t f32Power;
-		float32_t f32Altitude;
+		float32_t f32AltitudeAboveStart;
 		float32_t f32Speed;
 		uint8_t ui8CalculatePID;
 		uint8_t ui8Empty[3];
@@ -179,6 +186,7 @@ typedef struct
 		FLIGHT_MOTOR FR;
 		FLIGHT_MOTOR FL;
 		FLIGHT_MOTOR R;
+		float32_t f32TotalPower;
 	}MOTORS;
 
 	FLIGHT_BATMON batMon;

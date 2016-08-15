@@ -21,6 +21,7 @@
 #include "mag.h"
 #include "airSpeed.h"
 #include "gps.h"
+#include "ubx.h"
 
 #include "altimeter.h"
 
@@ -54,6 +55,8 @@ ErrorStatus fusion_init(FUSION_CORE *data, uint32_t time)
 	{
 		return ERROR;
 	}
+
+	ubx_initData();
 
 	// Init errors
 	data->_gyroError.f32SampleWindow = 10.0f;
@@ -196,7 +199,7 @@ ErrorStatus fusion_dataUpdate(FUSION_CORE *data, FUSION_SENSORDATA *sensorData, 
 // Function calculates temperature from MPU 6000 temperature measurement.
 ErrorStatus fusion_calculateMPUTemperature(FUSION_CORE *data, int16_t temperatureData, uint32_t dataTime)
 {
-	data->MPUTemperature = ((float32_t) temperatureData / 340)+36.53f;
+	data->MPUTemperature = ((float32_t) temperatureData / 340.0f) + 36.53f;
 	return SUCCESS;
 }
 

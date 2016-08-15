@@ -39,6 +39,13 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 // Define minimum motor PWM
 #define MOTOR_MIN_PWMOUT				1050
 
+// Front/back COG bias
+// Skupna dolžina 77 cm
+// lz = 44,5
+// ls = 32,5
+#define COG_BALANCE_FRONT				0.578f;//0.578f;//0.615f
+#define COG_BALANCE_REAR				0.422f;//0.422f;//0.385f
+
 // Macros that encode PWM inputs to specific channels
 #define RC_AILERON		1
 #define RC_ELEVATOR		2
@@ -130,20 +137,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 #define FLIGHT_TILT_START				0
 #define FLIGHT_TILT_P					1
 #define FLIGHT_TILT_H					2
-#define FLIGHT_TILT_TILTED_P			3
-#define FLIGHT_TILT_TILTED_H			4
-#define FLIGHT_TILT_SPEED_OK_P			5
-#define FLIGHT_TILT_SPEED_OK_H			6
-#define FLIGHT_TILT_END_P				7
-#define FLIGHT_TILT_END_H				8
-#define FLIGHT_TILT_ABORT_TILT_P		9
-#define FLIGHT_TILT_ABORT_TILT_H		10
-#define FLIGHT_TILT_ABORT_TILTED_P		11
-#define FLIGHT_TILT_ABORT_TILTED_H		12
-#define FLIGHT_TILT_ABORT_SPEED_OK_P	13
-#define FLIGHT_TILT_ABORT_SPEED_OK_H	14
-#define FLIGHT_TILT_ABORT_END_P			15
-#define FLIGHT_TILT_ABORT_END_H			16
+
 
 
 // Flight variables

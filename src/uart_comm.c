@@ -390,8 +390,45 @@ int32_t UART_RcvData(uint8_t data)
 				fPointer = &FCFlightData.ORIENTATION.f32YawOffset;
 				break;
 			}
+			case VAR_COG_FRONT_FACTOR:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.f32COGFrontFactor;
+				break;
+			}
+			case VAR_COG_REAR_FACTOR:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.f32COGRearFactor;
+				break;
+			}
+			case VAR_REQ_ALT_ABOVE_GROUND:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.ORIENTATION_REQUIRED.f32AltitudeAboveStart;
+				break;
+			}
 
+			case VAR_ALT_FILTER_WINDOW:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.ORIENTATION.ui32AltitudeFilterWindow;
+				break;
+			}
 
+			case VAR_PIDALTITUDEMAX:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.PIDAltitude.outMax;
+				break;
+			}
+
+			case VAR_PIDALTITUDEMIN:
+			{
+				ui8DataType = DATATYPE_f;
+				fPointer = &FCFlightData.PIDAltitude.outMin;
+				break;
+			}
 
 
 			default:

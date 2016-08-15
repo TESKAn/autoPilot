@@ -30,7 +30,7 @@
 #define GYRO_MAX_ERROR_UPDATE_RATE				0.1f		// Maximum gyro amplitude when updating error PID
 
 // DCM generation from sensor data macros
-#define DCMGEN_GRAVITY_ACCURACY					0.05f		// Absolute value of accelerometer reading must be within this tolerance
+#define DCMGEN_GRAVITY_ACCURACY					0.1f		// Absolute value of accelerometer reading must be within this tolerance
 
 // Multiply rotation error with this to get gain adjustment
 #define GYRO_GAIN_ADJUSTMENT_FACTOR				0.00001f

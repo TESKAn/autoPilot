@@ -47,16 +47,23 @@ void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 
 	FCFlightData->ui32FlightDeInitStates = FDEINIT_IDLE;
 
+	// Altitude filter window
+	FCFlightData->ORIENTATION.ui32AltitudeFilterWindow = 5.0f;
+
 	// Init offsets
-	FCFlightData->ORIENTATION.f32RollOffset = -0.0264f;
-	FCFlightData->ORIENTATION.f32PitchOffset = 0.0224f;
+	FCFlightData->ORIENTATION.f32RollOffset = -0.05f;
+	FCFlightData->ORIENTATION.f32PitchOffset = 0.0323f;
 	FCFlightData->ORIENTATION.f32YawOffset = 0.0f;
 
+	// Set COG distribution
+	FCFlightData->f32COGFrontFactor = COG_BALANCE_FRONT;
+	FCFlightData->f32COGRearFactor = COG_BALANCE_REAR;
+
 	// Init PIDs
-	math_PIDInit(&FCFlightData->PIDPitch, 0.3f, 0.005f, 0.25f, -0.15f, 0.15f);
-	math_PIDInit(&FCFlightData->PIDRoll, 0.3f, 0.005f, 0.25f, -0.15f, 0.15f);
+	math_PIDInit(&FCFlightData->PIDPitch, 0.1f, 0.00f, 0.3f, -0.15f, 0.15f);
+	math_PIDInit(&FCFlightData->PIDRoll, 0.1f, 0.00f, 0.3f, -0.15f, 0.15f);
 	math_PIDInit(&FCFlightData->PIDYaw, 2.0f, 0.0f, 0.0f, -0.26f, 0.26f);
-	math_PIDInit(&FCFlightData->PIDAltitude, 0.1f, 0.01f, 0.0f, 0.0f, 1.0f);
+	math_PIDInit(&FCFlightData->PIDAltitude, 0.1f, 0.01f, 0.0f, -0.10f, 0.10f);
 	math_PIDInit(&FCFlightData->PIDSpeed, 0.1f, 0.01f, 0.0f, 0.15f, 1.0f);
 
 	FCFlightData->f32COGDistribution = 0.6f;
@@ -64,7 +71,7 @@ void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 	FCFlightData->ORIENTATION_REQUIRED.f32Roll = 0.0f;
 	FCFlightData->ORIENTATION_REQUIRED.f32Pitch = 0.0f;
 	FCFlightData->ORIENTATION_REQUIRED.f32Yaw = 0.0f;
-	FCFlightData->ORIENTATION_REQUIRED.f32Altitude = 0.0f;
+	FCFlightData->ORIENTATION_REQUIRED.f32AltitudeAboveStart = 0.0f;
 	FCFlightData->ORIENTATION_REQUIRED.f32Speed = 0.0f;
 	FCFlightData->ORIENTATION_REQUIRED.f32Power = 0.0f;
 
@@ -267,19 +274,22 @@ void flight_checkRCInputs(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 
 		RCValues->f32ThrottleValue = f32Temp;
 
+		/*
 		FCFlightData->PIDAltitude.outMax = f32Temp;//(RCValues->ch[RC_THROTTLE].PWMIN_Zero / RCValues->ch[RC_THROTTLE].PWMDiff) * 2.0f;
 
 		// And use it for altitude adjust
-		FCFlightData->ORIENTATION_REQUIRED.f32Altitude += 0.0001f*(RCValues->ch[RC_THROTTLE].PWMIN_Zero);
+
+		FCFlightData->ORIENTATION_REQUIRED.f32AltitudeAboveStart += 0.0001f*(RCValues->ch[RC_THROTTLE].PWMIN_Zero);
 		// Limit altitude
-		if(400.0f < FCFlightData->ORIENTATION_REQUIRED.f32Altitude)
+		if(400.0f < FCFlightData->ORIENTATION_REQUIRED.f32AltitudeAboveStart)
 		{
-			FCFlightData->ORIENTATION_REQUIRED.f32Altitude = 400.0f;
+			FCFlightData->ORIENTATION_REQUIRED.f32AltitudeAboveStart = 400.0f;
 		}
-		else if(-100.0f > FCFlightData->ORIENTATION_REQUIRED.f32Altitude)
+		else if(0.0f > FCFlightData->ORIENTATION_REQUIRED.f32AltitudeAboveStart)
 		{
-			FCFlightData->ORIENTATION_REQUIRED.f32Altitude = -100.0f;
+			FCFlightData->ORIENTATION_REQUIRED.f32AltitudeAboveStart = 0.0f;
 		}
+		*/
 
 		// Elevator controls pitch
 		f32Temp = RCValues->ch[RC_ELEVATOR].PWMIN_Zero * RCValues->SCALES.f32ElevatorScale;
@@ -361,6 +371,7 @@ void flight_checkRCInputs(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 			{
 				FCFlightData->ui32FlightStateMachine = FLIGHT_DISARM;
 				FCFlightData->ui32FlightInitState = FINIT_IDLE;
+				FCFlightData->ui32FlightDeInitStates = FDEINIT_IDLE;
 			}
 		}
 	}
@@ -654,6 +665,11 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 				FCFlightData->PIDPitch.im = 0.0f;
 				FCFlightData->PIDYaw.im = 0.0f;
 				FCFlightData->PIDAltitude.im = 0.0f;
+				// Reset yaw and altitude
+				// Store current altitude as zero altitude
+				FCFlightData->ORIENTATION.f32ZeroAltitude = FCFlightData->ORIENTATION.f32Altitude;
+				// Store current heading as zero heading
+				FCFlightData->ORIENTATION_REQUIRED.f32Yaw = FCFlightData->ORIENTATION.f32Yaw;
 			}
 
 			break;
@@ -717,77 +733,6 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 					}
 					break;
 				}
-				case FLIGHT_TILT_TILTED_P:
-				{
-
-					break;
-				}
-				case FLIGHT_TILT_TILTED_H:
-				{
-
-					break;
-				}
-				case FLIGHT_TILT_SPEED_OK_P:
-				{
-
-					break;
-				}
-				case FLIGHT_TILT_SPEED_OK_H:
-				{
-					break;
-				}
-				case FLIGHT_TILT_END_P:
-				{
-					break;
-				}
-				case FLIGHT_TILT_END_H:
-				{
-					break;
-				}
-				case FLIGHT_TILT_ABORT_TILT_P:
-				{
-					break;
-				}
-				case FLIGHT_TILT_ABORT_TILT_H:
-				{
-					break;
-				}
-				case FLIGHT_TILT_ABORT_TILTED_P:
-				{
-					break;
-				}
-				case FLIGHT_TILT_ABORT_TILTED_H:
-				{
-					break;
-				}
-				case FLIGHT_TILT_ABORT_SPEED_OK_P:
-				{
-					break;
-				}
-				case FLIGHT_TILT_ABORT_SPEED_OK_H:
-				{
-					break;
-				}
-				case FLIGHT_TILT_ABORT_END_P:
-				{
-					break;
-				}
-				case FLIGHT_TILT_ABORT_END_H:
-				{
-					/*
-					// All done, end transition
-					// Reset tilt state
-					data->ui32FlightTransitionState = FLIGHT_TILT_START;
-					// Set state machine to flight
-					data->ui32FlightStateMachine = FLIGHT_STABILIZE_HOVER;
-					// End transition
-					RC_Flags.bits.TRANSITION = 0;
-					// Go to plane mode
-					RC_Flags.bits.PLANE = 1;
-					// Go out of hover mode
-					RC_Flags.bits.HOVER = 0;*/
-					break;
-				}
 				default:
 				{
 					FCFlightData->ui32FlightTransitionState = FLIGHT_TILT_START;
@@ -802,7 +747,7 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 			RC_Flags.bits.PLANE = 0;
 
 			// Gear down
-			RCValues->ch[RC_GEAR].PWMOUT_Val = 1000;
+			//RCValues->ch[RC_GEAR].PWMOUT_Val = 1000;
 			// Ailerons to midpoint
 			RCValues->ch[RC_AILERON_L].PWMOUT_Val = 1500;
 			RCValues->ch[RC_AILERON_R].PWMOUT_Val = 1500;
@@ -827,6 +772,9 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 			{
 				case FDEINIT_IDLE:
 				{
+					FCFlightData->MOTORS.FR.i16SetRPM = 0;
+					FCFlightData->MOTORS.FL.i16SetRPM = 0;
+					FCFlightData->MOTORS.R.i16SetRPM = 0;
 					FCFlightData->ui32FlightDeInitStates = FDEINIT_WAIT_MOTOR_STOP;
 					break;
 				}
@@ -993,21 +941,26 @@ void flight_stabilize(FLIGHT_CORE * FCFlightData)
 	// Run PID
 	math_PID(f32Error, f32IntegrationInterval, &FCFlightData->PIDPitch);
 
+
 	if(1 == FCFlightData->ORIENTATION_REQUIRED.ui8CalculatePID)
 	{
 		// Stabilize yaw - calculate error
 		f32Error = FCFlightData->ORIENTATION_REQUIRED.f32Yaw - FCFlightData->ORIENTATION.f32Yaw;
 		// Run PID
 		math_PID(f32Error, f32IntegrationInterval, &FCFlightData->PIDYaw);
-
-		// Run altitude PID
-		// Calculate altitude diff from start
-		f32Error = FCFlightData->ORIENTATION.f32Altitude - FCFlightData->ORIENTATION.f32ZeroAltitude;
-		// error is required altitude - alt difference from start point
-		f32Error = FCFlightData->ORIENTATION_REQUIRED.f32Altitude - f32Error;
-		math_PID(f32Error, f32IntegrationInterval, &FCFlightData->PIDAltitude);
-
 	}
+
+	// Run altitude PID
+	// Calculate altitude diff from start
+	FCFlightData->ORIENTATION.f32AltitudeAboveStart = FCFlightData->ORIENTATION.f32Altitude - FCFlightData->ORIENTATION.f32ZeroAltitude;
+
+	// Filter altitude
+	FCFlightData->ORIENTATION.f32AltitudeAboveStartFilteredAcc += FCFlightData->ORIENTATION.f32AltitudeAboveStart;
+	FCFlightData->ORIENTATION.f32AltitudeAboveStartFiltered = FCFlightData->ORIENTATION.f32AltitudeAboveStartFilteredAcc / FCFlightData->ORIENTATION.ui32AltitudeFilterWindow;
+	FCFlightData->ORIENTATION.f32AltitudeAboveStartFilteredAcc -= FCFlightData->ORIENTATION.f32AltitudeAboveStartFiltered;
+	// Error is required altitude - alt difference from start point
+	f32Error = FCFlightData->ORIENTATION_REQUIRED.f32AltitudeAboveStart - FCFlightData->ORIENTATION.f32AltitudeAboveStartFiltered;
+	math_PID(f32Error, f32IntegrationInterval, &FCFlightData->PIDAltitude);
 
 	// Run speed PID
 
@@ -1016,7 +969,6 @@ void flight_stabilize(FLIGHT_CORE * FCFlightData)
 // Hardware specific function - decode flight commands to servo/motor commands
 void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 {
-	float32_t f32Power;
 	float32_t f32Temp;
 	float32_t f32Temp1;
 	int i = 0;
@@ -1032,7 +984,17 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		RCValues->ch[RC_AILERON_R].PWMOUT_Val = RCValues->ch[RC_AILERON_R].PWMOUT_Offset;
 
 		// Power is altitude output
-		f32Power = FCFlightData->PIDAltitude.outMax;
+		//f32Power = FCFlightData->PIDAltitude.outMax;
+		// Power is throttle value + altitude PID output
+		if(-50.0f > RCValues->ch[RC_THROTTLE].PWMIN_Zero)
+		{
+			FCFlightData->MOTORS.f32TotalPower = RCValues->f32ThrottleValue + FCFlightData->PIDAltitude.s;
+		}
+		else
+		{
+			FCFlightData->MOTORS.f32TotalPower = RCValues->f32ThrottleValue;
+		}
+
 		// Set throttle to some value
 
 		//.65
@@ -1040,11 +1002,11 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 
 		// Calculate motor power ratios
 		// Motor FR
-		f32Temp = 0.615f + FCFlightData->PIDPitch.s;
+		f32Temp = FCFlightData->f32COGFrontFactor + FCFlightData->PIDPitch.s;
 		f32Temp1 = 0.5f - FCFlightData->PIDRoll.s;
 		f32Temp *= f32Temp1;
 		// Get power
-		f32Temp *= f32Power;
+		f32Temp *= FCFlightData->MOTORS.f32TotalPower;
 		// And sqrtf to get RPM
 		f32Temp = sqrtf(f32Temp);
 		// And out PWM value
@@ -1057,11 +1019,11 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		RCValues->ch[RC_MOTOR_FR].PWMOUT_Val = f32Temp;
 
 		// Motor FL
-		f32Temp = 0.615f + FCFlightData->PIDPitch.s;
+		f32Temp = FCFlightData->f32COGFrontFactor + FCFlightData->PIDPitch.s;
 		f32Temp1 = 0.5f + FCFlightData->PIDRoll.s;
 		f32Temp *= f32Temp1;
 		// Get power
-		f32Temp *= f32Power;
+		f32Temp *= FCFlightData->MOTORS.f32TotalPower;
 		// And sqrtf to get RPM
 		f32Temp = sqrtf(f32Temp);
 		// And out PWM value
@@ -1074,11 +1036,11 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		RCValues->ch[RC_MOTOR_FL].PWMOUT_Val = f32Temp;
 
 		// Motor R
-		f32Temp = 0.385f - FCFlightData->PIDPitch.s;
+		f32Temp = FCFlightData->f32COGRearFactor - FCFlightData->PIDPitch.s;
 		f32Temp1 = cosf(FCFlightData->PIDYaw.s);
 		f32Temp /= f32Temp1;
 		// Get power
-		f32Temp *= f32Power;
+		f32Temp *= FCFlightData->MOTORS.f32TotalPower;
 		// And sqrtf to get RPM
 		f32Temp = sqrtf(f32Temp);
 		// And out PWM value
