@@ -493,6 +493,7 @@ void TIM1_BRK_TIM9_ISR_Handler(void)
 		{
 			// Else transition from high to low
 			TIM9_IC1_HighWidth = result;
+			RCData.ch[8].PWMIN = result;
 			// Calculate DC
 			// Calculate period
 			strength = TIM9_IC1_HighWidth + TIM9_IC1_LowWidth;
