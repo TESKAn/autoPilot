@@ -19,6 +19,7 @@ void init_Timer14();
 void init_DMA();
 void init_ADC();
 void init_DAC();
+void init_CAN();
 void init_USART1();
 void init_USART2();
 void init_USART3();

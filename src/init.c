@@ -687,6 +687,57 @@ void init_DAC(void)
 	// End of DAC
 }
 
+void init_CAN()
+{
+	uint8_t ui8InitResult = 0;
+	//make structure for configuring pins
+	GPIO_InitTypeDef  GPIO_InitStructure;
+
+	//make structure for configuring CAN
+	CAN_InitTypeDef CAN_InitStructure;
+
+	// Init GPIO
+	//connect pins B6 and B7 to USART
+	GPIO_PinAFConfig(GPIOD, GPIO_PinSource0, GPIO_AF_CAN1);
+	GPIO_PinAFConfig(GPIOD, GPIO_PinSource1, GPIO_AF_CAN1);
+	//select pins 6 and 7
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1;
+	//set output type
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// push/pull
+	//set pull-up
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	//set pin mode to alternate function
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+	//set pin speed
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;
+	//write mode to selected pins and selected port
+	GPIO_Init(GPIOD, &GPIO_InitStructure);
+
+	// Init CAN
+	RCC_AHB1PeriphClockCmd(RCC_APB1Periph_CAN1, ENABLE);
+
+
+	CAN_InitStructure.CAN_Prescaler = 3;	// 42 MHz clock; tq = CAN_Prescaler x tPCLK; 3 = 14 MHz
+	CAN_InitStructure.CAN_Mode = CAN_OperatingMode_Normal;
+	CAN_InitStructure.CAN_SJW = CAN_SJW_1tq;
+	// Bit period = (3/42 MHz)*(1+11+2) = 1 usec
+	CAN_InitStructure.CAN_BS1 = CAN_BS1_13tq;
+	CAN_InitStructure.CAN_BS2 = CAN_BS2_7tq;
+	CAN_InitStructure.CAN_TTCM = DISABLE;
+	CAN_InitStructure.CAN_ABOM = DISABLE;
+	CAN_InitStructure.CAN_AWUM = DISABLE;
+	CAN_InitStructure.CAN_NART = DISABLE;
+	CAN_InitStructure.CAN_RFLM = DISABLE;
+	CAN_InitStructure.CAN_TXFP = DISABLE;
+
+
+	ui8InitResult = CAN_Init(CAN1, &CAN_InitStructure);
+
+	// Enable RX interrupt
+	CAN_ITConfig(CAN1, CAN_IT_FMP0, ENABLE);
+}
+
+
 void init_USART1()
 {
 	//make structure for configuring pins
@@ -1181,6 +1232,28 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
 	NVIC_Init(&NVCInitStructure);
 
+	//init CAN RX0 interrupt
+	//set IRQ channel
+	NVCInitStructure.NVIC_IRQChannel = CAN1_RX0_IRQn;
+	//set priority 0 - 15
+	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+	//set priority 0 - 15
+	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
+	//enable IRQ channel
+	NVCInitStructure.NVIC_IRQChannelCmd = newState;
+	NVIC_Init(&NVCInitStructure);
+
+	//init CAN TX interrupt
+	//set IRQ channel
+	NVCInitStructure.NVIC_IRQChannel = CAN1_TX_IRQn;
+	//set priority 0 - 15
+	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+	//set priority 0 - 15
+	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
+	//enable IRQ channel
+	NVCInitStructure.NVIC_IRQChannelCmd = newState;
+	NVIC_Init(&NVCInitStructure);
+
 	//init USART1 interrupt
 	//set IRQ channel
 	NVCInitStructure.NVIC_IRQChannel = USART1_IRQn;
@@ -1380,6 +1453,8 @@ void System_Config(void)
 	init_Timer8();
 	init_Timer9();
 	init_Timer14();
+	// Init CAN port
+	init_CAN();
 	// USART ports
 	init_USART1();
 	init_USART2();

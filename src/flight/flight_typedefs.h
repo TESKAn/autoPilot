@@ -224,8 +224,6 @@ typedef struct
 {
 	uint16_t PWMIN;					// PWM value as read from timer
 	uint16_t PWMOUT;				// PWM out value as set to timer
-	uint16_t PWMIN_LOW_VALUE;
-	uint16_t ui16Empty;
 	float32_t PWMMax;				// Maximum measured PWM input value
 	float32_t PWMMin;				// Minimum measured PWM input value
 	float32_t PWMDiff;				// Difference between max and min value
@@ -236,7 +234,7 @@ typedef struct
 	float32_t PWMOUT_Offset;		// Output offset
 	uint8_t PWM_Good;				// PWM input is active (receiving signal)
 	uint8_t PWM_Timeout;			// PWM input timeout counter
-	uint16_t empty[2];
+	uint8_t empty[2];
 }__attribute__((aligned(4),packed)) RC_CHANNEL;
 
 

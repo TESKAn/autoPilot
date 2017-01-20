@@ -99,6 +99,9 @@ int main(void)
 	// Init RS485
 	RS485_MasterInitData();
 
+	// Init CAN
+	InitCANLink();
+
 
 	// Peripherals initialized, wait 1 sec
 	Delayms(100);

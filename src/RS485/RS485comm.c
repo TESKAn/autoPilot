@@ -108,16 +108,6 @@ Int16 RS485_Timing()
 		RS485Data->ui16RXTimeoutCounter++;
 		if(RS485Data->ui16RXTimeoutCounter > RS485Data->ui16RXCommTimeout)
 		{
-			// Try one more time
-			/*
-			uint16_t reg = USART1->SR;
-			uint16_t reg1 = USART1->CR1;
-			uint16_t reg2 = USART1->CR2;
-			uint16_t reg3 = USART1->CR3;
-			uint16_t reg4 = USART1->BRR;
-			uint16_t reg5 = USART1->DR;
-			uint8_t bit5 = GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_5);
-			*/
 			uint16_t reg1 = USART3->DR;
 			RS485_ReceiveMessage((uint8_t)reg1);
 			if(1 != RS485ResponseReceived)
@@ -127,7 +117,6 @@ Int16 RS485_Timing()
 				RS485Data->ui8RXCounter = 0;
 				RB_flush(&RB_USART3);
 			}
-
 		}
 	}
 #endif

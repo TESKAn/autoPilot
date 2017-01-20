@@ -12,7 +12,7 @@
 // Define GPIO pin 5 as debug output
 //#define GPIOE5_IS_DEBUG
 // Define send debug messages over USB
-//#define DEBUG_USB
+#define DEBUG_USB
 
 //#define USE_FREEMASTER		// Use freemaster instead of own comm
 //#define RS485_DEBUG				// Disable sending commands over RS485

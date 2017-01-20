@@ -493,7 +493,6 @@ void TIM1_BRK_TIM9_ISR_Handler(void)
 		{
 			// Else transition from high to low
 			TIM9_IC1_HighWidth = result;
-			RCData.ch[8].PWMIN = result;
 			// Calculate DC
 			// Calculate period
 			strength = TIM9_IC1_HighWidth + TIM9_IC1_LowWidth;
@@ -695,6 +694,47 @@ void TIM1_CC_ISR_Handler(void)
 		TIM_ClearITPendingBit(TIM1, TIM_IT_CC4);
 		TIM_ClearFlag(TIM1, TIM_FLAG_CC4);
 	}
+}
+
+/**
+  * @brief  This function handles CAN1 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void CAN1_RX0_ISR_Handler()
+{
+	CanRxMsg RecMessage;
+	// Get how many messages are in fifo
+	uint8_t ui8MessagesPending = CAN_MessagePending(CAN1, CAN_FIFO0);
+	while(0 != ui8MessagesPending)
+	{
+		CAN_Receive(CAN1, CAN_FIFO0, &RecMessage);
+		ProcessCANMessage(&RecMessage);
+		// Check buffer
+		ui8MessagesPending = CAN_MessagePending(CAN1, CAN_FIFO0);
+	}
+}
+
+void CAN1_TX0_ISR_Handler()
+{
+	// Check CAN message buffer
+	if(CANData.ui16CANTxMsgBufRead != CANData.ui16CANTxMsgBufStore)
+	{
+		// Messages in buffer. Transmitt next message
+		uint8_t txResult = CAN_Transmit(CAN1, &CANData.CANTxMsgBuf[CANData.ui16CANTxMsgBufRead]);
+		if(CAN_TxStatus_NoMailBox != txResult)
+		{
+			// Msg stored in tx mailbox, remove from queue
+			CANData.ui16CANTxMsgBufRead++;
+			CANData.ui16CANTxMsgBufRead = CANData.ui16CANTxMsgBufRead & 0xff;
+		}
+	}
+	else
+	{
+		// No more messages in buffer, disable TX interrupt
+		CAN_ITConfig(CAN1, CAN_IT_TME, DISABLE);
+	}
+	CAN_ClearITPendingBit(CAN1, CAN_IT_TME);
 }
 
 /**

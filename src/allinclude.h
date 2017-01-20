@@ -31,6 +31,8 @@
 
 #include "uart_comm.h"
 
+#include "CAN/can.h"
+
 
 
 #include "kalman.h"
