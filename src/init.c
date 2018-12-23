@@ -697,7 +697,7 @@ void init_CAN()
 	CAN_InitTypeDef CAN_InitStructure;
 
 	// Init GPIO
-	//connect pins B6 and B7 to USART
+	//connect pins D0 and D1 to CAN
 	GPIO_PinAFConfig(GPIOD, GPIO_PinSource0, GPIO_AF_CAN1);
 	GPIO_PinAFConfig(GPIOD, GPIO_PinSource1, GPIO_AF_CAN1);
 	//select pins 6 and 7
@@ -714,13 +714,13 @@ void init_CAN()
 	GPIO_Init(GPIOD, &GPIO_InitStructure);
 
 	// Init CAN
-	RCC_AHB1PeriphClockCmd(RCC_APB1Periph_CAN1, ENABLE);
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_CAN1, ENABLE);
 
 
-	CAN_InitStructure.CAN_Prescaler = 3;	// 42 MHz clock; tq = CAN_Prescaler x tPCLK; 3 = 14 MHz
-	CAN_InitStructure.CAN_Mode = CAN_OperatingMode_Normal;
+	CAN_InitStructure.CAN_Prescaler = 2;	// 42 MHz clock; tq = CAN_Prescaler x tPCLK; 3 = 14 MHz
+	CAN_InitStructure.CAN_Mode = 0;// CAN_OperatingMode_Normal;
 	CAN_InitStructure.CAN_SJW = CAN_SJW_1tq;
-	// Bit period = (3/42 MHz)*(1+11+2) = 1 usec
+	// Bit period = (3/42 MHz)*(1+13+7) = 1 usec
 	CAN_InitStructure.CAN_BS1 = CAN_BS1_13tq;
 	CAN_InitStructure.CAN_BS2 = CAN_BS2_7tq;
 	CAN_InitStructure.CAN_TTCM = DISABLE;
@@ -733,8 +733,15 @@ void init_CAN()
 
 	ui8InitResult = CAN_Init(CAN1, &CAN_InitStructure);
 
+	// Set slave bank numbers to 27
+	CAN_SlaveStartBank(27);
+
+	// Enable debug freeze
+	CAN_DBGFreeze(CAN1, DISABLE);
+
 	// Enable RX interrupt
 	CAN_ITConfig(CAN1, CAN_IT_FMP0, ENABLE);
+	CAN_ITConfig(CAN1, CAN_IT_FMP1, ENABLE);
 }
 
 
@@ -1235,6 +1242,17 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	//init CAN RX0 interrupt
 	//set IRQ channel
 	NVCInitStructure.NVIC_IRQChannel = CAN1_RX0_IRQn;
+	//set priority 0 - 15
+	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+	//set priority 0 - 15
+	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
+	//enable IRQ channel
+	NVCInitStructure.NVIC_IRQChannelCmd = newState;
+	NVIC_Init(&NVCInitStructure);
+
+	//init CAN RX1 interrupt
+	//set IRQ channel
+	NVCInitStructure.NVIC_IRQChannel = CAN1_RX1_IRQn;
 	//set priority 0 - 15
 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
 	//set priority 0 - 15

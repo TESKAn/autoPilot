@@ -20,6 +20,7 @@ void DMA2_Stream7_ISR_Handler(void);
 //void I2C2_EV_IRQHandler(void);
 void TIM1_CC_ISR_Handler(void);
 void CAN1_RX0_ISR_Handler();
+void CAN1_RX1_ISR_Handler();
 void CAN1_TX0_ISR_Handler();
 void USART1_ISR_Handler(void);
 void USART2_ISR_Handler(void);

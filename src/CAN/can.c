@@ -5,9 +5,11 @@
  *      Author: jmoc
  */
 
-#include "stm32f4xx_can.h"
-#include "stm32f4xx_rcc.h"
-#include "customTypedefs.h"
+#include "allinclude.h"
+
+//#include "stm32f4xx_can.h"
+//#include "stm32f4xx_rcc.h"
+//#include "customTypedefs.h"
 #include "can.h"
 
 CANSTRUCT CANData;
@@ -18,10 +20,10 @@ void InitCANLink()
 {
 	// Init CAN filter(s) for rx messages
 	CAN_FilterInitTypeDef CANFilterInitStruct;
-	CANFilterInitStruct.CAN_FilterIdHigh = 0;
-	CANFilterInitStruct.CAN_FilterIdLow = 0;
-	CANFilterInitStruct.CAN_FilterMaskIdHigh = 0;
-	CANFilterInitStruct.CAN_FilterMaskIdLow = 0;
+	CANFilterInitStruct.CAN_FilterIdHigh = 0;//0x004e;
+	CANFilterInitStruct.CAN_FilterIdLow = 0;//0x2123;
+	CANFilterInitStruct.CAN_FilterMaskIdHigh = 0x0000;
+	CANFilterInitStruct.CAN_FilterMaskIdLow = 0x0000;
 	CANFilterInitStruct.CAN_FilterFIFOAssignment = CAN_Filter_FIFO0;
 	CANFilterInitStruct.CAN_FilterNumber = 0;
 	CANFilterInitStruct.CAN_FilterMode = CAN_FilterMode_IdMask;
@@ -85,10 +87,26 @@ int16_t SendCANMessage(CanTxMsg *msg)
 
 void ProcessCANMessage(CanRxMsg *msg)
 {
-	switch(msg->ExtId)
+	FLIGHT_MOTOR* FMotorData;
+	uint32_t ui32ID = 0;
+	uint32_t ui32Source = 0;
+	ui32ID = (msg->ExtId >> 8) & 0xffff;
+	ui32Source = msg->ExtId & 0x7f;
+
+	switch(ui32Source)
 	{
-		case 0:
+		case 0x12:
 		{
+			FMotorData = &FCFlightData.MOTORS.FR;
+			break;
+		}
+	}
+
+	switch(ui32ID)
+	{
+		case (uint32_t)CAN_MSG_ESC_RPM:
+		{
+			FMotorData->i16CurrentRPM = (int16_t)msg->Data[0];
 			break;
 		}
 		default:

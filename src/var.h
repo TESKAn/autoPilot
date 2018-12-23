@@ -227,4 +227,7 @@ extern volatile uint32_t signalStrengthCount;
 
 extern uint32_t ui32TestVar;
 
+extern uint32_t ui32CANTime;
+extern uint32_t ui32SendAHRSDataTime;
+
 #endif /* VAR_H_ */

@@ -166,3 +166,6 @@ volatile uint16_t errorUpdateInterval = 0;
 volatile uint32_t signalStrengthCount = 0;
 
 uint32_t ui32TestVar = 0;
+
+uint32_t ui32CANTime = 0;
+uint32_t ui32SendAHRSDataTime = 0;

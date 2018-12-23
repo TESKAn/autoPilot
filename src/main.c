@@ -60,6 +60,7 @@ float32_t t2 = 0;
 int main(void)
 {
 	unsigned int bytesWritten;
+	SYSTEM_RUNNING = 0;
 	//float32_t temp = 0;
 #ifdef USE_FREEMASTER
 	FMSTR_Init();
@@ -86,6 +87,10 @@ int main(void)
 	int registerCount = 0;*/
 	// Startup delay - 0,5 sec
 	Delaynus(500000);
+
+	// Init CAN filters
+	InitCANLink();
+
 	// Configure hardware
 	System_Config();
 	// Set default PWM out values
@@ -99,8 +104,7 @@ int main(void)
 	// Init RS485
 	RS485_MasterInitData();
 
-	// Init CAN
-	InitCANLink();
+
 
 
 	// Peripherals initialized, wait 1 sec
@@ -125,20 +129,14 @@ int main(void)
 	RS485_RXEN;
 
 	// Start servo poll
-	RS485_MasterState(1);
+	//RS485_MasterState(1);
 
-	// Test enable servo torque
-	/*
-	FCFlightData.TILT_SERVOS.FR.ui8Enable = 1;
-	FCFlightData.TILT_SERVOS.FL.ui8Enable = 1;
-	FCFlightData.TILT_SERVOS.R.ui8Enable = 1;
-*/
 
+
+	SYSTEM_RUNNING = 1;
 	// Mount SD card
     while (1)
     {
-
-
 
     	// Process RS485
     	if(0 != RB_USART3.count)

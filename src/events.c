@@ -519,6 +519,15 @@ void TIM1_BRK_TIM9_ISR_Handler(void)
 void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 {
 	//Check trigger event
+	CONVERTNUM cnvrt_number;
+	uint32_t test = CAN1->BTR;
+	uint8_t ui8MessagesPending = CAN_MessagePending(CAN1, CAN_FIFO0);
+	ui8MessagesPending = CAN_MessagePending(CAN1, CAN_FIFO1);
+	FlagStatus fst = CAN_GetFlagStatus(CAN1, CAN_FLAG_FMP0);
+	fst = CAN_GetFlagStatus(CAN1, CAN_FLAG_FMP0);
+	fst = CAN_GetFlagStatus(CAN1, CAN_FLAG_FF0);
+	fst = CAN_GetFlagStatus(CAN1, CAN_FLAG_FOV0);
+	fst = CAN_GetFlagStatus(CAN1, CAN_FLAG_LEC);
 
 	uint8_t retriesCount = 0;
 	ErrorStatus error = SUCCESS;
@@ -655,6 +664,53 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		}
 		// Call sensor timer
 		sensorInterruptTimer();
+
+		// Send CAN status
+		if(SYSTEM_RUNNING)
+		{
+			ui32CANTime++;
+			ui32SendAHRSDataTime++;
+			if(10 < ui32SendAHRSDataTime)
+			{
+				ui32SendAHRSDataTime = 0;
+				/*
+				cnvrt_number.ui32[0] = systemTime / 1000;
+				// System time = systemTime [ms]
+				ui32CANTime = 0;
+				CANData.CANTxMsgBuf[0].ExtId = 0x1401550a;
+				CANData.CANTxMsgBuf[0].Data[0] = cnvrt_number.ch[0];
+				CANData.CANTxMsgBuf[0].Data[1] = cnvrt_number.ch[1];
+				CANData.CANTxMsgBuf[0].Data[2] = cnvrt_number.ch[2];
+				CANData.CANTxMsgBuf[0].Data[3] = cnvrt_number.ch[3];
+				CANData.CANTxMsgBuf[0].Data[4] = 0x00;
+				CANData.CANTxMsgBuf[0].Data[5] = 0x00;
+				CANData.CANTxMsgBuf[0].Data[6] = 0x00;
+				CANData.CANTxMsgBuf[0].Data[7] = 0xc0;
+				CANData.CANTxMsgBuf[0].DLC = 8;
+				CANData.CANTxMsgBuf[0].IDE = CAN_Id_Extended;
+				CANData.CANTxMsgBuf[0].RTR = CAN_RTR_Data;
+				uint8_t txResult = CAN_Transmit(CAN1, &CANData.CANTxMsgBuf[0]);*/
+			}
+			else if(500 < ui32CANTime)
+			{
+				cnvrt_number.ui32[0] = systemTime / 1000;
+				// System time = systemTime [ms]
+				ui32CANTime = 0;
+				CANData.CANTxMsgBuf[0].ExtId = 0x1401550a;
+				CANData.CANTxMsgBuf[0].Data[0] = cnvrt_number.ch[0];
+				CANData.CANTxMsgBuf[0].Data[1] = cnvrt_number.ch[1];
+				CANData.CANTxMsgBuf[0].Data[2] = cnvrt_number.ch[2];
+				CANData.CANTxMsgBuf[0].Data[3] = cnvrt_number.ch[3];
+				CANData.CANTxMsgBuf[0].Data[4] = 0x00;
+				CANData.CANTxMsgBuf[0].Data[5] = 0x00;
+				CANData.CANTxMsgBuf[0].Data[6] = 0x00;
+				CANData.CANTxMsgBuf[0].Data[7] = 0xc0;
+				CANData.CANTxMsgBuf[0].DLC = 8;
+				CANData.CANTxMsgBuf[0].IDE = CAN_Id_Extended;
+				CANData.CANTxMsgBuf[0].RTR = CAN_RTR_Data;
+				uint8_t txResult = CAN_Transmit(CAN1, &CANData.CANTxMsgBuf[0]);
+			}
+		}
 	}
 }
 
@@ -710,8 +766,26 @@ void CAN1_RX0_ISR_Handler()
 	{
 		CAN_Receive(CAN1, CAN_FIFO0, &RecMessage);
 		ProcessCANMessage(&RecMessage);
+		// Release FIFO
+		//CAN_FIFORelease(CAN1, CAN_FIFO0);
 		// Check buffer
 		ui8MessagesPending = CAN_MessagePending(CAN1, CAN_FIFO0);
+	}
+}
+
+void CAN1_RX1_ISR_Handler()
+{
+	CanRxMsg RecMessage;
+	// Get how many messages are in fifo
+	uint8_t ui8MessagesPending = CAN_MessagePending(CAN1, CAN_FIFO1);
+	while(0 != ui8MessagesPending)
+	{
+		CAN_Receive(CAN1, CAN_FIFO1, &RecMessage);
+		ProcessCANMessage(&RecMessage);
+		// Release FIFO
+		//CAN_FIFORelease(CAN1, CAN_FIFO1);
+		// Check buffer
+		ui8MessagesPending = CAN_MessagePending(CAN1, CAN_FIFO1);
 	}
 }
 

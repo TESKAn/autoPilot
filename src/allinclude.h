@@ -10,6 +10,7 @@
 
 /* Includes */
 
+#include "CAN/can_messages.h"
 #include "macro.h"
 
 #include "stm32f4xx.h"
@@ -31,7 +32,7 @@
 
 #include "uart_comm.h"
 
-#include "CAN/can.h"
+
 
 
 
@@ -45,7 +46,7 @@
 
 #include "functions.h"
 
-
+#include "CAN/can.h"
 
 // File with macro functions
 #include "macroFunctions.h"

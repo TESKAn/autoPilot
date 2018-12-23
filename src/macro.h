@@ -14,7 +14,7 @@
 // Define send debug messages over USB
 #define DEBUG_USB
 
-//#define USE_FREEMASTER		// Use freemaster instead of own comm
+#define USE_FREEMASTER		// Use freemaster instead of own comm
 //#define RS485_DEBUG				// Disable sending commands over RS485
 //#define RS485_DISABLE_POLL	// Disable RS485 slave polling
 
@@ -66,7 +66,7 @@
 #define LED_BLINK				flag0.bits.BIT10
 #define ADC_ENABLED				flag0.bits.BIT11
 #define SENSOR_TEST_STEP		flag0.bits.BIT12
-
+#define SYSTEM_RUNNING			flag0.bits.BIT13
 
 
 #define SD_WRITE_LOG			flag0.bits.BIT15

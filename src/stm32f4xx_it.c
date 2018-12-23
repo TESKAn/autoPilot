@@ -303,6 +303,11 @@ void CAN1_RX0_IRQHandler(void)
 	CAN1_RX0_ISR_Handler();
 }
 
+void CAN1_RX1_IRQHandler(void)
+{
+	CAN1_RX1_ISR_Handler();
+}
+
 /**
   * @brief  This function handles CAN1 RX interrupt request.
   * @param  None
