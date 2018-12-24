@@ -673,26 +673,11 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			if(10 < ui32SendAHRSDataTime)
 			{
 				ui32SendAHRSDataTime = 0;
-				/*
-				cnvrt_number.ui32[0] = systemTime / 1000;
-				// System time = systemTime [ms]
-				ui32CANTime = 0;
-				CANData.CANTxMsgBuf[0].ExtId = 0x1401550a;
-				CANData.CANTxMsgBuf[0].Data[0] = cnvrt_number.ch[0];
-				CANData.CANTxMsgBuf[0].Data[1] = cnvrt_number.ch[1];
-				CANData.CANTxMsgBuf[0].Data[2] = cnvrt_number.ch[2];
-				CANData.CANTxMsgBuf[0].Data[3] = cnvrt_number.ch[3];
-				CANData.CANTxMsgBuf[0].Data[4] = 0x00;
-				CANData.CANTxMsgBuf[0].Data[5] = 0x00;
-				CANData.CANTxMsgBuf[0].Data[6] = 0x00;
-				CANData.CANTxMsgBuf[0].Data[7] = 0xc0;
-				CANData.CANTxMsgBuf[0].DLC = 8;
-				CANData.CANTxMsgBuf[0].IDE = CAN_Id_Extended;
-				CANData.CANTxMsgBuf[0].RTR = CAN_RTR_Data;
-				uint8_t txResult = CAN_Transmit(CAN1, &CANData.CANTxMsgBuf[0]);*/
+				CAN_SendOrientation();
 			}
 			else if(500 < ui32CANTime)
 			{
+				ui32CANTime = 0;
 				CAN_SendNodeStatus();
 			}
 		}

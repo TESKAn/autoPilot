@@ -2235,3 +2235,41 @@ int16_t RB32_flush(RING_BUFFER32* rb)
     return 0;
 }
 
+// Function to convert 32 bit float to 16 bit fixed point float
+// Beware of byte order.
+uint16_t Float32ToFloat16(float value)
+{
+	T16BITVARS t16Var1;
+
+	const FP32 f32inf = { 255UL << 23U };
+	const FP32 f16inf = { 31UL << 23U };
+	const FP32 magic = { 15UL << 23U };
+	const UInt32 sign_mask = 0x80000000UL;
+	const UInt32 round_mask = ~0xFFFUL;
+
+	FP32 in;
+	UInt32 sign;
+
+	in.f = value;
+	sign = in.u & sign_mask;
+	in.u ^= sign;
+
+	if (in.u >= f32inf.u)
+	{
+		t16Var1.ui16 = (in.u > f32inf.u) ? (UInt16)0x7FFFU : (UInt16)0x7C00U;
+	}
+	else
+	{
+	    in.u &= round_mask;
+	    in.f *= magic.f;
+	    in.u -= round_mask;
+	    if (in.u > f16inf.u)
+	    {
+	        in.u = f16inf.u;
+	    }
+	    t16Var1.ui16 = (UInt16)(in.u >> 13U);
+	}
+	t16Var1.ui16 |= (UInt16)(sign >> 16U);
+
+	return t16Var1.ui16;
+}

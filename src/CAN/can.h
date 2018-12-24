@@ -32,6 +32,7 @@ extern CANSTRUCT CANData;
 
 void InitCANLink();
 void ProcessCANMessage(CanRxMsg *msg);
+int16_t CAN_SendOrientation();
 int16_t CAN_SendNodeStatus();
 int16_t SendCANMessage(CanTxMsg *msg);
 

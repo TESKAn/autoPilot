@@ -80,4 +80,6 @@ int16_t RB32_push(RING_BUFFER32* rb, uint32_t data);
 uint32_t RB32_pop(RING_BUFFER32* rb);
 int16_t RB32_flush(RING_BUFFER32* rb);
 
+uint16_t Float32ToFloat16(float value);
+
 #endif /* FUNCTIONS_H_ */

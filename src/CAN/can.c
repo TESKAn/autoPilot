@@ -53,6 +53,37 @@ uint32_t CAN_GenerateID(uint32_t ui32PRIO, uint32_t ui32MID)
 	return ui32MsgID;
 }
 
+int16_t CAN_SendOrientation()
+{
+	CONVERTNUM cnvrt_number;
+	CanTxMsg msg;
+
+	uint16_t ui16Roll = Float32ToFloat16(FCFlightData.ORIENTATION.f32Roll);
+	uint16_t ui16Pitch = Float32ToFloat16(FCFlightData.ORIENTATION.f32Pitch);
+	uint16_t ui16Yaw = Float32ToFloat16(FCFlightData.ORIENTATION.f32Yaw);
+
+	// Generate message ID
+	msg.ExtId = CAN_GenerateID(CAN_PRIO_ORIENTATION, CAN_MID_ORIENTATION);
+
+	cnvrt_number.ui16[0] = ui16Roll;
+	cnvrt_number.ui16[1] = ui16Pitch;
+	cnvrt_number.ui16[2] = ui16Yaw;
+
+	msg.Data[0] = cnvrt_number.ch[0];
+	msg.Data[1] = cnvrt_number.ch[1];
+	msg.Data[2] = cnvrt_number.ch[2];
+	msg.Data[3] = cnvrt_number.ch[3];
+	msg.Data[4] = cnvrt_number.ch[4];
+	msg.Data[5] = cnvrt_number.ch[5];
+	msg.Data[6] = 0xc0;
+	msg.Data[7] = 0xc0;
+	msg.DLC = 7;
+	msg.IDE = CAN_Id_Extended;
+	msg.RTR = CAN_RTR_Data;
+
+	SendCANMessage(&msg);
+	return 0;
+}
 
 int16_t CAN_SendNodeStatus()
 {
