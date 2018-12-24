@@ -519,7 +519,7 @@ void TIM1_BRK_TIM9_ISR_Handler(void)
 void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 {
 	//Check trigger event
-	CONVERTNUM cnvrt_number;
+
 	uint32_t test = CAN1->BTR;
 	uint8_t ui8MessagesPending = CAN_MessagePending(CAN1, CAN_FIFO0);
 	ui8MessagesPending = CAN_MessagePending(CAN1, CAN_FIFO1);
@@ -693,22 +693,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			}
 			else if(500 < ui32CANTime)
 			{
-				cnvrt_number.ui32[0] = systemTime / 1000;
-				// System time = systemTime [ms]
-				ui32CANTime = 0;
-				CANData.CANTxMsgBuf[0].ExtId = 0x1401550a;
-				CANData.CANTxMsgBuf[0].Data[0] = cnvrt_number.ch[0];
-				CANData.CANTxMsgBuf[0].Data[1] = cnvrt_number.ch[1];
-				CANData.CANTxMsgBuf[0].Data[2] = cnvrt_number.ch[2];
-				CANData.CANTxMsgBuf[0].Data[3] = cnvrt_number.ch[3];
-				CANData.CANTxMsgBuf[0].Data[4] = 0x00;
-				CANData.CANTxMsgBuf[0].Data[5] = 0x00;
-				CANData.CANTxMsgBuf[0].Data[6] = 0x00;
-				CANData.CANTxMsgBuf[0].Data[7] = 0xc0;
-				CANData.CANTxMsgBuf[0].DLC = 8;
-				CANData.CANTxMsgBuf[0].IDE = CAN_Id_Extended;
-				CANData.CANTxMsgBuf[0].RTR = CAN_RTR_Data;
-				uint8_t txResult = CAN_Transmit(CAN1, &CANData.CANTxMsgBuf[0]);
+				CAN_SendNodeStatus();
 			}
 		}
 	}
@@ -794,13 +779,13 @@ void CAN1_TX0_ISR_Handler()
 	// Check CAN message buffer
 	if(CANData.ui16CANTxMsgBufRead != CANData.ui16CANTxMsgBufStore)
 	{
-		// Messages in buffer. Transmitt next message
+		// Messages in buffer. Transmit next message
 		uint8_t txResult = CAN_Transmit(CAN1, &CANData.CANTxMsgBuf[CANData.ui16CANTxMsgBufRead]);
 		if(CAN_TxStatus_NoMailBox != txResult)
 		{
 			// Msg stored in tx mailbox, remove from queue
 			CANData.ui16CANTxMsgBufRead++;
-			CANData.ui16CANTxMsgBufRead = CANData.ui16CANTxMsgBufRead & 0xff;
+			CANData.ui16CANTxMsgBufRead = CANData.ui16CANTxMsgBufRead & 0x1f;
 		}
 	}
 	else

@@ -31,8 +31,56 @@ void InitCANLink()
 	CANFilterInitStruct.CAN_FilterActivation = ENABLE;
 
 	CAN_FilterInit(&CANFilterInitStruct);
-
 }
+
+uint32_t CAN_GenerateID(uint32_t ui32PRIO, uint32_t ui32MID)
+{
+	uint32_t ui32Temp = 0;
+	uint32_t ui32MsgID = 0;
+
+	// Generate message ID
+	ui32Temp = ui32PRIO;
+	ui32Temp = ui32Temp << 24;
+	ui32MsgID = ui32Temp;
+
+	ui32Temp = ui32MID;
+	ui32Temp = ui32Temp << 8;
+	ui32MsgID = ui32MsgID | ui32Temp;
+
+	ui32Temp = CAN_ID;
+	ui32MsgID = ui32MsgID | ui32Temp;
+
+	return ui32MsgID;
+}
+
+
+int16_t CAN_SendNodeStatus()
+{
+	CONVERTNUM cnvrt_number;
+	CanTxMsg msg;
+	// Setup data in buffer
+	cnvrt_number.ui32[0] = systemTime / 1000;
+
+	// Generate message ID
+	msg.ExtId = CAN_GenerateID(CAN_PRIO_STATUS, CAN_MID_STATUS);
+
+	msg.Data[0] = cnvrt_number.ch[0];
+	msg.Data[1] = cnvrt_number.ch[1];
+	msg.Data[2] = cnvrt_number.ch[2];
+	msg.Data[3] = cnvrt_number.ch[3];
+	msg.Data[4] = 0x00;
+	msg.Data[5] = 0x00;
+	msg.Data[6] = 0x00;
+	msg.Data[7] = 0xc0;
+	msg.DLC = 8;
+	msg.IDE = CAN_Id_Extended;
+	msg.RTR = CAN_RTR_Data;
+
+	SendCANMessage(&msg);
+
+	return 0;
+}
+
 
 int16_t SendCANMessage(CanTxMsg *msg)
 {
@@ -44,7 +92,7 @@ int16_t SendCANMessage(CanTxMsg *msg)
 		// Check for room in buffer
 		// Get loc at store pointer + 1
 		uint16_t ui16NextLoc = CANData.ui16CANTxMsgBufStore + 1;
-		ui16NextLoc = ui16NextLoc & 0xff;
+		ui16NextLoc = ui16NextLoc & 0x1f;
 		// If it is different than read loc, there is room in buffer
 		if(ui16NextLoc != CANData.ui16CANTxMsgBufRead)
 		{
@@ -72,7 +120,7 @@ int16_t SendCANMessage(CanTxMsg *msg)
 				CAN_ITConfig(CAN1, CAN_IT_TME, ENABLE);
 			}
 			CANData.ui16CANTxMsgBufStore++;
-			CANData.ui16CANTxMsgBufStore = CANData.ui16CANTxMsgBufStore & 0xff;
+			CANData.ui16CANTxMsgBufStore = CANData.ui16CANTxMsgBufStore & 0x1f;
 
 			return 0;
 		}

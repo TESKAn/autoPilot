@@ -28,10 +28,11 @@ typedef struct tagCANSTRUCT
 
 }__attribute__((aligned(4),packed)) CANSTRUCT;
 
-CANSTRUCT CANData;
+extern CANSTRUCT CANData;
 
 void InitCANLink();
 void ProcessCANMessage(CanRxMsg *msg);
+int16_t CAN_SendNodeStatus();
 int16_t SendCANMessage(CanTxMsg *msg);
 
 #endif /* CAN_H_ */

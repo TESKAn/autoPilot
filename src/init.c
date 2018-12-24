@@ -824,7 +824,7 @@ void init_USART2()
 	//program port parameters
 	//set baud rate
 	//USART_InitStructure.USART_BaudRate = 38400;
-	USART_InitStructure.USART_BaudRate = 115200;;
+	USART_InitStructure.USART_BaudRate = 19200;;
 	//flow control
 	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
 	//enable receiver and transmitter

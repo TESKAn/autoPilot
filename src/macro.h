@@ -255,6 +255,7 @@
 
 
 
+
 // UART2 comm macros
 // Declare variables
 // Must be accessible to all files
@@ -529,6 +530,13 @@
 #define VAR_PIDALTITUDEMAX				230
 #define VAR_PIDALTITUDEMIN				231
 
+// CAN
+#define CAN_ID							10
 
+// CAN message IDs
+#define CAN_MID_STATUS					341
+
+// CAN message priorities
+#define CAN_PRIO_STATUS					0x15
 
 #endif /* MACRO_H_ */
