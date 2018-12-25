@@ -670,7 +670,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		{
 			ui32CANTime++;
 			ui32SendAHRSDataTime++;
-			if(10 < ui32SendAHRSDataTime)
+			if(100 < ui32SendAHRSDataTime)
 			{
 				ui32SendAHRSDataTime = 0;
 				CAN_SendOrientation();

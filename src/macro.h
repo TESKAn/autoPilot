@@ -536,9 +536,11 @@
 // CAN message IDs
 #define CAN_MID_STATUS					341
 #define CAN_MID_ORIENTATION				20001
+#define CAN_MID_SETRPMLIMIT				20002
 
 // CAN message priorities
 #define CAN_PRIO_STATUS					0x15
 #define CAN_PRIO_ORIENTATION			0x15
+#define CAN_PRIO_SETRPMLIMIT			0x15
 
 #endif /* MACRO_H_ */

@@ -341,6 +341,12 @@ int main(void)
 				mainLoopState = 0;
 				break;
 			}
+			case 19:
+			{
+				CAN_SendMinMaxRPM();
+				mainLoopState = 0;
+				break;
+			}
 			default:
 			{
 				mainLoopState = 0;

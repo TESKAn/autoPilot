@@ -53,6 +53,36 @@ uint32_t CAN_GenerateID(uint32_t ui32PRIO, uint32_t ui32MID)
 	return ui32MsgID;
 }
 
+int16_t CAN_SendMinMaxRPM()
+{
+	CONVERTNUM cnvrt_number;
+	CanTxMsg msg;
+
+	// Generate message ID
+	msg.ExtId = CAN_GenerateID(CAN_PRIO_SETRPMLIMIT, CAN_MID_SETRPMLIMIT);
+
+	// Destination ID - 0 to all
+	msg.Data[0] = 0x0;
+	msg.Data[1] = 0x0;
+	// Min RPM
+	cnvrt_number.i16[0] = 2000;
+	msg.Data[2] = cnvrt_number.ch[0];
+	msg.Data[3] = cnvrt_number.ch[1];
+	// Max RPM
+	cnvrt_number.i16[0] = 20000;
+	msg.Data[4] = cnvrt_number.ch[2];
+	msg.Data[5] = cnvrt_number.ch[3];
+
+	msg.Data[6] = 0x0;
+	msg.Data[7] = 0xc0;
+	msg.DLC = 8;
+	msg.IDE = CAN_Id_Extended;
+	msg.RTR = CAN_RTR_Data;
+
+	SendCANMessage(&msg);
+	return 0;
+}
+
 int16_t CAN_SendOrientation()
 {
 	CONVERTNUM cnvrt_number;
