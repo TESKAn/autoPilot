@@ -519,7 +519,7 @@ void TIM1_BRK_TIM9_ISR_Handler(void)
 void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 {
 	//Check trigger event
-
+/*
 	uint32_t test = CAN1->BTR;
 	uint8_t ui8MessagesPending = CAN_MessagePending(CAN1, CAN_FIFO0);
 	ui8MessagesPending = CAN_MessagePending(CAN1, CAN_FIFO1);
@@ -528,7 +528,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 	fst = CAN_GetFlagStatus(CAN1, CAN_FLAG_FF0);
 	fst = CAN_GetFlagStatus(CAN1, CAN_FLAG_FOV0);
 	fst = CAN_GetFlagStatus(CAN1, CAN_FLAG_LEC);
-
+*/
 	uint8_t retriesCount = 0;
 	ErrorStatus error = SUCCESS;
 	if((TIM14->SR & TIM_FLAG_Update) != (u16)RESET)

@@ -174,8 +174,6 @@ typedef struct tagCOMMSTRUCT
 		uint8_t ui8MotorFL;
 		uint8_t ui8MotorRR;
 		uint8_t ui8MotorRL;
-		uint8_t ui8MotorFRRL;
-		uint8_t ui8MotorFLRR;
 		uint8_t ui8MotorAll;
 	}IDs;
 }__attribute__((aligned(4),packed)) COMMSTRUCT;

@@ -347,14 +347,13 @@ int main(void)
 			}
 			case 20:
 			{
-				CAN_SendRPM(COMMData.IDs.ui8MotorFRRL, 1000, 1000);
-				CAN_SendRPM(COMMData.IDs.ui8MotorFLRR, 1000, 1000);
+				CAN_SendRPM(1234, 4321, 0);
 				mainLoopState = 0;
 				break;
 			}
 			case 21:
 			{
-				CAN_SendMinMaxRPM();
+				CAN_SendRPM(1234, 4321, 1);
 				mainLoopState = 0;
 				break;
 			}

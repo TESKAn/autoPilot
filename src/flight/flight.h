@@ -15,7 +15,8 @@
 void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCValues);
 int16_t flight_decideAction(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 void flight_checkRCInputs(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
-void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues);
+void flight_checkStatesY(FLIGHT_CORE *FCFlightData, RCDATA * RCValues);
+void flight_checkStatesQ(FLIGHT_CORE *FCFlightData, RCDATA * RCValues);
 void flight_stabilize(FLIGHT_CORE * FCFlightData);
 void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 
