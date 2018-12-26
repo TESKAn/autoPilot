@@ -98,12 +98,9 @@ int main(void)
 
 	globalVar = 0.001f;
 
-	// Set UART buffer
-	UART_Init();
 
-	// Init RS485
-	RS485_MasterInitData();
-
+	// Init Communication struct
+	COMM_Init();
 
 
 
@@ -139,10 +136,11 @@ int main(void)
     {
 
     	// Process RS485
+    	/*
     	if(0 != RB_USART3.count)
     	{
-    		RS485_ReceiveMessage(RB_pop(&RB_USART3));
-    	}
+    		//RS485_ReceiveMessage(RB_pop(&RB_USART3));
+    	}*/
 
 #ifndef USE_FREEMASTER
     	// Process serial comm
@@ -296,42 +294,42 @@ int main(void)
 			case 12:
 			{
 				// Start servo poll
-				RS485_MasterState(1);
+				//RS485_MasterState(1);
 				mainLoopState = 0;
 				break;
 			}
 			case 13:
 			{
 				// Stop servo poll
-				RS485_MasterState(2);
+				//RS485_MasterState(2);
 				mainLoopState = 0;
 				break;
 			}
 			case 14:
 			{
 				// Enable motor
-				RS485_MotorTest(0);
+				//RS485_MotorTest(0);
 				mainLoopState = 0;
 				break;
 			}
 			case 15:
 			{
 				// Disable motor
-				RS485_MotorTest(1);
+				//RS485_MotorTest(1);
 				mainLoopState = 0;
 				break;
 			}
 			case 16:
 			{
 				// Set RPM
-				RS485_MotorTest(2);
+				//RS485_MotorTest(2);
 				mainLoopState = 0;
 				break;
 			}
 			case 17:
 			{
 				// Store command
-				RS485_QueueCommand(RS485ExecuteCommand);
+				//RS485_QueueCommand(RS485ExecuteCommand);
 				mainLoopState = 0;
 				break;
 			}
@@ -342,6 +340,19 @@ int main(void)
 				break;
 			}
 			case 19:
+			{
+				CAN_SendMinMaxRPM();
+				mainLoopState = 0;
+				break;
+			}
+			case 20:
+			{
+				CAN_SendRPM(COMMData.IDs.ui8MotorFRRL, 1000, 1000);
+				CAN_SendRPM(COMMData.IDs.ui8MotorFLRR, 1000, 1000);
+				mainLoopState = 0;
+				break;
+			}
+			case 21:
 			{
 				CAN_SendMinMaxRPM();
 				mainLoopState = 0;

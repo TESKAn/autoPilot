@@ -61,7 +61,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 #define RC_MOTOR_R_TILT	7
 #define RC_MOTOR_FR		8
 #define RC_MOTOR_FL		9
-#define RC_MOTOR_R		10
+#define RC_MOTOR_RR		10
 
 #define RC_GEAR			11
 
@@ -120,6 +120,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 #define FINIT_WAIT_SPOS_VTOL			8
 #define FINIT_WAIT_IMAX_SET				9
 #define FINIT_WAIT_THROTTLE_NULL		10
+#define FINIT_WAIT_RPM_SET				11
 
 // Flight deinit states
 #define FDEINIT_IDLE					0

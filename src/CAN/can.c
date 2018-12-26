@@ -70,8 +70,39 @@ int16_t CAN_SendMinMaxRPM()
 	msg.Data[3] = cnvrt_number.ch[1];
 	// Max RPM
 	cnvrt_number.i16[0] = 20000;
-	msg.Data[4] = cnvrt_number.ch[2];
-	msg.Data[5] = cnvrt_number.ch[3];
+	msg.Data[4] = cnvrt_number.ch[0];
+	msg.Data[5] = cnvrt_number.ch[1];
+
+	msg.Data[6] = 0x0;
+	msg.Data[7] = 0xc0;
+	msg.DLC = 8;
+	msg.IDE = CAN_Id_Extended;
+	msg.RTR = CAN_RTR_Data;
+
+	SendCANMessage(&msg);
+	return 0;
+}
+
+int16_t CAN_SendRPM(int16_t i16Dest, uint16_t ui16RPM1, uint16_t ui16RPM2)
+{
+	CONVERTNUM cnvrt_number;
+	CanTxMsg msg;
+
+	// Generate message ID
+	msg.ExtId = CAN_GenerateID(CAN_PRIO_SETRPM, CAN_MID_SETRPM);
+
+	// Destination ID - 0 to all
+	cnvrt_number.i16[0] = i16Dest;
+	msg.Data[0] = cnvrt_number.ch[0];
+	msg.Data[1] = cnvrt_number.ch[1];
+	// RPM 1
+	cnvrt_number.ui16[0] = ui16RPM1;
+	msg.Data[2] = cnvrt_number.ch[0];
+	msg.Data[3] = cnvrt_number.ch[1];
+	// Max RPM
+	cnvrt_number.ui16[0] = ui16RPM2;
+	msg.Data[4] = cnvrt_number.ch[0];
+	msg.Data[5] = cnvrt_number.ch[1];
 
 	msg.Data[6] = 0x0;
 	msg.Data[7] = 0xc0;

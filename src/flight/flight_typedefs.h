@@ -77,10 +77,10 @@ typedef struct
 	uint8_t ui8Empty[2];
 	int16_t i16PWMMin;
 	int16_t i16PWMMax;
+	int16_t i16ReqRPM;
 	int16_t i16SetRPM;
 	int16_t i16CurrentRPM;
 	int16_t i16SetParkPosition;
-	int16_t i16Empty;
 }__attribute__((aligned(4),packed)) FLIGHT_MOTOR;
 
 typedef struct
@@ -178,14 +178,15 @@ typedef struct
 		float32_t f32AllowedPositionDeviation;
 		FLIGHT_SERVO FR;
 		FLIGHT_SERVO FL;
-		FLIGHT_SERVO R;
+		FLIGHT_SERVO RR;
 	}TILT_SERVOS;
 
 	struct
 	{
 		FLIGHT_MOTOR FR;
 		FLIGHT_MOTOR FL;
-		FLIGHT_MOTOR R;
+		FLIGHT_MOTOR RR;
+		FLIGHT_MOTOR RL;
 		float32_t f32TotalPower;
 	}MOTORS;
 
@@ -214,7 +215,7 @@ typedef struct
 	float32_t f32NacelleCommonTilt;
 	float32_t f32NacelleTilt_FL;
 	float32_t f32NacelleTilt_FR;
-	float32_t f32NacelleTilt_R;
+	float32_t f32NacelleTilt_RR;
 	// Engine nacelles tilt angle change for each iteration
 	float32_t f32NacelleTiltSpeed;
 }__attribute__((aligned(4),packed)) FLIGHT_CORE;

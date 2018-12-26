@@ -87,14 +87,18 @@ void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 	FCFlightData->MOTORS.FL.ui8Enable = 0;
 	FCFlightData->MOTORS.FL.ui8Park = 0;
 	FCFlightData->MOTORS.FL.ui8UsePWM = 0;
-	FCFlightData->MOTORS.R.ui8Enable = 0;
-	FCFlightData->MOTORS.R.ui8Park = 0;
-	FCFlightData->MOTORS.R.ui8UsePWM = 0;
+	FCFlightData->MOTORS.RR.ui8Enable = 0;
+	FCFlightData->MOTORS.RR.ui8Park = 0;
+	FCFlightData->MOTORS.RR.ui8UsePWM = 0;
+	FCFlightData->MOTORS.RL.ui8Enable = 0;
+	FCFlightData->MOTORS.RL.ui8Park = 0;
+	FCFlightData->MOTORS.RL.ui8UsePWM = 0;
 
 	// Set motor park positions
 	FCFlightData->MOTORS.FR.i16SetParkPosition = 2330;
 	FCFlightData->MOTORS.FL.i16SetParkPosition = 2402;
-	FCFlightData->MOTORS.R.i16SetParkPosition = 1998;
+	FCFlightData->MOTORS.RR.i16SetParkPosition = 1998;
+	FCFlightData->MOTORS.RL.i16SetParkPosition = 1998;
 
 	FCFlightData->f32MinPlaneSpeed = RC_DEFAULT_PLANE_MIN_SPEED;
 	FCFlightData->f32MaxHoverSpeed = RC_DEFAULT_HOVER_MAX_SPEED;
@@ -106,15 +110,15 @@ void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 	FCFlightData->f32NacelleCommonTilt = RC_DEFAULT_NACELLE_TILT;
 	FCFlightData->f32NacelleTilt_FL = RC_DEFAULT_NACELLE_TILT;
 	FCFlightData->f32NacelleTilt_FR = RC_DEFAULT_NACELLE_TILT;
-	FCFlightData->f32NacelleTilt_R = RC_DEFAULT_NACELLE_TILT;
+	FCFlightData->f32NacelleTilt_RR = RC_DEFAULT_NACELLE_TILT;
 	// Set zero angle values
 	FCFlightData->TILT_SERVOS.f32AllowedPositionDeviation = 20.0f;	// ~2 deg
 	FCFlightData->TILT_SERVOS.FR.f32ServoZero = NACELLE_FR_ZERO;
 	FCFlightData->TILT_SERVOS.FL.f32ServoZero = NACELLE_FL_ZERO;
-	FCFlightData->TILT_SERVOS.R.f32ServoZero = NACELLE_R_ZERO;
+	FCFlightData->TILT_SERVOS.RR.f32ServoZero = NACELLE_R_ZERO;
 	FCFlightData->TILT_SERVOS.FR.ui8Reverse = 1;
 	FCFlightData->TILT_SERVOS.FL.ui8Reverse = 0;
-	FCFlightData->TILT_SERVOS.R.ui8Reverse = 0;
+	FCFlightData->TILT_SERVOS.RR.ui8Reverse = 0;
 
 	RCValues->SCALES.f32ElevatorScale = 0.1;
 	RCValues->SCALES.f32AileronScale = 0.1;
@@ -155,8 +159,8 @@ void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 	RCValues->ch[RC_MOTOR_FL].PWMOUT_Val = 1000;
 	RCValues->ch[RC_MOTOR_FR].PWMOUT = 1000;
 	RCValues->ch[RC_MOTOR_FR].PWMOUT_Val = 1000;
-	RCValues->ch[RC_MOTOR_R].PWMOUT = 1000;
-	RCValues->ch[RC_MOTOR_R].PWMOUT_Val = 1000;
+	RCValues->ch[RC_MOTOR_RR].PWMOUT = 1000;
+	RCValues->ch[RC_MOTOR_RR].PWMOUT_Val = 1000;
 
 
 	// Nacelle tilt to midpoint
@@ -379,7 +383,7 @@ void flight_checkRCInputs(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 }
 
 // Main flight state machine
-void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
+void flight_checkStatesY(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 {
 	//int i = 0;
 	switch(FCFlightData->ui32FlightStateMachine)
@@ -397,23 +401,23 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 					// Set motor PWMs to min
 					RCValues->ch[RC_MOTOR_FL].PWMOUT_Val = 1000;
 					RCValues->ch[RC_MOTOR_FR].PWMOUT_Val = 1000;
-					RCValues->ch[RC_MOTOR_R].PWMOUT_Val = 1000;
+					RCValues->ch[RC_MOTOR_RR].PWMOUT_Val = 1000;
 					// Reverse motor FR
-					FCFlightData->MOTORS.FR.ui8ReverseRotation = 1;
-					FCFlightData->MOTORS.FL.ui8ReverseRotation = 0;
-					FCFlightData->MOTORS.R.ui8ReverseRotation = 1;
+					FCFlightData->MOTORS.FR.ui8ReverseRotation = 0;
+					FCFlightData->MOTORS.FL.ui8ReverseRotation = 1;
+					FCFlightData->MOTORS.RR.ui8ReverseRotation = 0;
 					// Enable motors
 					FCFlightData->MOTORS.FR.ui8Enable = 1;
 					FCFlightData->MOTORS.FL.ui8Enable = 1;
-					FCFlightData->MOTORS.R.ui8Enable = 1;
+					FCFlightData->MOTORS.RR.ui8Enable = 1;
 					// Set to park
 					FCFlightData->MOTORS.FR.ui8Park = 1;
 					FCFlightData->MOTORS.FL.ui8Park = 1;
-					FCFlightData->MOTORS.R.ui8Park = 1;
+					FCFlightData->MOTORS.RR.ui8Park = 1;
 					// Mark measure low PWM time
 					FCFlightData->MOTORS.FR.ui8MeasPWMMin = 1;
 					FCFlightData->MOTORS.FL.ui8MeasPWMMin = 1;
-					FCFlightData->MOTORS.R.ui8MeasPWMMin = 1;
+					FCFlightData->MOTORS.RR.ui8MeasPWMMin = 1;
 					// Next state
 					FCFlightData->ui32FlightInitState = FINIT_MEAS_PWM_MIN;
 					ui16CheckStatesDelay = 50;
@@ -426,19 +430,19 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 					{
 						if(1 == FCFlightData->MOTORS.FL.ui8MeasuringPWMMin)
 						{
-							if(1 == FCFlightData->MOTORS.R.ui8MeasuringPWMMin)
+							if(1 == FCFlightData->MOTORS.RR.ui8MeasuringPWMMin)
 							{
 								if(0 == ui16CheckStatesDelay)
 								{
 									// Mark measure low PWM time
 									FCFlightData->MOTORS.FR.ui8MeasPWMMin = 0;
 									FCFlightData->MOTORS.FL.ui8MeasPWMMin = 0;
-									FCFlightData->MOTORS.R.ui8MeasPWMMin = 0;
+									FCFlightData->MOTORS.RR.ui8MeasPWMMin = 0;
 
 									// Set servo max torque
 									FCFlightData->TILT_SERVOS.FR.ui16RequestedMaxTorque = 6000;
 									FCFlightData->TILT_SERVOS.FL.ui16RequestedMaxTorque = 6000;
-									FCFlightData->TILT_SERVOS.R.ui16RequestedMaxTorque = 6000;
+									FCFlightData->TILT_SERVOS.RR.ui16RequestedMaxTorque = 6000;
 
 									// Next state
 									FCFlightData->ui32FlightInitState = FINIT_WAIT_MEAS_PWMMIN;
@@ -460,15 +464,16 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 					{
 						if(0 == FCFlightData->MOTORS.FL.ui8MeasuringPWMMin)
 						{
-							if(0 == FCFlightData->MOTORS.R.ui8MeasuringPWMMin)
+							if(0 == FCFlightData->MOTORS.RR.ui8MeasuringPWMMin)
 							{
 								FCFlightData->MOTORS.FR.ui8MeasPWMMax = 1;
 								FCFlightData->MOTORS.FL.ui8MeasPWMMax = 1;
-								FCFlightData->MOTORS.R.ui8MeasPWMMax = 1;
+								FCFlightData->MOTORS.RR.ui8MeasPWMMax = 1;
 								// Set motor PWMs to max
 								RCValues->ch[RC_MOTOR_FL].PWMOUT_Val = 2000;
 								RCValues->ch[RC_MOTOR_FR].PWMOUT_Val = 2000;
-								RCValues->ch[RC_MOTOR_R].PWMOUT_Val = 2000;
+								RCValues->ch[RC_MOTOR_RR].PWMOUT_Val = 2000;
+								//RCValues->ch[RC_MOTOR_RL].PWMOUT_Val = 2000;
 								FCFlightData->ui32FlightInitState = FINIT_MEAS_PWM_MAX;
 							}
 						}
@@ -481,13 +486,13 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 					{
 						if(1 == FCFlightData->MOTORS.FL.ui8MeasuringPWMMax)
 						{
-							if(1 == FCFlightData->MOTORS.R.ui8MeasuringPWMMax)
+							if(1 == FCFlightData->MOTORS.RR.ui8MeasuringPWMMax)
 							{
 								if(0 == ui16CheckStatesDelay)
 								{
 									FCFlightData->MOTORS.FR.ui8MeasPWMMax = 0;
 									FCFlightData->MOTORS.FL.ui8MeasPWMMax = 0;
-									FCFlightData->MOTORS.R.ui8MeasPWMMax = 0;
+									FCFlightData->MOTORS.RR.ui8MeasPWMMax = 0;
 									// Next state
 									FCFlightData->ui32FlightInitState = FINIT_WAIT_MEAS_PWMMAX;
 									ui16CheckStatesDelay = 50;
@@ -507,16 +512,16 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 					{
 						if(0 == FCFlightData->MOTORS.FL.ui8MeasuringPWMMax)
 						{
-							if(0 == FCFlightData->MOTORS.R.ui8MeasuringPWMMax)
+							if(0 == FCFlightData->MOTORS.RR.ui8MeasuringPWMMax)
 							{
 								// Set motor PWMs to min
 								RCValues->ch[RC_MOTOR_FL].PWMOUT_Val = 1000;
 								RCValues->ch[RC_MOTOR_FR].PWMOUT_Val = 1000;
-								RCValues->ch[RC_MOTOR_R].PWMOUT_Val = 1000;
+								RCValues->ch[RC_MOTOR_RR].PWMOUT_Val = 1000;
 								// Send command enable servo torque
 								FCFlightData->TILT_SERVOS.FR.ui8Enable = 1;
 								FCFlightData->TILT_SERVOS.FL.ui8Enable = 1;
-								FCFlightData->TILT_SERVOS.R.ui8Enable = 1;
+								FCFlightData->TILT_SERVOS.RR.ui8Enable = 1;
 
 								FCFlightData->ui32FlightInitState = FINIT_WAIT_STORQUE_ON;
 							}
@@ -548,12 +553,12 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 					{
 						if(1 == FCFlightData->MOTORS.FL.ui8ParkPosition)
 						{
-							if(1 == FCFlightData->MOTORS.R.ui8ParkPosition)
+							if(1 == FCFlightData->MOTORS.RR.ui8ParkPosition)
 							{
 								// Set new position
 								FCFlightData->f32NacelleTilt_FR = 0.0f;
 								FCFlightData->f32NacelleTilt_FL = 0.0f;
-								FCFlightData->f32NacelleTilt_R = 0.0f;
+								FCFlightData->f32NacelleTilt_RR = 0.0f;
 								// Wait
 								FCFlightData->ui32FlightInitState = FINIT_WAIT_SPOS_LEVEL;
 							}
@@ -567,12 +572,12 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 					{
 						if((ANGLE_DEV_LEVEL_N < FCFlightData->TILT_SERVOS.FL.f32ServoAngle)&&(ANGLE_DEV_LEVEL_P > FCFlightData->TILT_SERVOS.FL.f32ServoAngle))
 						{
-							if((ANGLE_DEV_LEVEL_N < FCFlightData->TILT_SERVOS.R.f32ServoAngle)&&(ANGLE_DEV_LEVEL_P > FCFlightData->TILT_SERVOS.R.f32ServoAngle))
+							if((ANGLE_DEV_LEVEL_N < FCFlightData->TILT_SERVOS.RR.f32ServoAngle)&&(ANGLE_DEV_LEVEL_P > FCFlightData->TILT_SERVOS.RR.f32ServoAngle))
 							{
 								// Set new position
 								FCFlightData->f32NacelleTilt_FR = 94.0f;
 								FCFlightData->f32NacelleTilt_FL = 94.0f;
-								FCFlightData->f32NacelleTilt_R = 97.0f;
+								FCFlightData->f32NacelleTilt_RR = 97.0f;
 								// Wait
 								FCFlightData->ui32FlightInitState = FINIT_WAIT_SPOS_VTOL;
 							}
@@ -586,12 +591,12 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 					{
 						if((ANGLE_DEV_VTOL_N < FCFlightData->TILT_SERVOS.FL.f32ServoAngle)&&(ANGLE_DEV_VTOL_P > FCFlightData->TILT_SERVOS.FL.f32ServoAngle))
 						{
-							if((ANGLE_DEV_VTOL_N < FCFlightData->TILT_SERVOS.R.f32ServoAngle)&&(ANGLE_DEV_VTOL_P > FCFlightData->TILT_SERVOS.R.f32ServoAngle))
+							if((ANGLE_DEV_VTOL_N < FCFlightData->TILT_SERVOS.RR.f32ServoAngle)&&(ANGLE_DEV_VTOL_P > FCFlightData->TILT_SERVOS.RR.f32ServoAngle))
 							{
 								// Set servo max torque
 								FCFlightData->TILT_SERVOS.FR.ui16RequestedMaxTorque = 2000;
 								FCFlightData->TILT_SERVOS.FL.ui16RequestedMaxTorque = 2000;
-								FCFlightData->TILT_SERVOS.R.ui16RequestedMaxTorque = 2000;
+								FCFlightData->TILT_SERVOS.RR.ui16RequestedMaxTorque = 2000;
 								FCFlightData->ui32FlightInitState = FINIT_WAIT_IMAX_SET;
 							}
 						}
@@ -604,7 +609,7 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 					{
 						if(FCFlightData->TILT_SERVOS.FL.ui16MaxTorque == FCFlightData->TILT_SERVOS.FL.ui16RequestedMaxTorque)
 						{
-							if(FCFlightData->TILT_SERVOS.R.ui16MaxTorque == FCFlightData->TILT_SERVOS.R.ui16RequestedMaxTorque)
+							if(FCFlightData->TILT_SERVOS.RR.ui16MaxTorque == FCFlightData->TILT_SERVOS.RR.ui16RequestedMaxTorque)
 							{
 								// Wait throttle null
 								FCFlightData->ui32FlightInitState = FINIT_WAIT_THROTTLE_NULL;
@@ -612,7 +617,7 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 								// Set servos to holding position
 								FCFlightData->f32NacelleTilt_FR = 95.0f;
 								FCFlightData->f32NacelleTilt_FL = 100.0f;
-								FCFlightData->f32NacelleTilt_R = 100.0f;
+								FCFlightData->f32NacelleTilt_RR = 100.0f;
 							}
 						}
 					}
@@ -627,10 +632,10 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 						// Disable PWM inputs for testinf
 						FCFlightData->MOTORS.FR.ui8Park = 0;
 						FCFlightData->MOTORS.FL.ui8Park = 0;
-						FCFlightData->MOTORS.R.ui8Park = 0;
+						FCFlightData->MOTORS.RR.ui8Park = 0;
 						FCFlightData->MOTORS.FR.ui8UsePWM = 1;
 						FCFlightData->MOTORS.FL.ui8UsePWM = 1;
-						FCFlightData->MOTORS.R.ui8UsePWM = 1;
+						FCFlightData->MOTORS.RR.ui8UsePWM = 1;
 
 						// End init, go to hover stabilize
 						FCFlightData->ui32FlightInitState = FINIT_IDLE;
@@ -699,7 +704,7 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 							// Tilt motors up
 							FCFlightData->f32NacelleTilt_FR = 90.0f;
 							FCFlightData->f32NacelleTilt_FL = 90.0f;
-							FCFlightData->f32NacelleTilt_R = 90.0f;
+							FCFlightData->f32NacelleTilt_RR = 90.0f;
 							FCFlightData->ui32FlightTransitionState = FLIGHT_TILT_H;
 						}
 						else if(RC_Flags.bits.HOVER)
@@ -721,7 +726,7 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 					{
 						if((ANGLE_DEV_VTOL_N < FCFlightData->TILT_SERVOS.FL.f32ServoAngle)&&(ANGLE_DEV_VTOL_P > FCFlightData->TILT_SERVOS.FL.f32ServoAngle))
 						{
-							if((ANGLE_DEV_VTOL_N < FCFlightData->TILT_SERVOS.R.f32ServoAngle)&&(ANGLE_DEV_VTOL_P > FCFlightData->TILT_SERVOS.R.f32ServoAngle))
+							if((ANGLE_DEV_VTOL_N < FCFlightData->TILT_SERVOS.RR.f32ServoAngle)&&(ANGLE_DEV_VTOL_P > FCFlightData->TILT_SERVOS.RR.f32ServoAngle))
 							{
 								// Go to hover mode
 								RC_Flags.bits.HOVER = 1;
@@ -754,11 +759,11 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 			// Motors to zero
 			RCValues->ch[RC_MOTOR_FL].PWMOUT_Val = 1000;
 			RCValues->ch[RC_MOTOR_FR].PWMOUT_Val = 1000;
-			RCValues->ch[RC_MOTOR_R].PWMOUT_Val = 1000;
+			RCValues->ch[RC_MOTOR_RR].PWMOUT_Val = 1000;
 			// Motor req speed to zero
 			FCFlightData->MOTORS.FR.i16SetRPM = 0;
 			FCFlightData->MOTORS.FL.i16SetRPM = 0;
-			FCFlightData->MOTORS.R.i16SetRPM = 0;
+			FCFlightData->MOTORS.RR.i16SetRPM = 0;
 			// Nacelle tilt to midpoint
 			if(RC_OUT_YAW_MIDPOINT > RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val)
 			{
@@ -774,7 +779,7 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 				{
 					FCFlightData->MOTORS.FR.i16SetRPM = 0;
 					FCFlightData->MOTORS.FL.i16SetRPM = 0;
-					FCFlightData->MOTORS.R.i16SetRPM = 0;
+					FCFlightData->MOTORS.RR.i16SetRPM = 0;
 					FCFlightData->ui32FlightDeInitStates = FDEINIT_WAIT_MOTOR_STOP;
 					break;
 				}
@@ -784,25 +789,25 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 					{
 						if(100 > FCFlightData->MOTORS.FL.i16CurrentRPM)
 						{
-							if(100 > FCFlightData->MOTORS.R.i16CurrentRPM)
+							if(100 > FCFlightData->MOTORS.RR.i16CurrentRPM)
 							{
 								// Motors stopped
 								// Motor req speed to zero
 								FCFlightData->MOTORS.FR.i16SetRPM = 0;
 								FCFlightData->MOTORS.FL.i16SetRPM = 0;
-								FCFlightData->MOTORS.R.i16SetRPM = 0;
+								FCFlightData->MOTORS.RR.i16SetRPM = 0;
 								// Disable PWM control
 								FCFlightData->MOTORS.FR.ui8UsePWM = 0;
 								FCFlightData->MOTORS.FL.ui8UsePWM = 0;
-								FCFlightData->MOTORS.R.ui8UsePWM = 0;
+								FCFlightData->MOTORS.RR.ui8UsePWM = 0;
 								// Go to park
 								FCFlightData->MOTORS.FR.ui8Park = 1;
 								FCFlightData->MOTORS.FL.ui8Park = 1;
-								FCFlightData->MOTORS.R.ui8Park = 1;
+								FCFlightData->MOTORS.RR.ui8Park = 1;
 								// Enable motor for park
 								FCFlightData->MOTORS.FR.ui8Enable = 1;
 								FCFlightData->MOTORS.FL.ui8Enable = 1;
-								FCFlightData->MOTORS.R.ui8Enable = 1;
+								FCFlightData->MOTORS.RR.ui8Enable = 1;
 
 								FCFlightData->ui32FlightDeInitStates = FDEINIT_WAIT_MOTOR_PARK;
 							}
@@ -816,7 +821,7 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 					{
 						if(1 == FCFlightData->MOTORS.FL.ui8ParkPosition)
 						{
-							if(1 == FCFlightData->MOTORS.R.ui8ParkPosition)
+							if(1 == FCFlightData->MOTORS.RR.ui8ParkPosition)
 							{
 								// Wait PWM disabled
 								FCFlightData->ui32FlightDeInitStates = FDEINIT_WAIT_PWM_DISABLED;
@@ -831,16 +836,16 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 					{
 						if(0 == FCFlightData->MOTORS.FL.ui8UsingPWM)
 						{
-							if(0 == FCFlightData->MOTORS.R.ui8UsingPWM)
+							if(0 == FCFlightData->MOTORS.RR.ui8UsingPWM)
 							{
 								// Disable motors
 								FCFlightData->MOTORS.FR.ui8Enable = 0;
 								FCFlightData->MOTORS.FL.ui8Enable = 0;
-								FCFlightData->MOTORS.R.ui8Enable = 0;
+								FCFlightData->MOTORS.RR.ui8Enable = 0;
 								// Disable park
 								FCFlightData->MOTORS.FR.ui8Park = 0;
 								FCFlightData->MOTORS.FL.ui8Park = 0;
-								FCFlightData->MOTORS.R.ui8Park = 0;
+								FCFlightData->MOTORS.RR.ui8Park = 0;
 
 								FCFlightData->ui32FlightDeInitStates = FDEINIT_WAIT_MOTORS_DISABLED;
 							}
@@ -854,17 +859,17 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 					{
 						if(0 == FCFlightData->MOTORS.FL.ui8Enabled)
 						{
-							if(0 == FCFlightData->MOTORS.R.ui8Enabled)
+							if(0 == FCFlightData->MOTORS.RR.ui8Enabled)
 							{
 								// Tilt to plane
 								FCFlightData->f32NacelleTilt_FR = 0.0f;
 								FCFlightData->f32NacelleTilt_FL = 0.0f;
-								FCFlightData->f32NacelleTilt_R = 0.0f;
+								FCFlightData->f32NacelleTilt_RR = 0.0f;
 
 								// Set servo max torque
 								FCFlightData->TILT_SERVOS.FR.ui16RequestedMaxTorque = 6000;
 								FCFlightData->TILT_SERVOS.FL.ui16RequestedMaxTorque = 6000;
-								FCFlightData->TILT_SERVOS.R.ui16RequestedMaxTorque = 6000;
+								FCFlightData->TILT_SERVOS.RR.ui16RequestedMaxTorque = 6000;
 
 								FCFlightData->ui32FlightDeInitStates = FDEINIT_WAIT_TILT_PLANE;
 							}
@@ -878,11 +883,362 @@ void flight_checkStates(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 					{
 						if((ANGLE_DEV_LEVEL_N < FCFlightData->TILT_SERVOS.FL.f32ServoAngle)&&(ANGLE_DEV_LEVEL_P > FCFlightData->TILT_SERVOS.FL.f32ServoAngle))
 						{
-							if((ANGLE_DEV_LEVEL_N < FCFlightData->TILT_SERVOS.R.f32ServoAngle)&&(ANGLE_DEV_LEVEL_P > FCFlightData->TILT_SERVOS.R.f32ServoAngle))
+							if((ANGLE_DEV_LEVEL_N < FCFlightData->TILT_SERVOS.RR.f32ServoAngle)&&(ANGLE_DEV_LEVEL_P > FCFlightData->TILT_SERVOS.RR.f32ServoAngle))
 							{
 								FCFlightData->TILT_SERVOS.FR.ui8Enable = 0;
 								FCFlightData->TILT_SERVOS.FL.ui8Enable = 0;
-								FCFlightData->TILT_SERVOS.R.ui8Enable = 0;
+								FCFlightData->TILT_SERVOS.RR.ui8Enable = 0;
+								// Wait
+								FCFlightData->ui32FlightDeInitStates = FDEINIT_WAIT_SERVO_DISABLED;
+							}
+						}
+					}
+
+					break;
+				}
+				case FDEINIT_WAIT_SERVO_DISABLED:
+				{
+					if(0 == FCFlightData->TILT_SERVOS.FR.ui8Enabled)
+					{
+						if(0 == FCFlightData->TILT_SERVOS.FR.ui8Enabled)
+						{
+							if(0 == FCFlightData->TILT_SERVOS.FR.ui8Enabled)
+							{
+								FCFlightData->ui32FlightStateMachine = FLIGHT_IDLE;
+								// Go to idle
+								FCFlightData->ui32FlightDeInitStates = FDEINIT_IDLE;
+							}
+						}
+					}
+					break;
+				}
+				default:
+				{
+					FCFlightData->ui32FlightDeInitStates = FDEINIT_IDLE;
+					break;
+				}
+			}
+			break;
+		}
+		default:
+		{
+			FCFlightData->ui32FlightStateMachine = FLIGHT_IDLE;
+			FCFlightData->ui32FlightInitState = FINIT_IDLE;
+			FCFlightData->ui32FlightDeInitStates = FDEINIT_IDLE;
+			break;
+		}
+	}
+}
+
+// Main flight state machine
+void flight_checkStatesQ(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
+{
+	//int i = 0;
+	switch(FCFlightData->ui32FlightStateMachine)
+	{
+		case FLIGHT_IDLE:
+		{
+			break;
+		}
+		case FLIGHT_INIT:
+		{
+			switch(FCFlightData->ui32FlightInitState)
+			{
+				case FINIT_IDLE:
+				{
+					// Set RPM
+					FCFlightData->MOTORS.FR.i16ReqRPM = 2000;
+					FCFlightData->MOTORS.FL.i16ReqRPM = 2000;
+					FCFlightData->MOTORS.RR.i16ReqRPM = 2000;
+					FCFlightData->MOTORS.RL.i16ReqRPM = 2000;
+
+					// Next state
+					FCFlightData->ui32FlightInitState = FINIT_WAIT_THROTTLE_NULL;
+					ui16CheckStatesDelay = 50;
+					break;
+				}
+				case FINIT_WAIT_RPM_SET:
+				{
+					// Enable motors
+					FCFlightData->MOTORS.FR.ui8Enable = 1;
+					FCFlightData->MOTORS.FL.ui8Enable = 1;
+					FCFlightData->MOTORS.RR.ui8Enable = 1;
+					FCFlightData->MOTORS.RL.ui8Enable = 1;
+
+					// Next state
+					FCFlightData->ui32FlightInitState = FINIT_WAIT_THROTTLE_NULL;
+					ui16CheckStatesDelay = 50;
+
+					break;
+				}
+
+
+				case FINIT_WAIT_THROTTLE_NULL:
+				{
+					if(0.05f > RCValues->f32ThrottleValue)
+					{
+						// Go out of park and enable PWM in
+						// Disable PWM inputs for testinf
+						FCFlightData->MOTORS.FR.ui8Park = 0;
+						FCFlightData->MOTORS.FL.ui8Park = 0;
+						FCFlightData->MOTORS.RR.ui8Park = 0;
+						FCFlightData->MOTORS.RL.ui8Park = 0;
+						FCFlightData->MOTORS.FR.ui8UsePWM = 0;
+						FCFlightData->MOTORS.FL.ui8UsePWM = 0;
+						FCFlightData->MOTORS.RR.ui8UsePWM = 0;
+						FCFlightData->MOTORS.RL.ui8UsePWM = 0;
+
+						// End init, go to hover stabilize
+						FCFlightData->ui32FlightInitState = FINIT_IDLE;
+						FCFlightData->ui32FlightStateMachine = FLIGHT_STABILIZE_HOVER;
+						RC_Flags.bits.HOVER = 1;
+						RC_Flags.bits.PLANE = 0;
+						RC_Flags.bits.TRANSITION = 0;
+					}
+					break;
+				}
+				default:
+				{
+					FCFlightData->ui32FlightInitState = FINIT_IDLE;
+					break;
+				}
+			}
+			break;
+		}
+		case FLIGHT_STABILIZE_HOVER:
+		{
+			// Check that we have throttle
+			// -50
+			if(-50.0f > RCValues->ch[RC_THROTTLE].PWMIN_Zero)
+			{
+				// Run stabilising algorithm
+				flight_stabilize(FCFlightData);
+			}
+			else
+			{
+				// Else reset integrators in PID control
+				FCFlightData->PIDRoll.im = 0.0f;
+				FCFlightData->PIDPitch.im = 0.0f;
+				FCFlightData->PIDYaw.im = 0.0f;
+				FCFlightData->PIDAltitude.im = 0.0f;
+				// Reset yaw and altitude
+				// Store current altitude as zero altitude
+				FCFlightData->ORIENTATION.f32ZeroAltitude = FCFlightData->ORIENTATION.f32Altitude;
+				// Store current heading as zero heading
+				FCFlightData->ORIENTATION_REQUIRED.f32Yaw = FCFlightData->ORIENTATION.f32Yaw;
+			}
+
+			break;
+		}
+		case FLIGHT_STABILIZE_PLANE:
+		{
+			// Run stabilising algorithm
+			flight_stabilize(FCFlightData);
+			break;
+		}
+		case FLIGHT_STABILIZE_TRANSITION:
+		{
+			// Run stabilising algorithm
+			flight_stabilize(FCFlightData);
+
+			// Tilt state machine
+			switch(FCFlightData->ui32FlightTransitionState)
+			{
+				case FLIGHT_TILT_START:
+				{
+					// Still in transition?
+					if(RC_Flags.bits.TRANSITION)
+					{
+						// Flight mode?
+						if(RC_Flags.bits.PLANE)
+						{
+							// Tilt motors up
+							FCFlightData->f32NacelleTilt_FR = 90.0f;
+							FCFlightData->f32NacelleTilt_FL = 90.0f;
+							FCFlightData->f32NacelleTilt_RR = 90.0f;
+							FCFlightData->ui32FlightTransitionState = FLIGHT_TILT_H;
+						}
+						else if(RC_Flags.bits.HOVER)
+						{
+
+						}
+					}
+					break;
+				}
+				case FLIGHT_TILT_P:
+				{
+
+					break;
+				}
+				case FLIGHT_TILT_H:
+				{
+					// Wait for tilt angle to be ~90 deg
+					if((ANGLE_DEV_VTOL_N < FCFlightData->TILT_SERVOS.FR.f32ServoAngle)&&(ANGLE_DEV_VTOL_P > FCFlightData->TILT_SERVOS.FR.f32ServoAngle))
+					{
+						if((ANGLE_DEV_VTOL_N < FCFlightData->TILT_SERVOS.FL.f32ServoAngle)&&(ANGLE_DEV_VTOL_P > FCFlightData->TILT_SERVOS.FL.f32ServoAngle))
+						{
+							if((ANGLE_DEV_VTOL_N < FCFlightData->TILT_SERVOS.RR.f32ServoAngle)&&(ANGLE_DEV_VTOL_P > FCFlightData->TILT_SERVOS.RR.f32ServoAngle))
+							{
+								// Go to hover mode
+								RC_Flags.bits.HOVER = 1;
+								RC_Flags.bits.PLANE = 0;
+								RC_Flags.bits.TRANSITION = 0;
+								FCFlightData->ui32FlightTransitionState = FLIGHT_TILT_START;
+							}
+						}
+					}
+					break;
+				}
+				default:
+				{
+					FCFlightData->ui32FlightTransitionState = FLIGHT_TILT_START;
+				}
+			}
+			break;
+		}
+		case FLIGHT_DISARM:
+		{
+			// Go out of modes
+			RC_Flags.bits.HOVER = 0;
+			RC_Flags.bits.PLANE = 0;
+
+			// Gear down
+			//RCValues->ch[RC_GEAR].PWMOUT_Val = 1000;
+			// Ailerons to midpoint
+			RCValues->ch[RC_AILERON_L].PWMOUT_Val = 1500;
+			RCValues->ch[RC_AILERON_R].PWMOUT_Val = 1500;
+			// Motors to zero
+			RCValues->ch[RC_MOTOR_FL].PWMOUT_Val = 1000;
+			RCValues->ch[RC_MOTOR_FR].PWMOUT_Val = 1000;
+			RCValues->ch[RC_MOTOR_RR].PWMOUT_Val = 1000;
+			// Motor req speed to zero
+			FCFlightData->MOTORS.FR.i16SetRPM = 0;
+			FCFlightData->MOTORS.FL.i16SetRPM = 0;
+			FCFlightData->MOTORS.RR.i16SetRPM = 0;
+			// Nacelle tilt to midpoint
+			if(RC_OUT_YAW_MIDPOINT > RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val)
+			{
+				RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val += 1.0f;
+			}
+			else if(RC_OUT_YAW_MIDPOINT < RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val)
+			{
+				RCValues->ch[RC_MOTOR_R_TILT].PWMOUT_Val -= 1.0f;
+			}
+			switch(FCFlightData->ui32FlightDeInitStates)
+			{
+				case FDEINIT_IDLE:
+				{
+					FCFlightData->MOTORS.FR.i16SetRPM = 0;
+					FCFlightData->MOTORS.FL.i16SetRPM = 0;
+					FCFlightData->MOTORS.RR.i16SetRPM = 0;
+					FCFlightData->ui32FlightDeInitStates = FDEINIT_WAIT_MOTOR_STOP;
+					break;
+				}
+				case FDEINIT_WAIT_MOTOR_STOP:
+				{
+					if(100 > FCFlightData->MOTORS.FR.i16CurrentRPM)
+					{
+						if(100 > FCFlightData->MOTORS.FL.i16CurrentRPM)
+						{
+							if(100 > FCFlightData->MOTORS.RR.i16CurrentRPM)
+							{
+								// Motors stopped
+								// Motor req speed to zero
+								FCFlightData->MOTORS.FR.i16SetRPM = 0;
+								FCFlightData->MOTORS.FL.i16SetRPM = 0;
+								FCFlightData->MOTORS.RR.i16SetRPM = 0;
+								// Disable PWM control
+								FCFlightData->MOTORS.FR.ui8UsePWM = 0;
+								FCFlightData->MOTORS.FL.ui8UsePWM = 0;
+								FCFlightData->MOTORS.RR.ui8UsePWM = 0;
+								// Go to park
+								FCFlightData->MOTORS.FR.ui8Park = 1;
+								FCFlightData->MOTORS.FL.ui8Park = 1;
+								FCFlightData->MOTORS.RR.ui8Park = 1;
+								// Enable motor for park
+								FCFlightData->MOTORS.FR.ui8Enable = 1;
+								FCFlightData->MOTORS.FL.ui8Enable = 1;
+								FCFlightData->MOTORS.RR.ui8Enable = 1;
+
+								FCFlightData->ui32FlightDeInitStates = FDEINIT_WAIT_MOTOR_PARK;
+							}
+						}
+					}
+					break;
+				}
+				case FDEINIT_WAIT_MOTOR_PARK:
+				{
+					if(1 == FCFlightData->MOTORS.FR.ui8ParkPosition)
+					{
+						if(1 == FCFlightData->MOTORS.FL.ui8ParkPosition)
+						{
+							if(1 == FCFlightData->MOTORS.RR.ui8ParkPosition)
+							{
+								// Wait PWM disabled
+								FCFlightData->ui32FlightDeInitStates = FDEINIT_WAIT_PWM_DISABLED;
+							}
+						}
+					}
+					break;
+				}
+				case FDEINIT_WAIT_PWM_DISABLED:
+				{
+					if(0 == FCFlightData->MOTORS.FR.ui8UsingPWM)
+					{
+						if(0 == FCFlightData->MOTORS.FL.ui8UsingPWM)
+						{
+							if(0 == FCFlightData->MOTORS.RR.ui8UsingPWM)
+							{
+								// Disable motors
+								FCFlightData->MOTORS.FR.ui8Enable = 0;
+								FCFlightData->MOTORS.FL.ui8Enable = 0;
+								FCFlightData->MOTORS.RR.ui8Enable = 0;
+								// Disable park
+								FCFlightData->MOTORS.FR.ui8Park = 0;
+								FCFlightData->MOTORS.FL.ui8Park = 0;
+								FCFlightData->MOTORS.RR.ui8Park = 0;
+
+								FCFlightData->ui32FlightDeInitStates = FDEINIT_WAIT_MOTORS_DISABLED;
+							}
+						}
+					}
+					break;
+				}
+				case FDEINIT_WAIT_MOTORS_DISABLED:
+				{
+					if(0 == FCFlightData->MOTORS.FR.ui8Enabled)
+					{
+						if(0 == FCFlightData->MOTORS.FL.ui8Enabled)
+						{
+							if(0 == FCFlightData->MOTORS.RR.ui8Enabled)
+							{
+								// Tilt to plane
+								FCFlightData->f32NacelleTilt_FR = 0.0f;
+								FCFlightData->f32NacelleTilt_FL = 0.0f;
+								FCFlightData->f32NacelleTilt_RR = 0.0f;
+
+								// Set servo max torque
+								FCFlightData->TILT_SERVOS.FR.ui16RequestedMaxTorque = 6000;
+								FCFlightData->TILT_SERVOS.FL.ui16RequestedMaxTorque = 6000;
+								FCFlightData->TILT_SERVOS.RR.ui16RequestedMaxTorque = 6000;
+
+								FCFlightData->ui32FlightDeInitStates = FDEINIT_WAIT_TILT_PLANE;
+							}
+						}
+					}
+					break;
+				}
+				case FDEINIT_WAIT_TILT_PLANE:
+				{
+					if((ANGLE_DEV_LEVEL_N < FCFlightData->TILT_SERVOS.FR.f32ServoAngle)&&(ANGLE_DEV_LEVEL_P > FCFlightData->TILT_SERVOS.FR.f32ServoAngle))
+					{
+						if((ANGLE_DEV_LEVEL_N < FCFlightData->TILT_SERVOS.FL.f32ServoAngle)&&(ANGLE_DEV_LEVEL_P > FCFlightData->TILT_SERVOS.FL.f32ServoAngle))
+						{
+							if((ANGLE_DEV_LEVEL_N < FCFlightData->TILT_SERVOS.RR.f32ServoAngle)&&(ANGLE_DEV_LEVEL_P > FCFlightData->TILT_SERVOS.RR.f32ServoAngle))
+							{
+								FCFlightData->TILT_SERVOS.FR.ui8Enable = 0;
+								FCFlightData->TILT_SERVOS.FL.ui8Enable = 0;
+								FCFlightData->TILT_SERVOS.RR.ui8Enable = 0;
 								// Wait
 								FCFlightData->ui32FlightDeInitStates = FDEINIT_WAIT_SERVO_DISABLED;
 							}
@@ -1050,7 +1406,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		// Check min PWM
 		if(MOTOR_MIN_PWMOUT > f32Temp)f32Temp = MOTOR_MIN_PWMOUT;
 		// Store
-		RCValues->ch[RC_MOTOR_R].PWMOUT_Val = f32Temp;
+		RCValues->ch[RC_MOTOR_RR].PWMOUT_Val = f32Temp;
 
 /*
 		// Distribute power from RC command
@@ -1173,15 +1529,15 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		FCFlightData->TILT_SERVOS.FL.ui16RequestedPosition = 4096 - (uint16_t)f32Temp;
 	}
 	// Servo R position*****************
-	f32Temp = FCFlightData->TILT_SERVOS.R.f32ServoZero + FCFlightData->f32NacelleTilt_R;
+	f32Temp = FCFlightData->TILT_SERVOS.RR.f32ServoZero + FCFlightData->f32NacelleTilt_RR;
 	f32Temp *= 11.37777777777777;
-	if(0 == FCFlightData->TILT_SERVOS.R.ui8Reverse)
+	if(0 == FCFlightData->TILT_SERVOS.RR.ui8Reverse)
 	{
-		FCFlightData->TILT_SERVOS.R.ui16RequestedPosition = (uint16_t)f32Temp;
+		FCFlightData->TILT_SERVOS.RR.ui16RequestedPosition = (uint16_t)f32Temp;
 	}
 	else
 	{
-		FCFlightData->TILT_SERVOS.R.ui16RequestedPosition = 4096 - (uint16_t)f32Temp;
+		FCFlightData->TILT_SERVOS.RR.ui16RequestedPosition = 4096 - (uint16_t)f32Temp;
 	}
 	//***********************************
 

@@ -28,14 +28,6 @@
 
 #include "freemaster.h"
 
-#include "RS485/RS485comm.h"
-
-#include "uart_comm.h"
-
-
-
-
-
 #include "kalman.h"
 
 #include "math/myMath.h"

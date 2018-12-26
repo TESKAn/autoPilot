@@ -1498,3 +1498,17 @@ void System_Config(void)
 	init_swin();
 }
 
+// Initialize comm buffer structure
+void COMM_Init()
+{
+	COMMData.IDs.ui8MotorFR = CAN_MOTOR_FR_ID;
+	COMMData.IDs.ui8MotorFL = CAN_MOTOR_FL_ID;
+	COMMData.IDs.ui8MotorRR = CAN_MOTOR_RR_ID;
+	COMMData.IDs.ui8MotorRL = CAN_MOTOR_RL_ID;
+	COMMData.IDs.ui8MotorFRRL = CAN_MOTOR_FR_RL_ID;
+	COMMData.IDs.ui8MotorFLRR = CAN_MOTOR_FL_RR_ID;
+	COMMData.IDs.ui8MotorAll = CAN_MOTOR_ALL_ID;
+
+
+
+}

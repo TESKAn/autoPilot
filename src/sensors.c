@@ -289,7 +289,7 @@ void copySensorData(void)
 			flight_decideAction(&FCFlightData, &RCData);
 		}
 		// Check flight states
-		flight_checkStates(&FCFlightData, &RCData);
+		flight_checkStatesQ(&FCFlightData, &RCData);
 		// Get new servo values
 		flight_decodeServos(&FCFlightData, &RCData);
 		// Refresh PWM outputs

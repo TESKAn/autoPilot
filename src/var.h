@@ -80,15 +80,15 @@ typedef union
 	{
 		struct
 		{
-			UInt8 ui8[2];
+			int8_t ui8[2];
 		}bytes;
 		struct
 		{
-			Int8 i8[2];
+			int8_t i8[2];
 		}ints;
 		//UWord16 uw16;
-		UInt16 ui16;
-		Int16 i16;
+		uint16_t ui16;
+		int16_t i16;
 		//Frac16 f16;
 		//Word16 w16;
 	};
@@ -96,9 +96,89 @@ typedef union
 
 typedef union
 {
-    UInt32 u;
+    uint32_t u;
     float f;
 }__attribute__((aligned(4),packed))  FP32;
+
+// Structure that holds all relevant data for motor
+typedef struct tagCOMMMOTOR
+{
+	uint8_t errStatus;
+	uint8_t ui8FreshData;
+	union
+	{
+		uint8_t ui8REGSData[64];				// Main data structure
+		struct
+		{
+			// Some params
+			// Errors
+			uint16_t ui16Errors;			// 0
+			uint16_t ui16ModelNumber;		// 2
+			uint8_t ui8FirmwareVersion;	// 4
+			uint8_t ui8ID;				// 5
+			uint8_t ui8BaudRate;			// 6
+			uint8_t ui8Empty;				// 7
+
+
+			// Motor state - idle, run, error
+			uint16_t ui16State;			// 8
+
+			// Status of the motor
+			int16_t i16UIn;				// 10
+			int16_t i16IIn;				// 12
+			int16_t i16PIn;				// 14
+			int16_t i16RPM;				// 16
+			int16_t i16Position;			// 18
+			uint8_t ui8PresentTemperature;	//19
+			// Future expansion
+			uint8_t ui8Empty1[11];			// 32 bytes total
+
+			// Motor control
+			// Arm
+			uint8_t ui8Armed;				// 32
+			// Park
+			uint8_t ui8Park;				// 33
+			// Reverse rotation
+			uint8_t ui8ReverseRotation;	// 34
+			uint8_t uiEmpty2;
+			// Park position
+			int16_t i16ParkPosition;		// 36
+
+			int16_t i16SetRPM;			// 38
+			int16_t i16MaxRPM;			// 40
+			int16_t i16MinRPM;			// 42
+
+			// PWM input
+			uint8_t ui8MeasurePWMMin;		// 44
+			uint8_t ui8MeasurePWMMax;		// 45
+			uint8_t ui8UsePWMIN;			// 46
+			uint8_t uiEmpty3;				// 47
+			int16_t i16PWMMin;			// 48
+			int16_t i16PWMMax;			// 50
+			int16_t i16ZeroSpeedPWM;		// 52
+			int16_t i16CurrentPWM;		// 54	//55 bytes total
+
+			uint8_t uiEmpty4[8];					// 64 bytes total
+
+		}REGS;
+	};
+
+}__attribute__((aligned(4),packed)) COMMMOTOR;
+
+typedef struct tagCOMMSTRUCT
+{
+	// IDs
+	struct
+	{
+		uint8_t ui8MotorFR;
+		uint8_t ui8MotorFL;
+		uint8_t ui8MotorRR;
+		uint8_t ui8MotorRL;
+		uint8_t ui8MotorFRRL;
+		uint8_t ui8MotorFLRR;
+		uint8_t ui8MotorAll;
+	}IDs;
+}__attribute__((aligned(4),packed)) COMMSTRUCT;
 
 // Timing variables
 extern uint32_t ui32StartTime;
@@ -120,8 +200,8 @@ extern uint8_t usart3_buf[128];
 extern RING_BUFFER RB_USART2;
 extern uint8_t usart2_buf[128];
 
-// RS485 command structure
-extern RS485COMMAND RS485ExecuteCommand;
+// Communication data
+extern COMMSTRUCT COMMData;
 
 extern FUSION_CORE fusionData;
 

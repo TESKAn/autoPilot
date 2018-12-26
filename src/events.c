@@ -543,7 +543,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		UART_Timeout();
 #endif
 		// RS485 timing
-		RS485_Timing();
+		//RS485_Timing();
 
 		// Check RC inputs for timeouts
 		CheckRCInputTimeouts();
@@ -615,14 +615,14 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 					fusionData.deltaTime = systemTime - fusionData.dataTime;
 					fusionData.dataTime = systemTime;
 					// Update RS485
-					Refresh485();
+					//Refresh485();
 				}
 			}
 		}
 
 
 		// Call RS485 states
-		RS485_States_Master();
+		//RS485_States_Master();
 
 		// LED counter
 		LED_ToggleCount++;
