@@ -135,13 +135,15 @@ int main(void)
 	// Mount SD card
     while (1)
     {
-
-    	// Process RS485
-    	/*
-    	if(0 != RB_USART3.count)
+    	// Check CAN RX interrupts
+    	if(!(CAN1->IER & CAN_IT_FMP0))
     	{
-    		//RS485_ReceiveMessage(RB_pop(&RB_USART3));
-    	}*/
+    		CAN_ITConfig(CAN1, CAN_IT_FMP0, ENABLE);
+    	}
+    	if(!(CAN1->IER & CAN_IT_FMP1))
+    	{
+    		CAN_ITConfig(CAN1, CAN_IT_FMP1, ENABLE);
+    	}
 
 #ifndef USE_FREEMASTER
     	// Process serial comm
@@ -348,13 +350,13 @@ int main(void)
 			}
 			case 20:
 			{
-				CAN_SendRPM(1234, 4321, 0);
+				CAN_SendRPM(2000, 2000, 0);
 				mainLoopState = 0;
 				break;
 			}
 			case 21:
 			{
-				CAN_SendRPM(1234, 4321, 1);
+				CAN_SendRPM(2000, 2000, 1);
 				mainLoopState = 0;
 				break;
 			}
@@ -364,7 +366,24 @@ int main(void)
 				mainLoopState = 0;
 				break;
 			}
-
+			case 23:
+			{
+				init_CAN();
+				mainLoopState = 0;
+				break;
+			}
+			case 24:
+			{
+				CAN_SendENABLE(1, CAN_MOTOR_ALL_ID);
+				mainLoopState = 0;
+				break;
+			}
+			case 25:
+			{
+				CAN_SendENABLE(0, CAN_MOTOR_ALL_ID);
+				mainLoopState = 0;
+				break;
+			}
 			default:
 			{
 				mainLoopState = 0;

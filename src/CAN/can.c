@@ -156,6 +156,26 @@ int16_t CAN_SendRPM(uint16_t frontRPM, uint16_t rearRPM, uint8_t IDs)
 	return 0;
 }
 
+int16_t CAN_SendENABLE(uint8_t ui8Enable, uint8_t IDs)
+{
+	CONVERTNUM cnvrt_number;
+	CanTxMsg msg;
+
+	// Generate message ID
+	msg.ExtId = CAN_GenerateID(CAN_PRIO_ENABLE, CAN_MID_ENABLE);
+
+	// RPM 0
+	msg.Data[0] = ui8Enable;
+	msg.Data[1] = IDs;
+	msg.Data[2] = 0xc0;
+	msg.DLC = 3;
+	msg.IDE = CAN_Id_Extended;
+	msg.RTR = CAN_RTR_Data;
+
+	SendCANMessage(&msg);
+	return 0;
+}
+
 int16_t CAN_SendOrientation()
 {
 	CONVERTNUM cnvrt_number;
@@ -270,16 +290,17 @@ int16_t SendCANMessage(CanTxMsg *msg)
 void ProcessCANMessage(CanRxMsg *msg)
 {
 	FLIGHT_MOTOR* FMotorData;
-	UAVCANID UAVID;
+
 	CONVERTNUM cnvrtnum;
 
-	UAVID.ui32ID = msg->ExtId;
+	uint32_t ui32MID = (msg->ExtId >> 8) & 0xffff;
+	uint32_t ui32NID = msg->ExtId & 0x7f;
 
-	switch(UAVID.FIELDS.MID)
+	switch(ui32MID)
 	{
 		case CAN_MID_RPMINFO:
 		{
-			switch(UAVID.FIELDS.NODEID)
+			switch(ui32NID)
 			{
 				case CAN_MOTOR_FR_ID:
 				{

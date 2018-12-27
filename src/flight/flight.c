@@ -929,7 +929,7 @@ void flight_checkStatesY(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 		}
 	}
 }
-
+#define MOTOR_REQ_NULL_RPM		2000
 // Main flight state machine
 void flight_checkStatesQ(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 {
@@ -947,53 +947,52 @@ void flight_checkStatesQ(FLIGHT_CORE *FCFlightData, RCDATA * RCValues)
 				case FINIT_IDLE:
 				{
 					// Set RPM
-					FCFlightData->MOTORS.FR.i16ReqRPM = 2000;
-					FCFlightData->MOTORS.FL.i16ReqRPM = 2000;
-					FCFlightData->MOTORS.RR.i16ReqRPM = 2000;
-					FCFlightData->MOTORS.RL.i16ReqRPM = 2000;
+					FCFlightData->MOTORS.FR.i16ReqRPM = MOTOR_REQ_NULL_RPM;
+					FCFlightData->MOTORS.FL.i16ReqRPM = MOTOR_REQ_NULL_RPM;
+					FCFlightData->MOTORS.RR.i16ReqRPM = MOTOR_REQ_NULL_RPM;
+					FCFlightData->MOTORS.RL.i16ReqRPM = MOTOR_REQ_NULL_RPM;
 
 					// Next state
-					FCFlightData->ui32FlightInitState = FINIT_WAIT_THROTTLE_NULL;
+					FCFlightData->ui32FlightInitState = FINIT_WAIT_RPM_SET;
 					ui16CheckStatesDelay = 50;
 					break;
 				}
 				case FINIT_WAIT_RPM_SET:
 				{
-					// Enable motors
-					FCFlightData->MOTORS.FR.ui8Enable = 1;
-					FCFlightData->MOTORS.FL.ui8Enable = 1;
-					FCFlightData->MOTORS.RR.ui8Enable = 1;
-					FCFlightData->MOTORS.RL.ui8Enable = 1;
-
-					// Next state
-					FCFlightData->ui32FlightInitState = FINIT_WAIT_THROTTLE_NULL;
-					ui16CheckStatesDelay = 50;
-
-					break;
-				}
-
-
-				case FINIT_WAIT_THROTTLE_NULL:
-				{
-					if(0.05f > RCValues->f32ThrottleValue)
+					if(MOTOR_REQ_NULL_RPM == FCFlightData->MOTORS.FL.i16ReqRPM)
 					{
-						// Go out of park and enable PWM in
-						// Disable PWM inputs for testinf
-						FCFlightData->MOTORS.FR.ui8Park = 0;
-						FCFlightData->MOTORS.FL.ui8Park = 0;
-						FCFlightData->MOTORS.RR.ui8Park = 0;
-						FCFlightData->MOTORS.RL.ui8Park = 0;
-						FCFlightData->MOTORS.FR.ui8UsePWM = 0;
-						FCFlightData->MOTORS.FL.ui8UsePWM = 0;
-						FCFlightData->MOTORS.RR.ui8UsePWM = 0;
-						FCFlightData->MOTORS.RL.ui8UsePWM = 0;
-
-						// End init, go to hover stabilize
-						FCFlightData->ui32FlightInitState = FINIT_IDLE;
-						FCFlightData->ui32FlightStateMachine = FLIGHT_STABILIZE_HOVER;
-						RC_Flags.bits.HOVER = 1;
-						RC_Flags.bits.PLANE = 0;
-						RC_Flags.bits.TRANSITION = 0;
+						if(MOTOR_REQ_NULL_RPM == FCFlightData->MOTORS.FR.i16ReqRPM)
+						{
+							if(MOTOR_REQ_NULL_RPM == FCFlightData->MOTORS.RL.i16ReqRPM)
+							{
+								if(MOTOR_REQ_NULL_RPM == FCFlightData->MOTORS.RR.i16ReqRPM)
+								{
+									if(0 == ui16CheckStatesDelay)
+									{
+										if(0.05f > RCValues->f32ThrottleValue)
+										{
+											// Enable motors
+											FCFlightData->MOTORS.FR.ui8Enable = 1;
+											FCFlightData->MOTORS.FL.ui8Enable = 1;
+											FCFlightData->MOTORS.RR.ui8Enable = 1;
+											FCFlightData->MOTORS.RL.ui8Enable = 1;
+											// Next state
+											ui16CheckStatesDelay = 50;
+											// End init, go to hover stabilize
+											FCFlightData->ui32FlightInitState = FINIT_IDLE;
+											FCFlightData->ui32FlightStateMachine = FLIGHT_STABILIZE_HOVER;
+											RC_Flags.bits.HOVER = 1;
+											RC_Flags.bits.PLANE = 0;
+											RC_Flags.bits.TRANSITION = 0;
+										}
+									}
+									else
+									{
+										ui16CheckStatesDelay--;
+									}
+								}
+							}
+						}
 					}
 					break;
 				}
@@ -1391,7 +1390,7 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues)
 		// Store
 		RCValues->ch[RC_MOTOR_FL].PWMOUT_Val = f32Temp;
 
-		// Motor R
+		// Motor RR
 		f32Temp = FCFlightData->f32COGRearFactor - FCFlightData->PIDPitch.s;
 		f32Temp1 = cosf(FCFlightData->PIDYaw.s);
 		f32Temp /= f32Temp1;

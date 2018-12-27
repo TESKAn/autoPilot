@@ -788,7 +788,7 @@ void CAN1_TX0_ISR_Handler()
   */
 void CAN1_SCE_ISR_Handler(void)
 {
-
+	CAN_ClearITPendingBit(CAN1, CAN_IT_ERR);
 }
 
 /**

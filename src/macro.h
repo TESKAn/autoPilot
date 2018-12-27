@@ -263,12 +263,14 @@
 #define CAN_MID_ORIENTATION				20001
 #define CAN_MID_SETRPMLIMIT				20002
 #define CAN_MID_SETRPM					20003
+#define CAN_MID_ENABLE					20004
 
 // CAN message priorities
 #define CAN_PRIO_STATUS					0x15
 #define CAN_PRIO_ORIENTATION			0x15
 #define CAN_PRIO_SETRPMLIMIT			0x15
-#define CAN_PRIO_SETRPM					0x15
+#define CAN_PRIO_SETRPM					0x14
+#define CAN_PRIO_ENABLE					0x14
 
 // From ESC
 // CAN message IDs
@@ -277,5 +279,6 @@
 // CAN message priorities
 #define CAN_PRIO_UIN					0x15
 #define CAN_PRIO_RPMINFO				0x15
+
 
 #endif /* MACRO_H_ */
