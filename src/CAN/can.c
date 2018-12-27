@@ -18,12 +18,15 @@ CANSTRUCT CANData;
 // Hardware - dependent
 void InitCANLink()
 {
+	// Init filters to subscribe to reports
+	uint32_t ui32Filter = CAN_MID_RPMINFO << 11;	// shift 8 + 3 bits
+	uint32_t ui32Mask = 0xffff00 << 3;
 	// Init CAN filter(s) for rx messages
 	CAN_FilterInitTypeDef CANFilterInitStruct;
-	CANFilterInitStruct.CAN_FilterIdHigh = 0;//0x004e;
-	CANFilterInitStruct.CAN_FilterIdLow = 0;//0x2123;
-	CANFilterInitStruct.CAN_FilterMaskIdHigh = 0x0000;
-	CANFilterInitStruct.CAN_FilterMaskIdLow = 0x0000;
+	CANFilterInitStruct.CAN_FilterIdHigh = (uint16_t)(ui32Filter >> 16);
+	CANFilterInitStruct.CAN_FilterIdLow = (uint16_t)(ui32Filter);
+	CANFilterInitStruct.CAN_FilterMaskIdHigh = (uint16_t)(ui32Mask >> 16);
+	CANFilterInitStruct.CAN_FilterMaskIdLow = (uint16_t)(ui32Mask);
 	CANFilterInitStruct.CAN_FilterFIFOAssignment = CAN_Filter_FIFO0;
 	CANFilterInitStruct.CAN_FilterNumber = 0;
 	CANFilterInitStruct.CAN_FilterMode = CAN_FilterMode_IdMask;
@@ -31,7 +34,36 @@ void InitCANLink()
 	CANFilterInitStruct.CAN_FilterActivation = ENABLE;
 
 	CAN_FilterInit(&CANFilterInitStruct);
+
+
 }
+
+
+void InitCANFilter()
+{
+	uint16_t ui16IDHigh = (uint16_t)(ui32MainLoopCanVar >> 16);
+	uint16_t ui16IDLow = (uint16_t)(ui32MainLoopCanVar);
+
+	uint16_t ui16IDHigh1 = (uint16_t)(ui32MainLoopCanVar1 >> 16);
+	uint16_t ui16IDLow1 = (uint16_t)(ui32MainLoopCanVar1);
+
+	// Init CAN filter(s) for rx messages
+	CAN_FilterInitTypeDef CANFilterInitStruct;
+	CANFilterInitStruct.CAN_FilterIdHigh = ui16IDHigh; //0;//0x004e;
+	CANFilterInitStruct.CAN_FilterIdLow = ui16IDLow; //0;//0x2123;
+	CANFilterInitStruct.CAN_FilterMaskIdHigh = ui16IDHigh1;
+	CANFilterInitStruct.CAN_FilterMaskIdLow = ui16IDLow1;
+	CANFilterInitStruct.CAN_FilterFIFOAssignment = CAN_Filter_FIFO0;
+	CANFilterInitStruct.CAN_FilterNumber = 0;
+	CANFilterInitStruct.CAN_FilterMode = CAN_FilterMode_IdMask;
+	CANFilterInitStruct.CAN_FilterScale = CAN_FilterScale_32bit;
+	CANFilterInitStruct.CAN_FilterActivation = ENABLE;
+
+	CAN_FilterInit(&CANFilterInitStruct);
+
+
+}
+
 
 uint32_t CAN_GenerateID(uint32_t ui32PRIO, uint32_t ui32MID)
 {
@@ -238,25 +270,46 @@ int16_t SendCANMessage(CanTxMsg *msg)
 void ProcessCANMessage(CanRxMsg *msg)
 {
 	FLIGHT_MOTOR* FMotorData;
-	uint32_t ui32ID = 0;
-	uint32_t ui32Source = 0;
-	ui32ID = (msg->ExtId >> 8) & 0xffff;
-	ui32Source = msg->ExtId & 0x7f;
+	UAVCANID UAVID;
+	CONVERTNUM cnvrtnum;
 
-	switch(ui32Source)
-	{
-		case 0x12:
-		{
-			FMotorData = &FCFlightData.MOTORS.FR;
-			break;
-		}
-	}
+	UAVID.ui32ID = msg->ExtId;
 
-	switch(ui32ID)
+	switch(UAVID.FIELDS.MID)
 	{
-		case (uint32_t)CAN_MSG_ESC_RPM:
+		case CAN_MID_RPMINFO:
 		{
-			FMotorData->i16CurrentRPM = (int16_t)msg->Data[0];
+			switch(UAVID.FIELDS.NODEID)
+			{
+				case CAN_MOTOR_FR_ID:
+				{
+					FMotorData = &FCFlightData.MOTORS.FR;
+					break;
+				}
+				case CAN_MOTOR_FL_ID:
+				{
+					FMotorData = &FCFlightData.MOTORS.FL;
+					break;
+				}
+				case CAN_MOTOR_RR_ID:
+				{
+					FMotorData = &FCFlightData.MOTORS.RR;
+					break;
+				}
+				case CAN_MOTOR_RL_ID:
+				{
+					FMotorData = &FCFlightData.MOTORS.RL;
+					break;
+				}
+			}
+			cnvrtnum.ch[0] = msg->Data[0];
+			cnvrtnum.ch[1] = msg->Data[1];
+			FMotorData->i16ReqRPM = cnvrtnum.i16[0];
+
+			cnvrtnum.ch[0] = msg->Data[2];
+			cnvrtnum.ch[1] = msg->Data[3];
+			FMotorData->i16CurrentRPM = cnvrtnum.i16[0];
+
 			break;
 		}
 		default:

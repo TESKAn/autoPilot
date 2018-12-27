@@ -782,6 +782,16 @@ void CAN1_TX0_ISR_Handler()
 }
 
 /**
+  * @brief  This function handles CAN1 SCE interrupt request.
+  * @param  None
+  * @retval None
+  */
+void CAN1_SCE_ISR_Handler(void)
+{
+
+}
+
+/**
   * @brief  This function handles USART1 interrupt request.
   * @param  None
   * @retval None

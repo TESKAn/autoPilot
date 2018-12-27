@@ -20,6 +20,9 @@ uint32_t ui32SensorUpdateInterval = 0;
  uint16_t servoMovePosition = 0;
  float32_t motorFRSpeed = 0.0f;
  uint16_t readRS485Data = 0;
+ uint32_t ui32MainLoopCanVar = 0;
+ uint32_t ui32MainLoopCanVar1 = 0;
+
 
 // Ring buffers for serial communications
 RING_BUFFER RB_USART3;

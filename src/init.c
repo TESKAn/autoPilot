@@ -742,6 +742,12 @@ void init_CAN()
 	// Enable RX interrupt
 	CAN_ITConfig(CAN1, CAN_IT_FMP0, ENABLE);
 	CAN_ITConfig(CAN1, CAN_IT_FMP1, ENABLE);
+
+	CAN_ITConfig(CAN1, CAN_IT_FF0, ENABLE);
+	CAN_ITConfig(CAN1, CAN_IT_FF1, ENABLE);
+
+	CAN_ITConfig(CAN1, CAN_IT_FOV0, ENABLE);
+	CAN_ITConfig(CAN1, CAN_IT_FOV1, ENABLE);
 }
 
 
@@ -1260,6 +1266,18 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	//enable IRQ channel
 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
 	NVIC_Init(&NVCInitStructure);
+
+	//init CAN SCE interrupt
+	//set IRQ channel
+	NVCInitStructure.NVIC_IRQChannel = CAN1_SCE_IRQn;
+	//set priority 0 - 15
+	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+	//set priority 0 - 15
+	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
+	//enable IRQ channel
+	NVCInitStructure.NVIC_IRQChannelCmd = newState;
+	NVIC_Init(&NVCInitStructure);
+
 
 	//init CAN TX interrupt
 	//set IRQ channel

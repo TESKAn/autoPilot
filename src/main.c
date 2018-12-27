@@ -88,11 +88,12 @@ int main(void)
 	// Startup delay - 0,5 sec
 	Delaynus(500000);
 
+	// Configure hardware
+	System_Config();
+
 	// Init CAN filters
 	InitCANLink();
 
-	// Configure hardware
-	System_Config();
 	// Set default PWM out values
 	refreshPWMOutputs();
 
@@ -357,6 +358,13 @@ int main(void)
 				mainLoopState = 0;
 				break;
 			}
+			case 22:
+			{
+				InitCANFilter();
+				mainLoopState = 0;
+				break;
+			}
+
 			default:
 			{
 				mainLoopState = 0;

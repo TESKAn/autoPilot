@@ -178,6 +178,7 @@ typedef struct tagCOMMSTRUCT
 	}IDs;
 }__attribute__((aligned(4),packed)) COMMSTRUCT;
 
+
 // Timing variables
 extern uint32_t ui32StartTime;
 extern uint32_t ui32EndTime;
@@ -190,6 +191,8 @@ extern uint16_t mainLoopState;
 extern uint16_t servoMovePosition;
 extern float32_t motorFRSpeed;
 extern uint16_t readRS485Data;
+extern uint32_t ui32MainLoopCanVar;
+extern uint32_t ui32MainLoopCanVar1;
 
 // Ring buffers for serial communications
 extern RING_BUFFER RB_USART3;

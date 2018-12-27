@@ -22,6 +22,22 @@
 #define CAN_CLEAR_SERVO_ENABLE
 #define CAN_SET_SERVO_ANGLE	1024
 
+
+typedef union tagUAVCANID
+{
+	uint32_t ui32ID;
+	struct
+	{
+		volatile uint8_t NODEID:7;
+		volatile uint8_t SERVICE:1;
+		volatile uint16_t MID:16;
+		volatile uint8_t PRIO:4;
+		volatile uint8_t EMPTY: 4;
+	}FIELDS;
+
+}__attribute__((aligned(4),packed)) UAVCANID;
+
+
 typedef struct tagCANSTRUCT
 {
 	int16_t ui16CANTxMsgBufStore;
@@ -33,6 +49,7 @@ typedef struct tagCANSTRUCT
 extern CANSTRUCT CANData;
 
 void InitCANLink();
+void InitCANFilter();
 void ProcessCANMessage(CanRxMsg *msg);
 int16_t CAN_SendMinMaxRPM();
 int16_t CAN_SendRPM(uint16_t frontRPM, uint16_t rearRPM, uint8_t IDs);
