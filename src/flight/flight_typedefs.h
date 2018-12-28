@@ -77,10 +77,15 @@ typedef struct
 	uint8_t ui8Empty[2];
 	int16_t i16PWMMin;
 	int16_t i16PWMMax;
-	int16_t i16ReqRPM;
-	int16_t i16SetRPM;
-	int16_t i16CurrentRPM;
+	int16_t i16ReqRPM;				// Requested RPM, info from AHRS
+	int16_t i16MinRPM;
+	int16_t i16MaxRPM;
 	int16_t i16SetParkPosition;
+
+	int16_t i16SetRPM;				// Set RPM, info from ESC
+	int16_t i16CurrentRPM;
+
+	float fReqRPM;
 }__attribute__((aligned(4),packed)) FLIGHT_MOTOR;
 
 typedef struct

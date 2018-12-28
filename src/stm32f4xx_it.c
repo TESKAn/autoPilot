@@ -313,7 +313,7 @@ void CAN1_RX1_IRQHandler(void)
   * @param  None
   * @retval None
   */
-void CAN1_TX0_IRQHandler(void)
+void CAN1_TX_IRQHandler(void)
 {
 	CAN1_TX0_ISR_Handler();
 }

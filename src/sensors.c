@@ -291,9 +291,14 @@ void copySensorData(void)
 		// Check flight states
 		flight_checkStatesQ(&FCFlightData, &RCData);
 		// Get new servo values
-		flight_decodeServos(&FCFlightData, &RCData);
+		flight_decodeServosQ(&FCFlightData, &RCData);
 		// Refresh PWM outputs
 		refreshPWMOutputs();
+
+		refreshMotorRPM();
+
+		// Buffer to CAN
+		//CAN_SendENABLE(1, CAN_MOTOR_ALL_ID);
 	}
 
 	// Check if we are saving to log

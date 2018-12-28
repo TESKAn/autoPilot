@@ -93,21 +93,20 @@ int16_t CAN_SendMinMaxRPM()
 	// Generate message ID
 	msg.ExtId = CAN_GenerateID(CAN_PRIO_SETRPMLIMIT, CAN_MID_SETRPMLIMIT);
 
-	// Destination ID - 0 to all
-	msg.Data[0] = 0x0;
-	msg.Data[1] = 0x0;
 	// Min RPM
 	cnvrt_number.i16[0] = 2000;
-	msg.Data[2] = cnvrt_number.ch[0];
-	msg.Data[3] = cnvrt_number.ch[1];
+	msg.Data[0] = cnvrt_number.ch[0];
+	msg.Data[1] = cnvrt_number.ch[1];
 	// Max RPM
 	cnvrt_number.i16[0] = 20000;
-	msg.Data[4] = cnvrt_number.ch[0];
-	msg.Data[5] = cnvrt_number.ch[1];
+	msg.Data[2] = cnvrt_number.ch[0];
+	msg.Data[3] = cnvrt_number.ch[1];
 
-	msg.Data[6] = 0x0;
-	msg.Data[7] = 0xc0;
-	msg.DLC = 8;
+	// Destination ID - CAN_MOTOR_ALL_ID to all
+	msg.Data[4] = CAN_MOTOR_ALL_ID;
+
+	msg.Data[5] = 0xc0;
+	msg.DLC = 6;
 	msg.IDE = CAN_Id_Extended;
 	msg.RTR = CAN_RTR_Data;
 
@@ -156,9 +155,51 @@ int16_t CAN_SendRPM(uint16_t frontRPM, uint16_t rearRPM, uint8_t IDs)
 	return 0;
 }
 
-int16_t CAN_SendENABLE(uint8_t ui8Enable, uint8_t IDs)
+int16_t CAN_SendRPM_single(uint16_t RPM, uint8_t ID)
 {
 	CONVERTNUM cnvrt_number;
+	CanTxMsg msg;
+
+	// Generate message ID
+	switch(ID)
+	{
+		case CAN_MOTOR_FR_ID:
+		{
+			msg.ExtId = CAN_GenerateID(CAN_PRIO_SETRPM_FR, CAN_MID_SETRPM_FR);
+			break;
+		}
+		case CAN_MOTOR_FL_ID:
+		{
+			msg.ExtId = CAN_GenerateID(CAN_PRIO_SETRPM_FL, CAN_MID_SETRPM_FL);
+			break;
+		}
+		case CAN_MOTOR_RR_ID:
+		{
+			msg.ExtId = CAN_GenerateID(CAN_PRIO_SETRPM_RR, CAN_MID_SETRPM_RR);
+			break;
+		}
+		case CAN_MOTOR_RL_ID:
+		{
+			msg.ExtId = CAN_GenerateID(CAN_PRIO_SETRPM_RL, CAN_MID_SETRPM_RL);
+			break;
+		}
+	}
+	// RPM
+	cnvrt_number.ui16[0] = RPM;
+	msg.Data[0] = cnvrt_number.ch[0];
+	msg.Data[1] = cnvrt_number.ch[1];
+
+	msg.Data[2] = 0xc0;
+	msg.DLC = 3;
+	msg.IDE = CAN_Id_Extended;
+	msg.RTR = CAN_RTR_Data;
+
+	SendCANMessage(&msg);
+	return 0;
+}
+
+int16_t CAN_SendENABLE(uint8_t ui8Enable, uint8_t IDs)
+{
 	CanTxMsg msg;
 
 	// Generate message ID
@@ -325,7 +366,7 @@ void ProcessCANMessage(CanRxMsg *msg)
 			}
 			cnvrtnum.ch[0] = msg->Data[0];
 			cnvrtnum.ch[1] = msg->Data[1];
-			FMotorData->i16ReqRPM = cnvrtnum.i16[0];
+			FMotorData->i16SetRPM = cnvrtnum.i16[0];
 
 			cnvrtnum.ch[0] = msg->Data[2];
 			cnvrtnum.ch[1] = msg->Data[3];

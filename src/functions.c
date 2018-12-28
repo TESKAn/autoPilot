@@ -48,6 +48,23 @@ void calibrateI2CSensors(void)
 
 }
 
+void refreshMotorRPM()
+{
+	// Buffer to CAN
+	CAN_SendRPM_single(FCFlightData.MOTORS.FR.i16ReqRPM, CAN_MOTOR_FR_ID);
+	CAN_SendRPM_single(FCFlightData.MOTORS.FL.i16ReqRPM, CAN_MOTOR_FL_ID);
+	CAN_SendRPM_single(FCFlightData.MOTORS.RR.i16ReqRPM, CAN_MOTOR_RR_ID);
+	CAN_SendRPM_single(FCFlightData.MOTORS.RL.i16ReqRPM, CAN_MOTOR_RL_ID);
+	/*
+	CAN_SendRPM(FCFlightData.MOTORS.FR.i16ReqRPM, FCFlightData.MOTORS.RL.i16ReqRPM, 0);
+	CAN_SendRPM(FCFlightData.MOTORS.FL.i16ReqRPM, FCFlightData.MOTORS.RR.i16ReqRPM, 1);
+	*/
+}
+
+void enableMotors(uint8_t ui8Enable)
+{
+	CAN_SendENABLE(ui8Enable, CAN_MOTOR_ALL_ID);
+}
 
 
 // Update PWM out values

@@ -264,6 +264,10 @@
 #define CAN_MID_SETRPMLIMIT				20002
 #define CAN_MID_SETRPM					20003
 #define CAN_MID_ENABLE					20004
+#define CAN_MID_SETRPM_FR				20005
+#define CAN_MID_SETRPM_FL				20006
+#define CAN_MID_SETRPM_RR				20007
+#define CAN_MID_SETRPM_RL				20008
 
 // CAN message priorities
 #define CAN_PRIO_STATUS					0x15
@@ -271,6 +275,10 @@
 #define CAN_PRIO_SETRPMLIMIT			0x15
 #define CAN_PRIO_SETRPM					0x14
 #define CAN_PRIO_ENABLE					0x14
+#define CAN_PRIO_SETRPM_FR				0x01
+#define CAN_PRIO_SETRPM_FL				0x01
+#define CAN_PRIO_SETRPM_RR				0x01
+#define CAN_PRIO_SETRPM_RL				0x01
 
 // From ESC
 // CAN message IDs

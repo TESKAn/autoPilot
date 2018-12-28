@@ -32,6 +32,8 @@ typedef struct
 int16_t SendCommData();
 int16_t SendCommData1();
 void calibrateI2CSensors(void);
+void refreshMotorRPM();
+void enableMotors(uint8_t ui8Enable);
 void refreshPWMOutputs(void);
 uint32_t getSystemTime(void);
 float32_t getFTime(void);

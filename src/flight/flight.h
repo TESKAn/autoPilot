@@ -12,13 +12,14 @@
 #include "math/myMath_typedefs.h"
 
 // Functions
-void flight_init(FLIGHT_CORE *FCFlightData, RCDATA * RCValues);
-int16_t flight_decideAction(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
-void flight_checkRCInputs(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
-void flight_checkStatesY(FLIGHT_CORE *FCFlightData, RCDATA * RCValues);
-void flight_checkStatesQ(FLIGHT_CORE *FCFlightData, RCDATA * RCValues);
-void flight_stabilize(FLIGHT_CORE * FCFlightData);
-void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
+void flight_init(FLIGHT_CORE *FCFlightData_local, RCDATA * RCValues);
+int16_t flight_decideAction(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues);
+void flight_checkRCInputs(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues);
+void flight_checkStatesY(FLIGHT_CORE *FCFlightData_local, RCDATA * RCValues);
+void flight_checkStatesQ(FLIGHT_CORE *FCFlightData_local, RCDATA * RCValues);
+void flight_stabilize(FLIGHT_CORE * FCFlightData_local);
+void flight_decodeServosY(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues);
+void flight_decodeServosQ(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues);
 
 // Default values
 // Min plane speed in m/sec
@@ -44,8 +45,8 @@ void flight_decodeServos(FLIGHT_CORE * FCFlightData, RCDATA * RCValues);
 // Skupna dolžina 77 cm
 // lz = 44,5
 // ls = 32,5
-#define COG_BALANCE_FRONT				0.578f;//0.578f;//0.615f
-#define COG_BALANCE_REAR				0.422f;//0.422f;//0.385f
+#define COG_BALANCE_FRONT				0.5f;//0.578f;//0.615f
+#define COG_BALANCE_REAR				0.5f;//0.422f;//0.385f
 
 // Macros that encode PWM inputs to specific channels
 #define RC_AILERON		1

@@ -1278,7 +1278,6 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
 	NVIC_Init(&NVCInitStructure);
 
-
 	//init CAN TX interrupt
 	//set IRQ channel
 	NVCInitStructure.NVIC_IRQChannel = CAN1_TX_IRQn;
