@@ -217,6 +217,37 @@ int16_t CAN_SendENABLE(uint8_t ui8Enable, uint8_t IDs)
 	return 0;
 }
 
+int16_t CAN_SendOrientationPID()
+{
+	CONVERTNUM cnvrt_number;
+	CanTxMsg msg;
+
+	uint16_t ui16RollPID = Float32ToFloat16(FCFlightData.PIDRoll.s);
+	uint16_t ui16PitchPID = Float32ToFloat16(FCFlightData.PIDPitch.s);
+	uint16_t ui16YawPID = Float32ToFloat16(FCFlightData.PIDYaw.s);
+
+	// Generate message ID
+	msg.ExtId = CAN_GenerateID(CAN_PRIO_ORIENTATION_PID, CAN_MID_ORIENTATION_PID);
+
+	cnvrt_number.ui16[0] = ui16RollPID;
+	cnvrt_number.ui16[1] = ui16PitchPID;
+	cnvrt_number.ui16[2] = ui16YawPID;
+
+	msg.Data[0] = cnvrt_number.ch[0];
+	msg.Data[1] = cnvrt_number.ch[1];
+	msg.Data[2] = cnvrt_number.ch[2];
+	msg.Data[3] = cnvrt_number.ch[3];
+	msg.Data[4] = cnvrt_number.ch[4];
+	msg.Data[5] = cnvrt_number.ch[5];
+	msg.Data[6] = 0xc0;
+	msg.DLC = 7;
+	msg.IDE = CAN_Id_Extended;
+	msg.RTR = CAN_RTR_Data;
+
+	SendCANMessage(&msg);
+	return 0;
+}
+
 int16_t CAN_SendOrientation()
 {
 	CONVERTNUM cnvrt_number;

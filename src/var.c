@@ -155,7 +155,7 @@ char StringBuffer[161];			// Buffer for string manipulation
 char FSBuffer[FATFS_BUFF_SIZE];	// Pointer to buffer for file write
 
 // UART2 buffer
-uint8_t UART2Buffer[1024];
+//uint8_t UART2Buffer[1024];
 uint8_t ui8BufferToSend = 0;
 
 
@@ -172,3 +172,15 @@ uint32_t ui32TestVar = 0;
 
 uint32_t ui32CANTime = 0;
 uint32_t ui32SendAHRSDataTime = 0;
+
+uint8_t mavlinkBuffer[384];
+mavlink_message_t mavlinkMessageDataRX;
+mavlink_message_t mavlinkMessageDataTX;
+mavlink_status_t mavlinkStatusData;
+uint8_t mavlinkSendBusy;
+
+uint16_t ui16SendMavlinkHeartbeetTime = 0;
+uint16_t ui16SendMavlinkBatteryStatus = 0;
+
+
+

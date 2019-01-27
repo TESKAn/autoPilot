@@ -60,9 +60,9 @@ void flight_init(FLIGHT_CORE *FCFlightData_local, RCDATA * RCValues)
 	FCFlightData_local->f32COGRearFactor = COG_BALANCE_REAR;
 
 	// Init PIDs
-	math_PIDInit(&FCFlightData_local->PIDPitch, 0.1f, 0.00f, 0.3f, -0.15f, 0.15f);
-	math_PIDInit(&FCFlightData_local->PIDRoll, 0.1f, 0.00f, 0.3f, -0.15f, 0.15f);
-	math_PIDInit(&FCFlightData_local->PIDYaw, 2.0f, 0.0f, 0.0f, -0.26f, 0.26f);
+	math_PIDInit(&FCFlightData_local->PIDPitch, 0.20f, 0.01f, 0.10f, -0.15f, 0.15f);
+	math_PIDInit(&FCFlightData_local->PIDRoll, 0.20f, 0.01f, 0.10f, -0.15f, 0.15f);
+	math_PIDInit(&FCFlightData_local->PIDYaw, 2.0f, 0.0f, 0.0f, -0.06f, 0.06f);
 	math_PIDInit(&FCFlightData_local->PIDAltitude, 0.1f, 0.01f, 0.0f, -0.10f, 0.10f);
 	math_PIDInit(&FCFlightData_local->PIDSpeed, 0.1f, 0.01f, 0.0f, 0.15f, 1.0f);
 
@@ -187,6 +187,8 @@ void flight_init(FLIGHT_CORE *FCFlightData_local, RCDATA * RCValues)
 
 	RCValues->SCALES.f32RudderScale = RC_IN_DEFAULT_SCALE_RUDDER;
 	RCValues->SCALES.f32ThrottleScale = RC_IN_DEFAULT_SCALE_THROTTLE;
+	// Reset mAh counter
+	FCFlightData_local->batMon.fmAhUsed = 0.0f;
 }
 
 // What to do if there is no RC input

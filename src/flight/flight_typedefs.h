@@ -108,6 +108,18 @@ typedef struct
 	uint8_t ui8OutEnabled;
 	uint8_t ui8CountReset;
 	uint8_t ui8CountWasReset;
+	float32_t fUBat;
+	float32_t fIBat;
+	float32_t fmAsUsed;
+	float32_t fmAhUsed;
+	float32_t fUTime_m;
+	float32_t fITime_m;
+	float32_t fUTime;
+	float32_t fITime;
+	uint16_t ui6MavLinkVoltage;
+	int16_t i16MavLinkCurrent;
+	int32_t i32MavLinkCurrentConsumed;
+
 }__attribute__((aligned(4),packed)) FLIGHT_BATMON;
 
 typedef struct

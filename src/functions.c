@@ -97,6 +97,7 @@ uint32_t getSystemTime(void)
 }
 
 
+// Return system time in milliseconds
 float32_t getFTime(void)
 {
 	float32_t time = 0;

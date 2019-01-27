@@ -39,6 +39,7 @@ int16_t CAN_SendMinMaxRPM();
 int16_t CAN_SendRPM_single(uint16_t RPM, uint8_t ID);
 int16_t CAN_SendRPM(uint16_t frontRPM, uint16_t rearRPM, uint8_t IDs);
 int16_t CAN_SendENABLE(uint8_t ui8Enable, uint8_t IDs);
+int16_t CAN_SendOrientationPID();
 int16_t CAN_SendOrientation();
 int16_t CAN_SendNodeStatus();
 int16_t SendCANMessage(CanTxMsg *msg);

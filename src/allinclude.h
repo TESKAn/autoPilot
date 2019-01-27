@@ -24,7 +24,7 @@
 #include "arm_math.h"
 #include "math.h"
 
-
+#include "mavlink.h"
 
 #include "freemaster.h"
 
@@ -66,8 +66,6 @@
 #include "var.h"
 
 #include "sensors.h"
-
-
 
 
 #endif /* ALLINCLUDE_H_ */

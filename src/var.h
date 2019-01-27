@@ -320,7 +320,7 @@ extern char StringBuffer[161];			// Buffer for string manipulation
 extern char FSBuffer[FATFS_BUFF_SIZE];	// Pointer to buffer for file write
 
 // UART2 buffer
-extern uint8_t UART2Buffer[1024];
+//extern uint8_t UART2Buffer[1024];
 extern uint8_t ui8BufferToSend;
 
 extern volatile CONVERTNUM convertNumFormat;
@@ -336,5 +336,14 @@ extern uint32_t ui32TestVar;
 
 extern uint32_t ui32CANTime;
 extern uint32_t ui32SendAHRSDataTime;
+
+extern uint8_t mavlinkBuffer[384];
+extern mavlink_message_t mavlinkMessageDataRX;
+extern mavlink_message_t mavlinkMessageDataTX;
+extern mavlink_status_t mavlinkStatusData;
+extern uint8_t mavlinkSendBusy;
+
+extern uint16_t ui16SendMavlinkHeartbeetTime;
+extern uint16_t ui16SendMavlinkBatteryStatus;
 
 #endif /* VAR_H_ */

@@ -268,6 +268,7 @@
 #define CAN_MID_SETRPM_FL				20006
 #define CAN_MID_SETRPM_RR				20007
 #define CAN_MID_SETRPM_RL				20008
+#define CAN_MID_ORIENTATION_PID			20009
 
 // CAN message priorities
 #define CAN_PRIO_STATUS					0x15
@@ -279,6 +280,7 @@
 #define CAN_PRIO_SETRPM_FL				0x01
 #define CAN_PRIO_SETRPM_RR				0x01
 #define CAN_PRIO_SETRPM_RL				0x01
+#define CAN_PRIO_ORIENTATION_PID		0x15
 
 // From ESC
 // CAN message IDs

@@ -15,6 +15,7 @@
 void ADC_ISR_Handler(void)
 {
 	uint16_t result = 0;
+	float32_t fTemp;
 	// Check interrupt source - ADC1, ADC2 or ADC3
 	if(ADC_GetITStatus(ADC1, ADC_IT_EOC) != (u16)RESET)
 	{
@@ -31,10 +32,17 @@ void ADC_ISR_Handler(void)
 	if(ADC_GetITStatus(ADC2, ADC_IT_EOC) != (u16)RESET)
 	{
 		// Channel 2
+		fTemp = getFTime();
+		FCFlightData.batMon.fUTime = fTemp - FCFlightData.batMon.fUTime_m;
+		FCFlightData.batMon.fUTime_m = fTemp;
 		// Get conversion result
 		result = ADC_GetConversionValue(ADC2);
 		// Store value
 		AIn2 = result;
+		FCFlightData.batMon.fUBat = (float32_t)result;
+		FCFlightData.batMon.fUBat *= 0.015f;
+		FCFlightData.batMon.fUBat += 0.068f;
+		FCFlightData.batMon.ui6MavLinkVoltage = (uint16_t)(FCFlightData.batMon.fUBat * 1000.0f);
 		// Clear flag
 		ADC_ClearFlag(ADC2, ADC_FLAG_EOC);
 		// Clear interrupt
@@ -43,14 +51,26 @@ void ADC_ISR_Handler(void)
 	if(ADC_GetITStatus(ADC3, ADC_IT_EOC) != (u16)RESET)
 	{
 		// Channel 3
+		fTemp = getFTime();
+		FCFlightData.batMon.fITime = fTemp - FCFlightData.batMon.fITime_m;
+		FCFlightData.batMon.fITime_m = fTemp;
 		// Get conversion result
 		result = ADC_GetConversionValue(ADC3);
 		// Store value
 		AIn3 = result;
+		FCFlightData.batMon.fIBat = (float32_t)result;
+		FCFlightData.batMon.fIBat *= -0.0394f;
+		FCFlightData.batMon.fIBat += 126.03f;
+		FCFlightData.batMon.i16MavLinkCurrent = (int16_t)(FCFlightData.batMon.fIBat * 1000.0f);
 		// Clear flag
 		ADC_ClearFlag(ADC3, ADC_FLAG_EOC);
 		// Clear interrupt
 		ADC_ClearITPendingBit(ADC3, ADC_IT_EOC);
+
+		// To get mA, mul I * 1000; time is 1 ms, so div by 1000.
+		FCFlightData.batMon.fmAsUsed += FCFlightData.batMon.fIBat;
+		FCFlightData.batMon.fmAhUsed = FCFlightData.batMon.fmAsUsed / 3600.0f;
+		FCFlightData.batMon.i32MavLinkCurrentConsumed = (int32_t)(FCFlightData.batMon.fmAsUsed);
 	}
 }
 
@@ -128,8 +148,8 @@ void DMA1_Stream3_ISR_Handler(void)
 
 void DMA2_Stream7_ISR_Handler(void)
 {
-	// Clear GPS is sending data
-	GPS_Sending(0);
+	// Clear mavlink is sending data
+	mavlinkSendBusy = 0;
 	//GPS_SENDING = 0;
 	DMA_ClearITPendingBit(DMA_USART1, DMA_IT_TC);
 	DMA_ITConfig(DMA_USART1, DMA_IT_TC, DISABLE);
@@ -518,18 +538,9 @@ void TIM1_BRK_TIM9_ISR_Handler(void)
   */
 void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 {
-	//Check trigger event
-/*
-	uint32_t test = CAN1->BTR;
-	uint8_t ui8MessagesPending = CAN_MessagePending(CAN1, CAN_FIFO0);
-	ui8MessagesPending = CAN_MessagePending(CAN1, CAN_FIFO1);
-	FlagStatus fst = CAN_GetFlagStatus(CAN1, CAN_FLAG_FMP0);
-	fst = CAN_GetFlagStatus(CAN1, CAN_FLAG_FMP0);
-	fst = CAN_GetFlagStatus(CAN1, CAN_FLAG_FF0);
-	fst = CAN_GetFlagStatus(CAN1, CAN_FLAG_FOV0);
-	fst = CAN_GetFlagStatus(CAN1, CAN_FLAG_LEC);
-*/
+
 	uint8_t retriesCount = 0;
+	uint16_t ui16Temp;
 	ErrorStatus error = SUCCESS;
 	if((TIM14->SR & TIM_FLAG_Update) != (u16)RESET)
 	{
@@ -569,12 +580,13 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			PWMEN_PIN_TOGGLE;
 		}
 
+
 		if(ADC_ENABLED)
 		{
-			ADC_TriggerTimer++;
-			if(ADC_TriggerTimer >= 10)
+			//ADC_TriggerTimer++;
+			//if(ADC_TriggerTimer >= 1)
 			{
-				ADC_TriggerTimer = 0;
+				//ADC_TriggerTimer = 0;
 	        	ADC_SoftwareStartConv(ADC1);
 	        	ADC_SoftwareStartConv(ADC2);
 	        	ADC_SoftwareStartConv(ADC3);
@@ -665,20 +677,57 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		// Call sensor timer
 		sensorInterruptTimer();
 
-		// Send CAN status
+		// Send status
 		if(SYSTEM_RUNNING)
 		{
 			ui32CANTime++;
 			ui32SendAHRSDataTime++;
+
 			if(100 < ui32SendAHRSDataTime)
 			{
 				ui32SendAHRSDataTime = 0;
 				CAN_SendOrientation();
+				CAN_SendOrientationPID();
 			}
 			else if(500 < ui32CANTime)
 			{
 				ui32CANTime = 0;
 				CAN_SendNodeStatus();
+			}
+			ui16SendMavlinkHeartbeetTime++;
+			//ui16SendMavlinkBatteryStatus++;
+			if(1000 < ui16SendMavlinkHeartbeetTime)
+			{
+				if(0 == mavlinkSendBusy)
+				{
+					ui16Temp = mavlink_msg_heartbeat_pack(1, 1, &mavlinkMessageDataTX, MAV_TYPE_QUADROTOR, MAV_AUTOPILOT_GENERIC, MAV_MODE_FLAG_SAFETY_ARMED, 0, MAV_STATE_ACTIVE);
+					ui16Temp = mavlink_msg_to_send_buffer(mavlinkBuffer, &mavlinkMessageDataTX);
+					transferDMA_USART1(mavlinkBuffer, (int)ui16Temp);
+					mavlinkSendBusy = 1;
+					ui16SendMavlinkHeartbeetTime = 0;
+				}
+				else
+				{
+					ui16SendMavlinkHeartbeetTime --;
+				}
+			}
+
+
+			ui16SendMavlinkBatteryStatus++;
+			if(1500 < ui16SendMavlinkBatteryStatus)
+			{
+				if(0 == mavlinkSendBusy)
+				{
+					ui16Temp = mavlink_msg_battery_status_pack(1, 1, &mavlinkMessageDataTX, 1, MAV_BATTERY_FUNCTION_ALL, MAV_BATTERY_TYPE_LIPO, 25, &FCFlightData.batMon.ui6MavLinkVoltage, FCFlightData.batMon.i16MavLinkCurrent, FCFlightData.batMon.i32MavLinkCurrentConsumed, -1, -1, -1, 	MAV_BATTERY_CHARGE_STATE_OK);
+					ui16Temp = mavlink_msg_to_send_buffer(mavlinkBuffer, &mavlinkMessageDataTX);
+					transferDMA_USART1(mavlinkBuffer, (int)ui16Temp);
+					mavlinkSendBusy = 1;
+					ui16SendMavlinkBatteryStatus = 0;
+				}
+				else
+				{
+					ui16SendMavlinkBatteryStatus--;
+				}
 			}
 		}
 	}
@@ -799,11 +848,16 @@ void CAN1_SCE_ISR_Handler(void)
 void USART1_ISR_Handler(void)
 {
 	int iData = 0;
+	uint8_t msgStatus = 0;
 	if ((USART1->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
 	{
 		iData = USART_ReceiveData(USART1);
 		//GPS_ReceiveProcess((uint8_t)iData, getSystemTime());
-		ubx_parser((uint8_t)iData);
+		msgStatus = mavlink_parse_char(1, (uint8_t)iData, &mavlinkMessageDataRX, &mavlinkStatusData);
+		if(0 != msgStatus)
+		{
+			msgStatus = 0;
+		}
 	}
 
 	if((USART1->SR & USART_FLAG_TC) != (u16)RESET)	//if transfer complete
@@ -848,34 +902,17 @@ void USART2_ISR_Handler(void)
   */
 void USART3_ISR_Handler(void)
 {
-	uint16_t reg;
-//	int iData = 0;
-	while ((USART3->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
+	int iData = 0;
+	if ((USART3->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
 	{
-		// Store data to buffer
-		RB_push(&RB_USART3, (uint8_t)(USART3->DR & (uint16_t)0x01FF));
-		//RS485_ReceiveMessage((uint8_t) USART_ReceiveData(USART1));
-		//RS485_ReceiveMessage((uint8_t)(USART1->DR & (uint16_t)0x01FF));
-		USART_ClearFlag(USART3, USART_FLAG_RXNE);
-	}
-	// RXNE enabled can trigger ORE interrupt
-	if((USART3->SR & USART_FLAG_ORE) != (u16)RESET)	//if transfer complete
-	{
-		// Disable transfer complete interrupt
-		USART_ITConfig(USART3, USART_IT_ORE, DISABLE);
-		// Clear interrupt flag
-		reg = USART3->SR;
-		reg = USART3->DR;
+		iData = USART_ReceiveData(USART3);
+		//GPS_ReceiveProcess((uint8_t)iData, getSystemTime());
+		ubx_parser((uint8_t)iData);
 	}
 
 	if((USART3->SR & USART_FLAG_TC) != (u16)RESET)	//if transfer complete
 	{
-		// Disable transfer complete interrupt
-		USART_ITConfig(USART3, USART_IT_TC, DISABLE);
-		// Enable RX
-		RS485_RXEN;
-		// Clear interrupt flag
-		USART_ClearFlag(USART3, USART_FLAG_TC);
+		USART3->SR = USART3->SR & !USART_FLAG_TC;
 	}
 }
 

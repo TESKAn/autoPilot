@@ -37,6 +37,7 @@
 #include "sensors/sensors_fusion.h"
 
 
+
 /* Private macro */
 /* Private variables */
 /* Private function prototypes */
@@ -59,6 +60,7 @@ float32_t t2 = 0;
 
 int main(void)
 {
+	uint16_t ui16Temp = 0;
 	unsigned int bytesWritten;
 	SYSTEM_RUNNING = 0;
 	//float32_t temp = 0;
@@ -381,6 +383,18 @@ int main(void)
 			case 25:
 			{
 				CAN_SendENABLE(0, CAN_MOTOR_ALL_ID);
+				mainLoopState = 0;
+				break;
+			}
+			case 26:
+			{
+				if(0 == mavlinkSendBusy)
+				{
+					ui16Temp = mavlink_msg_battery_status_pack(1, 1, &mavlinkMessageDataTX, 1, MAV_BATTERY_FUNCTION_ALL, MAV_BATTERY_TYPE_LIPO, 25, &FCFlightData.batMon.ui6MavLinkVoltage, FCFlightData.batMon.i16MavLinkCurrent, FCFlightData.batMon.i32MavLinkCurrentConsumed, -1, -1, -1, 	MAV_BATTERY_CHARGE_STATE_OK);
+					ui16Temp = mavlink_msg_to_send_buffer(mavlinkBuffer, &mavlinkMessageDataTX);
+					transferDMA_USART1(mavlinkBuffer, (int)ui16Temp);
+					mavlinkSendBusy = 1;
+				}
 				mainLoopState = 0;
 				break;
 			}
