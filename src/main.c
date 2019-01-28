@@ -137,6 +137,7 @@ int main(void)
 	// Mount SD card
     while (1)
     {
+    	/*
     	// Check CAN RX interrupts
     	if(!(CAN1->IER & CAN_IT_FMP0))
     	{
@@ -145,7 +146,9 @@ int main(void)
     	if(!(CAN1->IER & CAN_IT_FMP1))
     	{
     		CAN_ITConfig(CAN1, CAN_IT_FMP1, ENABLE);
-    	}
+    	}*/
+
+
 
 #ifndef USE_FREEMASTER
     	// Process serial comm
@@ -390,9 +393,10 @@ int main(void)
 			{
 				if(0 == mavlinkSendBusy)
 				{
-					ui16Temp = mavlink_msg_battery_status_pack(1, 1, &mavlinkMessageDataTX, 1, MAV_BATTERY_FUNCTION_ALL, MAV_BATTERY_TYPE_LIPO, 25, &FCFlightData.batMon.ui6MavLinkVoltage, FCFlightData.batMon.i16MavLinkCurrent, FCFlightData.batMon.i32MavLinkCurrentConsumed, -1, -1, -1, 	MAV_BATTERY_CHARGE_STATE_OK);
+					/*
+					//ui16Temp = mavlink_msg_battery_status_pack(1, 1, &mavlinkMessageDataTX, 1, MAV_BATTERY_FUNCTION_ALL, MAV_BATTERY_TYPE_LIPO, 25, &FCFlightData.batMon.ui6MavLinkVoltage, FCFlightData.batMon.i16MavLinkCurrent, FCFlightData.batMon.i32MavLinkCurrentConsumed, -1, -1, -1, 	MAV_BATTERY_CHARGE_STATE_OK);
 					ui16Temp = mavlink_msg_to_send_buffer(mavlinkBuffer, &mavlinkMessageDataTX);
-					transferDMA_USART1(mavlinkBuffer, (int)ui16Temp);
+					transferDMA_USART1(mavlinkBuffer, (int)ui16Temp);*/
 					mavlinkSendBusy = 1;
 				}
 				mainLoopState = 0;

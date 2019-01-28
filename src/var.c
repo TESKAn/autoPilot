@@ -182,5 +182,5 @@ uint8_t mavlinkSendBusy;
 uint16_t ui16SendMavlinkHeartbeetTime = 0;
 uint16_t ui16SendMavlinkBatteryStatus = 0;
 
-
+uint16_t ui16MavlinkBatteryVoltages[10];
 

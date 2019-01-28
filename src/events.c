@@ -42,7 +42,17 @@ void ADC_ISR_Handler(void)
 		FCFlightData.batMon.fUBat = (float32_t)result;
 		FCFlightData.batMon.fUBat *= 0.015f;
 		FCFlightData.batMon.fUBat += 0.068f;
-		FCFlightData.batMon.ui6MavLinkVoltage = (uint16_t)(FCFlightData.batMon.fUBat * 1000.0f);
+
+		//ui16MavlinkBatteryVoltages
+		fTemp = FCFlightData.batMon.fUBat / ((float32_t)FCFlightData.batMon.ui16NumCells);
+
+		fTemp = fTemp * 1000.0f;
+		fTemp = FCFlightData.batMon.ui16MavlinkBatteryVoltages[0] = (uint16_t)fTemp;
+		FCFlightData.batMon.ui16MavlinkBatteryVoltages[1] = FCFlightData.batMon.ui16MavlinkBatteryVoltages[0];
+		FCFlightData.batMon.ui16MavlinkBatteryVoltages[2] = FCFlightData.batMon.ui16MavlinkBatteryVoltages[0];
+		FCFlightData.batMon.ui16MavlinkBatteryVoltages[3] = FCFlightData.batMon.ui16MavlinkBatteryVoltages[0];
+
+
 		// Clear flag
 		ADC_ClearFlag(ADC2, ADC_FLAG_EOC);
 		// Clear interrupt
@@ -61,7 +71,10 @@ void ADC_ISR_Handler(void)
 		FCFlightData.batMon.fIBat = (float32_t)result;
 		FCFlightData.batMon.fIBat *= -0.0394f;
 		FCFlightData.batMon.fIBat += 126.03f;
-		FCFlightData.batMon.i16MavLinkCurrent = (int16_t)(FCFlightData.batMon.fIBat * 1000.0f);
+
+		fTemp = FCFlightData.batMon.fIBat * 100.0f;
+
+		FCFlightData.batMon.i16MavLinkCurrent = (int16_t)(fTemp);
 		// Clear flag
 		ADC_ClearFlag(ADC3, ADC_FLAG_EOC);
 		// Clear interrupt
@@ -70,7 +83,8 @@ void ADC_ISR_Handler(void)
 		// To get mA, mul I * 1000; time is 1 ms, so div by 1000.
 		FCFlightData.batMon.fmAsUsed += FCFlightData.batMon.fIBat;
 		FCFlightData.batMon.fmAhUsed = FCFlightData.batMon.fmAsUsed / 3600.0f;
-		FCFlightData.batMon.i32MavLinkCurrentConsumed = (int32_t)(FCFlightData.batMon.fmAsUsed);
+
+		FCFlightData.batMon.i32MavLinkCurrentConsumed = (int32_t)(FCFlightData.batMon.fmAhUsed);
 	}
 }
 
@@ -718,7 +732,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			{
 				if(0 == mavlinkSendBusy)
 				{
-					ui16Temp = mavlink_msg_battery_status_pack(1, 1, &mavlinkMessageDataTX, 1, MAV_BATTERY_FUNCTION_ALL, MAV_BATTERY_TYPE_LIPO, 25, &FCFlightData.batMon.ui6MavLinkVoltage, FCFlightData.batMon.i16MavLinkCurrent, FCFlightData.batMon.i32MavLinkCurrentConsumed, -1, -1, -1, 	MAV_BATTERY_CHARGE_STATE_OK);
+					ui16Temp = mavlink_msg_battery_status_pack(1, 1, &mavlinkMessageDataTX, 0, MAV_BATTERY_FUNCTION_ALL, MAV_BATTERY_TYPE_LIPO, 2500, FCFlightData.batMon.ui16MavlinkBatteryVoltages, FCFlightData.batMon.i16MavLinkCurrent, FCFlightData.batMon.i32MavLinkCurrentConsumed, -1, -1, -1, MAV_BATTERY_CHARGE_STATE_OK);
 					ui16Temp = mavlink_msg_to_send_buffer(mavlinkBuffer, &mavlinkMessageDataTX);
 					transferDMA_USART1(mavlinkBuffer, (int)ui16Temp);
 					mavlinkSendBusy = 1;

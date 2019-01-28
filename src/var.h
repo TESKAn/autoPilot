@@ -346,4 +346,6 @@ extern uint8_t mavlinkSendBusy;
 extern uint16_t ui16SendMavlinkHeartbeetTime;
 extern uint16_t ui16SendMavlinkBatteryStatus;
 
+extern uint16_t ui16MavlinkBatteryVoltages[10];
+
 #endif /* VAR_H_ */

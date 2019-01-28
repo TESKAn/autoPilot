@@ -116,10 +116,10 @@ typedef struct
 	float32_t fITime_m;
 	float32_t fUTime;
 	float32_t fITime;
-	uint16_t ui6MavLinkVoltage;
-	int16_t i16MavLinkCurrent;
 	int32_t i32MavLinkCurrentConsumed;
-
+	uint16_t ui16NumCells;
+	int16_t i16MavLinkCurrent;
+	uint16_t ui16MavlinkBatteryVoltages[10];
 }__attribute__((aligned(4),packed)) FLIGHT_BATMON;
 
 typedef struct

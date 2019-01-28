@@ -189,6 +189,17 @@ void flight_init(FLIGHT_CORE *FCFlightData_local, RCDATA * RCValues)
 	RCValues->SCALES.f32ThrottleScale = RC_IN_DEFAULT_SCALE_THROTTLE;
 	// Reset mAh counter
 	FCFlightData_local->batMon.fmAhUsed = 0.0f;
+	FCFlightData_local->batMon.ui16NumCells = 4;
+	FCFlightData_local->batMon.ui16MavlinkBatteryVoltages[0] = 65535;
+	FCFlightData_local->batMon.ui16MavlinkBatteryVoltages[1] = 65535;
+	FCFlightData_local->batMon.ui16MavlinkBatteryVoltages[2] = 65535;
+	FCFlightData_local->batMon.ui16MavlinkBatteryVoltages[3] = 65535;
+	FCFlightData_local->batMon.ui16MavlinkBatteryVoltages[4] = 65535;
+	FCFlightData_local->batMon.ui16MavlinkBatteryVoltages[5] = 65535;
+	FCFlightData_local->batMon.ui16MavlinkBatteryVoltages[6] = 65535;
+	FCFlightData_local->batMon.ui16MavlinkBatteryVoltages[7] = 65535;
+	FCFlightData_local->batMon.ui16MavlinkBatteryVoltages[8] = 65535;
+	FCFlightData_local->batMon.ui16MavlinkBatteryVoltages[9] = 65535;
 }
 
 // What to do if there is no RC input
