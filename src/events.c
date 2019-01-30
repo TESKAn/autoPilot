@@ -16,6 +16,8 @@ void ADC_ISR_Handler(void)
 {
 	uint16_t result = 0;
 	float32_t fTemp;
+	// Call freemaster recorder
+	FMSTR_Recorder();
 	// Check interrupt source - ADC1, ADC2 or ADC3
 	if(ADC_GetITStatus(ADC1, ADC_IT_EOC) != (u16)RESET)
 	{
@@ -714,10 +716,12 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			{
 				if(0 == mavlinkSendBusy)
 				{
+					/*
 					ui16Temp = mavlink_msg_heartbeat_pack(1, 1, &mavlinkMessageDataTX, MAV_TYPE_QUADROTOR, MAV_AUTOPILOT_GENERIC, MAV_MODE_FLAG_SAFETY_ARMED, 0, MAV_STATE_ACTIVE);
 					ui16Temp = mavlink_msg_to_send_buffer(mavlinkBuffer, &mavlinkMessageDataTX);
 					transferDMA_USART1(mavlinkBuffer, (int)ui16Temp);
-					mavlinkSendBusy = 1;
+					mavlinkSendBusy = 1;*/
+					RB32_push(&rb32MavlinkTXQueue, 0);
 					ui16SendMavlinkHeartbeetTime = 0;
 				}
 				else
@@ -728,14 +732,18 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 
 
 			ui16SendMavlinkBatteryStatus++;
-			if(1500 < ui16SendMavlinkBatteryStatus)
+			if(200 < ui16SendMavlinkBatteryStatus)
 			{
 				if(0 == mavlinkSendBusy)
 				{
+					/*
 					ui16Temp = mavlink_msg_battery_status_pack(1, 1, &mavlinkMessageDataTX, 0, MAV_BATTERY_FUNCTION_ALL, MAV_BATTERY_TYPE_LIPO, 2500, FCFlightData.batMon.ui16MavlinkBatteryVoltages, FCFlightData.batMon.i16MavLinkCurrent, FCFlightData.batMon.i32MavLinkCurrentConsumed, -1, -1, -1, MAV_BATTERY_CHARGE_STATE_OK);
 					ui16Temp = mavlink_msg_to_send_buffer(mavlinkBuffer, &mavlinkMessageDataTX);
 					transferDMA_USART1(mavlinkBuffer, (int)ui16Temp);
 					mavlinkSendBusy = 1;
+					*/
+					RB32_push(&rb32MavlinkTXQueue, 1);
+					RB32_push(&rb32MavlinkTXQueue, 2);
 					ui16SendMavlinkBatteryStatus = 0;
 				}
 				else

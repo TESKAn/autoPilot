@@ -348,4 +348,12 @@ extern uint16_t ui16SendMavlinkBatteryStatus;
 
 extern uint16_t ui16MavlinkBatteryVoltages[10];
 
+extern uint16_t ui16MavlinkQueueState;
+extern RING_BUFFER32 rb32MavlinkTXQueue;
+extern uint32_t ui32MavlinkBuf[32];
+
+
+
+
+
 #endif /* VAR_H_ */

@@ -184,3 +184,6 @@ uint16_t ui16SendMavlinkBatteryStatus = 0;
 
 uint16_t ui16MavlinkBatteryVoltages[10];
 
+uint16_t ui16MavlinkQueueState = 0;
+RING_BUFFER32 rb32MavlinkTXQueue;
+uint32_t ui32MavlinkBuf[32];

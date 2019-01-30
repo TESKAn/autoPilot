@@ -62,6 +62,7 @@ int main(void)
 {
 	uint16_t ui16Temp = 0;
 	unsigned int bytesWritten;
+	uint32_t ui32Temp = 0;
 	SYSTEM_RUNNING = 0;
 	//float32_t temp = 0;
 #ifdef USE_FREEMASTER
@@ -74,6 +75,9 @@ int main(void)
 	// Init serial port data structure
 	RB_Init(&RB_USART3, usart3_buf, 128);
 	RB_Init(&RB_USART2, usart2_buf, 128);
+
+	// Init MAVLINK buffer
+	RB32_Init(&rb32MavlinkTXQueue, ui32MavlinkBuf, 32);
 
 
 	//PWM_PASSTHROUGH = 1;
@@ -188,6 +192,47 @@ int main(void)
     	// Check freemaster
     	FMSTR_Poll();
 #endif
+
+    	// Check MAVLINK
+    	if(0 == mavlinkSendBusy)
+    	{
+    		if(rb32MavlinkTXQueue.count)
+    		{
+    			ui32Temp = RB32_pop(&rb32MavlinkTXQueue);
+    			switch(ui32Temp)
+    			{
+					case 0:
+					{
+						ui16Temp = mavlink_msg_heartbeat_pack(1, 1, &mavlinkMessageDataTX, MAV_TYPE_QUADROTOR, MAV_AUTOPILOT_GENERIC, MAV_MODE_FLAG_SAFETY_ARMED, 0, MAV_STATE_ACTIVE);
+						ui16Temp = mavlink_msg_to_send_buffer(mavlinkBuffer, &mavlinkMessageDataTX);
+						transferDMA_USART1(mavlinkBuffer, (int)ui16Temp);
+						mavlinkSendBusy = 1;
+						break;
+					}
+					case 1:
+					{
+						ui16Temp = mavlink_msg_battery_status_pack(1, 1, &mavlinkMessageDataTX, 0, MAV_BATTERY_FUNCTION_ALL, MAV_BATTERY_TYPE_LIPO, 2500, FCFlightData.batMon.ui16MavlinkBatteryVoltages, FCFlightData.batMon.i16MavLinkCurrent, FCFlightData.batMon.i32MavLinkCurrentConsumed, -1, -1, -1, MAV_BATTERY_CHARGE_STATE_OK);
+						ui16Temp = mavlink_msg_to_send_buffer(mavlinkBuffer, &mavlinkMessageDataTX);
+						transferDMA_USART1(mavlinkBuffer, (int)ui16Temp);
+						mavlinkSendBusy = 1;
+						break;
+					}
+					case 2:
+					{
+						ui16Temp = mavlink_msg_attitude_pack(1, 1,&mavlinkMessageDataTX, (uint32_t)getFTime(), fusionData.ROLLPITCHYAW.roll, fusionData.ROLLPITCHYAW.pitch, fusionData.ROLLPITCHYAW.yaw, fusionData.updateRotation.x, fusionData.updateRotation.y, fusionData.updateRotation.z);
+						ui16Temp = mavlink_msg_to_send_buffer(mavlinkBuffer, &mavlinkMessageDataTX);
+						transferDMA_USART1(mavlinkBuffer, (int)ui16Temp);
+						mavlinkSendBusy = 1;
+						break;
+					}
+					default:
+					{
+						break;
+					}
+    			}
+    		}
+    	}
+
 
     	// Main loop switch
     	switch(mainLoopState)
