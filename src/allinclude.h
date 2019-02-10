@@ -37,6 +37,8 @@
 //#include"sensors/ubx.h"
 
 #include "functions.h"
+#include "SDCard.h"
+#include "RingBuffer.h"
 
 #include "CAN/can.h"
 

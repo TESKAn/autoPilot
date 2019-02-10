@@ -34,33 +34,22 @@ void InitCANLink()
 	CANFilterInitStruct.CAN_FilterActivation = ENABLE;
 
 	CAN_FilterInit(&CANFilterInitStruct);
-
-
-}
-
-
-void InitCANFilter()
-{
-	uint16_t ui16IDHigh = (uint16_t)(ui32MainLoopCanVar >> 16);
-	uint16_t ui16IDLow = (uint16_t)(ui32MainLoopCanVar);
-
-	uint16_t ui16IDHigh1 = (uint16_t)(ui32MainLoopCanVar1 >> 16);
-	uint16_t ui16IDLow1 = (uint16_t)(ui32MainLoopCanVar1);
-
+/*
+	ui32Filter = CAN_MID_STATUS << 11;	// shift 8 + 3 bits
+	ui32Mask = 0xffff00 << 3;
 	// Init CAN filter(s) for rx messages
-	CAN_FilterInitTypeDef CANFilterInitStruct;
-	CANFilterInitStruct.CAN_FilterIdHigh = ui16IDHigh; //0;//0x004e;
-	CANFilterInitStruct.CAN_FilterIdLow = ui16IDLow; //0;//0x2123;
-	CANFilterInitStruct.CAN_FilterMaskIdHigh = ui16IDHigh1;
-	CANFilterInitStruct.CAN_FilterMaskIdLow = ui16IDLow1;
+	CANFilterInitStruct.CAN_FilterIdHigh = (uint16_t)(ui32Filter >> 16);
+	CANFilterInitStruct.CAN_FilterIdLow = (uint16_t)(ui32Filter);
+	CANFilterInitStruct.CAN_FilterMaskIdHigh = (uint16_t)(ui32Mask >> 16);
+	CANFilterInitStruct.CAN_FilterMaskIdLow = (uint16_t)(ui32Mask);
 	CANFilterInitStruct.CAN_FilterFIFOAssignment = CAN_Filter_FIFO0;
-	CANFilterInitStruct.CAN_FilterNumber = 0;
+	CANFilterInitStruct.CAN_FilterNumber = 1;
 	CANFilterInitStruct.CAN_FilterMode = CAN_FilterMode_IdMask;
 	CANFilterInitStruct.CAN_FilterScale = CAN_FilterScale_32bit;
 	CANFilterInitStruct.CAN_FilterActivation = ENABLE;
 
 	CAN_FilterInit(&CANFilterInitStruct);
-
+	*/
 
 }
 
@@ -137,13 +126,13 @@ int16_t CAN_SendRPM(uint16_t frontRPM, uint16_t rearRPM, uint8_t IDs)
 	// FR_RL?
 	if(IDs)
 	{
-		msg.Data[4] = COMMData.IDs.ui8MotorFR;
-		msg.Data[5] = COMMData.IDs.ui8MotorRL;
+		msg.Data[4] = FCFlightData.MOTORS.FR.ui8MotorID;
+		msg.Data[5] = FCFlightData.MOTORS.RL.ui8MotorID;
 	}
 	else
 	{
-		msg.Data[4] = COMMData.IDs.ui8MotorFL;
-		msg.Data[5] = COMMData.IDs.ui8MotorRR;
+		msg.Data[4] = FCFlightData.MOTORS.FL.ui8MotorID;
+		msg.Data[5] = FCFlightData.MOTORS.RR.ui8MotorID;
 	}
 
 	msg.Data[6] = 0xc0;
@@ -207,6 +196,25 @@ int16_t CAN_SendENABLE(uint8_t ui8Enable, uint8_t IDs)
 
 	// RPM 0
 	msg.Data[0] = ui8Enable;
+	msg.Data[1] = IDs;
+	msg.Data[2] = 0xc0;
+	msg.DLC = 3;
+	msg.IDE = CAN_Id_Extended;
+	msg.RTR = CAN_RTR_Data;
+
+	SendCANMessage(&msg);
+	return 0;
+}
+
+int16_t CAN_SendRESET(uint8_t IDs)
+{
+	CanTxMsg msg;
+
+	// Generate message ID
+	msg.ExtId = CAN_GenerateID(CAN_PRIO_RESET_ESC, CAN_MID_RESET_ESC);
+
+	// RPM 0
+	msg.Data[0] = 1;
 	msg.Data[1] = IDs;
 	msg.Data[2] = 0xc0;
 	msg.DLC = 3;
@@ -348,6 +356,8 @@ int16_t SendCANMessage(CanTxMsg *msg)
 			CANData.ui16CANTxMsgBufStore++;
 			CANData.ui16CANTxMsgBufStore = CANData.ui16CANTxMsgBufStore & 0x1f;
 
+			CANData.ui16CANTxMsgsStored = CANData.ui16CANTxMsgBufStore - CANData.ui16CANTxMsgBufRead;
+
 			return 0;
 		}
 		else return -1;
@@ -370,6 +380,65 @@ void ProcessCANMessage(CanRxMsg *msg)
 
 	switch(ui32MID)
 	{
+		case CAN_MID_STATUS:
+		{
+			switch(ui32NID)
+			{
+				case CAN_MOTOR_FR_ID:
+				{
+					FMotorData = &FCFlightData.MOTORS.FR;
+					break;
+				}
+				case CAN_MOTOR_FL_ID:
+				{
+					FMotorData = &FCFlightData.MOTORS.FL;
+					break;
+				}
+				case CAN_MOTOR_RR_ID:
+				{
+					FMotorData = &FCFlightData.MOTORS.RR;
+					break;
+				}
+				case CAN_MOTOR_RL_ID:
+				{
+					FMotorData = &FCFlightData.MOTORS.RL;
+					break;
+				}
+				default:
+				{
+					FMotorData = 0;
+					break;
+				}
+			}
+
+			if(0 != FMotorData)
+			{
+				FMotorData->ui8Health = (msg->Data[4] >> 6) & 0x03;
+				FMotorData->ui8Mode = (msg->Data[4] >> 3) & 0x07;
+
+
+				cnvrtnum.ch[0] = msg->Data[5];
+				cnvrtnum.ch[1] = msg->Data[6];
+				FMotorData->i16MotorState = cnvrtnum.i16[0];
+				if(3 == FMotorData->i16MotorState)
+				{
+					if(2 == FMotorData->ui8Enable)
+					{
+						FMotorData->ui8Enable = 1;
+					}
+					FMotorData->ui8Enabled = 1;
+				}
+				else
+				{
+					if(2 == FMotorData->ui8Enable)
+					{
+						FMotorData->ui8Enable = 0;
+					}
+					FMotorData->ui8Enabled = 0;
+				}
+			}
+			break;
+		}
 		case CAN_MID_RPMINFO:
 		{
 			switch(ui32NID)

@@ -12,14 +12,14 @@
 #include "math/myMath_typedefs.h"
 
 // Functions
-void flight_init(FLIGHT_CORE *FCFlightData_local, RCDATA * RCValues);
+int16_t flight_init(FLIGHT_CORE *FCFlightData_local, RCDATA * RCValues);
 int16_t flight_decideAction(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues);
-void flight_checkRCInputs(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues);
-void flight_checkStatesY(FLIGHT_CORE *FCFlightData_local, RCDATA * RCValues);
-void flight_checkStatesQ(FLIGHT_CORE *FCFlightData_local, RCDATA * RCValues);
-void flight_stabilize(FLIGHT_CORE * FCFlightData_local);
-void flight_decodeServosY(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues);
-void flight_decodeServosQ(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues);
+int16_t flight_checkRCInputs(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues);
+int16_t flight_checkStatesY(FLIGHT_CORE *FCFlightData_local, RCDATA * RCValues);
+int16_t flight_checkStatesQ(FLIGHT_CORE *FCFlightData_local, RCDATA * RCValues);
+int16_t flight_stabilize(FLIGHT_CORE * FCFlightData_local);
+int16_t flight_decodeServosY(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues);
+int16_t flight_decodeServosQ(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues);
 
 // Default values
 // Min plane speed in m/sec
@@ -123,6 +123,7 @@ void flight_decodeServosQ(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues);
 #define FINIT_WAIT_IMAX_SET				9
 #define FINIT_WAIT_THROTTLE_NULL		10
 #define FINIT_WAIT_RPM_SET				11
+#define FINIT_MOTORS_OK					12
 
 // Flight deinit states
 #define FDEINIT_IDLE					0

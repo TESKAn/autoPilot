@@ -28,6 +28,5 @@ void init_GPIO();
 void NVIC_EnableInterrupts(FunctionalState newState);
 void init_swin();
 void System_Config(void);
-void COMM_Init();
 
 #endif /* INIT_H_ */

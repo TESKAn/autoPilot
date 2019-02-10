@@ -74,7 +74,8 @@ typedef struct
 	uint8_t ui8UsingPWM;
 	uint8_t ui8ReverseRotation;
 	uint8_t ui8Reversed;
-	uint8_t ui8Empty[2];
+	uint8_t ui8Health;
+	uint8_t ui8Mode;
 	int16_t i16PWMMin;
 	int16_t i16PWMMax;
 	int16_t i16ReqRPM;				// Requested RPM, info from AHRS
@@ -84,6 +85,12 @@ typedef struct
 
 	int16_t i16SetRPM;				// Set RPM, info from ESC
 	int16_t i16CurrentRPM;
+
+	int16_t i16MotorState;
+	int16_t i16Empty1;
+
+	uint8_t ui8ResetSent;
+	uint8_t ui8Empty[3];
 
 	float fReqRPM;
 }__attribute__((aligned(4),packed)) FLIGHT_MOTOR;

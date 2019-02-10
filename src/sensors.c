@@ -232,6 +232,17 @@ void sensorInit()
 	I2C2_INITDONE = 1;
 }
 
+void storeAHRSAngles(FUSION_CORE *data)
+{
+	// Store angles
+
+	fusionData.ROLLPITCHYAW.roll = atan2f(data->_fusion_DCM.c.y, data->_fusion_DCM.c.z);
+
+	fusionData.ROLLPITCHYAW.pitch = -asinf(data->_fusion_DCM.c.x);
+
+	fusionData.ROLLPITCHYAW.yaw = atan2f( data->_fusion_DCM.b.x, data->_fusion_DCM.a.x);
+}
+
 // Copies sensor data from I2C to variables
 void copySensorData(void)
 {
@@ -290,15 +301,17 @@ void copySensorData(void)
 		}
 		// Check flight states
 		flight_checkStatesQ(&FCFlightData, &RCData);
+
 		// Get new servo values
 		flight_decodeServosQ(&FCFlightData, &RCData);
-		// Refresh PWM outputs
-		refreshPWMOutputs();
 
 		refreshMotorRPM();
 
-		// Buffer to CAN
-		//CAN_SendENABLE(1, CAN_MOTOR_ALL_ID);
+		// Check motor status
+		checkMotorHealth();
+
+		// Refresh PWM outputs
+		refreshPWMOutputs();
 	}
 
 	// Check if we are saving to log

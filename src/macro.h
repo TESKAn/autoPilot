@@ -257,6 +257,15 @@
 // CAN
 #define CAN_ID							10
 
+// Define macros
+// Device IDs
+#define CAN_MOTOR_FR_ID			20
+#define CAN_MOTOR_FL_ID			21
+#define CAN_MOTOR_RR_ID			22
+#define CAN_MOTOR_RL_ID			23
+
+#define CAN_MOTOR_ALL_ID		26
+
 // From main controller
 // CAN message IDs
 #define CAN_MID_STATUS					341
@@ -269,6 +278,7 @@
 #define CAN_MID_SETRPM_RR				20007
 #define CAN_MID_SETRPM_RL				20008
 #define CAN_MID_ORIENTATION_PID			20009
+#define CAN_MID_RESET_ESC				20010
 
 // CAN message priorities
 #define CAN_PRIO_STATUS					0x15
@@ -281,6 +291,8 @@
 #define CAN_PRIO_SETRPM_RR				0x01
 #define CAN_PRIO_SETRPM_RL				0x01
 #define CAN_PRIO_ORIENTATION_PID		0x15
+#define CAN_PRIO_RESET_ESC				0x15
+
 
 // From ESC
 // CAN message IDs

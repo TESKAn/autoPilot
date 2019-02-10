@@ -165,20 +165,6 @@ typedef struct tagCOMMMOTOR
 
 }__attribute__((aligned(4),packed)) COMMMOTOR;
 
-typedef struct tagCOMMSTRUCT
-{
-	// IDs
-	struct
-	{
-		uint8_t ui8MotorFR;
-		uint8_t ui8MotorFL;
-		uint8_t ui8MotorRR;
-		uint8_t ui8MotorRL;
-		uint8_t ui8MotorAll;
-	}IDs;
-}__attribute__((aligned(4),packed)) COMMSTRUCT;
-
-
 // Timing variables
 extern uint32_t ui32StartTime;
 extern uint32_t ui32EndTime;
@@ -200,9 +186,6 @@ extern uint8_t usart3_buf[128];
 
 extern RING_BUFFER RB_USART2;
 extern uint8_t usart2_buf[128];
-
-// Communication data
-extern COMMSTRUCT COMMData;
 
 extern FUSION_CORE fusionData;
 

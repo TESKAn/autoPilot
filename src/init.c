@@ -689,7 +689,7 @@ void init_DAC(void)
 
 void init_CAN()
 {
-	uint8_t ui8InitResult = 0;
+	//uint8_t ui8InitResult = 0;
 	//make structure for configuring pins
 	GPIO_InitTypeDef  GPIO_InitStructure;
 
@@ -731,7 +731,8 @@ void init_CAN()
 	CAN_InitStructure.CAN_TXFP = DISABLE;
 
 
-	ui8InitResult = CAN_Init(CAN1, &CAN_InitStructure);
+	//ui8InitResult = CAN_Init(CAN1, &CAN_InitStructure);
+	CAN_Init(CAN1, &CAN_InitStructure);
 
 	// Set slave bank numbers to 27
 	CAN_SlaveStartBank(27);
@@ -1513,14 +1514,4 @@ void System_Config(void)
 
 	// Init ADC0 as GPIO with pull - down
 	init_swin();
-}
-
-// Initialize comm buffer structure
-void COMM_Init()
-{
-	COMMData.IDs.ui8MotorFR = CAN_MOTOR_FR_ID;
-	COMMData.IDs.ui8MotorFL = CAN_MOTOR_FL_ID;
-	COMMData.IDs.ui8MotorRR = CAN_MOTOR_RR_ID;
-	COMMData.IDs.ui8MotorRL = CAN_MOTOR_RL_ID;
-	COMMData.IDs.ui8MotorAll = CAN_MOTOR_ALL_ID;
 }

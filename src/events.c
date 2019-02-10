@@ -556,7 +556,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 {
 
 	uint8_t retriesCount = 0;
-	uint16_t ui16Temp;
+	//uint16_t ui16Temp;
 	ErrorStatus error = SUCCESS;
 	if((TIM14->SR & TIM_FLAG_Update) != (u16)RESET)
 	{

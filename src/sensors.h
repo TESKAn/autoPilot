@@ -26,6 +26,7 @@
 void sensorTimer(void);
 void sensorInterruptTimer(void);
 void sensorInit();
+void storeAHRSAngles(FUSION_CORE *data);
 void copySensorData(void);
 ErrorStatus MPU6000_ReadFTValues(void);
 ErrorStatus MPU6000_AccSelfTest(FunctionalState newState);

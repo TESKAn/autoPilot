@@ -105,18 +105,18 @@ int main(void)
 
 	globalVar = 0.001f;
 
-
-	// Init Communication struct
-	COMM_Init();
-
-
-
 	// Peripherals initialized, wait 1 sec
 	Delayms(100);
 
-
 	// Initialize flight data
 	flight_init(&FCFlightData, &RCData);
+
+	// Set motor IDs
+	FCFlightData.MOTORS.FR.ui8MotorID = CAN_MOTOR_FR_ID;
+	FCFlightData.MOTORS.FL.ui8MotorID = CAN_MOTOR_FL_ID;
+	FCFlightData.MOTORS.RR.ui8MotorID = CAN_MOTOR_RR_ID;
+	FCFlightData.MOTORS.RL.ui8MotorID = CAN_MOTOR_RL_ID;
+
 
 	// Initialize external peripheral
 	extPeripheralInit();
@@ -412,7 +412,6 @@ int main(void)
 			}
 			case 22:
 			{
-				InitCANFilter();
 				mainLoopState = 0;
 				break;
 			}

@@ -37,7 +37,7 @@ uint16_t ui16CheckStatesDelay = 0;
 
 
 // Init flight variables
-void flight_init(FLIGHT_CORE *FCFlightData_local, RCDATA * RCValues)
+int16_t flight_init(FLIGHT_CORE *FCFlightData_local, RCDATA * RCValues)
 {
 	int i = 0;
 	// Set initial state
@@ -200,6 +200,7 @@ void flight_init(FLIGHT_CORE *FCFlightData_local, RCDATA * RCValues)
 	FCFlightData_local->batMon.ui16MavlinkBatteryVoltages[7] = 65535;
 	FCFlightData_local->batMon.ui16MavlinkBatteryVoltages[8] = 65535;
 	FCFlightData_local->batMon.ui16MavlinkBatteryVoltages[9] = 65535;
+	return 0;
 }
 
 // What to do if there is no RC input
@@ -222,7 +223,7 @@ int16_t flight_decideAction(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues)
 }
 
 // Decode what RC commands want
-void flight_checkRCInputs(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues)
+int16_t flight_checkRCInputs(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues)
 {
 	int i = 0;
 	float32_t f32Temp;
@@ -413,10 +414,11 @@ void flight_checkRCInputs(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues)
 		}
 	}
 	//***********************************
+	return 0;
 }
 
 // Main flight state machine
-void flight_checkStatesY(FLIGHT_CORE *FCFlightData_local, RCDATA * RCValues)
+int16_t flight_checkStatesY(FLIGHT_CORE *FCFlightData_local, RCDATA * RCValues)
 {
 	//int i = 0;
 	switch(FCFlightData_local->ui32FlightStateMachine)
@@ -961,11 +963,14 @@ void flight_checkStatesY(FLIGHT_CORE *FCFlightData_local, RCDATA * RCValues)
 			break;
 		}
 	}
+	return 0;
 }
-#define MOTOR_REQ_NULL_RPM		2000
+#define MOTOR_REQ_NULL_RPM		4000
+#define ESC_SYSTEM_RUN			3
 // Main flight state machine
-void flight_checkStatesQ(FLIGHT_CORE *FCFlightData_local, RCDATA * RCValues)
+int16_t flight_checkStatesQ(FLIGHT_CORE *FCFlightData_local, RCDATA * RCValues)
 {
+	int16_t i16Status = 0;
 	//int i = 0;
 	switch(FCFlightData_local->ui32FlightStateMachine)
 	{
@@ -1010,16 +1015,13 @@ void flight_checkStatesQ(FLIGHT_CORE *FCFlightData_local, RCDATA * RCValues)
 											FCFlightData_local->MOTORS.RR.ui8Enable = 1;
 											FCFlightData_local->MOTORS.RL.ui8Enable = 1;
 
-											enableMotors(1);
+											// Indicate send motor arm signal
+											//i16Status = 1;
 
 											// Next state
 											ui16CheckStatesDelay = 50;
 											// End init, go to hover stabilize
-											FCFlightData_local->ui32FlightInitState = FINIT_IDLE;
-											FCFlightData_local->ui32FlightStateMachine = FLIGHT_STABILIZE_HOVER;
-											RC_Flags.bits.HOVER = 1;
-											RC_Flags.bits.PLANE = 0;
-											RC_Flags.bits.TRANSITION = 0;
+											FCFlightData_local->ui32FlightInitState = FINIT_MOTORS_OK;
 										}
 									}
 									else
@@ -1030,6 +1032,22 @@ void flight_checkStatesQ(FLIGHT_CORE *FCFlightData_local, RCDATA * RCValues)
 							}
 						}
 					}
+					break;
+				}
+				case FINIT_MOTORS_OK:
+				{
+					if(ESC_SYSTEM_RUN == FCFlightData_local->MOTORS.FL.i16MotorState)
+					{
+
+					}
+
+
+					// End init, go to hover stabilize
+					FCFlightData_local->ui32FlightInitState = FINIT_IDLE;
+					FCFlightData_local->ui32FlightStateMachine = FLIGHT_STABILIZE_HOVER;
+					RC_Flags.bits.HOVER = 1;
+					RC_Flags.bits.PLANE = 0;
+					RC_Flags.bits.TRANSITION = 0;
 					break;
 				}
 				default:
@@ -1082,7 +1100,8 @@ void flight_checkStatesQ(FLIGHT_CORE *FCFlightData_local, RCDATA * RCValues)
 			FCFlightData_local->MOTORS.RR.ui8Enable = 0;
 			FCFlightData_local->MOTORS.RL.ui8Enable = 0;
 
-			enableMotors(0);
+			// Indicate send motor disarm signal
+			//i16Status = 2;
 
 			switch(FCFlightData_local->ui32FlightDeInitStates)
 			{
@@ -1128,10 +1147,11 @@ void flight_checkStatesQ(FLIGHT_CORE *FCFlightData_local, RCDATA * RCValues)
 			break;
 		}
 	}
+	return i16Status;
 }
 
 // Stabilize according to data
-void flight_stabilize(FLIGHT_CORE * FCFlightData_local)
+int16_t flight_stabilize(FLIGHT_CORE * FCFlightData_local)
 {
 	float32_t f32Error = 0.0f;
 	float32_t f32IntegrationInterval = 0.01f;
@@ -1168,11 +1188,11 @@ void flight_stabilize(FLIGHT_CORE * FCFlightData_local)
 	math_PID(f32Error, f32IntegrationInterval, &FCFlightData_local->PIDAltitude);
 
 	// Run speed PID
-
+	return 0;
 }
 
 // Hardware specific function - decode flight commands to servo/motor commands
-void flight_decodeServosY(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues)
+int16_t flight_decodeServosY(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues)
 {
 	float32_t f32Temp;
 	float32_t f32Temp1;
@@ -1397,10 +1417,11 @@ void flight_decodeServosY(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues)
 	}
 
 	//***********************************
+	return 0;
 }
 
 // Hardware specific function - decode flight commands to servo/motor commands
-void flight_decodeServosQ(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues)
+int16_t flight_decodeServosQ(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues)
 {
 	float32_t f32Temp;
 	float32_t f32Temp1;
@@ -1631,6 +1652,7 @@ void flight_decodeServosQ(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues)
 	}
 
 	//***********************************
+	return 0;
 }
 
 
