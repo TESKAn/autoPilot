@@ -194,6 +194,7 @@ int main(void)
 #endif
 
     	// Check MAVLINK
+    	/*
     	if(0 == mavlinkSendBusy)
     	{
     		if(rb32MavlinkTXQueue.count)
@@ -232,7 +233,7 @@ int main(void)
     			}
     		}
     	}
-
+*/
 
     	// Main loop switch
     	switch(mainLoopState)

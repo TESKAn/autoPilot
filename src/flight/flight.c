@@ -95,13 +95,13 @@ int16_t flight_init(FLIGHT_CORE *FCFlightData_local, RCDATA * RCValues)
 	FCFlightData_local->MOTORS.RL.ui8UsePWM = 0;
 
 	// Motor min/max RPM
-	FCFlightData_local->MOTORS.FR.i16MinRPM = 2000;
+	FCFlightData_local->MOTORS.FR.i16MinRPM = 3500;
 	FCFlightData_local->MOTORS.FR.i16MaxRPM = 20000;
-	FCFlightData_local->MOTORS.FL.i16MinRPM = 2000;
+	FCFlightData_local->MOTORS.FL.i16MinRPM = 3500;
 	FCFlightData_local->MOTORS.FL.i16MaxRPM = 20000;
-	FCFlightData_local->MOTORS.RR.i16MinRPM = 2000;
+	FCFlightData_local->MOTORS.RR.i16MinRPM = 3500;
 	FCFlightData_local->MOTORS.RR.i16MaxRPM = 20000;
-	FCFlightData_local->MOTORS.RL.i16MinRPM = 2000;
+	FCFlightData_local->MOTORS.RL.i16MinRPM = 3500;
 	FCFlightData_local->MOTORS.RL.i16MaxRPM = 20000;
 
 	// Set motor park positions
@@ -1461,6 +1461,7 @@ int16_t flight_decodeServosQ(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues
 		// Get correct RPM value
 		f32Temp1 = (float)(FCFlightData_local->MOTORS.FR.i16MaxRPM - FCFlightData_local->MOTORS.FR.i16MinRPM);
 		f32Temp1 *= f32Temp;
+		f32Temp1 += (float)FCFlightData_local->MOTORS.FR.i16MinRPM;
 		FCFlightData_local->MOTORS.FR.i16ReqRPM = (int16_t)f32Temp1;
 		FCFlightData_local->MOTORS.FR.fReqRPM = f32Temp1;
 
@@ -1475,6 +1476,7 @@ int16_t flight_decodeServosQ(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues
 		// Get correct RPM value
 		f32Temp1 = (float)(FCFlightData_local->MOTORS.FL.i16MaxRPM - FCFlightData_local->MOTORS.FL.i16MinRPM);
 		f32Temp1 *= f32Temp;
+		f32Temp1 += (float)FCFlightData_local->MOTORS.FL.i16MinRPM;
 		FCFlightData_local->MOTORS.FL.i16ReqRPM = (int16_t)f32Temp1;
 		FCFlightData_local->MOTORS.FL.fReqRPM = f32Temp1;
 
@@ -1489,6 +1491,7 @@ int16_t flight_decodeServosQ(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues
 		// Get correct RPM value
 		f32Temp1 = (float)(FCFlightData_local->MOTORS.RR.i16MaxRPM - FCFlightData_local->MOTORS.RR.i16MinRPM);
 		f32Temp1 *= f32Temp;
+		f32Temp1 += (float)FCFlightData_local->MOTORS.RR.i16MinRPM;
 		FCFlightData_local->MOTORS.RR.i16ReqRPM = (int16_t)f32Temp1;
 		FCFlightData_local->MOTORS.RR.fReqRPM = f32Temp1;
 
@@ -1503,8 +1506,7 @@ int16_t flight_decodeServosQ(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues
 		// Get correct RPM value
 		f32Temp1 = (float)(FCFlightData_local->MOTORS.RL.i16MaxRPM - FCFlightData_local->MOTORS.RL.i16MinRPM);
 		f32Temp1 *= f32Temp;
-
-
+		f32Temp1 += (float)FCFlightData_local->MOTORS.RL.i16MinRPM;
 		FCFlightData_local->MOTORS.RL.i16ReqRPM = (int16_t)f32Temp1;
 		FCFlightData_local->MOTORS.RL.fReqRPM = f32Temp1;
 

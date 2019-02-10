@@ -21,6 +21,8 @@ typedef struct tagCANSTRUCT
 	int16_t ui16CANTxMsgBufRead;
 	int16_t ui16CANTxMsgsStored;
 	CanTxMsg CANTxMsgBuf[32];
+	uint32_t ui32CANRXMessages;
+	uint32_t ui32CANTXMessages;
 
 }__attribute__((aligned(4),packed)) CANSTRUCT;
 

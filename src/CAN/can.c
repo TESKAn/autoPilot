@@ -34,7 +34,7 @@ void InitCANLink()
 	CANFilterInitStruct.CAN_FilterActivation = ENABLE;
 
 	CAN_FilterInit(&CANFilterInitStruct);
-/*
+
 	ui32Filter = CAN_MID_STATUS << 11;	// shift 8 + 3 bits
 	ui32Mask = 0xffff00 << 3;
 	// Init CAN filter(s) for rx messages
@@ -49,8 +49,6 @@ void InitCANLink()
 	CANFilterInitStruct.CAN_FilterActivation = ENABLE;
 
 	CAN_FilterInit(&CANFilterInitStruct);
-	*/
-
 }
 
 
@@ -420,20 +418,24 @@ void ProcessCANMessage(CanRxMsg *msg)
 				cnvrtnum.ch[0] = msg->Data[5];
 				cnvrtnum.ch[1] = msg->Data[6];
 				FMotorData->i16MotorState = cnvrtnum.i16[0];
+				// If motor is running and enable was sent
 				if(3 == FMotorData->i16MotorState)
 				{
+					/*
 					if(2 == FMotorData->ui8Enable)
 					{
 						FMotorData->ui8Enable = 1;
-					}
+					}*/
 					FMotorData->ui8Enabled = 1;
 				}
-				else
+				// Else if motor is idle and disable was sent
+				else if(2 == FMotorData->i16MotorState)
 				{
-					if(2 == FMotorData->ui8Enable)
+					/*
+					if(3 == FMotorData->ui8Enable)
 					{
 						FMotorData->ui8Enable = 0;
-					}
+					}*/
 					FMotorData->ui8Enabled = 0;
 				}
 			}

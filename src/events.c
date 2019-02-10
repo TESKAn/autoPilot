@@ -805,6 +805,7 @@ void CAN1_RX0_ISR_Handler()
 	uint8_t ui8MessagesPending = CAN_MessagePending(CAN1, CAN_FIFO0);
 	while(0 != ui8MessagesPending)
 	{
+		CANData.ui32CANRXMessages++;
 		CAN_Receive(CAN1, CAN_FIFO0, &RecMessage);
 		ProcessCANMessage(&RecMessage);
 		// Release FIFO
@@ -832,6 +833,7 @@ void CAN1_RX1_ISR_Handler()
 
 void CAN1_TX0_ISR_Handler()
 {
+	CANData.ui32CANTXMessages++;
 	// Check CAN message buffer
 	if(CANData.ui16CANTxMsgBufRead != CANData.ui16CANTxMsgBufStore)
 	{

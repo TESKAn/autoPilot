@@ -84,21 +84,37 @@ int16_t checkMotorHealth()
 			// Is motor disabled?
 			if(0 == FMotorData->ui8Enabled)
 			{
-				// Mark enable sent
-				FMotorData->ui8Enable = 2;
-				// Send enable
-				CAN_SendENABLE(1, FMotorData->ui8MotorID);
+				if(0 == FMotorData->i16EnableDisableTimeout)
+				{
+					// Mark enable sent
+					//FMotorData->ui8Enable = 2;
+					// Send enable
+					CAN_SendENABLE(1, FMotorData->ui8MotorID);
+					FMotorData->i16EnableDisableTimeout = 50;
+				}
+				else
+				{
+					FMotorData->i16EnableDisableTimeout--;
+				}
 			}
 		}
-		else
+		else if(0 == FMotorData->ui8Enable)
 		{
 			// Is motor enabled?
 			if(1 == FMotorData->ui8Enabled)
 			{
-				// Mark enable sent
-				FMotorData->ui8Enable = 2;
-				// Send enable
-				CAN_SendENABLE(0, FMotorData->ui8MotorID);
+				if(0 == FMotorData->i16EnableDisableTimeout)
+				{
+					// Mark enable sent
+					//FMotorData->ui8Enable = 3;
+					// Send enable
+					CAN_SendENABLE(0, FMotorData->ui8MotorID);
+					FMotorData->i16EnableDisableTimeout = 50;
+				}
+				else
+				{
+					FMotorData->i16EnableDisableTimeout--;
+				}
 			}
 		}
 		// Check motor health

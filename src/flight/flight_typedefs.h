@@ -87,7 +87,7 @@ typedef struct
 	int16_t i16CurrentRPM;
 
 	int16_t i16MotorState;
-	int16_t i16Empty1;
+	int16_t i16EnableDisableTimeout;
 
 	uint8_t ui8ResetSent;
 	uint8_t ui8Empty[3];
