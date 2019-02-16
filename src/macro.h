@@ -271,14 +271,12 @@
 #define CAN_MID_STATUS					341
 #define CAN_MID_ORIENTATION				20001
 #define CAN_MID_SETRPMLIMIT				20002
-#define CAN_MID_SETRPM					20003
-#define CAN_MID_ENABLE					20004
-#define CAN_MID_SETRPM_FR				20005
-#define CAN_MID_SETRPM_FL				20006
-#define CAN_MID_SETRPM_RR				20007
-#define CAN_MID_SETRPM_RL				20008
 #define CAN_MID_ORIENTATION_PID			20009
-#define CAN_MID_RESET_ESC				20010
+
+#define CAN_MID_SETRPM_BASE				20200		// Base ID for set RPM
+#define CAN_MID_ENABLE_BASE				20300		// Base ID for ENABLE
+#define CAN_MID_SET_REG_BASE			20400		// Set register MID
+
 
 // CAN message priorities
 #define CAN_PRIO_STATUS					0x15
@@ -292,7 +290,7 @@
 #define CAN_PRIO_SETRPM_RL				0x01
 #define CAN_PRIO_ORIENTATION_PID		0x15
 #define CAN_PRIO_RESET_ESC				0x15
-
+#define CAN_PRIO_WRITE_REG				0x15
 
 // From ESC
 // CAN message IDs
@@ -301,6 +299,13 @@
 // CAN message priorities
 #define CAN_PRIO_UIN					0x15
 #define CAN_PRIO_RPMINFO				0x15
+
+// Reg write macros
+#define CAN_WRITE_TOFLASH				0
+#define CAN_WRITE_REG_RESET				1
+#define CAN_WRITE_REG_BATLOW			2
+#define CAN_WRITE_REG_MINRPM			3
+#define CAN_WRITE_REG_MAXRPM			4
 
 
 #endif /* MACRO_H_ */

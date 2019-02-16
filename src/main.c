@@ -60,9 +60,9 @@ float32_t t2 = 0;
 
 int main(void)
 {
-	uint16_t ui16Temp = 0;
+	//uint16_t ui16Temp = 0;
 	unsigned int bytesWritten;
-	uint32_t ui32Temp = 0;
+	//uint32_t ui32Temp = 0;
 	SYSTEM_RUNNING = 0;
 	//float32_t temp = 0;
 #ifdef USE_FREEMASTER
@@ -347,67 +347,78 @@ int main(void)
 			}
 			case 12:
 			{
-				// Start servo poll
-				//RS485_MasterState(1);
+				// Send reset signal
+				CAN_SendRESET(21);
 				mainLoopState = 0;
 				break;
 			}
 			case 13:
 			{
-				// Stop servo poll
-				//RS485_MasterState(2);
+				// Write bat low value
+				t32CANVar.ui16[0] = ui16MainLoopVar;
+				CAN_SendRegValue(CAN_WRITE_REG_BATLOW, &t32CANVar, 20);
+				CAN_SendRegValue(CAN_WRITE_REG_BATLOW, &t32CANVar, 21);
+				CAN_SendRegValue(CAN_WRITE_REG_BATLOW, &t32CANVar, 22);
+				CAN_SendRegValue(CAN_WRITE_REG_BATLOW, &t32CANVar, 23);
 				mainLoopState = 0;
 				break;
 			}
 			case 14:
 			{
 				// Enable motor
-				//RS485_MotorTest(0);
+				enableMotors(1);
 				mainLoopState = 0;
 				break;
 			}
 			case 15:
 			{
 				// Disable motor
-				//RS485_MotorTest(1);
+				enableMotors(0);
 				mainLoopState = 0;
 				break;
 			}
 			case 16:
 			{
-				// Set RPM
-				//RS485_MotorTest(2);
+				// Store parameters
+				storeMotorParams();
 				mainLoopState = 0;
 				break;
 			}
 			case 17:
 			{
-				// Store command
-				//RS485_QueueCommand(RS485ExecuteCommand);
+				// Write min RPM
+				t32CANVar.ui16[0] = ui16MainLoopVar;
+				CAN_SendRegValue(CAN_WRITE_REG_MINRPM, &t32CANVar, 20);
+				CAN_SendRegValue(CAN_WRITE_REG_MINRPM, &t32CANVar, 21);
+				CAN_SendRegValue(CAN_WRITE_REG_MINRPM, &t32CANVar, 22);
+				CAN_SendRegValue(CAN_WRITE_REG_MINRPM, &t32CANVar, 23);
 				mainLoopState = 0;
 				break;
 			}
 			case 18:
 			{
-				refreshPWMOutputs();
+				// Write max RPM
+				t32CANVar.ui16[0] = ui16MainLoopVar;
+				CAN_SendRegValue(CAN_WRITE_REG_MAXRPM, &t32CANVar, 20);
+				CAN_SendRegValue(CAN_WRITE_REG_MAXRPM, &t32CANVar, 21);
+				CAN_SendRegValue(CAN_WRITE_REG_MAXRPM, &t32CANVar, 22);
+				CAN_SendRegValue(CAN_WRITE_REG_MAXRPM, &t32CANVar, 23);
 				mainLoopState = 0;
 				break;
 			}
 			case 19:
 			{
-				CAN_SendMinMaxRPM();
+				refreshPWMOutputs();
 				mainLoopState = 0;
 				break;
 			}
 			case 20:
 			{
-				CAN_SendRPM(2000, 2000, 0);
 				mainLoopState = 0;
 				break;
 			}
 			case 21:
 			{
-				CAN_SendRPM(2000, 2000, 1);
 				mainLoopState = 0;
 				break;
 			}

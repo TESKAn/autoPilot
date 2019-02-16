@@ -1272,9 +1272,6 @@ int16_t flight_decodeServosY(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues
 		// Store
 		RCValues->ch[RC_MOTOR_RR].PWMOUT_Val = f32Temp;
 
-		// Send values
-		//CAN_SendRPM(2000, 2000, 0);
-
 /*
 		// Distribute power from RC command
 		f32Temp = RCValues->ch[RC_ELEVATOR].PWMIN_Zero / 4000;

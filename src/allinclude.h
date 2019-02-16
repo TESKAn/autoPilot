@@ -40,7 +40,7 @@
 #include "SDCard.h"
 #include "RingBuffer.h"
 
-#include "CAN/can.h"
+//#include "CAN/can.h"
 
 // File with macro functions
 #include "macroFunctions.h"
@@ -66,6 +66,8 @@
 
 
 #include "var.h"
+
+#include "CAN/can.h"
 
 #include "sensors.h"
 

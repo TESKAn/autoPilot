@@ -156,17 +156,29 @@ int16_t checkMotorHealth()
 void refreshMotorRPM()
 {
 	// Buffer to CAN
-	CAN_SendRPM_single(FCFlightData.MOTORS.FR.i16ReqRPM, CAN_MOTOR_FR_ID);
-	CAN_SendRPM_single(FCFlightData.MOTORS.FL.i16ReqRPM, CAN_MOTOR_FL_ID);
-	CAN_SendRPM_single(FCFlightData.MOTORS.RR.i16ReqRPM, CAN_MOTOR_RR_ID);
-	CAN_SendRPM_single(FCFlightData.MOTORS.RL.i16ReqRPM, CAN_MOTOR_RL_ID);
+	CAN_SendRPM_single(FCFlightData.MOTORS.FR.i16ReqRPM, FCFlightData.MOTORS.FR.ui8MotorID);
+	CAN_SendRPM_single(FCFlightData.MOTORS.FL.i16ReqRPM, FCFlightData.MOTORS.FL.ui8MotorID);
+	CAN_SendRPM_single(FCFlightData.MOTORS.RR.i16ReqRPM, FCFlightData.MOTORS.RR.ui8MotorID);
+	CAN_SendRPM_single(FCFlightData.MOTORS.RL.i16ReqRPM, FCFlightData.MOTORS.RL.ui8MotorID);
 }
 
 void enableMotors(uint8_t ui8Enable)
 {
-	CAN_SendENABLE(ui8Enable, CAN_MOTOR_ALL_ID);
+	CAN_SendENABLE(ui8Enable, FCFlightData.MOTORS.FR.ui8MotorID);
+	CAN_SendENABLE(ui8Enable, FCFlightData.MOTORS.FL.ui8MotorID);
+	CAN_SendENABLE(ui8Enable, FCFlightData.MOTORS.RR.ui8MotorID);
+	CAN_SendENABLE(ui8Enable, FCFlightData.MOTORS.RL.ui8MotorID);
 }
 
+int16_t storeMotorParams()
+{
+	t32CANVar.ui32 = 1;
+	CAN_SendRegValue(CAN_WRITE_TOFLASH, &t32CANVar, 20);
+	CAN_SendRegValue(CAN_WRITE_TOFLASH, &t32CANVar, 21);
+	CAN_SendRegValue(CAN_WRITE_TOFLASH, &t32CANVar, 22);
+	CAN_SendRegValue(CAN_WRITE_TOFLASH, &t32CANVar, 23);
+	return 0;
+}
 
 // Update PWM out values
 void refreshPWMOutputs(void)

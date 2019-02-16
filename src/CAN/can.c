@@ -72,6 +72,36 @@ uint32_t CAN_GenerateID(uint32_t ui32PRIO, uint32_t ui32MID)
 	return ui32MsgID;
 }
 
+int16_t CAN_SendRegValue(uint16_t ui16RegNumber, T32BITVARS *t32Data, uint8_t ID)
+{
+	T16BITVARS t16RegNum;
+	CanTxMsg msg;
+
+	// Generate message ID
+	msg.ExtId = CAN_GenerateID(CAN_PRIO_WRITE_REG, CAN_MID_SET_REG_BASE + ID);
+
+	t16RegNum.i16 = ui16RegNumber;
+	msg.Data[0] = t16RegNum.bytes.ui8[1];
+	msg.Data[1] = t16RegNum.bytes.ui8[0];
+
+
+	msg.Data[2] = t32Data->ui8[3];
+	msg.Data[3] = t32Data->ui8[2];
+	msg.Data[4] = t32Data->ui8[1];
+	msg.Data[5] = t32Data->ui8[0];
+
+	msg.Data[6] = 0xc0;
+	msg.DLC = 7;
+	msg.IDE = CAN_Id_Extended;
+	msg.RTR = CAN_RTR_Data;
+
+	SendCANMessage(&msg);
+
+
+
+	return 0;
+}
+
 int16_t CAN_SendMinMaxRPM()
 {
 	CONVERTNUM cnvrt_number;
@@ -101,37 +131,27 @@ int16_t CAN_SendMinMaxRPM()
 	return 0;
 }
 
-
-// IDs
-// 0 -> FR_RL
-// 1 -> FL_RR
-int16_t CAN_SendRPM(uint16_t frontRPM, uint16_t rearRPM, uint8_t IDs)
+int16_t CAN_SendVoltageCutoff(uint16_t ui16Value, uint8_t ID)
 {
-	CONVERTNUM cnvrt_number;
 	CanTxMsg msg;
+	CONVERTNUM cnvrt_number;
 
 	// Generate message ID
-	msg.ExtId = CAN_GenerateID(CAN_PRIO_SETRPM, CAN_MID_SETRPM);
+	msg.ExtId = CAN_GenerateID(CAN_PRIO_WRITE_REG, CAN_MID_SET_REG_BASE + ID);
 
-	// RPM 0
-	cnvrt_number.ui16[0] = frontRPM;
-	msg.Data[0] = cnvrt_number.ch[0];
-	msg.Data[1] = cnvrt_number.ch[1];
-	// RPM 1
-	cnvrt_number.ui16[0] = rearRPM;
-	msg.Data[2] = cnvrt_number.ch[0];
-	msg.Data[3] = cnvrt_number.ch[1];
-	// FR_RL?
-	if(IDs)
-	{
-		msg.Data[4] = FCFlightData.MOTORS.FR.ui8MotorID;
-		msg.Data[5] = FCFlightData.MOTORS.RL.ui8MotorID;
-	}
-	else
-	{
-		msg.Data[4] = FCFlightData.MOTORS.FL.ui8MotorID;
-		msg.Data[5] = FCFlightData.MOTORS.RR.ui8MotorID;
-	}
+	// Write to reg
+	cnvrt_number.ui16[0] = CAN_WRITE_REG_BATLOW;
+
+	msg.Data[0] = cnvrt_number.ch[1];
+	msg.Data[1] = cnvrt_number.ch[0];
+
+	// Data to write
+	cnvrt_number.ui16[0] = ui16Value;
+
+	msg.Data[2] = 0;
+	msg.Data[3] = 0;
+	msg.Data[4] = cnvrt_number.ch[1];
+	msg.Data[5] = cnvrt_number.ch[0];
 
 	msg.Data[6] = 0xc0;
 	msg.DLC = 7;
@@ -148,29 +168,8 @@ int16_t CAN_SendRPM_single(uint16_t RPM, uint8_t ID)
 	CanTxMsg msg;
 
 	// Generate message ID
-	switch(ID)
-	{
-		case CAN_MOTOR_FR_ID:
-		{
-			msg.ExtId = CAN_GenerateID(CAN_PRIO_SETRPM_FR, CAN_MID_SETRPM_FR);
-			break;
-		}
-		case CAN_MOTOR_FL_ID:
-		{
-			msg.ExtId = CAN_GenerateID(CAN_PRIO_SETRPM_FL, CAN_MID_SETRPM_FL);
-			break;
-		}
-		case CAN_MOTOR_RR_ID:
-		{
-			msg.ExtId = CAN_GenerateID(CAN_PRIO_SETRPM_RR, CAN_MID_SETRPM_RR);
-			break;
-		}
-		case CAN_MOTOR_RL_ID:
-		{
-			msg.ExtId = CAN_GenerateID(CAN_PRIO_SETRPM_RL, CAN_MID_SETRPM_RL);
-			break;
-		}
-	}
+	msg.ExtId = CAN_GenerateID(CAN_PRIO_SETRPM_FR, CAN_MID_SETRPM_BASE + ID);
+
 	// RPM
 	cnvrt_number.ui16[0] = RPM;
 	msg.Data[0] = cnvrt_number.ch[0];
@@ -190,12 +189,10 @@ int16_t CAN_SendENABLE(uint8_t ui8Enable, uint8_t IDs)
 	CanTxMsg msg;
 
 	// Generate message ID
-	msg.ExtId = CAN_GenerateID(CAN_PRIO_ENABLE, CAN_MID_ENABLE);
+	msg.ExtId = CAN_GenerateID(CAN_PRIO_ENABLE, CAN_MID_ENABLE_BASE + IDs);
 
-	// RPM 0
 	msg.Data[0] = ui8Enable;
-	msg.Data[1] = IDs;
-	msg.Data[2] = 0xc0;
+	msg.Data[1] = 0xc0;
 	msg.DLC = 3;
 	msg.IDE = CAN_Id_Extended;
 	msg.RTR = CAN_RTR_Data;
@@ -209,13 +206,16 @@ int16_t CAN_SendRESET(uint8_t IDs)
 	CanTxMsg msg;
 
 	// Generate message ID
-	msg.ExtId = CAN_GenerateID(CAN_PRIO_RESET_ESC, CAN_MID_RESET_ESC);
+	msg.ExtId = CAN_GenerateID(CAN_PRIO_WRITE_REG, CAN_MID_SET_REG_BASE + IDs);
 
-	// RPM 0
-	msg.Data[0] = 1;
-	msg.Data[1] = IDs;
-	msg.Data[2] = 0xc0;
-	msg.DLC = 3;
+	msg.Data[0] = 0;
+	msg.Data[1] = 1;
+	msg.Data[2] = 0;
+	msg.Data[3] = 0;
+	msg.Data[4] = 0;
+	msg.Data[5] = 1;
+	msg.Data[6] = 0xc0;
+	msg.DLC = 7;
 	msg.IDE = CAN_Id_Extended;
 	msg.RTR = CAN_RTR_Data;
 

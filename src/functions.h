@@ -35,6 +35,7 @@ void calibrateI2CSensors(void);
 int16_t checkMotorHealth();
 void refreshMotorRPM();
 void enableMotors(uint8_t ui8Enable);
+int16_t storeMotorParams();
 void refreshPWMOutputs(void);
 uint32_t getSystemTime(void);
 float32_t getFTime(void);

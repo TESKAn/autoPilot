@@ -96,6 +96,32 @@ typedef union
 
 typedef union
 {
+	union
+	{
+		struct
+		{
+			uint8_t ui8[4];
+		};
+		struct
+		{
+			int8_t i8[4];
+		};
+		struct
+		{
+			uint16_t ui16[2];
+		};
+		struct
+		{
+			int16_t i16[2];
+		};
+		uint32_t ui32;
+		int32_t i32;
+		float32_t f;
+	};
+}__attribute__((aligned(4),packed))  T32BITVARS;
+
+typedef union
+{
     uint32_t u;
     float f;
 }__attribute__((aligned(4),packed))  FP32;
@@ -174,6 +200,7 @@ extern uint32_t ui32SensorUpdateInterval;
 
 
 extern uint16_t mainLoopState;
+extern uint16_t ui16MainLoopVar;
 extern uint16_t servoMovePosition;
 extern float32_t motorFRSpeed;
 extern uint16_t readRS485Data;
@@ -335,7 +362,7 @@ extern uint16_t ui16MavlinkQueueState;
 extern RING_BUFFER32 rb32MavlinkTXQueue;
 extern uint32_t ui32MavlinkBuf[32];
 
-
+extern T32BITVARS t32CANVar;
 
 
 

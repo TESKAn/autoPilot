@@ -17,6 +17,7 @@ uint32_t ui32SensorUpdateInterval = 0;
 // Variable for main loop state execution machine
 
  uint16_t mainLoopState = 0;
+ uint16_t ui16MainLoopVar = 0;
  uint16_t servoMovePosition = 0;
  float32_t motorFRSpeed = 0.0f;
  uint16_t readRS485Data = 0;
@@ -184,3 +185,5 @@ uint16_t ui16MavlinkBatteryVoltages[10];
 uint16_t ui16MavlinkQueueState = 0;
 RING_BUFFER32 rb32MavlinkTXQueue;
 uint32_t ui32MavlinkBuf[32];
+
+T32BITVARS t32CANVar;
