@@ -177,8 +177,10 @@ mavlink_message_t mavlinkMessageDataTX;
 mavlink_status_t mavlinkStatusData;
 uint8_t mavlinkSendBusy;
 
-uint16_t ui16SendMavlinkHeartbeetTime = 0;
-uint16_t ui16SendMavlinkBatteryStatus = 0;
+uint16_t ui16SendMavlink10Hz = 0;
+uint16_t ui16SendMavlink5Hz = 0;
+uint16_t ui16SendMavlink2Hz = 0;
+uint16_t ui16SendMavlink1Hz = 0;
 
 uint16_t ui16MavlinkBatteryVoltages[10];
 
@@ -187,3 +189,7 @@ RING_BUFFER32 rb32MavlinkTXQueue;
 uint32_t ui32MavlinkBuf[32];
 
 T32BITVARS t32CANVar;
+
+int32_t i32CurrentMavlinkMessage = 0;
+int32_t i32CurrentMavlinkCommand = 0;
+

@@ -8,25 +8,7 @@
 #ifndef FUNCTIONS_H_
 #define FUNCTIONS_H_
 
-typedef struct
-{
-     uint8_t* buffer;
-     uint8_t* buffer_end;
-     uint8_t* data_start;
-     uint8_t* data_end;
-     volatile int32_t count;
-     int32_t size;
- }__attribute__((aligned(4),packed))  RING_BUFFER;
 
- typedef struct
- {
-      uint32_t* buffer;
-      uint32_t* buffer_end;
-      uint32_t* data_start;
-      uint32_t* data_end;
-      volatile int32_t count;
-      int32_t size;
-  }__attribute__((aligned(4),packed))  RING_BUFFER32;
 
 int16_t CheckRCInputTimeouts();
 int16_t SendCommData();

@@ -39,62 +39,124 @@
 
 
 
-UBX_SOL		*UbxSol;//	  = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, INVALID};
-UBX_POSLLH    *UbxPosLlh;// = {0,0,0,0,0,0,0, INVALID};
-UBX_VELNED    *UbxVelNed;// = {0,0,0,0,0,0,0,0,0, INVALID};
-GPS_INFO_t      GPSInfo   = {0,0,0,0,0,0,0,0,0,0, INVALID};
+GPS_INFO_t      GPSInfo;
 
-volatile uint8_t GPSTimeout = 0;
+volatile uint16_t GPSTimeout = 0;
+volatile uint8_t ubxstate = UBXSTATE_IDLE;
 
 void ubx_initData()
 {
-	UbxSol = fusionData._ubxSol;
-	UbxPosLlh = fusionData._ubxPOSLLH;
-	UbxVelNed = fusionData._ubxVelNED;
+	GPSInfo.PAcc = 0;
+	GPSInfo.VAcc = 0;
+	GPSInfo.altitude = 0;
+	GPSInfo.flags = 0;
+	GPSInfo.latitude = 0;
+	GPSInfo.longitude = 0;
+	GPSInfo.satfix = 0;
+	GPSInfo.satnum = 0;
+	GPSInfo.status = 0;
+	GPSInfo.veleast = 0;
+	GPSInfo.velground = 0;
+	GPSInfo.velnorth = 0;
+	GPSInfo.veltop = 0;
+	GPSInfo.ui32NumMessages = 0;
+
+	fusionData._ubxVelNED.CAcc = 0;
+	fusionData._ubxVelNED.GSpeed = 0;
+	fusionData._ubxVelNED.Heading = 0;
+	fusionData._ubxVelNED.ITOW = 0;
+	fusionData._ubxVelNED.SAcc = 0;
+	fusionData._ubxVelNED.Speed = 0;
+	fusionData._ubxVelNED.Status = 0;
+	fusionData._ubxVelNED.VEL_D = 0;
+	fusionData._ubxVelNED.VEL_E = 0;
+	fusionData._ubxVelNED.VEL_N = 0;
+
+	fusionData._ubxPOSLLH.HEIGHT = 0;
+	fusionData._ubxPOSLLH.HMSL = 0;
+	fusionData._ubxPOSLLH.Hacc = 0;
+	fusionData._ubxPOSLLH.ITOW = 0;
+	fusionData._ubxPOSLLH.LAT = 0;
+	fusionData._ubxPOSLLH.LON = 0;
+	fusionData._ubxPOSLLH.Status = 0;
+	fusionData._ubxPOSLLH.Vacc = 0;
+
+	fusionData._ubxSol.ECEFVX = 0;
+	fusionData._ubxSol.ECEFVY = 0;
+	fusionData._ubxSol.ECEFVZ = 0;
+	fusionData._ubxSol.ECEF_X = 0;
+	fusionData._ubxSol.ECEF_Y = 0;
+	fusionData._ubxSol.ECEF_Z = 0;
+	fusionData._ubxSol.Flags = 0;
+	fusionData._ubxSol.Frac = 0;
+	fusionData._ubxSol.GPSfix = 0;
+	fusionData._ubxSol.ITOW = 0;
+	fusionData._ubxSol.PAcc = 0;
+	fusionData._ubxSol.PDOP = 0;
+	fusionData._ubxSol.SAcc = 0;
+	fusionData._ubxSol.Status = 0;
+	fusionData._ubxSol.numSV = 0;
+	fusionData._ubxSol.res1 = 0;
+	fusionData._ubxSol.res2 = 0;
+	fusionData._ubxSol.week = 0;
+
+
+
 }
 
 void UpdateGPSInfo (void)
 {
 
-	if ((UbxSol->Status == NEWDATA) && (UbxPosLlh->Status == NEWDATA) && (UbxVelNed->Status == NEWDATA))
+	if ((fusionData._ubxSol.Status == NEWDATA) && (fusionData._ubxPOSLLH.Status == NEWDATA) && (fusionData._ubxVelNED.Status == NEWDATA))
 	{
 		//RED_FLASH;
 		if(GPSInfo.status != NEWDATA)
 		{
 			GPSInfo.status = INVALID;
 			// NAV SOL
-			GPSInfo.flags = UbxSol->Flags;
-			GPSInfo.satfix = UbxSol->GPSfix;
-			GPSInfo.satnum = UbxSol->numSV;
-			GPSInfo.PAcc = UbxSol->PAcc;
-			GPSInfo.VAcc = UbxSol->SAcc;
+			GPSInfo.flags = fusionData._ubxSol.Flags;
+			GPSInfo.satfix = fusionData._ubxSol.GPSfix;
+			GPSInfo.satnum = fusionData._ubxSol.numSV;
+			GPSInfo.PAcc = fusionData._ubxSol.PAcc;
+			GPSInfo.VAcc = fusionData._ubxSol.SAcc;
 			// NAV POSLLH
-			GPSInfo.longitude = UbxPosLlh->LON;
-			GPSInfo.latitude = UbxPosLlh->LAT;
-			GPSInfo.altitude = UbxPosLlh->HEIGHT;
+			GPSInfo.longitude = fusionData._ubxPOSLLH.LON;
+			GPSInfo.latitude = fusionData._ubxPOSLLH.LAT;
+			GPSInfo.altitude = fusionData._ubxPOSLLH.HEIGHT;
 
-			GPSInfo.veleast = UbxVelNed->VEL_E;
-			GPSInfo.velnorth = UbxVelNed->VEL_N;
-			GPSInfo.veltop = -UbxVelNed->VEL_D;
-			GPSInfo.velground = UbxVelNed->GSpeed;
+			GPSInfo.veleast = fusionData._ubxVelNED.VEL_E;
+			GPSInfo.velnorth = fusionData._ubxVelNED.VEL_N;
+			GPSInfo.veltop = -fusionData._ubxVelNED.VEL_D;
+			GPSInfo.velground = fusionData._ubxVelNED.GSpeed;
 
 			GPSInfo.status = NEWDATA;
 
 		}
 		// set state to collect new data
-		UbxSol->Status = PROCESSED;			// never update old data
-		UbxPosLlh->Status = PROCESSED;		// never update old data
-		UbxVelNed->Status = PROCESSED;		// never update old data
+		fusionData._ubxSol.Status = PROCESSED;			// never update old data
+		fusionData._ubxPOSLLH.Status = PROCESSED;		// never update old data
+		fusionData._ubxVelNED.Status = PROCESSED;		// never update old data
+
+		GPSInfo.ui32NumMessages++;
 	}
-
-
 }
 
+void ubx_timeout()
+{
+	if(0 < GPSTimeout)
+	{
+		GPSTimeout--;
+		if(0 == GPSTimeout)
+		{
+			ubxstate = UBXSTATE_IDLE;
+		}
+	}
+}
 
 // this function should be called within the UART RX ISR
 void ubx_parser(uint8_t c)
 {
-	static uint8_t ubxstate = UBXSTATE_IDLE;
+
 	static uint8_t cka, ckb;
 	static uint16_t msglen;
 	static int8_t *ubxP, *ubxEp, *ubxSp; // pointers to data currently transfered
@@ -120,21 +182,21 @@ void ubx_parser(uint8_t c)
 			switch(c)
 			{
 				case UBX_ID_POSLLH: // geodetic position
-					ubxP =  (int8_t *)&UbxPosLlh; // data start pointer
-					ubxEp = (int8_t *)(&UbxPosLlh + 1); // data end pointer
-					ubxSp = (int8_t *)&UbxPosLlh->Status; // status pointer
+					ubxP =  (int8_t *)&fusionData._ubxPOSLLH; // data start pointer
+					ubxEp = (int8_t *)(&fusionData._ubxPOSLLH + 1); // data end pointer
+					ubxSp = (int8_t *)&fusionData._ubxPOSLLH.Status; // status pointer
 					break;
 
 				case UBX_ID_SOL: // navigation solution
-					ubxP =  (int8_t *)&UbxSol; // data start pointer
-					ubxEp = (int8_t *)(&UbxSol + 1); // data end pointer
-					ubxSp = (int8_t *)&UbxSol->Status; // status pointer
+					ubxP =  (int8_t *)&fusionData._ubxSol; // data start pointer
+					ubxEp = (int8_t *)(&fusionData._ubxSol + 1); // data end pointer
+					ubxSp = (int8_t *)&fusionData._ubxSol.Status; // status pointer
 					break;
 
 				case UBX_ID_VELNED: // velocity vector in tangent plane
-					ubxP =  (int8_t *)&UbxVelNed; // data start pointer
-					ubxEp = (int8_t *)(&UbxVelNed + 1); // data end pointer
-					ubxSp = (int8_t *)&UbxVelNed->Status; // status pointer
+					ubxP =  (int8_t *)&fusionData._ubxVelNED; // data start pointer
+					ubxEp = (int8_t *)(&fusionData._ubxVelNED + 1); // data end pointer
+					ubxSp = (int8_t *)&fusionData._ubxVelNED.Status; // status pointer
 					break;
 
 				default:			// unsupported identifier
@@ -195,7 +257,7 @@ void ubx_parser(uint8_t c)
 			{
 				*ubxSp = NEWDATA; // new data are valid
 				UpdateGPSInfo(); //update GPS info respectively
-				GPSTimeout = 255;
+				GPSTimeout = 2000;
 			}
 			else
 			{	// if checksum not fit then set data invalid

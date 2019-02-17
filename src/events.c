@@ -46,9 +46,12 @@ void ADC_ISR_Handler(void)
 		FCFlightData.batMon.fUBat += 0.068f;
 
 		//ui16MavlinkBatteryVoltages
+		fTemp = FCFlightData.batMon.fUBat * 1000.0f;
+
+		FCFlightData.batMon.ui16MavlinkTotalBatteryVoltage = (uint16_t)fTemp;
+
 		fTemp = FCFlightData.batMon.fUBat / ((float32_t)FCFlightData.batMon.ui16NumCells);
 
-		fTemp = fTemp * 1000.0f;
 		fTemp = FCFlightData.batMon.ui16MavlinkBatteryVoltages[0] = (uint16_t)fTemp;
 		FCFlightData.batMon.ui16MavlinkBatteryVoltages[1] = FCFlightData.batMon.ui16MavlinkBatteryVoltages[0];
 		FCFlightData.batMon.ui16MavlinkBatteryVoltages[2] = FCFlightData.batMon.ui16MavlinkBatteryVoltages[0];
@@ -565,12 +568,6 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 
 		// Update system time
 		systemTime++;
-#ifndef USE_FREEMASTER
-		// UART2 timeout
-		UART_Timeout();
-#endif
-		// RS485 timing
-		//RS485_Timing();
 
 		// Check RC inputs for timeouts
 		CheckRCInputTimeouts();
@@ -596,7 +593,6 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			PWMEN_PIN_TOGGLE;
 		}
 
-
 		if(ADC_ENABLED)
 		{
 			//ADC_TriggerTimer++;
@@ -618,7 +614,6 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 				I2C2_PollTimer = I2C2_POLLTIME;
 				if(!I2C2_WAITINGDATA && I2C2_INITDONE && MPU_COMM_ENABLED)
 				{
-
 					// Store start time
 					ui32StartTime = getSystemTime();
 					I2C2_PollTimer = 0;
@@ -627,7 +622,6 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 						// Mark time when data is requested
 						sensorAcquisitionTime = getSystemTime();
 						// Read from MPU, start at reg 59, read 25 bytes
-						//error = masterReceive_beginDMA(MPU6000_ADDRESS, 59, I2C2_DMABufRX, 26);
 						error = masterReceive_beginDMA(MPU6000_ADDRESS, 59, I2C2_sensorBufRX.buf, 26);
 						if(error == SUCCESS)
 						{
@@ -642,15 +636,9 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 					// Store system time
 					fusionData.deltaTime = systemTime - fusionData.dataTime;
 					fusionData.dataTime = systemTime;
-					// Update RS485
-					//Refresh485();
 				}
 			}
 		}
-
-
-		// Call RS485 states
-		//RS485_States_Master();
 
 		// LED counter
 		LED_ToggleCount++;
@@ -693,6 +681,9 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		// Call sensor timer
 		sensorInterruptTimer();
 
+		// GPS timeout
+		ubx_timeout();
+
 		// Send status
 		if(SYSTEM_RUNNING)
 		{
@@ -710,45 +701,61 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 				ui32CANTime = 0;
 				CAN_SendNodeStatus();
 			}
-			ui16SendMavlinkHeartbeetTime++;
-			//ui16SendMavlinkBatteryStatus++;
-			if(1000 < ui16SendMavlinkHeartbeetTime)
+
+			ui16SendMavlink10Hz++;
+			ui16SendMavlink5Hz++;
+			ui16SendMavlink2Hz++;
+			ui16SendMavlink1Hz++;
+
+			if(1000 < ui16SendMavlink1Hz)
 			{
 				if(0 == mavlinkSendBusy)
 				{
-					/*
-					ui16Temp = mavlink_msg_heartbeat_pack(1, 1, &mavlinkMessageDataTX, MAV_TYPE_QUADROTOR, MAV_AUTOPILOT_GENERIC, MAV_MODE_FLAG_SAFETY_ARMED, 0, MAV_STATE_ACTIVE);
-					ui16Temp = mavlink_msg_to_send_buffer(mavlinkBuffer, &mavlinkMessageDataTX);
-					transferDMA_USART1(mavlinkBuffer, (int)ui16Temp);
-					mavlinkSendBusy = 1;*/
-					RB32_push(&rb32MavlinkTXQueue, 0);
-					ui16SendMavlinkHeartbeetTime = 0;
+					RB32_push(&rb32MavlinkTXQueue, MAVLINK_MSG_ID_HEARTBEAT);
+					ui16SendMavlink1Hz = 0;
 				}
 				else
 				{
-					ui16SendMavlinkHeartbeetTime --;
+					ui16SendMavlink1Hz --;
 				}
 			}
-
-
-			ui16SendMavlinkBatteryStatus++;
-			if(200 < ui16SendMavlinkBatteryStatus)
+			if(500 < ui16SendMavlink2Hz)
 			{
 				if(0 == mavlinkSendBusy)
 				{
-					/*
-					ui16Temp = mavlink_msg_battery_status_pack(1, 1, &mavlinkMessageDataTX, 0, MAV_BATTERY_FUNCTION_ALL, MAV_BATTERY_TYPE_LIPO, 2500, FCFlightData.batMon.ui16MavlinkBatteryVoltages, FCFlightData.batMon.i16MavLinkCurrent, FCFlightData.batMon.i32MavLinkCurrentConsumed, -1, -1, -1, MAV_BATTERY_CHARGE_STATE_OK);
-					ui16Temp = mavlink_msg_to_send_buffer(mavlinkBuffer, &mavlinkMessageDataTX);
-					transferDMA_USART1(mavlinkBuffer, (int)ui16Temp);
-					mavlinkSendBusy = 1;
-					*/
-					RB32_push(&rb32MavlinkTXQueue, 1);
-					RB32_push(&rb32MavlinkTXQueue, 2);
-					ui16SendMavlinkBatteryStatus = 0;
+					RB32_push(&rb32MavlinkTXQueue, MAVLINK_MSG_ID_SYS_STATUS);
+					RB32_push(&rb32MavlinkTXQueue, MAVLINK_MSG_ID_BATTERY_STATUS);
+					RB32_push(&rb32MavlinkTXQueue, MAVLINK_MSG_ID_GPS_RAW_INT);
+					ui16SendMavlink2Hz = 0;
 				}
 				else
 				{
-					ui16SendMavlinkBatteryStatus--;
+					ui16SendMavlink2Hz--;
+				}
+			}
+			if(200 < ui16SendMavlink5Hz)
+			{
+				if(0 == mavlinkSendBusy)
+				{
+					RB32_push(&rb32MavlinkTXQueue, MAVLINK_MSG_ID_GLOBAL_POSITION_INT);
+					RB32_push(&rb32MavlinkTXQueue, MAVLINK_MSG_ID_VFR_HUD);
+					ui16SendMavlink5Hz = 0;
+				}
+				else
+				{
+					ui16SendMavlink5Hz--;
+				}
+			}
+			if(100 < ui16SendMavlink10Hz)
+			{
+				if(0 == mavlinkSendBusy)
+				{
+					RB32_push(&rb32MavlinkTXQueue, MAVLINK_MSG_ID_ATTITUDE);
+					ui16SendMavlink10Hz = 0;
+				}
+				else
+				{
+					ui16SendMavlink10Hz--;
 				}
 			}
 		}
@@ -872,7 +879,9 @@ void CAN1_SCE_ISR_Handler(void)
 void USART1_ISR_Handler(void)
 {
 	int iData = 0;
+	mavlink_command_long_t mavCommand;
 	uint8_t msgStatus = 0;
+	uint32_t ui32Temp = 0;
 	if ((USART1->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
 	{
 		iData = USART_ReceiveData(USART1);
@@ -880,6 +889,75 @@ void USART1_ISR_Handler(void)
 		msgStatus = mavlink_parse_char(1, (uint8_t)iData, &mavlinkMessageDataRX, &mavlinkStatusData);
 		if(0 != msgStatus)
 		{
+			switch(mavlinkMessageDataRX.msgid)
+			{
+				case MAVLINK_MSG_ID_HEARTBEAT:
+				{
+					break;
+				}
+				case MAVLINK_MSG_ID_SYSTEM_TIME:
+				case MAVLINK_MSG_ID_PARAM_REQUEST_LIST:
+				{
+					RB32_push(&rb32MavlinkTXQueue, mavlinkMessageDataRX.msgid);
+					break;
+				}
+				case MAVLINK_MSG_ID_COMMAND_LONG:
+				{
+					mavlink_msg_command_long_decode(&mavlinkMessageDataRX, &mavCommand);
+					i32CurrentMavlinkCommand = (int32_t)mavCommand.command;
+					switch(mavCommand.command)
+					{
+						case MAV_CMD_REQUEST_PROTOCOL_VERSION:
+						{
+							ui32Temp = (uint32_t)mavCommand.param1;
+							switch(ui32Temp)
+							{
+								case 1:
+								{
+									// V2
+									//RB32_push(&rb32MavlinkTXQueue, MAVLINK_MSG_ID_PROTOCOL_VERSION);
+									break;
+								}
+								default:
+								{
+									break;
+								}
+							}
+							break;
+						}
+						case MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES:
+						{
+							ui32Temp = (uint32_t)mavCommand.param1;
+							switch(ui32Temp)
+							{
+								case 1:
+								{
+									RB32_push(&rb32MavlinkTXQueue, MAVLINK_MSG_ID_AUTOPILOT_VERSION);
+									break;
+								}
+								default:
+								{
+									break;
+								}
+							}
+							break;
+						}
+						default:
+						{
+							break;
+						}
+					}
+					break;
+				}
+				default:
+				{
+
+					break;
+				}
+			}
+
+
+
 			msgStatus = 0;
 		}
 	}

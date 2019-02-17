@@ -127,6 +127,7 @@ typedef struct
 	uint16_t ui16NumCells;
 	int16_t i16MavLinkCurrent;
 	uint16_t ui16MavlinkBatteryVoltages[10];
+	uint16_t ui16MavlinkTotalBatteryVoltage;
 }__attribute__((aligned(4),packed)) FLIGHT_BATMON;
 
 typedef struct
@@ -168,6 +169,9 @@ typedef struct
 		float32_t f32RollOffset;
 		float32_t f32PitchOffset;
 		float32_t f32YawOffset;
+		// Mavlink values
+		int32_t i32AltitudeAboveGround;
+		uint16_t ui16Hdg;
 	}ORIENTATION;
 	// Required orientation
 	struct
@@ -212,6 +216,8 @@ typedef struct
 		FLIGHT_MOTOR RR;
 		FLIGHT_MOTOR RL;
 		float32_t f32TotalPower;
+		uint16_t ui16Throttle;
+		uint16_t ui16Empty;
 	}MOTORS;
 
 	FLIGHT_BATMON batMon;

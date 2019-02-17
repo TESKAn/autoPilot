@@ -126,7 +126,7 @@ int16_t RB32_push(RING_BUFFER32* rb, uint32_t data)
 	return 0;
 }
 
-uint32_t RB32_pop(RING_BUFFER32* rb)
+int32_t RB32_pop(RING_BUFFER32* rb)
 {
 	if(0 < rb->count)
 	{
@@ -150,7 +150,7 @@ uint32_t RB32_pop(RING_BUFFER32* rb)
 		}
 		return data;
 	}
-    return 0;
+    return -1;
 }
 
 int16_t RB32_flush(RING_BUFFER32* rb)

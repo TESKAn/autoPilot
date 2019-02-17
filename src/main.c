@@ -43,6 +43,8 @@
 /* Private function prototypes */
 /* Private functions */
 
+uint16_t MavlinkTransfer();
+
 /*
  * ===========================================================================
  *
@@ -152,88 +154,16 @@ int main(void)
     		CAN_ITConfig(CAN1, CAN_IT_FMP1, ENABLE);
     	}*/
 
-
-
-#ifndef USE_FREEMASTER
-    	// Process serial comm
-    	if(0 != RB_USART2.count)
-    	{
-    		UART_RcvData(RB_pop(&RB_USART2));
-    	}
-    	if(COMM_SEND_DATA)
-    	{
-    		if(0 == UART2_Transferring)
-    		{
-				COMM_SEND_DATA = 0;
-				LED_ToggleCount = 0;
-				switch(ui8BufferToSend)
-				{
-					case 0:
-					{
-						SendCommData();
-						ui8BufferToSend = 1;
-						break;
-					}
-					case 1:
-					{
-						SendCommData1();
-						ui8BufferToSend = 0;
-						break;
-					}
-					default:
-					{
-						ui8BufferToSend = 0;
-						break;
-					}
-				}
-    		}
-    	}
-#else
     	// Check freemaster
     	FMSTR_Poll();
-#endif
 
     	// Check MAVLINK
-    	/*
+
     	if(0 == mavlinkSendBusy)
     	{
-    		if(rb32MavlinkTXQueue.count)
-    		{
-    			ui32Temp = RB32_pop(&rb32MavlinkTXQueue);
-    			switch(ui32Temp)
-    			{
-					case 0:
-					{
-						ui16Temp = mavlink_msg_heartbeat_pack(1, 1, &mavlinkMessageDataTX, MAV_TYPE_QUADROTOR, MAV_AUTOPILOT_GENERIC, MAV_MODE_FLAG_SAFETY_ARMED, 0, MAV_STATE_ACTIVE);
-						ui16Temp = mavlink_msg_to_send_buffer(mavlinkBuffer, &mavlinkMessageDataTX);
-						transferDMA_USART1(mavlinkBuffer, (int)ui16Temp);
-						mavlinkSendBusy = 1;
-						break;
-					}
-					case 1:
-					{
-						ui16Temp = mavlink_msg_battery_status_pack(1, 1, &mavlinkMessageDataTX, 0, MAV_BATTERY_FUNCTION_ALL, MAV_BATTERY_TYPE_LIPO, 2500, FCFlightData.batMon.ui16MavlinkBatteryVoltages, FCFlightData.batMon.i16MavLinkCurrent, FCFlightData.batMon.i32MavLinkCurrentConsumed, -1, -1, -1, MAV_BATTERY_CHARGE_STATE_OK);
-						ui16Temp = mavlink_msg_to_send_buffer(mavlinkBuffer, &mavlinkMessageDataTX);
-						transferDMA_USART1(mavlinkBuffer, (int)ui16Temp);
-						mavlinkSendBusy = 1;
-						break;
-					}
-					case 2:
-					{
-						ui16Temp = mavlink_msg_attitude_pack(1, 1,&mavlinkMessageDataTX, (uint32_t)getFTime(), fusionData.ROLLPITCHYAW.roll, fusionData.ROLLPITCHYAW.pitch, fusionData.ROLLPITCHYAW.yaw, fusionData.updateRotation.x, fusionData.updateRotation.y, fusionData.updateRotation.z);
-						ui16Temp = mavlink_msg_to_send_buffer(mavlinkBuffer, &mavlinkMessageDataTX);
-						transferDMA_USART1(mavlinkBuffer, (int)ui16Temp);
-						mavlinkSendBusy = 1;
-						break;
-					}
-					default:
-					{
-						break;
-					}
-    			}
-    		}
+    		MavlinkTransfer();
     	}
-*/
+
 
     	// Main loop switch
     	switch(mainLoopState)
@@ -414,11 +344,14 @@ int main(void)
 			}
 			case 20:
 			{
+				USART_SendData(USART1, 0x55);
 				mainLoopState = 0;
 				break;
 			}
 			case 21:
 			{
+				//GPIO_ToggleBits(GPIOB, GPIO_Pin_6);
+				//GPIO_ToggleBits(GPIOB, GPIO_Pin_7);
 				mainLoopState = 0;
 				break;
 			}

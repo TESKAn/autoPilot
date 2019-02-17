@@ -1,1 +1,3 @@
 uavcan.equipment.esc.SetEnable
+uavcan.equipment.esc.SetRPM_FR
+uavcan.equipment.esc.SetReg

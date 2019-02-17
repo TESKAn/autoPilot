@@ -559,7 +559,7 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 	status = SUCCESS;
 
 	//Vectorf omega = vectorf_init(0);						// Rotation value
-	Matrixf updateMatrix;									// Update matrix
+	//Matrixf updateMatrix;									// Update matrix
 	Matrixf newMatrix;										// Place to store new DCM matrix
 	float32_t dt = 0;
 
@@ -575,10 +575,10 @@ ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
 	status = vectorf_scalarProduct(&data->_gyro.vector, dt, &data->updateRotation);
 
 	// Generate update matrix
-	status = fusion_generateUpdateMatrix(&data->updateRotation, &updateMatrix, 1);
+	status = fusion_generateUpdateMatrix(&data->updateRotation, &data->_fusion_update, 1);
 
 	// Multiply DCM and update matrix
-	status = matrix3_MatrixMultiply(&data->_fusion_DCM, &updateMatrix, &newMatrix);
+	status = matrix3_MatrixMultiply(&data->_fusion_DCM, &data->_fusion_update, &newMatrix);
 
 	// Renormalize and orthogonalize DCM matrix
 	status = matrix3_normalizeOrthogonalizeMatrix(&newMatrix, param_dcm_max_orth_error);

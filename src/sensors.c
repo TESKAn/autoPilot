@@ -285,6 +285,10 @@ void copySensorData(void)
 	FCFlightData.ORIENTATION.f32Yaw = fusionData.ROLLPITCHYAW.yaw - FCFlightData.ORIENTATION.f32YawOffset;
 	FCFlightData.ORIENTATION.f32Altitude = fusionData._altimeter.altitude;
 
+	// Mavlink values
+	// TODO: fix relative altitude.
+	FCFlightData.ORIENTATION.i32AltitudeAboveGround = 0;
+	FCFlightData.ORIENTATION.ui16Hdg = (uint16_t)((FCFlightData.ORIENTATION.f32Yaw + 3.141592653589f) * 5732.4840764331f);
 	// Check flight
 	//ui32FlightCheckCounter++;
 	//if(ui32FlightCheckCounter > ui32FlightCheckInterval)

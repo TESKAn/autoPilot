@@ -36,10 +36,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/autopilot_sw/support/src_common}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/autopilot_sw/support/src_platforms/Kxx}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/autopilot_sw/Libraries/mavlink}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/autopilot_sw/Libraries/mavlink/ardupilotmega}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/autopilot_sw/Libraries/mavlink/common}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/autopilot_sw/Libraries/mavlink/icarous}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/autopilot_sw/Libraries/mavlink/uAvionix}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/autopilot_sw/Libraries/mavlink/autopilot}&quot;"/>
 								</option>
 								<inputType id="org.eclipse.cdt.cross.arm.gnu.sourcery.windows.assembler.base.input.1612343982" superClass="org.eclipse.cdt.cross.arm.gnu.sourcery.windows.assembler.base.input"/>
 							</tool>
@@ -56,10 +54,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/autopilot_sw/support/src_common}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/autopilot_sw/support/src_platforms/Kxx}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/autopilot_sw/Libraries/mavlink}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/autopilot_sw/Libraries/mavlink/ardupilotmega}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/autopilot_sw/Libraries/mavlink/common}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/autopilot_sw/Libraries/mavlink/icarous}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/autopilot_sw/Libraries/mavlink/uAvionix}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/autopilot_sw/Libraries/mavlink/autopilot}&quot;"/>
 								</option>
 								<option id="org.eclipse.cdt.cross.arm.gnu.c.compiler.option.preprocessor.def.2147447557" name="Defined symbols (-D)" superClass="org.eclipse.cdt.cross.arm.gnu.c.compiler.option.preprocessor.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="USE_STDPERIPH_DRIVER"/>
@@ -85,7 +81,7 @@
 								<option id="org.eclipse.cdt.cross.arm.gnu.c.link.option.gcsections.1647610856" name="Remove unused sections (-Xlinker --gc-sections)" superClass="org.eclipse.cdt.cross.arm.gnu.c.link.option.gcsections" value="true" valueType="boolean"/>
 								<option id="org.eclipse.cdt.cross.arm.gnu.c.linker.option.other.verbose.453131615" name="Verbose (-v)" superClass="org.eclipse.cdt.cross.arm.gnu.c.linker.option.other.verbose" value="false" valueType="boolean"/>
 								<option id="org.eclipse.cdt.cross.arm.gnu.c.link.option.libs.1861300567" name="Libraries (-l)" superClass="org.eclipse.cdt.cross.arm.gnu.c.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" value="m"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="m"/>
 								</option>
 								<inputType id="org.eclipse.cdt.cross.arm.gnu.c.linker.input.588129883" superClass="org.eclipse.cdt.cross.arm.gnu.c.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>

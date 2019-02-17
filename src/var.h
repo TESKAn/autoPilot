@@ -353,8 +353,10 @@ extern mavlink_message_t mavlinkMessageDataTX;
 extern mavlink_status_t mavlinkStatusData;
 extern uint8_t mavlinkSendBusy;
 
-extern uint16_t ui16SendMavlinkHeartbeetTime;
-extern uint16_t ui16SendMavlinkBatteryStatus;
+extern uint16_t ui16SendMavlink10Hz;
+extern uint16_t ui16SendMavlink5Hz;
+extern uint16_t ui16SendMavlink2Hz;
+extern uint16_t ui16SendMavlink1Hz;
 
 extern uint16_t ui16MavlinkBatteryVoltages[10];
 
@@ -364,6 +366,7 @@ extern uint32_t ui32MavlinkBuf[32];
 
 extern T32BITVARS t32CANVar;
 
-
+extern int32_t i32CurrentMavlinkMessage;
+extern int32_t i32CurrentMavlinkCommand;
 
 #endif /* VAR_H_ */

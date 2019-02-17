@@ -1220,6 +1220,9 @@ int16_t flight_decodeServosY(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues
 			FCFlightData_local->MOTORS.f32TotalPower = RCValues->f32ThrottleValue;
 		}
 
+		// Calculate throttle
+		FCFlightData_local->MOTORS.ui16Throttle = (uint16_t)(RCValues->f32ThrottleValue * 100.0f);
+
 		// Calculate motor power ratios
 		// Motor FR
 		f32Temp = FCFlightData_local->f32COGFrontFactor + FCFlightData_local->PIDPitch.s;

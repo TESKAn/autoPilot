@@ -229,8 +229,10 @@ typedef struct {
 	uint32_t		ITOW;		// ms GPS Millisecond Time of Week
 	int32_t			Frac;		// ns remainder of rounded ms above
 	int16_t			week;		// GPS week
+	//int16_t 		i16Empty1;
 	uint8_t			GPSfix;		// GPSfix Type, range 0..6
 	uint8_t			Flags;		// Navigation Status Flags
+	//uint8_t 		ui8Empty2[2];
 	int32_t			ECEF_X;		// cm ECEF X coordinate
 	int32_t			ECEF_Y;		// cm ECEF Y coordinate
 	int32_t			ECEF_Z;		// cm ECEF Z coordinate
@@ -240,8 +242,10 @@ typedef struct {
 	int32_t			ECEFVZ;		// cm/s ECEF Z velocity
 	uint32_t		SAcc;		// cm/s Speed Accuracy Estimate
 	uint16_t		PDOP;		// 0.01 Position DOP
+	//uint16_t 		ui16Empty3;
 	uint8_t			res1;		// reserved
 	uint8_t			numSV;		// Number of SVs used in navigation solution
+	//uint8_t 		ui8Empty4[2];
 	uint32_t		res2;		// reserved
 	uint32_t		Status;
 }__attribute__((aligned(4),packed)) UBX_SOL;
@@ -284,9 +288,9 @@ typedef struct
 	airSpeedData _airSpeed;
 	AltimeterData _altimeter;
 	GPSData _gps;
-	UBX_SOL *_ubxSol;
-	UBX_POSLLH *_ubxPOSLLH;
-	UBX_VELNED *_ubxVelNED;
+	UBX_SOL _ubxSol;
+	UBX_POSLLH _ubxPOSLLH;
+	UBX_VELNED _ubxVelNED;
 	// Data for calculating gyro error
 	GyroErrorData _gyroError;
 
@@ -312,6 +316,9 @@ typedef struct
 
 	// DCM matrix
 	Matrixf _fusion_DCM;
+
+	// Update matrix
+	Matrixf _fusion_update;
 
 	// Update rotation vector
 	Vectorf updateRotation;

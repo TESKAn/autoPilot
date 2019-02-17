@@ -308,4 +308,7 @@
 #define CAN_WRITE_REG_MAXRPM			4
 
 
+// Mavlink
+
+
 #endif /* MACRO_H_ */

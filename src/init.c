@@ -780,7 +780,7 @@ void init_USART1()
 	//configure module 1 - current/voltage/temperature sensor
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE); //for USART1 and USART6
 	//set baud rate
-	USART_InitStructure.USART_BaudRate = 57600;	//500000
+	USART_InitStructure.USART_BaudRate = 57600;	//57600
 	//flow control
 	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
 	//enable receiver and transmitter
@@ -861,6 +861,11 @@ void init_USART3()
 	//make structure for configuring pins
 	GPIO_InitTypeDef  GPIO_InitStructure;
 
+	// GPIO Peripheral clock enable
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
+	// USART 3 clock enable
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);
+
 	// Config GPIO
 	//GPIO C
 	// C12 - RS485 dir
@@ -870,35 +875,13 @@ void init_USART3()
 	//set pull-up
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
 	//set pin mode to alternate function
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
 	//set pin speed
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	//write mode to selected pins and selected port
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-	GPIO_WriteBit(GPIOC, GPIO_Pin_12, 0);
-
-	// Init GPIO
-	//connect pins C10 and C11 to USART
-	GPIO_PinAFConfig(GPIOC, GPIO_PinSource10, GPIO_AF_USART3);
-	GPIO_PinAFConfig(GPIOC, GPIO_PinSource11, GPIO_AF_USART3);
-	//select pins 10 and 11
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_11;
-	//set output type
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// push/pull
-	//set pull-up
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	//set pin mode to alternate function
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-	//set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	//write mode to selected pins and selected port
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
 
-	// GPIO Peripheral clock enable
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
-	// USART 3 clock enable
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);
+	GPIO_WriteBit(GPIOC, GPIO_Pin_12, 0);
 
 	//connect pins C10 and C11 to USART
 	GPIO_PinAFConfig(GPIOC, GPIO_PinSource10, GPIO_AF_USART3);

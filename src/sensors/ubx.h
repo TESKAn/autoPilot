@@ -11,7 +11,6 @@
 #include <inttypes.h>
 
 
-
 #define INVALID		0
 #define NEWDATA		1
 #define PROCESSED	2
@@ -42,6 +41,7 @@ typedef struct
 	uint8_t		flags;		// flags
 	uint8_t		satnum;		// number of satelites
 	uint8_t 	satfix;		// type of satfix
+	//uint8_t 	ui8Empty;
 	int32_t		longitude;  // in 1e-07 deg
 	int32_t		latitude;	// in 1e-07 deg
 	int32_t		altitude;   // in mm
@@ -52,16 +52,17 @@ typedef struct
 	uint32_t    velground;  // 2D ground speed in cm/s
 	uint32_t	VAcc;		// in cm/s 3d velocity accuracy
 	uint32_t	status;	    // status of data: invalid | valid
-} GPS_INFO_t;
+	uint32_t 	ui32NumMessages;	// Count recvd messages
+}__attribute__((aligned(4),packed)) GPS_INFO_t;
 
 //here you will find the current gps info
 extern GPS_INFO_t GPSInfo;	// measured position (last gps record)
 
 // this variable should be decremted by the application
-extern volatile uint8_t GPSTimeout; // is reset to 255 if a new UBX msg was received
+extern volatile uint16_t GPSTimeout; // is reset to 2000 if a new UBX msg was received
 
 void ubx_initData();
-
+void ubx_timeout();
 // this function should be called within the UART RX ISR
 extern void ubx_parser(uint8_t c);
 
