@@ -86,6 +86,7 @@ typedef struct
 typedef struct
 {
 	Vectorf vector;
+	float32_t vectorNorm;
 	Vectorf vectorRaw;
 	Vectorf vectorKFiltered;
 	Vectorf scale;
@@ -127,6 +128,7 @@ typedef struct
 	uint32_t deltaTime;
 	Vectorf speed3D;
 	Vectorf speed3D_m;
+	float32_t speed_from3D;
 	float32_t hdop;
 	float32_t gg;
 	float32_t magvar;
@@ -174,6 +176,7 @@ typedef struct
 typedef struct
 {
 	Vectorf vector;
+	float32_t vectorNorm;
 	Vectorf vectorRaw;
 	Vectorf vectorKFiltered;
 	Vectorf vectorNormalized;

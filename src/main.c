@@ -132,13 +132,6 @@ int main(void)
 
 	MPU_COMM_ENABLED = 1;
 
-	RS485_RXEN;
-
-	// Start servo poll
-	//RS485_MasterState(1);
-
-
-
 	SYSTEM_RUNNING = 1;
 	// Mount SD card
     while (1)
