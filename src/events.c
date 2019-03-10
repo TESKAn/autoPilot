@@ -566,9 +566,6 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		TIM_ClearFlag(TIM14, TIM_FLAG_Update);
 		TIM_ClearITPendingBit(TIM14, TIM_IT_Update);
 
-		// Update system time
-		systemTime++;
-
 		// Check RC inputs for timeouts
 		CheckRCInputTimeouts();
 
@@ -595,14 +592,9 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 
 		if(ADC_ENABLED)
 		{
-			//ADC_TriggerTimer++;
-			//if(ADC_TriggerTimer >= 1)
-			{
-				//ADC_TriggerTimer = 0;
-	        	ADC_SoftwareStartConv(ADC1);
-	        	ADC_SoftwareStartConv(ADC2);
-	        	ADC_SoftwareStartConv(ADC3);
-			}
+			ADC_SoftwareStartConv(ADC1);
+	        ADC_SoftwareStartConv(ADC2);
+	        ADC_SoftwareStartConv(ADC3);
 		}
 
 		if(EXTSENS_INIT_DONE)
@@ -634,8 +626,8 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 						}
 					}
 					// Store system time
-					fusionData.deltaTime = systemTime - fusionData.dataTime;
-					fusionData.dataTime = systemTime;
+					fusionData.deltaTime = READ_SYS_TIME - fusionData.dataTime;
+					fusionData.dataTime = READ_SYS_TIME;
 				}
 			}
 		}
@@ -646,9 +638,6 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 		{
 			LED_ToggleCount = 0;
 			// Send out data
-#ifndef USE_FREEMASTER
-			COMM_SEND_DATA = 1;
-#endif
 			// Event every second
 
 			// Write log

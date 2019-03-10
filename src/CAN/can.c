@@ -291,7 +291,7 @@ int16_t CAN_SendNodeStatus()
 	CONVERTNUM cnvrt_number;
 	CanTxMsg msg;
 	// Setup data in buffer
-	cnvrt_number.ui32[0] = systemTime / 1000;
+	cnvrt_number.ui32[0] = getSystemTime() / 1000000;
 
 	// Generate message ID
 	msg.ExtId = CAN_GenerateID(CAN_PRIO_STATUS, CAN_MID_STATUS);

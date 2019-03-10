@@ -11,7 +11,6 @@
 // Includes
 #include "math/myMath_typedefs.h"
 #include "sensor_typedefs.h"
-#include "gps.h"
 #include "ubx.h"
 #include "accelerometer.h"
 
@@ -24,6 +23,6 @@ ErrorStatus fusion_calculateMPUTemperature(FUSION_CORE *data, int16_t temperatur
 ErrorStatus fusion_generateDCM(FUSION_CORE *data);
 ErrorStatus fusion_generateUpdateMatrix(Vectorf * omega, Matrixf * updateMatrix, int isIdentity);
 ErrorStatus fusion_updateGyroError(FUSION_CORE *data);
-ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data);
+
 
 #endif /* SENSORS_FUSION_H_ */

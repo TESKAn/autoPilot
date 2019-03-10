@@ -7,7 +7,6 @@
 
 #include "stm32f4xx.h"
 #include "arm_math.h"
-#include "parameters.h"
 #include "math/myMath_typedefs.h"
 #include "math/myMath_vec3.h"
 #include "math/myMath_matrix3.h"
@@ -20,7 +19,6 @@
 #include "accelerometer.h"
 #include "mag.h"
 #include "airSpeed.h"
-#include "gps.h"
 #include "ubx.h"
 
 #include "altimeter.h"
@@ -51,11 +49,6 @@ ErrorStatus fusion_init(FUSION_CORE *data, uint32_t time)
 		return ERROR;
 	}
 
-	if(ERROR == gps_initData(&data->_gps, time))
-	{
-		return ERROR;
-	}
-
 	ubx_initData();
 
 	// Init errors
@@ -73,7 +66,7 @@ ErrorStatus fusion_init(FUSION_CORE *data, uint32_t time)
 	data->_gyroError.ui8SamplesAcc = 0;
 	data->_gyroError.ui8SamplesMag = 0;
 	data->_gyroError.ui8SamplesGyro = 0;
-	data->_gyroError.f32GyroErrorUpdateMaxRate = 0.6f;
+	data->_gyroError.f32GyroErrorUpdateMaxRate = 3.141f;
 
 	// Init maximum gyro amplitude when updating error
 	data->maxGyroErrorAmplitude = GYRO_MAX_ERROR_AMPLITUDE;
@@ -149,6 +142,14 @@ ErrorStatus fusion_initGyroGainPID(FUSION_CORE *data)
 
 ErrorStatus fusion_dataUpdate(FUSION_CORE *data, FUSION_SENSORDATA *sensorData, uint32_t time)
 {
+
+	ErrorStatus status = SUCCESS;
+	Matrixf newMatrix;										// Place to store new DCM matrix
+	float32_t dt = 0;
+	float32_t a = 0;
+	float32_t b = 0;
+	float32_t c = 0;
+
 	// Update temperature
 	fusion_calculateMPUTemperature(data, sensorData->data.temperature, sensorData->data.dataTakenTime);
 	// Update gyro
@@ -156,7 +157,88 @@ ErrorStatus fusion_dataUpdate(FUSION_CORE *data, FUSION_SENSORDATA *sensorData, 
 	if(data->sFlag.bits.SFLAG_DO_DCM_UPDATE)
 	{
 		// Update rotation matrix
-		fusion_updateRotationMatrix(data);
+		//fusion_updateRotationMatrix(data);
+
+		// Calculate delta time
+		dt = (float32_t)data->_gyro.deltaTime;
+		dt = dt * data->PARAMETERS.systimeToSeconds;
+
+		data->integrationTime = dt;
+
+		// Calculate current rotation angle
+		// Part 1
+		// Is gyro value * delta time in seconds
+		/*
+		data->updateRotation.x = data->_gyro.vector.x * dt;
+		data->updateRotation.y = data->_gyro.vector.y * dt;
+		data->updateRotation.z = data->_gyro.vector.z * dt;
+*/
+		// Generate update matrix
+		//status = fusion_generateUpdateMatrix(&data->updateRotation, &data->_fusion_update, 1);
+
+		// Populate elements of matrix
+		data->_fusion_update.a.x = 1.0f;
+		data->_fusion_update.a.y = -(data->_gyro.vector.z * dt);
+		data->_fusion_update.a.z = data->_gyro.vector.y * dt;
+
+		data->_fusion_update.b.x = data->_gyro.vector.z * dt;
+		data->_fusion_update.b.y = 1.0f;
+		data->_fusion_update.b.z = -(data->_gyro.vector.x * dt);
+
+		data->_fusion_update.c.x = -(data->_gyro.vector.y * dt);
+		data->_fusion_update.c.y = data->_gyro.vector.x * dt;
+		data->_fusion_update.c.z = 1.0f;
+
+		// Multiply DCM and update matrix
+		//status = matrix3_MatrixMultiply(&data->_fusion_DCM, &data->_fusion_update, &newMatrix);
+
+		// Calculate resulting matrix by multiplying matrices A and B
+		// Row A.a, col B.x
+		b = data->_fusion_DCM.a.y * data->_fusion_update.b.x;
+		c = data->_fusion_DCM.a.z * data->_fusion_update.c.x;
+		newMatrix.a.x = data->_fusion_DCM.a.x + b + c;
+
+		a = data->_fusion_DCM.a.x * data->_fusion_update.a.y;
+		c = data->_fusion_DCM.a.z * data->_fusion_update.c.y;
+		newMatrix.a.y = a + data->_fusion_DCM.a.y + c;
+
+		a = data->_fusion_DCM.a.x * data->_fusion_update.a.z;
+		b = data->_fusion_DCM.a.y * data->_fusion_update.b.z;
+		newMatrix.a.z = a + b + data->_fusion_DCM.a.z;
+
+		b = data->_fusion_DCM.b.y * data->_fusion_update.b.x;
+		c = data->_fusion_DCM.b.z * data->_fusion_update.c.x;
+		newMatrix.b.x = data->_fusion_DCM.b.x + b + c;
+
+		a = data->_fusion_DCM.b.x * data->_fusion_update.a.y;
+		c = data->_fusion_DCM.b.z * data->_fusion_update.c.y;
+		newMatrix.b.y = a + data->_fusion_DCM.b.y + c;
+
+		a = data->_fusion_DCM.b.x * data->_fusion_update.a.z;
+		b = data->_fusion_DCM.b.y * data->_fusion_update.b.z;
+		newMatrix.b.z = a + b + data->_fusion_DCM.b.z;
+
+		b = data->_fusion_DCM.c.y * data->_fusion_update.b.x;
+		c = data->_fusion_DCM.c.z * data->_fusion_update.c.x;
+		newMatrix.c.x = data->_fusion_DCM.c.x + b + c;
+
+		a = data->_fusion_DCM.c.x * data->_fusion_update.a.y;
+		c = data->_fusion_DCM.c.z * data->_fusion_update.c.y;
+		newMatrix.c.y = a + data->_fusion_DCM.c.y + c;
+
+		a = data->_fusion_DCM.c.x * data->_fusion_update.a.z;
+		b = data->_fusion_DCM.c.y * data->_fusion_update.b.z;
+		newMatrix.c.z = a + b + data->_fusion_DCM.c.z;
+
+
+		// Renormalize and orthogonalize DCM matrix
+		status = matrix3_normalizeOrthogonalizeMatrix(&newMatrix, 0.0001f);
+
+		// Check if matrix is OK and copy data
+		if(SUCCESS == status)
+		{
+			matrix3_copy(&newMatrix, &data->_fusion_DCM);
+		}
 	}
 	else
 	{
@@ -415,44 +497,3 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 }
 
 // Function updates rotation matrix from gyro data. At end it renormalizes and reorthogonalizes matrix.
-ErrorStatus fusion_updateRotationMatrix(FUSION_CORE *data)
-{
-	ErrorStatus status;
-	status = SUCCESS;
-
-	//Vectorf omega = vectorf_init(0);						// Rotation value
-	//Matrixf updateMatrix;									// Update matrix
-	Matrixf newMatrix;										// Place to store new DCM matrix
-	float32_t dt = 0;
-
-	// Calculate delta time
-	dt = (float32_t)data->_gyro.deltaTime;
-	dt = dt * data->PARAMETERS.systimeToSeconds;
-
-	data->integrationTime = dt;
-
-	// Calculate current rotation angle
-	// Part 1
-	// Is gyro value * delta time in seconds
-	status = vectorf_scalarProduct(&data->_gyro.vector, dt, &data->updateRotation);
-
-	// Generate update matrix
-	status = fusion_generateUpdateMatrix(&data->updateRotation, &data->_fusion_update, 1);
-
-	// Multiply DCM and update matrix
-	status = matrix3_MatrixMultiply(&data->_fusion_DCM, &data->_fusion_update, &newMatrix);
-
-	// Renormalize and orthogonalize DCM matrix
-	status = matrix3_normalizeOrthogonalizeMatrix(&newMatrix, param_dcm_max_orth_error);
-
-	// Check if matrix is OK and copy data
-	if(SUCCESS == status)
-	{
-		matrix3_copy(&newMatrix, &data->_fusion_DCM);
-	}
-
-	//fusion_generateDCM(data);
-
-	return status;
-}
-

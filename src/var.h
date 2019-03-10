@@ -207,13 +207,6 @@ extern uint16_t readRS485Data;
 extern uint32_t ui32MainLoopCanVar;
 extern uint32_t ui32MainLoopCanVar1;
 
-// Ring buffers for serial communications
-extern RING_BUFFER RB_USART3;
-extern uint8_t usart3_buf[128];
-
-extern RING_BUFFER RB_USART2;
-extern uint8_t usart2_buf[128];
-
 extern FUSION_CORE fusionData;
 
 // Flight data
@@ -239,18 +232,7 @@ extern uint16_t AIn3;
 
 
 extern volatile char* fileBuffer;
-extern volatile float32_t globalFloatTemp;
-// Temp variable
-extern volatile int globalTemp;
 
-// Global set variable, can be set over comm
-extern volatile float32_t globalVar;
-
-// System time variable
-extern volatile uint32_t systemTime;
-
-// SCR reg
-extern volatile uint16_t SCR;
 
 //TIM1 variables
 extern volatile uint16_t TIM1_CCRValue4;

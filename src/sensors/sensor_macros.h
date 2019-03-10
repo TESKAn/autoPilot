@@ -18,7 +18,7 @@
 #define SFLAG_Z_FAST_ROTATING					BIT6
 #define SFLAG_DO_DCM_UPDATE						BIT7
 
-#define SENSOR_SYSTIME_TO_SECONDS				0.00001f	// Convert systemTime to seconds, 1 ms timer, time is stored as 1/100 ms, so divide by 100000.
+#define SENSOR_SYSTIME_TO_SECONDS				0.000001f	// Convert systemTime to seconds, 1 us timer, time is stored as 1 us, so divide by 1000000.
 #define SENSOR_MIN_ROT_ERROR					0.000f
 #define SENSOR_MIN_ROTATION						0.000f
 #define SENSOR_MIN_GPS_SPEED					2.0f

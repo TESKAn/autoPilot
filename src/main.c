@@ -74,15 +74,17 @@ int main(void)
 	// Init sensor data structures
 	fusion_init(&fusionData, getSystemTime());
 
-	// Init serial port data structure
-	RB_Init(&RB_USART3, usart3_buf, 128);
-	RB_Init(&RB_USART2, usart2_buf, 128);
-
 	// Init MAVLINK buffer
 	RB32_Init(&rb32MavlinkTXQueue, ui32MavlinkBuf, 32);
 
+	// Initialize flight data
+	flight_init(&FCFlightData, &RCData);
 
-	//PWM_PASSTHROUGH = 1;
+	// Set motor IDs
+	FCFlightData.MOTORS.FR.ui8MotorID = CAN_MOTOR_FR_ID;
+	FCFlightData.MOTORS.FL.ui8MotorID = CAN_MOTOR_FL_ID;
+	FCFlightData.MOTORS.RR.ui8MotorID = CAN_MOTOR_RR_ID;
+	FCFlightData.MOTORS.RL.ui8MotorID = CAN_MOTOR_RL_ID;
 
 	AHRS_FIRSTRUN_PID = 1;
 	AHRS_FIRSTRUN_MATRIX = 1;
@@ -96,7 +98,7 @@ int main(void)
 	// Startup delay - 0,5 sec
 	Delaynus(500000);
 
-	// Configure hardware
+	// Configure MCU hardware
 	System_Config();
 
 	// Init CAN filters
@@ -105,291 +107,35 @@ int main(void)
 	// Set default PWM out values
 	refreshPWMOutputs();
 
-	globalVar = 0.001f;
-
 	// Peripherals initialized, wait 1 sec
 	Delayms(100);
-
-	// Initialize flight data
-	flight_init(&FCFlightData, &RCData);
-
-	// Set motor IDs
-	FCFlightData.MOTORS.FR.ui8MotorID = CAN_MOTOR_FR_ID;
-	FCFlightData.MOTORS.FL.ui8MotorID = CAN_MOTOR_FL_ID;
-	FCFlightData.MOTORS.RR.ui8MotorID = CAN_MOTOR_RR_ID;
-	FCFlightData.MOTORS.RL.ui8MotorID = CAN_MOTOR_RL_ID;
-
 
 	// Initialize external peripheral
 	extPeripheralInit();
 
 	// Calibrate I2C sensors
 	// Function has no function...
-	calibrateI2CSensors();
+	//calibrateI2CSensors();
 
 	PWMEN_OUT_ENABLE = 1;
-
 
 	MPU_COMM_ENABLED = 1;
 
 	SYSTEM_RUNNING = 1;
-	// Mount SD card
+
     while (1)
     {
-    	/*
-    	// Check CAN RX interrupts
-    	if(!(CAN1->IER & CAN_IT_FMP0))
-    	{
-    		CAN_ITConfig(CAN1, CAN_IT_FMP0, ENABLE);
-    	}
-    	if(!(CAN1->IER & CAN_IT_FMP1))
-    	{
-    		CAN_ITConfig(CAN1, CAN_IT_FMP1, ENABLE);
-    	}*/
-
     	// Check freemaster
     	FMSTR_Poll();
 
     	// Check MAVLINK
-
     	if(0 == mavlinkSendBusy)
     	{
     		MavlinkTransfer();
     	}
 
-
-    	// Main loop switch
-    	switch(mainLoopState)
-    	{
-			case 0:
-			{
-				break;
-			}
-			case 1:
-			{
-				mainLoopState = 0;
-				// Reset DCM
-				// Create identity matrix
-				matrix3_init(1, &fusionData._fusion_DCM);
-				matrix3_init(1, &fusionData._GPS_DCM);
-				// Reset PIDs
-				math_PID3Reset(&fusionData._gyroErrorPID);
-				// Set initial value
-				fusion_initGyroDriftPID(&fusionData);
-				fusion_initGyroGainPID(&fusionData);
-
-				break;
-			}
-			case 2:
-			{
-				mainLoopState = 0;
-				// Stop comm
-				MPU_COMM_ENABLED = 0;
-				// Wait if there is transmission in progress
-				while(I2C2_WAITINGDATA ) {}
-				MPU6000_GyroSelfTest(ENABLE);
-				// Enable comm
-				MPU_COMM_ENABLED = 1;
-
-				break;
-			}
-			case 3:
-			{
-				mainLoopState = 0;
-				MPU_COMM_ENABLED = 0;
-				while(I2C2_WAITINGDATA ) {}
-				MPU6000_GyroSelfTest(DISABLE);
-				MPU_COMM_ENABLED = 1;
-
-				break;
-			}
-			case 4:
-			{
-				mainLoopState = 0;
-				MPU_COMM_ENABLED = 0;
-				while(I2C2_WAITINGDATA ) {}
-				MPU6000_AccSelfTest(ENABLE);
-				MPU_COMM_ENABLED = 1;
-
-				break;
-			}
-			case 5:
-			{
-				mainLoopState = 0;
-				MPU_COMM_ENABLED = 0;
-				while(I2C2_WAITINGDATA ) {}
-				MPU6000_AccSelfTest(DISABLE);
-				MPU_COMM_ENABLED = 1;
-
-				break;
-			}
-			case 6:
-			{
-				mainLoopState = 0;
-				MPU_COMM_ENABLED = 0;
-				while(I2C2_WAITINGDATA ) {}
-				MPU6000_ReadFTValues();
-				MPU_COMM_ENABLED = 1;
-
-				break;
-			}
-			case 7:
-			{
-				mainLoopState = 0;
-				// Acc offsets
-				acc_updateOffsets(&fusionData._accelerometer);
-				break;
-			}
-			case 8:
-			{
-				// All gains
-				acc_updateGains(&fusionData._accelerometer, 0);
-				mainLoopState = 0;
-				break;
-			}
-			case 9:
-			{
-				// X gain
-				acc_updateGains(&fusionData._accelerometer, 1);
-				mainLoopState = 0;
-				break;
-			}
-			case 10:
-			{
-				// Y gain
-				acc_updateGains(&fusionData._accelerometer, 2);
-				mainLoopState = 0;
-				break;
-			}
-			case 11:
-			{
-				// Z gain
-				acc_updateGains(&fusionData._accelerometer, 3);
-				mainLoopState = 0;
-				break;
-			}
-			case 12:
-			{
-				// Send reset signal
-				CAN_SendRESET(21);
-				mainLoopState = 0;
-				break;
-			}
-			case 13:
-			{
-				// Write bat low value
-				t32CANVar.ui16[0] = ui16MainLoopVar;
-				CAN_SendRegValue(CAN_WRITE_REG_BATLOW, &t32CANVar, 20);
-				CAN_SendRegValue(CAN_WRITE_REG_BATLOW, &t32CANVar, 21);
-				CAN_SendRegValue(CAN_WRITE_REG_BATLOW, &t32CANVar, 22);
-				CAN_SendRegValue(CAN_WRITE_REG_BATLOW, &t32CANVar, 23);
-				mainLoopState = 0;
-				break;
-			}
-			case 14:
-			{
-				// Enable motor
-				enableMotors(1);
-				mainLoopState = 0;
-				break;
-			}
-			case 15:
-			{
-				// Disable motor
-				enableMotors(0);
-				mainLoopState = 0;
-				break;
-			}
-			case 16:
-			{
-				// Store parameters
-				storeMotorParams();
-				mainLoopState = 0;
-				break;
-			}
-			case 17:
-			{
-				// Write min RPM
-				t32CANVar.ui16[0] = ui16MainLoopVar;
-				CAN_SendRegValue(CAN_WRITE_REG_MINRPM, &t32CANVar, 20);
-				CAN_SendRegValue(CAN_WRITE_REG_MINRPM, &t32CANVar, 21);
-				CAN_SendRegValue(CAN_WRITE_REG_MINRPM, &t32CANVar, 22);
-				CAN_SendRegValue(CAN_WRITE_REG_MINRPM, &t32CANVar, 23);
-				mainLoopState = 0;
-				break;
-			}
-			case 18:
-			{
-				// Write max RPM
-				t32CANVar.ui16[0] = ui16MainLoopVar;
-				CAN_SendRegValue(CAN_WRITE_REG_MAXRPM, &t32CANVar, 20);
-				CAN_SendRegValue(CAN_WRITE_REG_MAXRPM, &t32CANVar, 21);
-				CAN_SendRegValue(CAN_WRITE_REG_MAXRPM, &t32CANVar, 22);
-				CAN_SendRegValue(CAN_WRITE_REG_MAXRPM, &t32CANVar, 23);
-				mainLoopState = 0;
-				break;
-			}
-			case 19:
-			{
-				refreshPWMOutputs();
-				mainLoopState = 0;
-				break;
-			}
-			case 20:
-			{
-				USART_SendData(USART1, 0x55);
-				mainLoopState = 0;
-				break;
-			}
-			case 21:
-			{
-				//GPIO_ToggleBits(GPIOB, GPIO_Pin_6);
-				//GPIO_ToggleBits(GPIOB, GPIO_Pin_7);
-				mainLoopState = 0;
-				break;
-			}
-			case 22:
-			{
-				mainLoopState = 0;
-				break;
-			}
-			case 23:
-			{
-				init_CAN();
-				mainLoopState = 0;
-				break;
-			}
-			case 24:
-			{
-				CAN_SendENABLE(1, CAN_MOTOR_ALL_ID);
-				mainLoopState = 0;
-				break;
-			}
-			case 25:
-			{
-				CAN_SendENABLE(0, CAN_MOTOR_ALL_ID);
-				mainLoopState = 0;
-				break;
-			}
-			case 26:
-			{
-				if(0 == mavlinkSendBusy)
-				{
-					/*
-					//ui16Temp = mavlink_msg_battery_status_pack(1, 1, &mavlinkMessageDataTX, 1, MAV_BATTERY_FUNCTION_ALL, MAV_BATTERY_TYPE_LIPO, 25, &FCFlightData.batMon.ui6MavLinkVoltage, FCFlightData.batMon.i16MavLinkCurrent, FCFlightData.batMon.i32MavLinkCurrentConsumed, -1, -1, -1, 	MAV_BATTERY_CHARGE_STATE_OK);
-					ui16Temp = mavlink_msg_to_send_buffer(mavlinkBuffer, &mavlinkMessageDataTX);
-					transferDMA_USART1(mavlinkBuffer, (int)ui16Temp);*/
-					mavlinkSendBusy = 1;
-				}
-				mainLoopState = 0;
-				break;
-			}
-			default:
-			{
-				mainLoopState = 0;
-				break;
-			}
-    	}
+    	// Check main loop
+    	CheckMainLoopStates();
 
         // Check log write buffers
         if(SD_WRITING_BUF1)

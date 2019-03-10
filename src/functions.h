@@ -9,7 +9,7 @@
 #define FUNCTIONS_H_
 
 
-
+int16_t CheckMainLoopStates();
 int16_t CheckRCInputTimeouts();
 int16_t SendCommData();
 int16_t SendCommData1();

@@ -14,7 +14,7 @@
 #define DEFAULT_MAG_RATE					0.000635075720f			// 1,3/2047 -> gauss
 #define DEG_TO_RAD							0.017453292519f			// 1 deg/sec is this in rad/sec
 #define RAD_TO_DEG							57.295779513082f		// 1 rad/sec is this in deg/sec
-#define SYSTIME_TOSECONDS					0.00001f				// Convert systemTime to seconds, 1 ms timer, time is stored as 1/100 ms, so divide by 100000.
+//#define SYSTIME_TOSECONDS					0.00001f				// Convert systemTime to seconds, 1 ms timer, time is stored as 1/100 ms, so divide by 100000.
 #define DEFAULT_ROLLPITCHCORRECTIONSCALE	0.5f					// Weight of roll pitch correction error
 #define DEFAULT_YAWCORRECTIONSCALE			0.5f					// Weight of yaw correction error
 // PID defaults

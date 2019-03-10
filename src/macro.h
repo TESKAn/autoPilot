@@ -11,12 +11,9 @@
 // Configuration macros
 // Define GPIO pin 5 as debug output
 //#define GPIOE5_IS_DEBUG
-// Define send debug messages over USB
-#define DEBUG_USB
 
 #define USE_FREEMASTER		// Use freemaster instead of own comm
-//#define RS485_DEBUG				// Disable sending commands over RS485
-//#define RS485_DISABLE_POLL	// Disable RS485 slave polling
+
 
 // APStatus flags macros
 #define LOG_ISOPEN	APStatus1.bits.BIT0
@@ -98,6 +95,9 @@
 
 // Clear flag1 FPU exceptions
 #define CLEAR_FPU_EXCEPTIONS	flag1.flag.flag = flag1.flag.flag & 0xFFFFFFC3
+
+// Read system time counter (32 bit)
+#define READ_SYS_TIME			(uint32_t)(TIM2->CNT)
 
 // DMA macros
 //DMA1_Stream0 used by USB
@@ -185,9 +185,8 @@
 #define TIM1_PULSE		1049
 
 // Timer 2 macros
-#define TIM2_PERIOD		2999//19999	// Make PWM faster - 3 ms.
+#define TIM2_PERIOD		0xffffffff	// Max. period for 32 bit timer
 #define TIM2_PRESCALER	83
-#define TIM2_PULSE		1049
 
 // Timer 3 macros
 #define TIM3_PERIOD		19999

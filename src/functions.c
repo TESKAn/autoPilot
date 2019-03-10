@@ -9,6 +9,244 @@
 #include <stdlib.h>
 #include "sensors/altimeter.h"
 
+// check main loop state
+int16_t CheckMainLoopStates()
+{
+	// Main loop switch
+	switch(mainLoopState)
+	{
+		case 0:
+		{
+			break;
+		}
+		case 1:
+		{
+			mainLoopState = 0;
+			// Reset DCM
+			// Create identity matrix
+			matrix3_init(1, &fusionData._fusion_DCM);
+			matrix3_init(1, &fusionData._GPS_DCM);
+			// Reset PIDs
+			math_PID3Reset(&fusionData._gyroErrorPID);
+			// Set initial value
+			fusion_initGyroDriftPID(&fusionData);
+			fusion_initGyroGainPID(&fusionData);
+
+			break;
+		}
+		case 2:
+		{
+			mainLoopState = 0;
+			// Stop comm
+			MPU_COMM_ENABLED = 0;
+			// Wait if there is transmission in progress
+			while(I2C2_WAITINGDATA ) {}
+			MPU6000_GyroSelfTest(ENABLE);
+			// Enable comm
+			MPU_COMM_ENABLED = 1;
+
+			break;
+		}
+		case 3:
+		{
+			mainLoopState = 0;
+			MPU_COMM_ENABLED = 0;
+			while(I2C2_WAITINGDATA ) {}
+			MPU6000_GyroSelfTest(DISABLE);
+			MPU_COMM_ENABLED = 1;
+
+			break;
+		}
+		case 4:
+		{
+			mainLoopState = 0;
+			MPU_COMM_ENABLED = 0;
+			while(I2C2_WAITINGDATA ) {}
+			MPU6000_AccSelfTest(ENABLE);
+			MPU_COMM_ENABLED = 1;
+
+			break;
+		}
+		case 5:
+		{
+			mainLoopState = 0;
+			MPU_COMM_ENABLED = 0;
+			while(I2C2_WAITINGDATA ) {}
+			MPU6000_AccSelfTest(DISABLE);
+			MPU_COMM_ENABLED = 1;
+
+			break;
+		}
+		case 6:
+		{
+			mainLoopState = 0;
+			MPU_COMM_ENABLED = 0;
+			while(I2C2_WAITINGDATA ) {}
+			MPU6000_ReadFTValues();
+			MPU_COMM_ENABLED = 1;
+
+			break;
+		}
+		case 7:
+		{
+			mainLoopState = 0;
+			// Acc offsets
+			acc_updateOffsets(&fusionData._accelerometer);
+			break;
+		}
+		case 8:
+		{
+			// All gains
+			acc_updateGains(&fusionData._accelerometer, 0);
+			mainLoopState = 0;
+			break;
+		}
+		case 9:
+		{
+			// X gain
+			acc_updateGains(&fusionData._accelerometer, 1);
+			mainLoopState = 0;
+			break;
+		}
+		case 10:
+		{
+			// Y gain
+			acc_updateGains(&fusionData._accelerometer, 2);
+			mainLoopState = 0;
+			break;
+		}
+		case 11:
+		{
+			// Z gain
+			acc_updateGains(&fusionData._accelerometer, 3);
+			mainLoopState = 0;
+			break;
+		}
+		case 12:
+		{
+			// Send reset signal
+			CAN_SendRESET(21);
+			mainLoopState = 0;
+			break;
+		}
+		case 13:
+		{
+			// Write bat low value
+			t32CANVar.ui16[0] = ui16MainLoopVar;
+			CAN_SendRegValue(CAN_WRITE_REG_BATLOW, &t32CANVar, 20);
+			CAN_SendRegValue(CAN_WRITE_REG_BATLOW, &t32CANVar, 21);
+			CAN_SendRegValue(CAN_WRITE_REG_BATLOW, &t32CANVar, 22);
+			CAN_SendRegValue(CAN_WRITE_REG_BATLOW, &t32CANVar, 23);
+			mainLoopState = 0;
+			break;
+		}
+		case 14:
+		{
+			// Enable motor
+			enableMotors(1);
+			mainLoopState = 0;
+			break;
+		}
+		case 15:
+		{
+			// Disable motor
+			enableMotors(0);
+			mainLoopState = 0;
+			break;
+		}
+		case 16:
+		{
+			// Store parameters
+			storeMotorParams();
+			mainLoopState = 0;
+			break;
+		}
+		case 17:
+		{
+			// Write min RPM
+			t32CANVar.ui16[0] = ui16MainLoopVar;
+			CAN_SendRegValue(CAN_WRITE_REG_MINRPM, &t32CANVar, 20);
+			CAN_SendRegValue(CAN_WRITE_REG_MINRPM, &t32CANVar, 21);
+			CAN_SendRegValue(CAN_WRITE_REG_MINRPM, &t32CANVar, 22);
+			CAN_SendRegValue(CAN_WRITE_REG_MINRPM, &t32CANVar, 23);
+			mainLoopState = 0;
+			break;
+		}
+		case 18:
+		{
+			// Write max RPM
+			t32CANVar.ui16[0] = ui16MainLoopVar;
+			CAN_SendRegValue(CAN_WRITE_REG_MAXRPM, &t32CANVar, 20);
+			CAN_SendRegValue(CAN_WRITE_REG_MAXRPM, &t32CANVar, 21);
+			CAN_SendRegValue(CAN_WRITE_REG_MAXRPM, &t32CANVar, 22);
+			CAN_SendRegValue(CAN_WRITE_REG_MAXRPM, &t32CANVar, 23);
+			mainLoopState = 0;
+			break;
+		}
+		case 19:
+		{
+			refreshPWMOutputs();
+			mainLoopState = 0;
+			break;
+		}
+		case 20:
+		{
+			USART_SendData(USART1, 0x55);
+			mainLoopState = 0;
+			break;
+		}
+		case 21:
+		{
+			//GPIO_ToggleBits(GPIOB, GPIO_Pin_6);
+			//GPIO_ToggleBits(GPIOB, GPIO_Pin_7);
+			mainLoopState = 0;
+			break;
+		}
+		case 22:
+		{
+			mainLoopState = 0;
+			break;
+		}
+		case 23:
+		{
+			init_CAN();
+			mainLoopState = 0;
+			break;
+		}
+		case 24:
+		{
+			CAN_SendENABLE(1, CAN_MOTOR_ALL_ID);
+			mainLoopState = 0;
+			break;
+		}
+		case 25:
+		{
+			CAN_SendENABLE(0, CAN_MOTOR_ALL_ID);
+			mainLoopState = 0;
+			break;
+		}
+		case 26:
+		{
+			if(0 == mavlinkSendBusy)
+			{
+				/*
+				//ui16Temp = mavlink_msg_battery_status_pack(1, 1, &mavlinkMessageDataTX, 1, MAV_BATTERY_FUNCTION_ALL, MAV_BATTERY_TYPE_LIPO, 25, &FCFlightData.batMon.ui6MavLinkVoltage, FCFlightData.batMon.i16MavLinkCurrent, FCFlightData.batMon.i32MavLinkCurrentConsumed, -1, -1, -1, 	MAV_BATTERY_CHARGE_STATE_OK);
+				ui16Temp = mavlink_msg_to_send_buffer(mavlinkBuffer, &mavlinkMessageDataTX);
+				transferDMA_USART1(mavlinkBuffer, (int)ui16Temp);*/
+				mavlinkSendBusy = 1;
+			}
+			mainLoopState = 0;
+			break;
+		}
+		default:
+		{
+			mainLoopState = 0;
+			break;
+		}
+	}
+	return 0;
+}
+
 // Check RC inputs timing
 int16_t CheckRCInputTimeouts()
 {
@@ -200,6 +438,9 @@ void refreshPWMOutputs(void)
 // Returns system time, resolution is 10 usec
 uint32_t getSystemTime(void)
 {
+	// Return timer2 value - counting from 0 on reset to 0xffffffff in 1 us increments, 1.2 hours total
+	return (uint32_t)(TIM2->CNT);
+	/*
 	uint32_t time = 0;
 	uint32_t timeFrac = 0;
 	time = systemTime * 100;	// 1 time tick is 10 usec
@@ -207,18 +448,17 @@ uint32_t getSystemTime(void)
 	timeFrac = timeFrac / 10;	// Period is 1000 usec
 	time = time + timeFrac;
 	return time;
+	*/
 }
 
 
 // Return system time in milliseconds
 float32_t getFTime(void)
 {
+	uint32_t ui32SysTime;
 	float32_t time = 0;
-	float32_t timeFrac = 0;
-	time = systemTime;
-	timeFrac = (float32_t)(TIM14->CNT);
-	timeFrac = timeFrac / 1000;
-	time = time + timeFrac;
+	ui32SysTime = getSystemTime();
+	time = (float32_t)ui32SysTime / 1000000;
 	return time;
 }
 
@@ -254,18 +494,22 @@ void extPeripheralInit(void)
 
 void Delayms(uint32_t ms)
 {
-	uint32_t time = systemTime - 1;
 	uint32_t deltaTime = 0;
-	while(deltaTime < ms)
+	uint32_t time = getSystemTime();
+	uint32_t endTime = 0;
+
+	endTime = time + (ms * 1000);
+	deltaTime = time;
+	while(endTime > time)
 	{
-		Delaynus(1500);
-		if(systemTime == time)
+		time = getSystemTime();
+		if(time == deltaTime)
 		{
 			// Error - time is not counting, break the loop
 			Delaynus(ms * 1000);
 			break;
 		}
-		deltaTime = systemTime - time;
+		deltaTime = time;
 	}
 }
 

@@ -98,33 +98,9 @@ void init_Timer1()
 
 void init_Timer2()
 {
-	//make structure for configuring pins
-	GPIO_InitTypeDef  GPIO_InitStructure;
 
 	//make structures for configuring timers
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStruct;
-	TIM_OCInitTypeDef TIM_OCInitStruct;
-	TIM_BDTRInitTypeDef TIM_BDTRInitStruct;
-
-	// Configure GPIO
-	// A0 - A3, A6, A7 timer output
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource0, GPIO_AF_TIM2);
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource1, GPIO_AF_TIM2);
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_TIM2);
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_TIM2);
-
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_3;
-	//set output type
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// push/pull
-	//set pull-up
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
-	//set pin mode to alternate function
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-	//set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-	//write mode to selected pins and selected port
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-
 
 	// Timer 2
 	// Enable clock(s)
@@ -139,45 +115,7 @@ void init_Timer2()
 	// Configure timer 2
 	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStruct);
 
-	// Populate structure
-	TIM_OCInitStruct.TIM_OCMode = TIM_OCMode_PWM1;
-	TIM_OCInitStruct.TIM_OutputState = TIM_OutputState_Enable;
-	TIM_OCInitStruct.TIM_OutputNState = TIM_OutputNState_Disable;
-	TIM_OCInitStruct.TIM_Pulse = TIM2_PULSE;
-	TIM_OCInitStruct.TIM_OCPolarity = TIM_OCPolarity_High;
-	TIM_OCInitStruct.TIM_OCNPolarity = TIM_OCNPolarity_High;
-	TIM_OCInitStruct.TIM_OCIdleState = TIM_OCIdleState_Reset;
-	TIM_OCInitStruct.TIM_OCNIdleState = TIM_OCNIdleState_Reset;
-	// Configure output compare, channel 2
-	TIM_OC1Init(TIM2, &TIM_OCInitStruct);
-	TIM_OC1PreloadConfig(TIM2, TIM_OCPreload_Enable);
-	TIM_OCInitStruct.TIM_OutputState = TIM_OutputState_Enable;
-	TIM_OC2Init(TIM2, &TIM_OCInitStruct);
-	TIM_OC2PreloadConfig(TIM2, TIM_OCPreload_Enable);
-	TIM_OCInitStruct.TIM_OutputState = TIM_OutputState_Enable;
-	TIM_OC3Init(TIM2, &TIM_OCInitStruct);
-	TIM_OC3PreloadConfig(TIM2, TIM_OCPreload_Enable);
-	TIM_OCInitStruct.TIM_OutputState = TIM_OutputState_Enable;
-	TIM_OC4Init(TIM2, &TIM_OCInitStruct);
-	TIM_OC4PreloadConfig(TIM2, TIM_OCPreload_Enable);
 
-	TIM_ARRPreloadConfig(TIM2, ENABLE);
-
-	TIM_BDTRInitStruct.TIM_OSSRState = TIM_OSSRState_Disable;
-	TIM_BDTRInitStruct.TIM_OSSIState = TIM_OSSIState_Disable;
-	TIM_BDTRInitStruct.TIM_LOCKLevel = TIM_LOCKLevel_OFF;
-	TIM_BDTRInitStruct.TIM_DeadTime = 0;
-	TIM_BDTRInitStruct.TIM_Break= TIM_Break_Disable;
-	TIM_BDTRInitStruct.TIM_BreakPolarity = TIM_BreakPolarity_Low;
-	TIM_BDTRInitStruct.TIM_AutomaticOutput = TIM_AutomaticOutput_Disable;
-
-	TIM_BDTRConfig(TIM2, &TIM_BDTRInitStruct);
-
-	// Required for timers 1 or 8
-	//TIM_CtrlPWMOutputs(TIM2, ENABLE);
-
-	// Enable interrupts
-	// TIM_ITConfig(TIM1, TIM_IT_CC1 | TIM_IT_CC2 | TIM_IT_CC3 | TIM_IT_CC4, ENABLE);
 	// Enable timer
 	TIM_Cmd(TIM2, ENABLE);
 	// End of Timer 2
@@ -845,11 +783,6 @@ void init_USART2()
 	//start port
 	USART_Init(USART2, &USART_InitStructure);
 
-	//enable interrupt - RX not empty, transfer complete
-	//USART_ITConfig(USART2, USART_IT_RXNE | USART_IT_TC, ENABLE);
-#ifndef USE_FREEMASTER
-	USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
-#endif
 	//enable module 2
 	USART_Cmd(USART2, ENABLE);
 }

@@ -24,13 +24,6 @@ uint32_t ui32SensorUpdateInterval = 0;
  uint32_t ui32MainLoopCanVar = 0;
  uint32_t ui32MainLoopCanVar1 = 0;
 
-
-// Ring buffers for serial communications
-RING_BUFFER RB_USART3;
-uint8_t usart3_buf[128];
-RING_BUFFER RB_USART2;
-uint8_t usart2_buf[128];
-
 // Fusion data
 FUSION_CORE fusionData;
 
@@ -57,21 +50,7 @@ uint16_t AIn2 = 0;
 uint16_t AIn3 = 0;
 
 
-
 volatile char* fileBuffer;
-volatile float32_t globalFloatTemp = 0;
-
-// Temp variable
-volatile int globalTemp = 0;
-
-// Global set variable, can be set over comm
-volatile float32_t globalVar = 0;
-
-// System time variable
-volatile uint32_t systemTime = 0;
-
-// SCR reg
-// Defined in modbus.h
 
 //TIM1 variables
 volatile uint16_t TIM1_CCRValue4 = 2200;
