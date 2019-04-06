@@ -189,9 +189,10 @@
 #define TIM2_PRESCALER	83
 
 // Timer 3 macros
-#define TIM3_PERIOD		19999
+#define TIM3_PERIOD		0xFFFF
 #define TIM3_PRESCALER	83
 #define TIM3_PULSE		1049
+#define TIM3_FILTER		1
 
 // Timer 4 macros
 #define TIM4_PRESCALER	83
@@ -243,6 +244,11 @@
 #define SENSOR_POWER_ON		GPIO_WriteBit(GPIOE, GPIO_Pin_7, 0)
 // Sensor power OFF
 #define SENSOR_POWER_OFF	GPIO_WriteBit(GPIOE, GPIO_Pin_7, 1)
+
+// USB power ON
+#define USB_POWER_ON		GPIO_WriteBit(GPIOA, GPIO_Pin_15, 0)
+// USB power OFF
+#define USB_POWER_OFF	GPIO_WriteBit(GPIOA, GPIO_Pin_15, 1)
 
 // Signal strength macros
 // How much time between pulses to declare value to be DC

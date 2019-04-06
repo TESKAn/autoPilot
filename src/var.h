@@ -242,6 +242,14 @@ extern volatile int TIM1CaptureValue2;
 extern volatile int TIM1CaptureValue3;
 extern volatile int TIM1CaptureValue4;
 
+// TIM3 variables
+extern volatile uint32_t TIM3_IC1_PreviousValue;
+extern volatile uint32_t TIM3_IC1_LowWidth;
+extern volatile uint32_t TIM3_IC1_HighWidth;
+extern volatile uint32_t TIM3_IC2_PreviousValue;
+extern volatile uint32_t TIM3_IC2_LowWidth;
+extern volatile uint32_t TIM3_IC2_HighWidth;
+
 // TIM4 variables
 extern volatile uint32_t TIM4_IC1_PreviousValue;
 extern volatile uint32_t TIM4_IC1_LowWidth;

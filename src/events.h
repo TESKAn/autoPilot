@@ -9,6 +9,7 @@
 #define EVENTS_H_
 
 void ADC_ISR_Handler(void);
+void TIM3_ISR_Handler(void);
 void TIM4_ISR_Handler(void);
 void TIM8_CC_ISR_Handler(void);
 void TIM1_BRK_TIM9_ISR_Handler(void);

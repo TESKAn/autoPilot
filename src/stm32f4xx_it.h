@@ -52,6 +52,7 @@ void PendSV_Handler(void);
 void SysTick_Handler(void);
 
 void ADC_IRQHandler(void);
+void TIM3_IRQHandler(void);
 void TIM4_IRQHandler(void);
 void TIM8_CC_IRQHandler(void);
 void TIM8_TRG_COM_TIM14_IRQHandler(void);

@@ -174,6 +174,83 @@ void DMA2_Stream7_ISR_Handler(void)
 	DMA_ITConfig(DMA_USART1, DMA_IT_TC, DISABLE);
 }
 
+/**
+  * @brief  This function handles Timer 3 event interrupt request.
+  * @param  None
+  * @retval None
+  * @services TIM3
+  */
+void TIM3_ISR_Handler(void)
+{
+	uint32_t dataTemp = 0;
+	uint32_t result = 0;
+	if((TIM3->SR & TIM_FLAG_CC1) != (u16)RESET)
+	{
+		// CC on channel 1
+		dataTemp = TIM_GetCapture1(TIM3);
+		// Calculate time
+		// Check value
+		if(dataTemp > TIM3_IC1_PreviousValue)
+		{
+			result = dataTemp - TIM3_IC1_PreviousValue;
+		}
+		else
+		{
+			result = (TIM3_PERIOD - TIM3_IC1_PreviousValue) + dataTemp;
+		}
+		// Check input polarity
+		if(GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_0) != 0)
+		{
+			// Input is not 0, transition from low to high
+			TIM3_IC1_LowWidth = result;
+		}
+		else
+		{
+			// Else transition from high to low
+			TIM3_IC1_HighWidth = result;
+			RCData.ch[10].PWMIN = (uint16_t)TIM3_IC1_HighWidth;
+			RCData.ch[10].PWM_Good = 1;
+			RCData.ch[10].PWM_Timeout = 0;
+		}
+		TIM3_IC1_PreviousValue = dataTemp;
+		TIM_ClearITPendingBit(TIM3, TIM_IT_CC1);
+		TIM_ClearFlag(TIM3, TIM_FLAG_CC1);
+	}
+
+	else if((TIM3->SR & TIM_FLAG_CC2) != (u16)RESET)
+	{
+		// CC on channel 2
+		dataTemp = TIM_GetCapture2(TIM3);
+		// Calculate time
+		// Check value
+		if(dataTemp > TIM3_IC2_PreviousValue)
+		{
+			result = dataTemp - TIM3_IC2_PreviousValue;
+		}
+		else
+		{
+			result = (TIM3_PERIOD - TIM3_IC2_PreviousValue) + dataTemp;
+		}
+		// Check input polarity
+		if(GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_1) != 0)
+		{
+			// Input is not 0, transition from low to high
+			TIM3_IC2_LowWidth = result;
+		}
+		else
+		{
+			// Else transition from high to low
+			TIM3_IC2_HighWidth = result;
+			RCData.ch[11].PWMIN = (uint16_t)TIM3_IC2_HighWidth;
+			RCData.ch[11].PWM_Good = 1;
+			RCData.ch[11].PWM_Timeout = 0;
+		}
+		TIM3_IC2_PreviousValue = dataTemp;
+		TIM_ClearITPendingBit(TIM3, TIM_IT_CC2);
+		TIM_ClearFlag(TIM3, TIM_FLAG_CC2);
+	}
+}
+
 
 /**
   * @brief  This function handles Timer 4 event interrupt request.

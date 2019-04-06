@@ -65,16 +65,16 @@
  #define SPI_SD                   		SPI2
  #define GPIO_CS                  		GPIOB
  #define RCC_APB2Periph_GPIO_CS   		RCC_AHB1Periph_GPIOB
- #define GPIO_Pin_CS              		GPIO_Pin_12
+ #define GPIO_Pin_CS              		GPIO_Pin_11
  #define DMA_Channel_SPI_SD_RX    		DMA1_Channel2
  #define DMA_Channel_SPI_SD_TX   		DMA1_Channel3
  #define DMA_FLAG_SPI_SD_TC_RX    		DMA1_FLAG_TC2
  #define DMA_FLAG_SPI_SD_TC_TX   		DMA1_FLAG_TC3
  #define GPIO_SPI_SD             		GPIOB
- #define GPIO_Pin_SPI_SD_SCK    		GPIO_Pin_13
+ #define GPIO_Pin_SPI_SD_SCK    		GPIO_Pin_10
  #define GPIO_Pin_SPI_SD_MISO    		GPIO_Pin_14
  #define GPIO_Pin_SPI_SD_MOSI     		GPIO_Pin_15
-#define GPIO_PinSource_SPI_SD_SCK      	GPIO_PinSource13
+#define GPIO_PinSource_SPI_SD_SCK      	GPIO_PinSource10
 #define GPIO_PinSource_SPI_SD_MISO      GPIO_PinSource14
 #define GPIO_PinSource_SPI_SD_MOSI      GPIO_PinSource15
 #define GPIO_AF_SPI						GPIO_AF_SPI2

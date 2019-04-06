@@ -128,11 +128,12 @@ void init_Timer3()
 
 	//make structures for configuring timers
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStruct;
-	TIM_OCInitTypeDef TIM_OCInitStruct;
 	TIM_BDTRInitTypeDef TIM_BDTRInitStruct;
 
+	TIM_ICInitTypeDef TIM_ICInitStruct;
+
 	// Configure GPIO
-	//connect pins B0 and B1 to timer output
+	//connect pins B0 and B1 to timer input
 	GPIO_PinAFConfig(GPIOB, GPIO_PinSource0, GPIO_AF_TIM3);
 	GPIO_PinAFConfig(GPIOB, GPIO_PinSource1, GPIO_AF_TIM3);
 	//select pins 0 and 1
@@ -144,29 +145,11 @@ void init_Timer3()
 	//set pin mode to alternate function
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
 	//set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
-	// Configure GPIO
-	// A0 - A3, A6, A7 timer output
-
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource6, GPIO_AF_TIM3);
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource7, GPIO_AF_TIM3);
-
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
-	//set output type
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// push/pull
-	//set pull-up
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
-	//set pin mode to alternate function
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-	//set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	//write mode to selected pins and selected port
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-	// Timer 3
+	// Timer 3 - input capture
 	// Enable clock(s)
 	// Clock = 42 MHz
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
@@ -176,32 +159,18 @@ void init_Timer3()
 	TIM_TimeBaseInitStruct.TIM_Period = TIM3_PERIOD;
 	TIM_TimeBaseInitStruct.TIM_Prescaler = TIM3_PRESCALER;
 	TIM_TimeBaseInitStruct.TIM_RepetitionCounter = 0;
-	// Configure timer 3
+	// Configure timer
 	TIM_TimeBaseInit(TIM3, &TIM_TimeBaseInitStruct);
 
 	// Populate structure
-	TIM_OCInitStruct.TIM_OCMode = TIM_OCMode_PWM1;
-	TIM_OCInitStruct.TIM_OutputState = TIM_OutputState_Enable;
-	TIM_OCInitStruct.TIM_OutputNState = TIM_OutputNState_Disable;
-	TIM_OCInitStruct.TIM_Pulse = TIM3_PULSE;
-	TIM_OCInitStruct.TIM_OCPolarity = TIM_OCPolarity_High;
-	TIM_OCInitStruct.TIM_OCNPolarity = TIM_OCNPolarity_High;
-	TIM_OCInitStruct.TIM_OCIdleState = TIM_OCIdleState_Reset;
-	TIM_OCInitStruct.TIM_OCNIdleState = TIM_OCNIdleState_Reset;
-	// Configure output compare, channel 3
-	TIM_OC1Init(TIM3, &TIM_OCInitStruct);
-	TIM_OC1PreloadConfig(TIM3, TIM_OCPreload_Enable);
-	TIM_OCInitStruct.TIM_OutputState = TIM_OutputState_Enable;
-	TIM_OC2Init(TIM3, &TIM_OCInitStruct);
-	TIM_OC2PreloadConfig(TIM3, TIM_OCPreload_Enable);
-	TIM_OCInitStruct.TIM_OutputState = TIM_OutputState_Enable;
-	TIM_OC3Init(TIM3, &TIM_OCInitStruct);
-	TIM_OC3PreloadConfig(TIM3, TIM_OCPreload_Enable);
-	TIM_OCInitStruct.TIM_OutputState = TIM_OutputState_Enable;
-	TIM_OC4Init(TIM3, &TIM_OCInitStruct);
-	TIM_OC4PreloadConfig(TIM3, TIM_OCPreload_Enable);
-
-	TIM_ARRPreloadConfig(TIM3, ENABLE);
+	TIM_ICInitStruct.TIM_Channel = TIM_Channel_1;
+	TIM_ICInitStruct.TIM_ICPolarity = TIM_ICPolarity_BothEdge;
+	TIM_ICInitStruct.TIM_ICSelection = TIM_ICSelection_DirectTI;
+	TIM_ICInitStruct.TIM_ICPrescaler = TIM_ICPSC_DIV1;
+	TIM_ICInitStruct.TIM_ICFilter = TIM3_FILTER;
+	TIM_ICInit(TIM8, &TIM_ICInitStruct);
+	TIM_ICInitStruct.TIM_Channel = TIM_Channel_2;
+	TIM_ICInit(TIM8, &TIM_ICInitStruct);
 
 	TIM_BDTRInitStruct.TIM_OSSRState = TIM_OSSRState_Disable;
 	TIM_BDTRInitStruct.TIM_OSSIState = TIM_OSSIState_Disable;
@@ -213,11 +182,9 @@ void init_Timer3()
 
 	TIM_BDTRConfig(TIM3, &TIM_BDTRInitStruct);
 
-	// Required for timers 1 or 8
-	//TIM_CtrlPWMOutputs(TIM2, ENABLE);
+	// Configure interrupt
+	TIM_ITConfig(TIM3, TIM_IT_CC1 | TIM_IT_CC2, ENABLE);
 
-	// Enable interrupts
-	// TIM_ITConfig(TIM1, TIM_IT_CC1 | TIM_IT_CC2 | TIM_IT_CC3 | TIM_IT_CC4, ENABLE);
 	// Enable timer
 	TIM_Cmd(TIM3, ENABLE);
 	// End of Timer 3
@@ -247,7 +214,7 @@ void init_Timer4()
 	//set pin mode to alternate function
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
 	//set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOD, &GPIO_InitStructure);
 
@@ -338,7 +305,7 @@ void init_Timer8()
 	//set pin mode to alternate function
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
 	//set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
 
@@ -627,7 +594,6 @@ void init_DAC(void)
 
 void init_CAN()
 {
-	//uint8_t ui8InitResult = 0;
 	//make structure for configuring pins
 	GPIO_InitTypeDef  GPIO_InitStructure;
 
@@ -654,6 +620,60 @@ void init_CAN()
 	// Init CAN
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_CAN1, ENABLE);
 
+	CAN_InitStructure.CAN_Prescaler = 2;	// 42 MHz clock; tq = CAN_Prescaler x tPCLK; 3 = 14 MHz
+	CAN_InitStructure.CAN_Mode = 0;// CAN_OperatingMode_Normal;
+	CAN_InitStructure.CAN_SJW = CAN_SJW_1tq;
+	// Bit period = (3/42 MHz)*(1+13+7) = 1 usec
+	CAN_InitStructure.CAN_BS1 = CAN_BS1_13tq;
+	CAN_InitStructure.CAN_BS2 = CAN_BS2_7tq;
+	CAN_InitStructure.CAN_TTCM = DISABLE;
+	CAN_InitStructure.CAN_ABOM = DISABLE;
+	CAN_InitStructure.CAN_AWUM = DISABLE;
+	CAN_InitStructure.CAN_NART = DISABLE;
+	CAN_InitStructure.CAN_RFLM = DISABLE;
+	CAN_InitStructure.CAN_TXFP = DISABLE;
+
+	//ui8InitResult = CAN_Init(CAN1, &CAN_InitStructure);
+	CAN_Init(CAN1, &CAN_InitStructure);
+
+	// Set slave bank numbers to 27
+	CAN_SlaveStartBank(27);
+
+	// Enable debug freeze
+	CAN_DBGFreeze(CAN1, DISABLE);
+
+	// Enable RX interrupt
+	CAN_ITConfig(CAN1, CAN_IT_FMP0, ENABLE);
+	CAN_ITConfig(CAN1, CAN_IT_FMP1, ENABLE);
+}
+
+void init_CAN1()
+{
+	//make structure for configuring pins
+	GPIO_InitTypeDef  GPIO_InitStructure;
+
+	//make structure for configuring CAN
+	CAN_InitTypeDef CAN_InitStructure;
+
+	// Init GPIO
+	//connect pins D0 and D1 to CAN
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource12, GPIO_AF_CAN2);
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource13, GPIO_AF_CAN2);
+	//select pins 6 and 7
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13;
+	//set output type
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// push/pull
+	//set pull-up
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	//set pin mode to alternate function
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+	//set pin speed
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;
+	//write mode to selected pins and selected port
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+	// Init CAN
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_CAN2, ENABLE);
 
 	CAN_InitStructure.CAN_Prescaler = 2;	// 42 MHz clock; tq = CAN_Prescaler x tPCLK; 3 = 14 MHz
 	CAN_InitStructure.CAN_Mode = 0;// CAN_OperatingMode_Normal;
@@ -668,27 +688,19 @@ void init_CAN()
 	CAN_InitStructure.CAN_RFLM = DISABLE;
 	CAN_InitStructure.CAN_TXFP = DISABLE;
 
-
 	//ui8InitResult = CAN_Init(CAN1, &CAN_InitStructure);
-	CAN_Init(CAN1, &CAN_InitStructure);
+	CAN_Init(CAN2, &CAN_InitStructure);
 
 	// Set slave bank numbers to 27
 	CAN_SlaveStartBank(27);
 
 	// Enable debug freeze
-	CAN_DBGFreeze(CAN1, DISABLE);
+	CAN_DBGFreeze(CAN2, DISABLE);
 
 	// Enable RX interrupt
-	CAN_ITConfig(CAN1, CAN_IT_FMP0, ENABLE);
-	CAN_ITConfig(CAN1, CAN_IT_FMP1, ENABLE);
-
-	//CAN_ITConfig(CAN1, CAN_IT_FF0, ENABLE);
-	//CAN_ITConfig(CAN1, CAN_IT_FF1, ENABLE);
-
-	//CAN_ITConfig(CAN1, CAN_IT_FOV0, ENABLE);
-	//CAN_ITConfig(CAN1, CAN_IT_FOV1, ENABLE);
+	CAN_ITConfig(CAN2, CAN_IT_FMP0, ENABLE);
+	CAN_ITConfig(CAN2, CAN_IT_FMP1, ENABLE);
 }
-
 
 void init_USART1()
 {
@@ -886,19 +898,81 @@ void init_EXTI()
 	EXTI_Init(&EXTI_InitStructure);
 }
 
+void init_SPI1()
+{
+	//make structure for configuring
+	GPIO_InitTypeDef  GPIO_InitStructure;
+	SPI_InitTypeDef  SPI_InitStructure;
+
+	// Connect A4, 5, 6, 7 to SPI1
+	// Select AF
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource4, GPIO_AF_SPI1);
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource5, GPIO_AF_SPI1);
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource6, GPIO_AF_SPI1);
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource7, GPIO_AF_SPI1);
+	// Select pins 4, 5, 6, 7
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
+	// Set output type
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// Push pull output
+	// Set pull-up
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	// Set pin mode to alternate function
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+	// Set pin speed
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	// Write mode to selected pins and selected port
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+	/* Enable SPI clock, SPI1: APB2, SPI2: APB1 */
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
+
+	// Disable SPI
+	SPI_Cmd(SPI1, DISABLE);
+
+	SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
+	SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
+	SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;
+	SPI_InitStructure.SPI_CPOL = SPI_CPOL_High;
+	SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;
+	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
+	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_16;
+	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
+	SPI_InitStructure.SPI_CRCPolynomial = 7;
+	SPI_Init(SPI1, &SPI_InitStructure);
+	// Disable CRC calculation
+	SPI_CalculateCRC(SPI1, DISABLE);
+	// Enable interrupt
+	//SPI_ITConfig(SPI2, ...);
+	// Configure DMA
+	//DMA_Init()
+	// Activate DMA
+	//SPI_I2S_DMACmd()
+	//Enable SPI
+	SPI_Cmd(SPI1, ENABLE);
+	// Enable DMA
+	//DMA_Cmd()
+	// End of sensor SPI init
+
+	/* drain SPI */
+	while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
+	{
+		SPI_I2S_ReceiveData(SPI1);
+	}
+}
+
 // Only init SPI pins, rest is in FATFS functions
-void init_SPI()
+void init_SPI2()
 {
 	//make structure for configuring pins
 	GPIO_InitTypeDef  GPIO_InitStructure;
 
-	// Connect B13, B14, B15 to SPI for SD card
+	// Connect B10, B14, B15 to SPI for SD card
 	// Select AF
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource13, GPIO_AF_SPI2);
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource10, GPIO_AF_SPI2);
 	GPIO_PinAFConfig(GPIOB, GPIO_PinSource14, GPIO_AF_SPI2);
 	GPIO_PinAFConfig(GPIOB, GPIO_PinSource15, GPIO_AF_SPI2);
 	// Select pins 13, 14, 15
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_14 | GPIO_Pin_15;
 	// Set output type
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// Push pull output
 	// Set pull-up
@@ -910,6 +984,69 @@ void init_SPI()
 	// Write mode to selected pins and selected port
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
+}
+
+// SPI for inertial sensors
+void init_SPI3()
+{
+	//make structure for configuring pins and SPI
+	GPIO_InitTypeDef  GPIO_InitStructure;
+	SPI_InitTypeDef  SPI_InitStructure;
+
+	// Connect C10, C11, C12 to SPI3 for sensors
+	// Select AF
+	GPIO_PinAFConfig(GPIOC, GPIO_PinSource10, GPIO_AF_SPI3);
+	GPIO_PinAFConfig(GPIOC, GPIO_PinSource11, GPIO_AF_SPI3);
+	GPIO_PinAFConfig(GPIOC, GPIO_PinSource12, GPIO_AF_SPI3);
+	// Select pins 10, 11, 12
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_11 | GPIO_Pin_12;
+	// Set output type
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// Push pull output
+	// Set pull-up
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	// Set pin mode to alternate function
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+	// Set pin speed
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	// Write mode to selected pins and selected port
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
+
+
+	/* Enable SPI clock, SPI1: APB2, SPI2: APB1 */
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI3, ENABLE);
+
+	// Disable SPI
+	SPI_Cmd(SPI3, DISABLE);
+
+	SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
+	SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
+	SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;
+	SPI_InitStructure.SPI_CPOL = SPI_CPOL_High;
+	SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;
+	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
+	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_16;
+	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
+	SPI_InitStructure.SPI_CRCPolynomial = 7;
+	SPI_Init(SPI3, &SPI_InitStructure);
+	// Disable CRC calculation
+	SPI_CalculateCRC(SPI3, DISABLE);
+	// Enable interrupt
+	//SPI_ITConfig(SPI2, ...);
+	// Configure DMA
+	//DMA_Init()
+	// Activate DMA
+	//SPI_I2S_DMACmd()
+	//Enable SPI
+	SPI_Cmd(SPI3, ENABLE);
+	// Enable DMA
+	//DMA_Cmd()
+	// End of sensor SPI init
+
+	/* drain SPI */
+	while (SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE) == RESET)
+	{
+		SPI_I2S_ReceiveData(SPI3);
+	}
 }
 
 void init_GPIO()
@@ -942,6 +1079,42 @@ void init_GPIO()
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 	// Set pin to 1
 	GPIO_WriteBit(GPIOA, GPIO_Pin_8, 1);
+
+	// A9, 10, 11, 12 - USB FS
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_OTG_FS);
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_OTG_FS);
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource11, GPIO_AF_OTG_FS);
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource12, GPIO_AF_OTG_FS);
+	// Select pins
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_10 | GPIO_Pin_11 | GPIO_Pin_12;
+	//set output type
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// open drain output
+	//set pull-up
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	//set pin mode to out function
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+	//set pin speed
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	//write mode to selected pins and selected port
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+	// A15 = GPIO output, set to 1, for USB power switch
+	// Set pin to 1
+	GPIO_WriteBit(GPIOA, GPIO_Pin_15, 1);
+	// Select pin
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
+	//set output type
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// open drain output
+	//set pull-up
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	//set pin mode to out function
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	//set pin speed
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	//write mode to selected pins and selected port
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	// Set pin to 1
+	GPIO_WriteBit(GPIOA, GPIO_Pin_15, 1);
 
 	//GPIO B
 
@@ -1283,6 +1456,17 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
 	NVIC_Init(&NVCInitStructure);
 
+	//init TIM3 interrupt
+	//set IRQ channel
+	NVCInitStructure.NVIC_IRQChannel = TIM3_IRQn;
+	//set priority 0 - 15
+	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+	//set priority 0 - 15
+	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
+	//enable IRQ channel
+	NVCInitStructure.NVIC_IRQChannelCmd = newState;
+	NVIC_Init(&NVCInitStructure);
+
 	//init TIM4 interrupt
 	//set IRQ channel
 	NVCInitStructure.NVIC_IRQChannel = TIM4_IRQn;
@@ -1414,7 +1598,10 @@ void System_Config(void)
 	// External interrupt
 	init_EXTI();
 	// SPI config
-	init_SPI();
+	init_SPI1();
+	init_SPI2();
+	// Sensor SPI
+	init_SPI3();
 	// I2C2 config
 	I2C2_Configure(ENABLE);
 	// ADC config

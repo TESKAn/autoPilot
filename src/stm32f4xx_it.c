@@ -195,6 +195,18 @@ void I2C2_ER_IRQHandler(void)
 }
 
 /**
+  * @brief  This function handles Timer 3 event interrupt request.
+  * @param  None
+  * @retval None
+  * @services TIM3
+  */
+void TIM3_IRQHandler(void)
+{
+	TIM3_ISR_Handler();
+}
+
+
+/**
   * @brief  This function handles Timer 4 event interrupt request.
   * @param  None
   * @retval None

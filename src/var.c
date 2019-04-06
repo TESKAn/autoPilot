@@ -62,6 +62,14 @@ volatile int TIM1CaptureValue2 = 0;
 volatile int TIM1CaptureValue3 = 0;
 volatile int TIM1CaptureValue4 = 0;
 
+// TIM3 variables
+volatile uint32_t TIM3_IC1_PreviousValue = 0;
+volatile uint32_t TIM3_IC1_LowWidth = 0;
+volatile uint32_t TIM3_IC1_HighWidth = 0;
+volatile uint32_t TIM3_IC2_PreviousValue = 0;
+volatile uint32_t TIM3_IC2_LowWidth = 0;
+volatile uint32_t TIM3_IC2_HighWidth = 0;
+
 // TIM4 variables
 volatile uint32_t TIM4_IC1_PreviousValue = 0;
 volatile uint32_t TIM4_IC1_LowWidth = 0;
