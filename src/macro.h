@@ -241,14 +241,31 @@
 #define SD_POWER_TOGGLE		GPIO_ToggleBits(GPIOA, GPIO_Pin_8)
 
 // Sensor power ON
-#define SENSOR_POWER_ON		GPIO_WriteBit(GPIOE, GPIO_Pin_7, 0)
+#define SENSOR_POWER_ON		GPIO_WriteBit(GPIOC, GPIO_Pin_5, 0)
 // Sensor power OFF
-#define SENSOR_POWER_OFF	GPIO_WriteBit(GPIOE, GPIO_Pin_7, 1)
+#define SENSOR_POWER_OFF	GPIO_WriteBit(GPIOC, GPIO_Pin_5, 1)
+
+// Sensor CS
+// Baro
+#define BARO_CS_0			GPIO_WriteBit(GPIOC, GPIO_Pin_4, 0)
+#define BARO_CS_1			GPIO_WriteBit(GPIOC, GPIO_Pin_4, 1)
+
+// Mag
+#define MAG_CS_0			GPIO_WriteBit(GPIOE, GPIO_Pin_7, 0)
+#define MAG_CS_1			GPIO_WriteBit(GPIOE, GPIO_Pin_7, 1)
+
+// Gyro/acc
+#define A_G_CS_0			GPIO_WriteBit(GPIOE, GPIO_Pin_8, 0)
+#define A_G_CS_1			GPIO_WriteBit(GPIOE, GPIO_Pin_8, 1)
+
+// Enable acc/gyro
+#define A_G_ON				GPIO_WriteBit(GPIOC, GPIO_Pin_13, 1)
+#define A_G_OFF				GPIO_WriteBit(GPIOC, GPIO_Pin_13, 0)
 
 // USB power ON
 #define USB_POWER_ON		GPIO_WriteBit(GPIOA, GPIO_Pin_15, 0)
 // USB power OFF
-#define USB_POWER_OFF	GPIO_WriteBit(GPIOA, GPIO_Pin_15, 1)
+#define USB_POWER_OFF		GPIO_WriteBit(GPIOA, GPIO_Pin_15, 1)
 
 // Signal strength macros
 // How much time between pulses to declare value to be DC

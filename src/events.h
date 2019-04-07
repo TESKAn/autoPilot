@@ -27,7 +27,11 @@ void CAN1_SCE_ISR_Handler(void);
 void USART1_ISR_Handler(void);
 void USART2_ISR_Handler(void);
 void USART3_ISR_Handler(void);
+void UART4_ISR_Handler(void);
 void EXTI0_ISR_Handler(void);
+void EXTI3_ISR_Handler(void);
+void EXTI4_ISR_Handler(void);
+void EXTI15_10_ISRHandler(void);
 void FPU_ISR_Handler(void);
 
 #endif /* EVENTS_H_ */

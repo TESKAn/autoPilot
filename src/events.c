@@ -1085,7 +1085,28 @@ void USART3_ISR_Handler(void)
 }
 
 /**
-  * @brief  This function handles USART3 interrupt request.
+  * @brief  This function handles UART4 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void UART4_ISR_Handler(void)
+{
+	int iData = 0;
+	if ((UART4->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
+	{
+		iData = USART_ReceiveData(UART4);
+		//GPS_ReceiveProcess((uint8_t)iData, getSystemTime());
+		//ubx_parser((uint8_t)iData);
+	}
+
+	if((UART4->SR & USART_FLAG_TC) != (u16)RESET)	//if transfer complete
+	{
+		UART4->SR = UART4->SR & !USART_FLAG_TC;
+	}
+}
+
+/**
+  * @brief  This function handles interrupt request.
   * @param  None
   * @retval None
   */
@@ -1099,38 +1120,66 @@ void EXTI0_ISR_Handler(void)
 		fusionData.sensorInterruptDeltaTime = dtCalc - fusionData.sensorInterruptTime;
 		fusionData.sensorInterruptTime = dtCalc;
 
-		/*
-		// Get data from sensors
-		if(!I2C2_WAITINGDATA && I2C2_INITDONE)
-		{
-			I2C2_PollTimer = 0;
-			for(retriesCount = I2C2_ERROR_RETRIESCOUNT; retriesCount > 0; retriesCount --)
-			{
-				// Mark time when data is requested
-				sensorAcquisitionTime = getSystemTime();
-				// Read from MPU, start at reg 59, read 25 bytes
-				//error = masterReceive_beginDMA(MPU6000_ADDRESS, 59, I2C2_DMABufRX, 26);
-				error = masterReceive_beginDMA(MPU6000_ADDRESS, 59, I2C2_sensorBufRX.buf, 26);
-				if(error == SUCCESS)
-				{
-					break;
-				}
-				else
-				{
-					// Handle error
-					I2C2_ResetInterface();
-				}
-			}
-		}
 
-		// Store system time
-		fusionData.deltaTime = systemTime - fusionData.dataTime;
-		fusionData.dataTime = systemTime;
-		*/
+
 		/* Clear the EXTI line 0 pending bit */
 		EXTI_ClearITPendingBit(EXTI_Line0);
 	}
 }
+
+/**
+  * @brief  This function handles EXTI3 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI3_ISR_Handler(void)
+{
+	if(EXTI_GetITStatus(EXTI_Line3) != RESET)
+	{
+		/* Clear the EXTI line 3 pending bit */
+		EXTI_ClearITPendingBit(EXTI_Line3);
+		// Check lines A3/C3
+	}
+}
+
+/**
+  * @brief  This function handles EXTI4 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI4_ISR_Handler(void)
+{
+	if(EXTI_GetITStatus(EXTI_Line4) != RESET)
+	{
+		/* Clear the EXTI line 4 pending bit */
+		EXTI_ClearITPendingBit(EXTI_Line4);
+		// Check lines E4
+	}
+}
+
+/**
+  * @brief  This function handles EXTI14/15 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI15_10_ISRHandler(void)
+{
+	if(EXTI_GetITStatus(EXTI_Line14) != RESET)
+	{
+		/* Clear the EXTI line 14 pending bit */
+		EXTI_ClearITPendingBit(EXTI_Line14);
+		// Check line C14
+	}
+
+	if(EXTI_GetITStatus(EXTI_Line15) != RESET)
+	{
+		/* Clear the EXTI line 15 pending bit */
+		EXTI_ClearITPendingBit(EXTI_Line15);
+		// Check line C15
+	}
+}
+
+
 
 /**
   * @brief  This function handles FPU interrupt request.

@@ -371,6 +371,16 @@ void USART3_IRQHandler(void)
 }
 
 /**
+  * @brief  This function handles UART4 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void UART4_IRQHandler(void)
+{
+	UART4_ISR_Handler();
+}
+
+/**
   * @brief  This function handles EXTI0 interrupt request.
   * @param  None
   * @retval None
@@ -380,7 +390,35 @@ void EXTI0_IRQHandler(void)
 	EXTI0_ISR_Handler();
 }
 
+/**
+  * @brief  This function handles EXTI3 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI3_IRQHandler(void)
+{
+	EXTI3_ISR_Handler();
+}
 
+/**
+  * @brief  This function handles EXTI4 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI4_IRQHandler(void)
+{
+	EXTI4_ISR_Handler();
+}
+
+/**
+  * @brief  This function handles EXTI14-15 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI15_10_IRQHandler(void)
+{
+	EXTI15_10_ISRHandler();
+}
 
 /******************************************************************************/
 /*                 STM32F4xx Peripherals Interrupt Handlers                   */
