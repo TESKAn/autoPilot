@@ -13,16 +13,108 @@ int16_t Sensor_SPIInit()
 	return 0;
 }
 
-int16_t Sensor_SPIWrite()
+int16_t Sensor_setCS(uint8_t device, uint8_t state)
 {
-
+	switch(device)
+	{
+		case GYRO_DEV_CS:
+		case ACC_DEV_CS:
+		{
+			if(state)
+			{
+				A_G_CS_1;
+			}
+			else
+			{
+				A_G_CS_0;
+			}
+			break;
+		}
+		case MAG_DEV_CS:
+		{
+			if(state)
+			{
+				MAG_CS_1;
+			}
+			else
+			{
+				MAG_CS_0;
+			}
+			break;
+		}
+		case BARO_DEV_CS:
+		{
+			if(state)
+			{
+				BARO_CS_1;
+			}
+			else
+			{
+				BARO_CS_0;
+			}
+			break;
+		}
+	}
 	return 0;
 }
 
-int16_t Sensor_SPIRead()
+int16_t Sensor_SPIWrite(uint8_t device, uint8_t address, uint8_t data)
 {
+	uint16_t ui16Temp = 0;
+	// Is SPI idle?
+	if(SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_BSY))
+	{
+		// Set CS low
+		Sensor_setCS(device, 0);
 
+		ui16Temp = 0x7F & (uint16_t)address;
+		SPI3->DR = ui16Temp;
+		// Wait until TX reg is empty
+		while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE))
+		{
+
+		}
+		// Send data
+		SPI3->DR = (uint16_t)data;
+		// Wait end of transmission
+		while(SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_BSY))
+		{
+
+		}
+		Sensor_setCS(device, 1);
+	}
 	return 0;
+}
+
+int16_t Sensor_SPIRead(uint8_t device, uint8_t address)
+{
+	uint16_t ui16Temp = 0;
+	// Is SPI idle?
+	if(SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_BSY))
+	{
+		// Set CS low
+		Sensor_setCS(device, 0);
+
+		ui16Temp = 0x80 | (uint16_t)address;
+		SPI3->DR = ui16Temp;
+		// Wait until TX reg is empty
+		while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE))
+		{
+
+		}
+		// Send data
+		SPI3->DR = 0;
+		// Wait end of reception
+		while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_RXNE))
+		{
+
+		}
+		// Read data
+		ui16Temp = SPI3->DR;
+
+		Sensor_setCS(device, 1);
+	}
+	return ui16Temp;
 }
 
 int16_t Sensor_SPIReadDMA(uint8_t device)
@@ -75,6 +167,13 @@ int16_t Sensor_SPIReadDMA(uint8_t device)
 			MAG_CS_0;
 			byteCount = MAG_BYTE_COUNT;
 			ui16StartRegAddress = MAG_START_REG;
+			break;
+		}
+		case BARO_DEV_CS:
+		{
+			BARO_CS_0;
+			byteCount = BARO_BYTE_COUNT;
+			ui16StartRegAddress = BARO_START_REG;
 			break;
 		}
 

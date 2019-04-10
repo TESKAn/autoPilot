@@ -224,6 +224,9 @@
 #define MAG_START_REG		0x28
 #define MAG_BYTE_COUNT		6
 
+#define BARO_DEV_CS			4
+#define BARO_START_REG		0x28
+#define BARO_BYTE_COUNT		5
 
 // Sensor CS
 // Baro
