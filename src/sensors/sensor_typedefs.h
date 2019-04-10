@@ -432,6 +432,45 @@ typedef union
 	}arrays;
 }__attribute__((aligned(4),packed)) FUSION_SENSORDATA, *PFUSION_SENSORDATA;
 
+typedef struct
+{
+	uint8_t ui8Device;
+	uint8_t ui8Busy;
+	uint8_t ui8NextDev;
+	uint8_t ui8Empty;
+	union
+	{
+		uint8_t buf[16];
+		struct
+		{
+			uint8_t ui8Empty;
+			uint16_t ui16Temperature;
+			uint8_t ui8Status;
+			uint16_t ui16XOut;
+			uint16_t ui16YOut;
+			uint16_t ui16ZOut;
+			uint16_t ui16Empty;
+			uint32_t ui32Empty;
+		}GYRO;
+		struct
+		{
+			uint16_t ui16XOut;
+			uint16_t ui16YOut;
+			uint16_t ui16ZOut;
+			uint16_t ui16Empty;
+			uint32_t ui32Empty[2];
+		}ACC;
+		struct
+		{
+			uint16_t ui16XOut;
+			uint16_t ui16YOut;
+			uint16_t ui16ZOut;
+			uint16_t ui16Empty;
+			uint32_t ui32Empty[2];
+		}MAG;
+	}DATA;
+}__attribute__((aligned(4),packed)) FUSION_SPIDATA;
+
 extern FUSION_CORE fusionData;
 
 #endif /* SENSOR_TYPEDEFS_H_ */

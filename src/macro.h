@@ -79,7 +79,7 @@
 #define AHRS_FIRSTRUN_PID		flag0.bits.BIT25	// Mark to run once
 #define AHRS_FIRSTRUN_MATRIX	flag0.bits.BIT26
 #define TIMEOUT_USEINTERRUPT	flag0.bits.BIT27	// Use interrupt to count timeout
-#define PWMEN_OUT_ENABLE		flag0.bits.BIT28
+#define SPI3_WAITINGDATA		flag0.bits.BIT28
 #define SD_SETTINGS_OPEN		flag0.bits.BIT29
 #define SD_MOUNTED				flag0.bits.BIT30	// Mark SD card is mounted and ready
 #define SENSORS_UPDATING		flag0.bits.BIT31	// Mark sensor data is being updated
@@ -109,6 +109,9 @@
 
 #define DMA_USART1				DMA2_Stream7
 #define DMA_USART1_CH			DMA_Channel_4
+
+#define DMA_SPI3_RX_STREAM		DMA1_Stream2
+#define DMA_SPI3_RX_CHANNEL		DMA_Channel_0
 
 #define DMA_I2C2_RX_TCIF 		DMA_FLAG_TCIF3
 #define DMA_I2C2_RX_HTIF 		DMA_FLAG_HTIF3
@@ -140,43 +143,17 @@
 #define DAC_DHR12R1_ADDRESS    0x40007408
 
 // LED macros
-#define LED_ERR_ON		GPIO_WriteBit(GPIOD, GPIO_Pin_8, 1)
-#define LED_ERR_OFF		GPIO_WriteBit(GPIOD, GPIO_Pin_8, 0)
+#define LED_ERR_ON		GPIO_WriteBit(GPIOE, GPIO_Pin_12, 1)
+#define LED_ERR_OFF		GPIO_WriteBit(GPIOE, GPIO_Pin_12, 0)
 
-#define LED_OK_ON		GPIO_WriteBit(GPIOD, GPIO_Pin_9, 1)
-#define LED_OK_OFF		GPIO_WriteBit(GPIOD, GPIO_Pin_9, 0)
-#define LED_OK_TOGGLE	GPIO_ToggleBits(GPIOD, GPIO_Pin_9)
+#define LED_OK_ON		GPIO_WriteBit(GPIOD, GPIO_Pin_11, 1)
+#define LED_OK_OFF		GPIO_WriteBit(GPIOD, GPIO_Pin_11, 0)
+#define LED_OK_TOGGLE	GPIO_ToggleBits(GPIOD, GPIO_Pin_11)
 
-#define LED_RUN_ON		GPIO_WriteBit(GPIOD, GPIO_Pin_10, 1)
-#define LED_RUN_OFF		GPIO_WriteBit(GPIOD, GPIO_Pin_10, 0)
-#define LED_RUN_TOGGLE	GPIO_ToggleBits(GPIOD, GPIO_Pin_10)
+#define LED_RUN_ON		GPIO_WriteBit(GPIOE, GPIO_Pin_10, 1)
+#define LED_RUN_OFF		GPIO_WriteBit(GPIOE, GPIO_Pin_10, 0)
+#define LED_RUN_TOGGLE	GPIO_ToggleBits(GPIOE, GPIO_Pin_10)
 
-// SCR1 macros
-#define SCR_01				0x0001
-#define SCR_02				0x0002
-#define SCR_03				0x0004
-#define SCR_04				0x0008
-#define SCR_05				0x0010
-#define SCR_06				0x0020
-#define SCR_07				0x0040
-#define SCR_08				0x0080
-#define SCR_09				0x0100
-#define SCR_10				0x0200
-#define SCR_11				0x0400
-#define SCR_12				0x0800
-#define SCR_13				0x1000
-#define SCR_14				0x2000
-#define SCR_15				0x4000
-#define SCR_16				0x8000
-
-// SCR2 macros
-#define SCR2_ACCOK					0x0001
-#define SCR2_GYROOK					0x0002
-#define SCR2_MAGOK					0x0004
-#define SCR2_BAROK					0x0008
-#define SCR2_POWEROK				0x0010
-#define SCR2_GPSOK					0x0020
-#define SCR2_LOGOPEN				0x0040
 
 
 //Timer 1 macros
@@ -218,19 +195,8 @@
 //define data register address - base address + DR offset
 #define USART2_DR_ADDRESS	((uint32_t)0x40004404)
 
-// SPI macros
-#define SPI_SDCARD_SELECT	GPIO_WriteBit(GPIOB, GPIO_Pin_12, 0)
-#define SPI_SDCARD_RELEASE	GPIO_WriteBit(GPIOB, GPIO_Pin_12, 1)
 
-// Debug macros
-/*
-#define DEBUG_PIN_ON		GPIO_WriteBit(GPIOE, GPIO_Pin_5, 1)
-#define DEBUG_PIN_OFF		GPIO_WriteBit(GPIOE, GPIO_Pin_5, 0)
-#define DEBUG_PIN_TOGGLE	GPIO_ToggleBits(GPIOE, GPIO_Pin_5)
-*/
 
-// PWM enable macro
-#define PWMEN_PIN_TOGGLE	GPIO_ToggleBits(GPIOE, GPIO_Pin_15)
 
 // SD card macros
 // SD power ON
@@ -244,6 +210,20 @@
 #define SENSOR_POWER_ON		GPIO_WriteBit(GPIOC, GPIO_Pin_5, 0)
 // Sensor power OFF
 #define SENSOR_POWER_OFF	GPIO_WriteBit(GPIOC, GPIO_Pin_5, 1)
+
+// Sensor macros
+#define GYRO_DEV_CS			1
+#define GYRO_START_REG		0x14
+#define GYRO_BYTE_COUNT		10
+
+#define ACC_DEV_CS			2
+#define ACC_START_REG		0x28
+#define ACC_BYTE_COUNT		6
+
+#define MAG_DEV_CS			3
+#define MAG_START_REG		0x28
+#define MAG_BYTE_COUNT		6
+
 
 // Sensor CS
 // Baro

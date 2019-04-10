@@ -217,6 +217,10 @@ extern RCDATA RCData;
 extern uint32_t ui32FlightCheckCounter;
 extern uint32_t ui32FlightCheckInterval;
 
+// SPI variables
+extern int16_t i16SPIInitAGState;
+
+extern FUSION_SPIDATA SPI_SensorBuf;
 
 // Flag variable
 extern volatile Flag flag0;

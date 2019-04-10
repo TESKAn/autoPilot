@@ -1,0 +1,25 @@
+/*
+ * sensors_spi.h
+ *
+ *  Created on: 10. apr. 2019
+ *      Author: jmoc
+ */
+
+#ifndef SENSORS_SPI_H_
+#define SENSORS_SPI_H_
+
+#define SPI_DMA_WAITDEINIT		500
+#define SPI_DMA_TIMEOUT_TIME	2000
+#define SPI_ERRORTIMEOUT		2000
+#define SPI_ERROR_RETRIESCOUNT	5		// How many times to retry communication
+
+
+int16_t Sensor_SPIInit();
+int16_t Sensor_SPIWrite();
+int16_t Sensor_SPIRead();
+int16_t Sensor_SPIReadDMA(uint8_t device);
+int16_t Sensor_SPIInitAG();
+int16_t Sensor_SPIInitM();
+int16_t Sensor_SPIInitB();
+
+#endif /* SENSORS_SPI_H_ */

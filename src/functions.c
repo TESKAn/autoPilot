@@ -425,30 +425,13 @@ void refreshPWMOutputs(void)
 	TIM_SetCompare3(TIM1, RCData.ch[1].PWMOUT);
 	TIM_SetCompare2(TIM1, RCData.ch[2].PWMOUT);
 	TIM_SetCompare1(TIM1, RCData.ch[3].PWMOUT);
-	TIM_SetCompare4(TIM3, RCData.ch[4].PWMOUT);
-	TIM_SetCompare3(TIM3, RCData.ch[5].PWMOUT);
-	TIM_SetCompare2(TIM3, RCData.ch[6].PWMOUT);
-	TIM_SetCompare1(TIM3, RCData.ch[7].PWMOUT);
-	TIM_SetCompare4(TIM2, RCData.ch[8].PWMOUT);
-	TIM_SetCompare3(TIM2, RCData.ch[9].PWMOUT);
-	TIM_SetCompare2(TIM2, RCData.ch[10].PWMOUT);
-	TIM_SetCompare1(TIM2, RCData.ch[11].PWMOUT);
 }
 
 // Returns system time, resolution is 10 usec
 uint32_t getSystemTime(void)
 {
 	// Return timer2 value - counting from 0 on reset to 0xffffffff in 1 us increments, 1.2 hours total
-	return (uint32_t)(TIM2->CNT);
-	/*
-	uint32_t time = 0;
-	uint32_t timeFrac = 0;
-	time = systemTime * 100;	// 1 time tick is 10 usec
-	timeFrac = (uint32_t)(TIM14->CNT);
-	timeFrac = timeFrac / 10;	// Period is 1000 usec
-	time = time + timeFrac;
-	return time;
-	*/
+	return READ_SYS_TIME;
 }
 
 
@@ -457,7 +440,7 @@ float32_t getFTime(void)
 {
 	uint32_t ui32SysTime;
 	float32_t time = 0;
-	ui32SysTime = getSystemTime();
+	ui32SysTime = READ_SYS_TIME;
 	time = (float32_t)ui32SysTime / 1000000;
 	return time;
 }

@@ -113,11 +113,11 @@ int main(void)
 	// Initialize external peripheral
 	extPeripheralInit();
 
+	Sensor_SPIInitAG();
+
 	// Calibrate I2C sensors
 	// Function has no function...
 	//calibrateI2CSensors();
-
-	PWMEN_OUT_ENABLE = 1;
 
 	MPU_COMM_ENABLED = 1;
 

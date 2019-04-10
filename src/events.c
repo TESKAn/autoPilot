@@ -129,6 +129,62 @@ void DMA1_Stream4_ISR_Handler(void)
 }
 
 /**
+  * @brief  This function handles DMA1 stream2 event interrupt request.
+  * @param  None
+  * @retval None
+  * @services DMA1 stream 2 - SPI3
+  */
+void DMA1_Stream2_ISR_Handler(void)
+{
+	// Disable interrupts
+	DMA_ITConfig(DMA_SPI3_RX_STREAM, DMA_IT_TC | DMA_IT_DME | DMA_IT_FE, DISABLE);
+
+
+	/* Disable DMA RX Channel */
+	DMA_Cmd(DMA_SPI3_RX_STREAM, DISABLE);
+
+	/* Wait until SPI_DMA_STREAM_RX disabled or time out */
+	while (DMA_GetCmdStatus(DMA_SPI3_RX_STREAM)!= DISABLE)
+	{}
+	/* Disable I2C DMA request */
+	SPI_I2S_DMACmd(SPI3, SPI_I2S_DMAReq_Rx, DISABLE);
+	DMA_ClearITPendingBit(DMA_SPI3_RX_STREAM, DMA_IT_TC);
+	// Set CS = 1
+	switch(SPI_SensorBuf.ui8Device)
+	{
+		case GYRO_DEV_CS:
+		{
+			// A/G module
+			A_G_CS_1;
+			break;
+		}
+		case ACC_DEV_CS:
+		{
+			A_G_CS_1;
+			break;
+		}
+		case MAG_DEV_CS:
+		{
+			MAG_CS_1;
+			break;
+		}
+	}
+	if(0 !=SPI_SensorBuf.ui8NextDev)
+	{
+		// Request next data
+		Sensor_SPIReadDMA(SPI_SensorBuf.ui8NextDev);
+		SPI_SensorBuf.ui8NextDev = 0;
+	}
+
+	// Copy data
+	//copySensorData();
+	// Set flag to mark has data
+	COPYI2C = 1;
+	// Clear receive in progress
+	I2C2_WAITINGDATA = 0;
+}
+
+/**
   * @brief  This function handles DMA1 stream3 event interrupt request.
   * @param  None
   * @retval None
@@ -661,11 +717,6 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 				RCData.RSSI = 100;
 			}
 		}
-		//DEBUG_PIN_TOGGLE;
-		if(PWMEN_OUT_ENABLE)
-		{
-			PWMEN_PIN_TOGGLE;
-		}
 
 		if(ADC_ENABLED)
 		{
@@ -1169,6 +1220,19 @@ void EXTI15_10_ISRHandler(void)
 		/* Clear the EXTI line 14 pending bit */
 		EXTI_ClearITPendingBit(EXTI_Line14);
 		// Check line C14
+		if(GPIO_ReadInputDataBit(GPIOC, 14))
+		{
+			// SPI busy?
+			if(0 == SPI_SensorBuf.ui8Busy)
+			{
+				// Read data from gyro
+				Sensor_SPIReadDMA(ACC_DEV_CS);
+			}
+			else
+			{
+				SPI_SensorBuf.ui8NextDev = ACC_DEV_CS;
+			}
+		}
 	}
 
 	if(EXTI_GetITStatus(EXTI_Line15) != RESET)
@@ -1176,6 +1240,20 @@ void EXTI15_10_ISRHandler(void)
 		/* Clear the EXTI line 15 pending bit */
 		EXTI_ClearITPendingBit(EXTI_Line15);
 		// Check line C15
+		if(GPIO_ReadInputDataBit(GPIOC, 15))
+		{
+			// SPI busy?
+			if(0 == SPI_SensorBuf.ui8Busy)
+			{
+				// Read data from gyro
+				SPI_SensorBuf.ui8Device = GYRO_DEV_CS;
+				Sensor_SPIReadDMA(GYRO_DEV_CS);
+			}
+			else
+			{
+				SPI_SensorBuf.ui8NextDev = GYRO_DEV_CS;
+			}
+		}
 	}
 }
 

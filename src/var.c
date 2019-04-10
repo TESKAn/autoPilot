@@ -36,6 +36,11 @@ uint32_t ui32FlightCheckCounter = 0;
 // Interval time = value * 10 ms
 uint32_t ui32FlightCheckInterval = 4;
 
+// SPI variables
+int16_t i16SPIInitAGState = 0;
+
+FUSION_SPIDATA SPI_SensorBuf;
+
 // Flag variables
 volatile Flag flag0;
 volatile Flag flag1;

@@ -319,7 +319,7 @@ void copySensorData(void)
 	}
 
 	// Check if we are saving to log
-	if(SD_WRITE_LOG && SCR2_LOGOPEN)
+	if(SD_WRITE_LOG)
 	{
 		write_toLog();
 	}

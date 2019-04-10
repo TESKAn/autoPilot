@@ -70,6 +70,6 @@
 #include "CAN/can.h"
 
 #include "sensors.h"
-
+#include "sensors_spi.h"
 
 #endif /* ALLINCLUDE_H_ */
