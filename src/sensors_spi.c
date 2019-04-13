@@ -226,17 +226,126 @@ int16_t Sensor_SPIReadDMA(uint8_t device)
 
 int16_t Sensor_SPIInitAG()
 {
-	switch(i16SPIInitAGState)
+	uint16_t ui16Temp = 0;
+	// Is SPI idle?
+	if(SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_BSY))
 	{
-		case 0:
+		//************************
+		// Set CS low
+		A_G_CS_0;
+		SPI3->DR = 0x10;	// Write, start with reg 0x0c
+		// Wait until TX reg is empty
+		while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE))
 		{
-			i16SPIInitAGState++;
-			break;
+
 		}
-		default:
+		// Send data
+		SPI3->DR = A_G_CTRL_REG1_G;
+		// Wait until TX reg is empty
+		while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE))
 		{
-			i16SPIInitAGState = 0;
+
 		}
+		// Send data
+		SPI3->DR = A_G_CTRL_REG2_G;
+		// Wait until TX reg is empty
+		while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE))
+		{
+
+		}
+		// Send data
+		SPI3->DR = A_G_CTRL_REG3_G;
+		// Wait end of transmission
+		while(SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_BSY))
+		{
+
+		}
+		// Set CS high
+		A_G_CS_1;
+		//************************
+
+		//************************
+		// Set CS low
+		A_G_CS_0;
+		SPI3->DR = 0x1e;	// Write, set start write reg
+		// Wait until TX reg is empty
+		while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE))
+		{
+
+		}
+		// Send data
+		SPI3->DR = A_G_CTRL_REG4_G;
+		// Wait until TX reg is empty
+		while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE))
+		{
+
+		}
+		// Send data
+		SPI3->DR = A_G_CTRL_REG5_XL;
+		// Wait until TX reg is empty
+		while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE))
+		{
+
+		}
+		// Send data
+		SPI3->DR = A_G_CTRL_REG6_XL;
+		// Wait end of transmission
+		while(SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_BSY))
+		{
+
+		}
+		// Set CS high
+		A_G_CS_1;
+		//************************
+
+
+
+		//************************
+		// Set interrupt registers
+		// Set CS low
+		A_G_CS_0;
+		SPI3->DR = 0x0c;	// Write, set start write reg
+		// Wait until TX reg is empty
+		while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE))
+		{
+
+		}
+		// Send data
+		SPI3->DR = A_G_INT1_CTRL;
+		// Wait until TX reg is empty
+		while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE))
+		{
+
+		}
+		// Send data
+		SPI3->DR = A_G_INT2_CTRL;
+		// Wait end of transmission
+		while(SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_BSY))
+		{
+
+		}
+		// Set CS high
+		A_G_CS_1;
+		//************************
+
+
+		// Wait until TX reg is empty
+		while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE))
+		{
+
+		}
+		// Send data
+		SPI3->DR = A_G_INT2_CTRL;
+
+
+
+		// Wait end of transmission
+		while(SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_BSY))
+		{
+
+		}
+		// Set CS high
+		A_G_CS_1;
 	}
 
 	return 0;

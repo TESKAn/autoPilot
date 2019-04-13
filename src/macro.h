@@ -228,6 +228,16 @@
 #define BARO_START_REG		0x28
 #define BARO_BYTE_COUNT		5
 
+// Sensor reg settings
+#define A_G_INT1_CTRL		0x02		// Gyro data ready on INT1 pin
+#define A_G_INT2_CTRL		0x01		// Acc data ready on INT2 pin
+#define A_G_CTRL_REG1_G		0x6b		// ODR 119 Hz, 500 dps, BW 31 Hz
+#define A_G_CTRL_REG2_G		0x0f		// INT/OUTput after LPF2
+#define A_G_CTRL_REG3_G		0x49		// HP filter enable, cutoff 0.01 Hz
+#define A_G_CTRL_REG4_G		0x38		// Enable gyro outputs
+#define A_G_CTRL_REG5_XL	0x38		// Enable acc outputs
+#define A_G_CTRL_REG6_XL	0x78		// Acc ODR 119 Hz, +/- 8G
+
 // Sensor CS
 // Baro
 #define BARO_CS_0			GPIO_WriteBit(GPIOC, GPIO_Pin_4, 0)
