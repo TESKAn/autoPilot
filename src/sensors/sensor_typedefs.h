@@ -438,6 +438,7 @@ typedef struct
 	uint8_t ui8Busy;
 	uint8_t ui8NextDev;
 	uint8_t ui8Empty;
+	uint32_t ui32InterruptTime;
 	union
 	{
 		uint8_t buf[16];

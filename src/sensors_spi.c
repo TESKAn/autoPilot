@@ -224,9 +224,9 @@ int16_t Sensor_SPIReadDMA(uint8_t device)
 	return 0;
 }
 
+// LSM9DS1
 int16_t Sensor_SPIInitAG()
 {
-	uint16_t ui16Temp = 0;
 	// Is SPI idle?
 	if(SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_BSY))
 	{
@@ -289,6 +289,27 @@ int16_t Sensor_SPIInitAG()
 		}
 		// Send data
 		SPI3->DR = A_G_CTRL_REG6_XL;
+		// Wait until TX reg is empty
+		while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE))
+		{
+
+		}
+		// Send data
+		SPI3->DR = A_G_CTRL_REG7_XL;
+		// Wait until TX reg is empty
+		while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE))
+		{
+
+		}
+		// Send data
+		SPI3->DR = A_G_CTRL_REG8;
+		// Wait until TX reg is empty
+		while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE))
+		{
+
+		}
+		// Send data
+		SPI3->DR = A_G_CTRL_REG9;
 		// Wait end of transmission
 		while(SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_BSY))
 		{
@@ -297,7 +318,6 @@ int16_t Sensor_SPIInitAG()
 		// Set CS high
 		A_G_CS_1;
 		//************************
-
 
 
 		//************************
@@ -328,24 +348,6 @@ int16_t Sensor_SPIInitAG()
 		A_G_CS_1;
 		//************************
 
-
-		// Wait until TX reg is empty
-		while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE))
-		{
-
-		}
-		// Send data
-		SPI3->DR = A_G_INT2_CTRL;
-
-
-
-		// Wait end of transmission
-		while(SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_BSY))
-		{
-
-		}
-		// Set CS high
-		A_G_CS_1;
 	}
 
 	return 0;
@@ -353,10 +355,117 @@ int16_t Sensor_SPIInitAG()
 int16_t Sensor_SPIInitM()
 {
 
+	//************************
+	// Set CS low
+	MAG_CS_0;
+	SPI3->DR = 0x20;	// Write, set start write reg
+	// Wait until TX reg is empty
+	while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE))
+	{
+
+	}
+	// Send data
+	SPI3->DR = MAG_CTRL_REG_1_M;
+	// Wait until TX reg is empty
+	while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE))
+	{
+
+	}
+	// Send data
+	SPI3->DR = MAG_CTRL_REG_2_M;
+	// Wait until TX reg is empty
+	while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE))
+	{
+
+	}
+	// Send data
+	SPI3->DR = MAG_CTRL_REG_3_M;
+	// Wait until TX reg is empty
+	while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE))
+	{
+
+	}
+	// Send data
+	SPI3->DR = MAG_CTRL_REG_4_M;
+	// Wait until TX reg is empty
+	while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE))
+	{
+
+	}
+	// Send data
+	SPI3->DR = MAG_CTRL_REG_5_M;
+	// Wait end of transmission
+	while(SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_BSY))
+	{
+
+	}
+	// Set CS high
+	MAG_CS_1;
+	//************************
+
+	//************************
+	// Set interrupt registers
+	// Set CS low
+	MAG_CS_0;
+	SPI3->DR = 0x30;	// Write, set start write reg
+	// Wait until TX reg is empty
+	while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE))
+	{
+
+	}
+	// Send data
+	SPI3->DR = MAG_INT_CFG_M;
+	// Wait end of transmission
+	while(SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_BSY))
+	{
+
+	}
+	// Set CS high
+	MAG_CS_1;
+	//************************
 	return 0;
 }
 int16_t Sensor_SPIInitB()
 {
+	//************************
+	// Set CS low
+	BARO_CS_0;
+	SPI3->DR = 0x20;	// Write, set start write reg
+	// Wait until TX reg is empty
+	while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE))
+	{
 
+	}
+	// Send data
+	SPI3->DR = BARO_CTRL_REG1;
+	// Wait until TX reg is empty
+	while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE))
+	{
+
+	}
+	// Send data
+	SPI3->DR = BARO_CTRL_REG2;
+	// Wait until TX reg is empty
+	while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE))
+	{
+
+	}
+	// Send data
+	SPI3->DR = BARO_CTRL_REG3;
+	// Wait until TX reg is empty
+	while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE))
+	{
+
+	}
+	// Send data
+	SPI3->DR = BARO_CTRL_REG4;
+	// Wait end of transmission
+	while(SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_BSY))
+	{
+
+	}
+	// Set CS high
+	BARO_CS_1;
+	//************************
 	return 0;
 }

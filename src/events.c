@@ -1164,6 +1164,9 @@ void UART4_ISR_Handler(void)
 void EXTI0_ISR_Handler(void)
 {
 	uint32_t dtCalc = 0;
+	// Store time of interrupt
+	//uint32_t ui32InterruptTime = READ_SYS_TIME;
+
 	if(EXTI_GetITStatus(EXTI_Line0) != RESET)
 	{
 
@@ -1185,10 +1188,15 @@ void EXTI0_ISR_Handler(void)
   */
 void EXTI3_ISR_Handler(void)
 {
+	// Store time of interrupt
+	uint32_t ui32InterruptTime = READ_SYS_TIME;
+
 	if(EXTI_GetITStatus(EXTI_Line3) != RESET)
 	{
 		/* Clear the EXTI line 3 pending bit */
 		EXTI_ClearITPendingBit(EXTI_Line3);
+		// A3, I_D_INT_BARO_DRDY
+		// C3, I_D_INT_M
 		// Check lines A3/C3
 	}
 }
@@ -1200,10 +1208,14 @@ void EXTI3_ISR_Handler(void)
   */
 void EXTI4_ISR_Handler(void)
 {
+	// Store time of interrupt
+	uint32_t ui32InterruptTime = READ_SYS_TIME;
+
 	if(EXTI_GetITStatus(EXTI_Line4) != RESET)
 	{
 		/* Clear the EXTI line 4 pending bit */
 		EXTI_ClearITPendingBit(EXTI_Line4);
+		// E4, I_D_MAG_DRDY
 		// Check lines E4
 	}
 }
@@ -1215,16 +1227,22 @@ void EXTI4_ISR_Handler(void)
   */
 void EXTI15_10_ISRHandler(void)
 {
+	// Store time of interrupt
+	uint32_t ui32InterruptTime = READ_SYS_TIME;
+
 	if(EXTI_GetITStatus(EXTI_Line14) != RESET)
 	{
 		/* Clear the EXTI line 14 pending bit */
 		EXTI_ClearITPendingBit(EXTI_Line14);
+		// C14, I_D_INT_A_G_2,
 		// Check line C14
 		if(GPIO_ReadInputDataBit(GPIOC, 14))
 		{
 			// SPI busy?
 			if(0 == SPI_SensorBuf.ui8Busy)
 			{
+				// Store interrupt time
+				SPI_SensorBuf.ui32InterruptTime = ui32InterruptTime;
 				// Read data from gyro
 				Sensor_SPIReadDMA(ACC_DEV_CS);
 			}
@@ -1239,12 +1257,15 @@ void EXTI15_10_ISRHandler(void)
 	{
 		/* Clear the EXTI line 15 pending bit */
 		EXTI_ClearITPendingBit(EXTI_Line15);
+		// C15, I_D_INT_A_G_1
 		// Check line C15
 		if(GPIO_ReadInputDataBit(GPIOC, 15))
 		{
 			// SPI busy?
 			if(0 == SPI_SensorBuf.ui8Busy)
 			{
+				// Store interrupt time
+				SPI_SensorBuf.ui32InterruptTime = ui32InterruptTime;
 				// Read data from gyro
 				SPI_SensorBuf.ui8Device = GYRO_DEV_CS;
 				Sensor_SPIReadDMA(GYRO_DEV_CS);

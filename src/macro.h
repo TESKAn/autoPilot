@@ -229,6 +229,7 @@
 #define BARO_BYTE_COUNT		5
 
 // Sensor reg settings
+// A_G
 #define A_G_INT1_CTRL		0x02		// Gyro data ready on INT1 pin
 #define A_G_INT2_CTRL		0x01		// Acc data ready on INT2 pin
 #define A_G_CTRL_REG1_G		0x6b		// ODR 119 Hz, 500 dps, BW 31 Hz
@@ -237,6 +238,23 @@
 #define A_G_CTRL_REG4_G		0x38		// Enable gyro outputs
 #define A_G_CTRL_REG5_XL	0x38		// Enable acc outputs
 #define A_G_CTRL_REG6_XL	0x78		// Acc ODR 119 Hz, +/- 8G
+#define A_G_CTRL_REG7_XL	0x00		// Acc
+#define A_G_CTRL_REG8		0x04		// Reg address increment on data access
+#define A_G_CTRL_REG9		0x04		// SPI only
+
+// MAG
+#define MAG_INT_CFG_M		0x05		// Int enabled, latched, active high
+#define MAG_CTRL_REG_1_M	0x7c		// High performance, 80 Hz output data rate
+#define MAG_CTRL_REG_2_M	0x00		// +/- 4 gauss full-scale
+#define MAG_CTRL_REG_3_M	0x84		// Disable I2C, no low power, SPI read/write, continuous conversion
+#define MAG_CTRL_REG_4_M	0x0c		// High - performance mode on Z axis
+#define MAG_CTRL_REG_5_M	0x40		// Block data update until readout
+
+// BARO
+#define BARO_CTRL_REG1		0xcc		// Active mode, interrupt enable, 25 Hz rate, block update until readout, 4 - wire interface
+#define BARO_CTRL_REG2		0x08		// I2C interface disabled
+#define BARO_CTRL_REG3		0x00		// Default
+#define BARO_CTRL_REG4		0x01		// Data ready on interrupt pin
 
 // Sensor CS
 // Baro
