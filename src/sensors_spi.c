@@ -145,7 +145,7 @@ int16_t Sensor_SPIReadDMA(uint8_t device)
 	}
 
 	// Set correct CS bit
-	switch(SPI_SensorBuf.ui8Device)
+	switch(SPI_SensorBuf->ui8Device)
 	{
 		case GYRO_DEV_CS:
 		{
@@ -188,7 +188,7 @@ int16_t Sensor_SPIReadDMA(uint8_t device)
 	//peripheral data address
 	DMAInitStructure.DMA_PeripheralBaseAddr = (uint32_t)&SPI3->DR;//    I2C2_DR_ADDRESS;
 	// DMA buffer address
-	DMAInitStructure.DMA_Memory0BaseAddr = (uint32_t)(&SPI_SensorBuf.DATA.buf);
+	DMAInitStructure.DMA_Memory0BaseAddr = (uint32_t)(&SPI_SensorBuf->DATA.buf);
 	DMAInitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
 	DMAInitStructure.DMA_BufferSize = byteCount;
 	DMAInitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;

@@ -123,6 +123,8 @@ int main(void)
 
 	SYSTEM_RUNNING = 1;
 
+	SPI_SensorBuf = &SPI_SensorBufAcc;
+
     while (1)
     {
     	// Check freemaster

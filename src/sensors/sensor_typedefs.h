@@ -437,7 +437,7 @@ typedef struct
 	uint8_t ui8Device;
 	uint8_t ui8Busy;
 	uint8_t ui8NextDev;
-	uint8_t ui8Empty;
+	uint8_t ui8DataWaiting;
 	uint32_t ui32InterruptTime;
 	union
 	{

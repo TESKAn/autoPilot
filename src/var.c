@@ -39,7 +39,11 @@ uint32_t ui32FlightCheckInterval = 4;
 // SPI variables
 int16_t i16SPIInitAGState = 0;
 
-FUSION_SPIDATA SPI_SensorBuf;
+FUSION_SPIDATA *SPI_SensorBuf;
+FUSION_SPIDATA SPI_SensorBufAcc;
+FUSION_SPIDATA SPI_SensorBufGyro;
+FUSION_SPIDATA SPI_SensorBufMag;
+FUSION_SPIDATA SPI_SensorBufBaro;
 
 // Flag variables
 volatile Flag flag0;

@@ -139,49 +139,50 @@ void DMA1_Stream2_ISR_Handler(void)
 	// Disable interrupts
 	DMA_ITConfig(DMA_SPI3_RX_STREAM, DMA_IT_TC | DMA_IT_DME | DMA_IT_FE, DISABLE);
 
-
 	/* Disable DMA RX Channel */
 	DMA_Cmd(DMA_SPI3_RX_STREAM, DISABLE);
 
 	/* Wait until SPI_DMA_STREAM_RX disabled or time out */
 	while (DMA_GetCmdStatus(DMA_SPI3_RX_STREAM)!= DISABLE)
 	{}
-	/* Disable I2C DMA request */
+	/* Disable SPI DMA request */
 	SPI_I2S_DMACmd(SPI3, SPI_I2S_DMAReq_Rx, DISABLE);
 	DMA_ClearITPendingBit(DMA_SPI3_RX_STREAM, DMA_IT_TC);
 	// Set CS = 1
-	switch(SPI_SensorBuf.ui8Device)
+	switch(SPI_SensorBuf->ui8Device)
 	{
 		case GYRO_DEV_CS:
 		{
-			// A/G module
 			A_G_CS_1;
+			// Process gyro data
 			break;
 		}
 		case ACC_DEV_CS:
 		{
 			A_G_CS_1;
+			// Process acc data
 			break;
 		}
 		case MAG_DEV_CS:
 		{
 			MAG_CS_1;
+			// Process mag data
+			break;
+		}
+		case BARO_DEV_CS:
+		{
+			BARO_CS_1;
+			// Process baro data
 			break;
 		}
 	}
-	if(0 !=SPI_SensorBuf.ui8NextDev)
+	if(0 !=SPI_SensorBuf->ui8NextDev)
 	{
 		// Request next data
-		Sensor_SPIReadDMA(SPI_SensorBuf.ui8NextDev);
-		SPI_SensorBuf.ui8NextDev = 0;
+		Sensor_SPIReadDMA(SPI_SensorBuf->ui8NextDev);
+		SPI_SensorBuf->ui8NextDev = 0;
 	}
 
-	// Copy data
-	//copySensorData();
-	// Set flag to mark has data
-	COPYI2C = 1;
-	// Clear receive in progress
-	I2C2_WAITINGDATA = 0;
 }
 
 /**
@@ -1198,6 +1199,42 @@ void EXTI3_ISR_Handler(void)
 		// A3, I_D_INT_BARO_DRDY
 		// C3, I_D_INT_M
 		// Check lines A3/C3
+		if(GPIOA->IDR & 0x08)
+		{
+			// Baro data ready nterrupt
+			SPI_SensorBufBaro.ui32InterruptTime = ui32InterruptTime;
+			// SPI idle?
+			if(0 == SPI_SensorBuf->ui8Busy)
+			{
+				// Store baro buffer address
+				SPI_SensorBuf = &SPI_SensorBufBaro;
+				// Read data from baro
+				Sensor_SPIReadDMA(BARO_DEV_CS);
+			}
+			else
+			{
+				SPI_SensorBuf->ui8NextDev = BARO_DEV_CS;
+				SPI_SensorBufBaro.ui8DataWaiting = 1;
+			}
+		}
+		if(GPIOC->IDR & 0x08)
+		{
+			// Mag data ready interrupt
+			SPI_SensorBufMag.ui32InterruptTime = ui32InterruptTime;
+			// SPI idle?
+			if(0 == SPI_SensorBuf->ui8Busy)
+			{
+				// Store mag buffer address
+				SPI_SensorBuf = &SPI_SensorBufMag;
+				// Read data from mag
+				Sensor_SPIReadDMA(MAG_DEV_CS);
+			}
+			else
+			{
+				SPI_SensorBuf->ui8NextDev = MAG_DEV_CS;
+				SPI_SensorBufMag.ui8DataWaiting = 1;
+			}
+		}
 	}
 }
 
@@ -1217,6 +1254,24 @@ void EXTI4_ISR_Handler(void)
 		EXTI_ClearITPendingBit(EXTI_Line4);
 		// E4, I_D_MAG_DRDY
 		// Check lines E4
+		if(GPIOE->IDR & 0x10)
+		{
+			// Baro data ready nterrupt
+			SPI_SensorBufMag.ui32InterruptTime = ui32InterruptTime;
+			// SPI idle?
+			if(0 == SPI_SensorBuf->ui8Busy)
+			{
+				// Store mag buffer address
+				SPI_SensorBuf = &SPI_SensorBufMag;
+				// Read data from mag
+				Sensor_SPIReadDMA(MAG_DEV_CS);
+			}
+			else
+			{
+				SPI_SensorBuf->ui8NextDev = MAG_DEV_CS;
+				SPI_SensorBufMag.ui8DataWaiting = 1;
+			}
+		}
 	}
 }
 
@@ -1239,16 +1294,16 @@ void EXTI15_10_ISRHandler(void)
 		if(GPIO_ReadInputDataBit(GPIOC, 14))
 		{
 			// SPI busy?
-			if(0 == SPI_SensorBuf.ui8Busy)
+			if(0 == SPI_SensorBuf->ui8Busy)
 			{
 				// Store interrupt time
-				SPI_SensorBuf.ui32InterruptTime = ui32InterruptTime;
+				SPI_SensorBuf->ui32InterruptTime = ui32InterruptTime;
 				// Read data from gyro
 				Sensor_SPIReadDMA(ACC_DEV_CS);
 			}
 			else
 			{
-				SPI_SensorBuf.ui8NextDev = ACC_DEV_CS;
+				SPI_SensorBuf->ui8NextDev = ACC_DEV_CS;
 			}
 		}
 	}
@@ -1262,17 +1317,17 @@ void EXTI15_10_ISRHandler(void)
 		if(GPIO_ReadInputDataBit(GPIOC, 15))
 		{
 			// SPI busy?
-			if(0 == SPI_SensorBuf.ui8Busy)
+			if(0 == SPI_SensorBuf->ui8Busy)
 			{
 				// Store interrupt time
-				SPI_SensorBuf.ui32InterruptTime = ui32InterruptTime;
+				SPI_SensorBuf->ui32InterruptTime = ui32InterruptTime;
 				// Read data from gyro
-				SPI_SensorBuf.ui8Device = GYRO_DEV_CS;
+				SPI_SensorBuf->ui8Device = GYRO_DEV_CS;
 				Sensor_SPIReadDMA(GYRO_DEV_CS);
 			}
 			else
 			{
-				SPI_SensorBuf.ui8NextDev = GYRO_DEV_CS;
+				SPI_SensorBuf->ui8NextDev = GYRO_DEV_CS;
 			}
 		}
 	}

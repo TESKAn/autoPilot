@@ -220,8 +220,11 @@ extern uint32_t ui32FlightCheckInterval;
 // SPI variables
 extern int16_t i16SPIInitAGState;
 
-extern FUSION_SPIDATA SPI_SensorBuf;
-
+extern FUSION_SPIDATA *SPI_SensorBuf;
+extern FUSION_SPIDATA SPI_SensorBufAcc;
+extern FUSION_SPIDATA SPI_SensorBufGyro;
+extern FUSION_SPIDATA SPI_SensorBufMag;
+extern FUSION_SPIDATA SPI_SensorBufBaro;
 // Flag variable
 extern volatile Flag flag0;
 extern volatile Flag flag1;
