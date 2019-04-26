@@ -10,7 +10,6 @@
 
 /* Includes */
 
-#include "CAN/can_messages.h"
 #include "macro.h"
 
 #include "stm32f4xx.h"
@@ -39,11 +38,6 @@
 #include "functions.h"
 #include "SDCard.h"
 #include "RingBuffer.h"
-
-//#include "CAN/can.h"
-
-// File with macro functions
-#include "macroFunctions.h"
 
 // SD card
 //#include "spi_sd.h"

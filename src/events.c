@@ -178,11 +178,30 @@ void DMA1_Stream2_ISR_Handler(void)
 	}
 	if(0 !=SPI_SensorBuf->ui8NextDev)
 	{
-		// Request next data
-		Sensor_SPIReadDMA(SPI_SensorBuf->ui8NextDev);
-		SPI_SensorBuf->ui8NextDev = 0;
+		switch(SPI_SensorBuf->ui8NextDev)
+		{
+			case GYRO_DEV_CS:
+			{
+				SPI_SensorBuf = &SPI_SensorBufGyro;
+				// Request next data
+				Sensor_SPIReadDMA(GYRO_DEV_CS);
+				SPI_SensorBuf->ui8NextDev = 0;
+				break;
+			}
+			case ACC_DEV_CS:
+			{
+				break;
+			}
+			case MAG_DEV_CS:
+			{
+				break;
+			}
+			case BARO_DEV_CS:
+			{
+				break;
+			}
+		}
 	}
-
 }
 
 /**
@@ -1293,17 +1312,20 @@ void EXTI15_10_ISRHandler(void)
 		// Check line C14
 		if(GPIO_ReadInputDataBit(GPIOC, 14))
 		{
-			// SPI busy?
+			// Acc data ready nterrupt
+			SPI_SensorBufAcc.ui32InterruptTime = ui32InterruptTime;
+			// SPI idle?
 			if(0 == SPI_SensorBuf->ui8Busy)
 			{
-				// Store interrupt time
-				SPI_SensorBuf->ui32InterruptTime = ui32InterruptTime;
-				// Read data from gyro
+				// Store mag buffer address
+				SPI_SensorBuf = &SPI_SensorBufAcc;
+				// Read data from mag
 				Sensor_SPIReadDMA(ACC_DEV_CS);
 			}
 			else
 			{
 				SPI_SensorBuf->ui8NextDev = ACC_DEV_CS;
+				SPI_SensorBufAcc.ui8DataWaiting = 1;
 			}
 		}
 	}
@@ -1316,18 +1338,20 @@ void EXTI15_10_ISRHandler(void)
 		// Check line C15
 		if(GPIO_ReadInputDataBit(GPIOC, 15))
 		{
-			// SPI busy?
+			// Gyro data ready nterrupt
+			SPI_SensorBufGyro.ui32InterruptTime = ui32InterruptTime;
+			// SPI idle?
 			if(0 == SPI_SensorBuf->ui8Busy)
 			{
-				// Store interrupt time
-				SPI_SensorBuf->ui32InterruptTime = ui32InterruptTime;
-				// Read data from gyro
-				SPI_SensorBuf->ui8Device = GYRO_DEV_CS;
+				// Store mag buffer address
+				SPI_SensorBuf = &SPI_SensorBufGyro;
+				// Read data from mag
 				Sensor_SPIReadDMA(GYRO_DEV_CS);
 			}
 			else
 			{
 				SPI_SensorBuf->ui8NextDev = GYRO_DEV_CS;
+				SPI_SensorBufGyro.ui8DataWaiting = 1;
 			}
 		}
 	}
