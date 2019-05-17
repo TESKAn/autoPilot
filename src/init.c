@@ -345,6 +345,7 @@ void init_Timer8()
 	// End of timer 8
 }
 
+// TIM 9 - E5 not connected anywhere
 void init_Timer9()
 {
 	//make structure for configuring pins
@@ -523,6 +524,7 @@ void init_ADC()
 	// End of ADC
 }
 
+// Not available on V3.0
 void init_DAC(void)
 {
 	DAC_InitTypeDef DAC_InitStruct;
@@ -533,6 +535,7 @@ void init_DAC(void)
 	/* GPIO Peripheral clock enable */
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 
+	/*
 	//GPIO A
 	// A4, A5 - DAC output
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_5;
@@ -546,7 +549,7 @@ void init_DAC(void)
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
-
+*/
 	// DMA for DAC
 	// DMA1_Stream5 channel7 configuration
 	DMA_DeInit(DMA_DAC1);
@@ -937,14 +940,14 @@ void init_EXTI3()
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
 
-
-
+	/*
 	EXTI_InitStructure.EXTI_Line = EXTI_Line3;
 	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
 	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
 	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
 
 	EXTI_Init(&EXTI_InitStructure);
+	*/
 }
 
 void init_EXTI4()
@@ -968,12 +971,14 @@ void init_EXTI4()
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOE, &GPIO_InitStructure);
 
+	/*
 	EXTI_InitStructure.EXTI_Line = EXTI_Line4;
 	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
 	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
 	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
 
 	EXTI_Init(&EXTI_InitStructure);
+	*/
 }
 
 void init_EXTI14_15()
@@ -997,6 +1002,7 @@ void init_EXTI14_15()
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
 
+	/*
 	EXTI_InitStructure.EXTI_Line = EXTI_Line14;
 	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
 	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
@@ -1005,6 +1011,7 @@ void init_EXTI14_15()
 
 	EXTI_InitStructure.EXTI_Line = EXTI_Line15;
 	EXTI_Init(&EXTI_InitStructure);
+	*/
 }
 
 void init_SPI1()
@@ -1116,7 +1123,7 @@ void init_SPI3()
 	// Set pin mode to alternate function
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
 	// Set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;
 	// Write mode to selected pins and selected port
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
 
@@ -1134,6 +1141,8 @@ void init_SPI3()
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	// Write mode to selected pins and selected port
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
+	// Set pin to 1
+	GPIO_WriteBit(GPIOC, GPIO_Pin_4, 1);
 
 	// E7 - mag, E8 - gyro, acc
 	// Select pins 7, 8
@@ -1148,6 +1157,10 @@ void init_SPI3()
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	// Write mode to selected pins and selected port
 	GPIO_Init(GPIOE, &GPIO_InitStructure);
+	// Set pin to 1
+	GPIO_WriteBit(GPIOE, GPIO_Pin_7, 1);
+	// Set pin to 1
+	GPIO_WriteBit(GPIOE, GPIO_Pin_8, 1);
 
 
 	/* Enable SPI clock, SPI1: APB2, SPI2: APB1 */
@@ -1162,7 +1175,7 @@ void init_SPI3()
 	SPI_InitStructure.SPI_CPOL = SPI_CPOL_High;
 	SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;
 	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
-	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_16;
+	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_256;
 	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
 	SPI_InitStructure.SPI_CRCPolynomial = 7;
 	SPI_Init(SPI3, &SPI_InitStructure);
@@ -1185,6 +1198,56 @@ void init_SPI3()
 	{
 		SPI_I2S_ReceiveData(SPI3);
 	}
+}
+
+void init_I2C2(FunctionalState NewState)
+{
+	I2C_InitTypeDef I2CInitStruct;
+	//make structure for configuring pins
+	GPIO_InitTypeDef  GPIO_InitStructure;
+
+	// Config GPIO
+	// Connect pins B10 and B11 to I2C 2
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource8, GPIO_AF_I2C1);
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource9, GPIO_AF_I2C1);
+	// Select pins 10 and 11
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9;
+	//set output type
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;	// open drain output
+	//set pull-up
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	//set pin mode to alternate function
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+	//set pin speed
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	//write mode to selected pins and selected port
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
+	// Enable clock
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1, ENABLE);
+	// I2C1 config
+	// Configure I2C 1 for sensor communication
+	// Set clock to 400 kHz
+	I2CInitStruct.I2C_ClockSpeed = 200000;
+	I2CInitStruct.I2C_Mode = I2C_Mode_I2C;
+	I2CInitStruct.I2C_DutyCycle = I2C_DutyCycle_2;
+	I2CInitStruct.I2C_OwnAddress1 = 0x00;
+	I2CInitStruct.I2C_Ack = I2C_Ack_Enable;
+	I2CInitStruct.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit;
+	I2C_Init(I2C1, &I2CInitStruct);
+	// Configure interrupts
+	// Enable event interrupt and buf empty interrupt event and error interrupt event
+	// Do not enable BUF interrupt if using DMA
+	// I2C_IT_BUF, I2C_IT_EVT, I2C_IT_ERR
+	//I2C_ITConfig(I2C2, I2C_IT_BUF | I2C_IT_EVT | I2C_IT_ERR, ENABLE);
+	// Configure DMA
+	//DMA_DeInit(DMA_I2C2_TX);
+	//DMA_DeInit(DMA_I2C2_RX);
+	// Configure DMA1 stream 3 transfer complete interrupt
+	//DMA_ITConfig(DMA1_Stream3, DMA_IT_TC | DMA_IT_DME | DMA_IT_FE, ENABLE);
+	// Configure DMA1 stream 7 transfer complete interrupt
+	//DMA_ITConfig(DMA1_Stream7, DMA_IT_TC | DMA_IT_DME | DMA_IT_FE, ENABLE);
+	// Enable I2C 2
+	I2C_Cmd(I2C1, NewState);
 }
 
 void init_GPIO()
@@ -1256,25 +1319,11 @@ void init_GPIO()
 
 	//GPIO B
 
-	// B4 = GPIO input for SD card detect
-	// Select pin 4
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
-	//set output type
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;	// open drain output
-	//set pull-up
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-	//set pin mode to out function
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-	//set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-	//write mode to selected pins and selected port
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
-
-	// B12 = GPIO output, set to 1, for SD card SS
+	// B11 = GPIO output, set to 1, for SD card SS
 	// Set pin to 1
-	GPIO_WriteBit(GPIOB, GPIO_Pin_12, 1);
-	// Select pin 12
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
+	GPIO_WriteBit(GPIOB, GPIO_Pin_11, 1);
+	// Select pin 11
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
 	//set output type
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// open drain output
 	//set pull-up
@@ -1286,42 +1335,9 @@ void init_GPIO()
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 	// Set pin to 1
-	GPIO_WriteBit(GPIOB, GPIO_Pin_12, 1);
+	GPIO_WriteBit(GPIOB, GPIO_Pin_11, 1);
 
 	//GPIO C
-
-	// Set C3 as input, sensor I_D_INT_M
-	// Select
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
-	//set output type
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// push/pull
-	//set pull-up
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
-	//set pin mode to alternate function
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-	//set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-	//write mode to selected pins and selected port
-	GPIO_Init(GPIOC, &GPIO_InitStructure);
-
-
-
-
-	// Set C4 as input, sensor FSYNC
-	// Select C4
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
-	//set output type
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// push/pull
-	//set pull-up
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
-	//set pin mode to alternate function
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-	//set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-	//write mode to selected pins and selected port
-	GPIO_Init(GPIOC, &GPIO_InitStructure);
-	// Set pin to 0
-	GPIO_WriteBit(GPIOC, GPIO_Pin_4, 0);
 
 	// Set C5 as output, sensor power ON
 	// Select C5
@@ -1336,27 +1352,10 @@ void init_GPIO()
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
+	// Set pin to 0 - ON
+	GPIO_WriteBit(GPIOC, GPIO_Pin_5, 0);
 
-	// Set C12 as output, RS485 enable
-	// Select C12
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
-	//set output type
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// push/pull
-	//set pull-up
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	//set pin mode to alternate function
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	//set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-	//write mode to selected pins and selected port
-	GPIO_Init(GPIOC, &GPIO_InitStructure);
-
-	// Set interrupt
-
-	// Set C13 as output
-	// C13 = enable acc/gyro
-	// Set pin to 1
-	GPIO_WriteBit(GPIOC, GPIO_Pin_13, 1);
+	// Set C13 as output, A_G data enable
 	// Select C13
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
 	//set output type
@@ -1369,24 +1368,8 @@ void init_GPIO()
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
-	// Set pin to 1
+	// Set pin to 1 - ON
 	GPIO_WriteBit(GPIOC, GPIO_Pin_13, 1);
-
-	// Set C15 as output, set to 1, pull - up, MPL sensor shutdown
-	// Select C15
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
-	//set output type
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// push/pull
-	//set pull-up
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-	//set pin mode to alternate function
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	//set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-	//write mode to selected pins and selected port
-	GPIO_Init(GPIOC, &GPIO_InitStructure);
-	// Set pin to 1
-	GPIO_WriteBit(GPIOC, GPIO_Pin_15, 1);
 
 	//GPIO D
 
@@ -1405,37 +1388,42 @@ void init_GPIO()
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOD, &GPIO_InitStructure);
 
-	// Pins 11 as output low - status LEDs
+	// D11 = LED
+	//configure structure
 	//select pins
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
 	//set output type
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// push/pull
-	//set pull-up
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	//set pin mode to alternate function
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	//set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-	//write mode to selected pins and selected port
-	GPIO_Init(GPIOD, &GPIO_InitStructure);
-	// Set pins to 0
-	GPIO_WriteBit(GPIOD, GPIO_Pin_11, 0);
-
-	// Pin D 0 - ext. slave select 1
-	//select pins
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
-	//set output type
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
 	//set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	//set pull-up
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
 	//set pin mode
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOD, &GPIO_InitStructure);
+	// Set pin to 0 - OFF
+	GPIO_WriteBit(GPIOD, GPIO_Pin_11, 0);
 
 	//GPIO E
+
+	// E10, 12 = LED
+	//configure structure
+	//select pins
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_12;
+	//set output type
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	//set pin speed
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	//set pull-up
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	//set pin mode
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	//write mode to selected pins and selected port
+	GPIO_Init(GPIOE, &GPIO_InitStructure);
+	// Set pin to 0 - OFF
+	GPIO_WriteBit(GPIOE, GPIO_Pin_10, 0);
+	GPIO_WriteBit(GPIOE, GPIO_Pin_12, 0);
 
 	// Connect pin E15 to input, SD card IN
 	// This pin switches MUX input select circuit
@@ -1704,21 +1692,6 @@ void init_swin()
 	//make structure for configuring pins
 	GPIO_InitTypeDef  GPIO_InitStructure;
 
-	// Init GPIO
-	//connect pins C0 to GPIO
-	//select pin 0
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
-	//set output type
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;	// Open drain
-	//set pull-up
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
-	//set pin mode to GPIO input
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-	//set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-	//write mode to selected pins and selected port
-	GPIO_Init(GPIOC, &GPIO_InitStructure);
-
 }
 
 void System_Config(void)
@@ -1753,7 +1726,7 @@ void System_Config(void)
 	// Sensor SPI
 	init_SPI3();
 	// I2C2 config
-	I2C2_Configure(ENABLE);
+	init_I2C2(DISABLE);
 	// ADC config
 	init_ADC();
 	// DAC config

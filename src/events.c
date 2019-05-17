@@ -744,7 +744,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 	        ADC_SoftwareStartConv(ADC2);
 	        ADC_SoftwareStartConv(ADC3);
 		}
-
+/*
 		if(EXTSENS_INIT_DONE)
 		{
 			// Check I2C sensors
@@ -778,7 +778,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 					fusionData.dataTime = READ_SYS_TIME;
 				}
 			}
-		}
+		}*/
 
 		// LED counter
 		LED_ToggleCount++;

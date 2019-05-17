@@ -30,6 +30,7 @@ void init_EXTI14_15();
 void init_SPI1();
 void init_SPI2();
 void init_SPI3();
+void init_I2C2(FunctionalState NewState);
 void init_GPIO();
 void NVIC_EnableInterrupts(FunctionalState newState);
 void init_swin();

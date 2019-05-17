@@ -1586,56 +1586,6 @@ ErrorStatus I2C_CheckForError(I2C_TypeDef* I2Cx)
 	return error;
 }
 
-void I2C2_Configure(FunctionalState NewState)
-{
-	I2C_InitTypeDef I2CInitStruct;
-	//make structure for configuring pins
-	GPIO_InitTypeDef  GPIO_InitStructure;
-
-	// Config GPIO
-	// Connect pins B10 and B11 to I2C 2
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource10, GPIO_AF_I2C2);
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource11, GPIO_AF_I2C2);
-	// Select pins 10 and 11
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_11;
-	//set output type
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;	// open drain output
-	//set pull-up
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-	//set pin mode to alternate function
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-	//set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	//write mode to selected pins and selected port
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
-	// Enable clock
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C2, ENABLE);
-	// I2C2 config
-	// Configure I2C 2 for sensor communication
-	// Set clock to 400 kHz
-	I2CInitStruct.I2C_ClockSpeed = 200000;
-	I2CInitStruct.I2C_Mode = I2C_Mode_I2C;
-	I2CInitStruct.I2C_DutyCycle = I2C_DutyCycle_2;
-	I2CInitStruct.I2C_OwnAddress1 = 0x00;
-	I2CInitStruct.I2C_Ack = I2C_Ack_Enable;
-	I2CInitStruct.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit;
-	I2C_Init(I2C2, &I2CInitStruct);
-	// Configure interrupts
-	// Enable event interrupt and buf empty interrupt event and error interrupt event
-	// Do not enable BUF interrupt if using DMA
-	// I2C_IT_BUF, I2C_IT_EVT, I2C_IT_ERR
-	//I2C_ITConfig(I2C2, I2C_IT_BUF | I2C_IT_EVT | I2C_IT_ERR, ENABLE);
-	// Configure DMA
-	DMA_DeInit(DMA_I2C2_TX);
-	DMA_DeInit(DMA_I2C2_RX);
-	// Configure DMA1 stream 3 transfer complete interrupt
-	//DMA_ITConfig(DMA1_Stream3, DMA_IT_TC | DMA_IT_DME | DMA_IT_FE, ENABLE);
-	// Configure DMA1 stream 7 transfer complete interrupt
-	//DMA_ITConfig(DMA1_Stream7, DMA_IT_TC | DMA_IT_DME | DMA_IT_FE, ENABLE);
-	// Enable I2C 2
-	I2C_Cmd(I2C2, NewState);
-}
-
 
 void I2C2_ResetInterface(void)
 {
@@ -1731,7 +1681,7 @@ void I2C2_ResetInterface(void)
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
 	// Reconfigure and enable I2C2 interface
-	I2C2_Configure(ENABLE);
+	init_I2C2(ENABLE);
 
 }
 

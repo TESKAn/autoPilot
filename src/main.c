@@ -111,9 +111,9 @@ int main(void)
 	Delayms(100);
 
 	// Initialize external peripheral
-	extPeripheralInit();
+	//extPeripheralInit();
 
-	Sensor_SPIInitAG();
+	//Sensor_SPIInitAG();
 
 	// Calibrate I2C sensors
 	// Function has no function...

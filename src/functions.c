@@ -21,30 +21,17 @@ int16_t CheckMainLoopStates()
 		}
 		case 1:
 		{
-			mainLoopState = 0;
-			// Reset DCM
-			// Create identity matrix
-			matrix3_init(1, &fusionData._fusion_DCM);
-			matrix3_init(1, &fusionData._GPS_DCM);
-			// Reset PIDs
-			math_PID3Reset(&fusionData._gyroErrorPID);
-			// Set initial value
-			fusion_initGyroDriftPID(&fusionData);
-			fusion_initGyroGainPID(&fusionData);
+			LED_ERR_ON;
+			LED_OK_ON;
+			LED_RUN_ON;
 
 			break;
 		}
 		case 2:
 		{
-			mainLoopState = 0;
-			// Stop comm
-			MPU_COMM_ENABLED = 0;
-			// Wait if there is transmission in progress
-			while(I2C2_WAITINGDATA ) {}
-			MPU6000_GyroSelfTest(ENABLE);
-			// Enable comm
-			MPU_COMM_ENABLED = 1;
-
+			LED_ERR_OFF;
+			LED_OK_OFF;
+			LED_RUN_OFF;
 			break;
 		}
 		case 3:
@@ -197,19 +184,19 @@ int16_t CheckMainLoopStates()
 		}
 		case 21:
 		{
-			//GPIO_ToggleBits(GPIOB, GPIO_Pin_6);
-			//GPIO_ToggleBits(GPIOB, GPIO_Pin_7);
+			i16SPITestData = Sensor_SPIRead(1, ui16SPITestAddress);
 			mainLoopState = 0;
 			break;
 		}
 		case 22:
 		{
+			i16SPITestData = Sensor_SPIRead(3, ui16SPITestAddress);
 			mainLoopState = 0;
 			break;
 		}
 		case 23:
 		{
-			init_CAN();
+			i16SPITestData = Sensor_SPIRead(4, ui16SPITestAddress);
 			mainLoopState = 0;
 			break;
 		}

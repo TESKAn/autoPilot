@@ -42,7 +42,6 @@ ErrorStatus masterReceive_beginDMA(uint8_t device, uint8_t startReg, uint8_t *da
 ErrorStatus masterReceive(uint8_t device,uint8_t startReg, uint8_t *dataBuffer, uint8_t byteCount);
 ErrorStatus I2C_DMACheckForError(DMA_Stream_TypeDef* DMAy_Streamx);
 ErrorStatus I2C_CheckForError(I2C_TypeDef* I2Cx);
-void I2C2_Configure(FunctionalState NewState);
 void I2C2_ResetInterface(void);
 void I2C2_DMA_ClearErrors(void);
 

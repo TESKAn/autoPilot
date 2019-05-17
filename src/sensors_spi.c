@@ -62,7 +62,7 @@ int16_t Sensor_SPIWrite(uint8_t device, uint8_t address, uint8_t data)
 {
 	uint16_t ui16Temp = 0;
 	// Is SPI idle?
-	if(SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_BSY))
+	if(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_BSY))
 	{
 		// Set CS low
 		Sensor_setCS(device, 0);
@@ -90,22 +90,25 @@ int16_t Sensor_SPIRead(uint8_t device, uint8_t address)
 {
 	uint16_t ui16Temp = 0;
 	// Is SPI idle?
-	if(SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_BSY))
+	if(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_BSY))
 	{
 		// Set CS low
 		Sensor_setCS(device, 0);
 
 		ui16Temp = 0x80 | (uint16_t)address;
 		SPI3->DR = ui16Temp;
-		// Wait until TX reg is empty
-		while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_TXE))
+		// Wait until RX is ready
+		while(!(SPI3->SR & SPI_I2S_FLAG_RXNE))
 		{
 
 		}
+		// Read data
+		ui16Temp = SPI3->DR;
+
 		// Send data
 		SPI3->DR = 0;
-		// Wait end of reception
-		while(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_RXNE))
+		// Wait until RX buffer is full
+		while(!(SPI3->SR & SPI_I2S_FLAG_RXNE))
 		{
 
 		}
@@ -114,7 +117,7 @@ int16_t Sensor_SPIRead(uint8_t device, uint8_t address)
 
 		Sensor_setCS(device, 1);
 	}
-	return ui16Temp;
+	return (int16_t)ui16Temp;
 }
 
 int16_t Sensor_SPIReadDMA(uint8_t device)
@@ -228,7 +231,7 @@ int16_t Sensor_SPIReadDMA(uint8_t device)
 int16_t Sensor_SPIInitAG()
 {
 	// Is SPI idle?
-	if(SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_BSY))
+	if(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_BSY))
 	{
 		//************************
 		// Set CS low
