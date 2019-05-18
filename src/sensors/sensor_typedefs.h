@@ -438,6 +438,11 @@ typedef struct
 	uint8_t ui8Busy;
 	uint8_t ui8NextDev;
 	uint8_t ui8DataWaiting;
+	uint8_t ui8DummyByte;
+	uint8_t ui8Empty[3];
+	uint16_t ui16StartReg;
+	uint16_t ui16Empty;
+	uint32_t ui32ByteCount;
 	uint32_t ui32InterruptTime;
 	union
 	{
@@ -445,30 +450,34 @@ typedef struct
 		struct
 		{
 			uint8_t ui8Empty;
-			uint16_t ui16Temperature;
+			int16_t i16Temperature;
 			uint8_t ui8Status;
-			uint16_t ui16XOut;
-			uint16_t ui16YOut;
-			uint16_t ui16ZOut;
-			uint16_t ui16Empty;
-			uint32_t ui32Empty;
+			int16_t i16XOut;
+			int16_t i16YOut;
+			int16_t i16ZOut;
+			int16_t i16Empty;
+			int32_t i32Empty;
 		}GYRO;
 		struct
 		{
-			uint16_t ui16XOut;
-			uint16_t ui16YOut;
-			uint16_t ui16ZOut;
-			uint16_t ui16Empty;
-			uint32_t ui32Empty[2];
+			int16_t i16Empty;
+			int16_t i16XOut;
+			int16_t i16YOut;
+			int16_t i16ZOut;
+			int32_t i32Empty[2];
 		}ACC;
 		struct
 		{
-			uint16_t ui16XOut;
-			uint16_t ui16YOut;
-			uint16_t ui16ZOut;
-			uint16_t ui16Empty;
-			uint32_t ui32Empty[2];
+			int16_t i16XOut;
+			int16_t i16YOut;
+			int16_t i16ZOut;
+			int16_t i16Empty;
+			int32_t i32Empty[2];
 		}MAG;
+		struct
+		{
+			uint8_t buf[16];
+		}BARO;
 	}DATA;
 }__attribute__((aligned(4),packed)) FUSION_SPIDATA;
 

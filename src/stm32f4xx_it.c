@@ -251,15 +251,25 @@ void TIM1_BRK_TIM9_IRQHandler(void)
 }
 
 /**
-  * @brief  This function handles DMA1 stream6 event interrupt request.
+  * @brief  This function handles DMA1 stream2 event interrupt request.
   * @param  None
   * @retval None
-  * @services DMA1 stream 6
+  * @services DMA1 stream 2
   */
-void DMA1_Stream6_IRQHandler(void)
+void DMA1_Stream0_IRQHandler(void)
 {
-	//DMA_ClearITPendingBit(DMA1_Stream6, DMA_IT_TC);
-	DMA1_Stream6_ISR_Handler();
+	DMA1_Stream0_ISR_Handler();
+}
+
+/**
+  * @brief  This function handles DMA1 stream3 event interrupt request.
+  * @param  None
+  * @retval None
+  * @services DMA1 stream 3
+  */
+void DMA1_Stream3_IRQHandler(void)
+{
+	DMA1_Stream3_ISR_Handler();
 }
 
 /**
@@ -274,26 +284,26 @@ void DMA1_Stream4_IRQHandler(void)
 }
 
 /**
-  * @brief  This function handles DMA1 stream3 event interrupt request.
+  * @brief  This function handles DMA1 stream5 event interrupt request.
   * @param  None
   * @retval None
-  * @services DMA1 stream 3
+  * @services DMA1 stream 2
   */
-void DMA1_Stream2_IRQHandler(void)
+void DMA1_Stream5_IRQHandler(void)
 {
-	DMA1_Stream2_ISR_Handler();
+	DMA1_Stream5_ISR_Handler();
 }
 
-
 /**
-  * @brief  This function handles DMA1 stream3 event interrupt request.
+  * @brief  This function handles DMA1 stream6 event interrupt request.
   * @param  None
   * @retval None
-  * @services DMA1 stream 3
+  * @services DMA1 stream 6
   */
-void DMA1_Stream3_IRQHandler(void)
+void DMA1_Stream6_IRQHandler(void)
 {
-	DMA1_Stream3_ISR_Handler();
+	//DMA_ClearITPendingBit(DMA1_Stream6, DMA_IT_TC);
+	DMA1_Stream6_ISR_Handler();
 }
 
 /**
@@ -449,20 +459,21 @@ void EXTI15_10_IRQHandler(void)
 * Return         : None
 *******************************************************************************/
 //void DMA1_Channel1_IRQHandler(void)
+/*
 void DMA1_Stream0_IRQHandler(void)
 {
   //Buffer[0] = 0x06;
 
 
-    /* Write the descriptor through the endpoint
+    // Write the descriptor through the endpoint
     //USB_SIL_Write(EP1_IN, (uint8_t*) Send_Buffer, 2);
-    USBD_HID_SendReport (&USB_OTG_dev, Buffer, 2);
-*/
+    //USBD_HID_SendReport (&USB_OTG_dev, Buffer, 2);
+
 
   DMA_ClearITPendingBit(DMA1_Stream0, DMA_IT_TCIF0);
 
 }
-
+*/
 /**
   * @brief  This function handles FPU interrupt request.
   * @param  None

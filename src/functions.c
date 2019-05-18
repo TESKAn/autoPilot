@@ -161,42 +161,54 @@ int16_t CheckMainLoopStates()
 		}
 		case 18:
 		{
-			// Write max RPM
-			t32CANVar.ui16[0] = ui16MainLoopVar;
-			CAN_SendRegValue(CAN_WRITE_REG_MAXRPM, &t32CANVar, 20);
-			CAN_SendRegValue(CAN_WRITE_REG_MAXRPM, &t32CANVar, 21);
-			CAN_SendRegValue(CAN_WRITE_REG_MAXRPM, &t32CANVar, 22);
-			CAN_SendRegValue(CAN_WRITE_REG_MAXRPM, &t32CANVar, 23);
+			// Store mag buffer address
+			SPI_SensorBuf = &SPI_SensorBufMag;
+			SPI_SensorBuf->ui8Device = MAG_DEV_CS;
+			// Read data from mag
+			Sensor_SPIReadDMA();
 			mainLoopState = 0;
 			break;
 		}
 		case 19:
 		{
-			refreshPWMOutputs();
+			// Store baro buffer address
+			SPI_SensorBuf = &SPI_SensorBufBaro;
+			SPI_SensorBuf->ui8Device = BARO_DEV_CS;
+			// Read data from baro
+			Sensor_SPIReadDMA();
 			mainLoopState = 0;
 			break;
 		}
 		case 20:
 		{
-			USART_SendData(USART1, 0x55);
+			// Store mag buffer address
+			SPI_SensorBuf = &SPI_SensorBufAcc;
+			SPI_SensorBuf->ui8Device = ACC_DEV_CS;
+			// Read data from mag
+			Sensor_SPIReadDMA();
 			mainLoopState = 0;
 			break;
 		}
 		case 21:
 		{
-			i16SPITestData = Sensor_SPIRead(1, ui16SPITestAddress);
+			// Store mag buffer address
+			SPI_SensorBuf = &SPI_SensorBufGyro;
+			SPI_SensorBuf->ui8Device = GYRO_DEV_CS;
+			// Read data from mag
+			Sensor_SPIReadDMA();
 			mainLoopState = 0;
 			break;
 		}
 		case 22:
 		{
-			i16SPITestData = Sensor_SPIRead(3, ui16SPITestAddress);
+			i16SPITestData = Sensor_SPIWrite(ui16SPITestDevice, ui16SPITestAddress, i16SPITestData);
 			mainLoopState = 0;
 			break;
 		}
 		case 23:
 		{
-			i16SPITestData = Sensor_SPIRead(4, ui16SPITestAddress);
+			i16SPITestData = Sensor_SPIRead(ui16SPITestDevice, ui16SPITestAddress);
+			//ui16SPITestAddress++;
 			mainLoopState = 0;
 			break;
 		}

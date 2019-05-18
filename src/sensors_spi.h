@@ -18,7 +18,7 @@ int16_t Sensor_SPIInit();
 int16_t Sensor_setCS(uint8_t device, uint8_t state);
 int16_t Sensor_SPIWrite(uint8_t device, uint8_t address, uint8_t data);
 int16_t Sensor_SPIRead(uint8_t device, uint8_t address);
-int16_t Sensor_SPIReadDMA(uint8_t device);
+int16_t Sensor_SPIReadDMA();
 int16_t Sensor_SPIInitAG();
 int16_t Sensor_SPIInitM();
 int16_t Sensor_SPIInitB();

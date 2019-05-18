@@ -64,7 +64,7 @@
 #define ADC_ENABLED				flag0.bits.BIT11
 #define SENSOR_TEST_STEP		flag0.bits.BIT12
 #define SYSTEM_RUNNING			flag0.bits.BIT13
-
+#define SPI_TEST_RX				flag0.bits.BIT14
 
 #define SD_WRITE_LOG			flag0.bits.BIT15
 #define SD_LOG_ISOPEN			flag0.bits.BIT16
@@ -110,8 +110,11 @@
 #define DMA_USART1				DMA2_Stream7
 #define DMA_USART1_CH			DMA_Channel_4
 
-#define DMA_SPI3_RX_STREAM		DMA1_Stream2
+#define DMA_SPI3_RX_STREAM		DMA1_Stream0
 #define DMA_SPI3_RX_CHANNEL		DMA_Channel_0
+
+#define DMA_SPI3_TX_STREAM		DMA1_Stream5
+#define DMA_SPI3_TX_CHANNEL		DMA_Channel_0
 
 #define DMA_I2C2_RX_TCIF 		DMA_FLAG_TCIF3
 #define DMA_I2C2_RX_HTIF 		DMA_FLAG_HTIF3
@@ -217,8 +220,8 @@
 #define GYRO_BYTE_COUNT		10
 
 #define ACC_DEV_CS			2
-#define ACC_START_REG		0x28
-#define ACC_BYTE_COUNT		6
+#define ACC_START_REG		0x26
+#define ACC_BYTE_COUNT		8
 
 #define MAG_DEV_CS			3
 #define MAG_START_REG		0x28
@@ -232,21 +235,21 @@
 // A_G
 #define A_G_INT1_CTRL		0x02		// Gyro data ready on INT1 pin
 #define A_G_INT2_CTRL		0x01		// Acc data ready on INT2 pin
-#define A_G_CTRL_REG1_G		0x6b		// ODR 119 Hz, 500 dps, BW 31 Hz
+#define A_G_CTRL_REG1_G		0x69		// ODR 119 Hz, 500 dps, BW 31 Hz
 #define A_G_CTRL_REG2_G		0x0f		// INT/OUTput after LPF2
-#define A_G_CTRL_REG3_G		0x49		// HP filter enable, cutoff 0.01 Hz
-#define A_G_CTRL_REG4_G		0x38		// Enable gyro outputs
+#define A_G_CTRL_REG3_G		0x47		// HP filter enable, cutoff 0.05 Hz
+#define A_G_CTRL_REG4_G		0x3a		// Enable gyro outputs, latched interrupt
 #define A_G_CTRL_REG5_XL	0x38		// Enable acc outputs
-#define A_G_CTRL_REG6_XL	0x78		// Acc ODR 119 Hz, +/- 8G
+#define A_G_CTRL_REG6_XL	0x7b		// Acc ODR 119 Hz, +/- 8G, 50 Hz BW
 #define A_G_CTRL_REG7_XL	0x00		// Acc
-#define A_G_CTRL_REG8		0x04		// Reg address increment on data access
+#define A_G_CTRL_REG8		0x46		// Reg address increment on data access, output not updated until readout, BLE set
 #define A_G_CTRL_REG9		0x04		// SPI only
 
 // MAG
 #define MAG_INT_CFG_M		0x05		// Int enabled, latched, active high
 #define MAG_CTRL_REG_1_M	0x7c		// High performance, 80 Hz output data rate
 #define MAG_CTRL_REG_2_M	0x00		// +/- 4 gauss full-scale
-#define MAG_CTRL_REG_3_M	0x84		// Disable I2C, no low power, SPI read/write, continuous conversion
+#define MAG_CTRL_REG_3_M	0x80		// Disable I2C, no low power, SPI write, continuous conversion
 #define MAG_CTRL_REG_4_M	0x0c		// High - performance mode on Z axis
 #define MAG_CTRL_REG_5_M	0x40		// Block data update until readout
 

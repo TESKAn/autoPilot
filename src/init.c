@@ -445,6 +445,11 @@ void init_DMA()
 	//deinit DMA channel
 	DMA_DeInit(DMA_USART3);
 
+	// Deinit SPI3 DMA RX
+	DMA_DeInit(DMA_SPI3_RX_STREAM);
+	// Deinit SPI3 DMA TX
+	DMA_DeInit(DMA_SPI3_TX_STREAM);
+
 	// Disable/clear interrupts
 	DMA_ClearITPendingBit(DMA_USART1, DMA_IT_TC);
 	DMA_ITConfig(DMA_USART1, DMA_IT_TC, DISABLE);
@@ -454,6 +459,12 @@ void init_DMA()
 
 	DMA_ClearITPendingBit(DMA_USART3, DMA_IT_TC);
 	DMA_ITConfig(DMA_USART3, DMA_IT_TC, DISABLE);
+
+	DMA_ClearITPendingBit(DMA_SPI3_RX_STREAM, DMA_IT_TC);
+	DMA_ITConfig(DMA_SPI3_RX_STREAM, DMA_IT_TC | DMA_IT_DME | DMA_IT_FE, DISABLE);
+
+	DMA_ClearITPendingBit(DMA_SPI3_TX_STREAM, DMA_IT_TC);
+	DMA_ITConfig(DMA_SPI3_TX_STREAM, DMA_IT_TC | DMA_IT_DME | DMA_IT_FE, DISABLE);
 }
 
 void init_ADC()
@@ -1175,7 +1186,7 @@ void init_SPI3()
 	SPI_InitStructure.SPI_CPOL = SPI_CPOL_High;
 	SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;
 	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
-	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_256;
+	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_64;
 	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
 	SPI_InitStructure.SPI_CRCPolynomial = 7;
 	SPI_Init(SPI3, &SPI_InitStructure);
@@ -1535,6 +1546,17 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
 	NVIC_Init(&NVCInitStructure);
 
+	//init DMA1 stream0 interrupt, SPI3 RX
+	//set IRQ channel
+	NVCInitStructure.NVIC_IRQChannel = DMA1_Stream0_IRQn;
+	//set priority 0 - 15
+	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+	//set priority 0 - 15
+	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
+	//enable IRQ channel
+	NVCInitStructure.NVIC_IRQChannelCmd = newState;
+	NVIC_Init(&NVCInitStructure);
+
 	//init DMA1 stream3 interrupt, I2C
 	//set IRQ channel
 	NVCInitStructure.NVIC_IRQChannel = DMA1_Stream3_IRQn;
@@ -1549,6 +1571,17 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	//init DMA1 stream4 interrupt, GPS
 	//set IRQ channel
 	NVCInitStructure.NVIC_IRQChannel = DMA1_Stream4_IRQn;
+	//set priority 0 - 15
+	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
+	//set priority 0 - 15
+	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
+	//enable IRQ channel
+	NVCInitStructure.NVIC_IRQChannelCmd = newState;
+	NVIC_Init(&NVCInitStructure);
+
+	//init DMA1 stream5 interrupt, SPI3 TX
+	//set IRQ channel
+	NVCInitStructure.NVIC_IRQChannel = DMA1_Stream5_IRQn;
 	//set priority 0 - 15
 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
 	//set priority 0 - 15

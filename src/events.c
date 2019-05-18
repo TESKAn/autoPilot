@@ -129,12 +129,12 @@ void DMA1_Stream4_ISR_Handler(void)
 }
 
 /**
-  * @brief  This function handles DMA1 stream2 event interrupt request.
+  * @brief  This function handles DMA1 stream0 event interrupt request.
   * @param  None
   * @retval None
-  * @services DMA1 stream 2 - SPI3
+  * @services DMA1 stream 0 - SPI3 RX
   */
-void DMA1_Stream2_ISR_Handler(void)
+void DMA1_Stream0_ISR_Handler(void)
 {
 	// Disable interrupts
 	DMA_ITConfig(DMA_SPI3_RX_STREAM, DMA_IT_TC | DMA_IT_DME | DMA_IT_FE, DISABLE);
@@ -160,7 +160,11 @@ void DMA1_Stream2_ISR_Handler(void)
 		case ACC_DEV_CS:
 		{
 			A_G_CS_1;
+
 			// Process acc data
+			//byte_swap16(SPI_SensorBufAcc.DATA.ACC.i16XOut);
+			//byte_swap16(SPI_SensorBufAcc.DATA.ACC.i16YOut);
+			//byte_swap16(SPI_SensorBufAcc.DATA.ACC.i16ZOut);
 			break;
 		}
 		case MAG_DEV_CS:
@@ -202,6 +206,29 @@ void DMA1_Stream2_ISR_Handler(void)
 			}
 		}
 	}
+}
+
+/**
+  * @brief  This function handles DMA1 stream0 event interrupt request.
+  * @param  None
+  * @retval None
+  * @services DMA1 stream 0 - SPI3 TX
+  */
+void DMA1_Stream5_ISR_Handler(void)
+{
+	// Disable interrupts
+	DMA_ITConfig(DMA_SPI3_TX_STREAM, DMA_IT_TC | DMA_IT_DME | DMA_IT_FE, DISABLE);
+
+
+	/* Disable DMA RX Channel */
+	DMA_Cmd(DMA_SPI3_TX_STREAM, DISABLE);
+
+	/* Wait until SPI_DMA_STREAM_RX disabled or time out */
+	while (DMA_GetCmdStatus(DMA_SPI3_TX_STREAM)!= DISABLE)
+	{}
+	/* Disable SPI DMA request */
+	SPI_I2S_DMACmd(SPI3, SPI_I2S_DMAReq_Tx, DISABLE);
+	DMA_ClearITPendingBit(DMA_SPI3_TX_STREAM, DMA_IT_TC);
 }
 
 /**
@@ -712,7 +739,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 {
 
 	uint8_t retriesCount = 0;
-	//uint16_t ui16Temp;
+	uint16_t ui16Temp;
 	ErrorStatus error = SUCCESS;
 	if((TIM14->SR & TIM_FLAG_Update) != (u16)RESET)
 	{
@@ -744,6 +771,58 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 	        ADC_SoftwareStartConv(ADC2);
 	        ADC_SoftwareStartConv(ADC3);
 		}
+
+		if(SPI_TEST_RX)
+		{
+			I2C2_PollTimer++;
+			if(I2C2_PollTimer >= 20)
+			{
+				ui16Temp = Sensor_SPIRead(1, 0x27);
+				if((ui16Temp & 0x01))
+				{
+					I2C2_PollTimer = 0;
+					SPI_SensorBuf = &SPI_SensorBufAcc;
+					SPI_SensorBuf->ui8Device = ACC_DEV_CS;
+					// Read data from mag
+					Sensor_SPIReadDMA();
+/*
+					ui16Temp = Sensor_SPIRead(1, SPI_SensorBufAcc.ui16StartReg);
+					ui16Temp = ui16Temp & 0x00ff;
+					SPI_SensorBufAcc.DATA.buf[0] = (uint8_t)ui16Temp;
+
+					ui16Temp = Sensor_SPIRead(1, SPI_SensorBufAcc.ui16StartReg + 1);
+					ui16Temp = ui16Temp & 0x00ff;
+					SPI_SensorBufAcc.DATA.buf[1] = (uint8_t)ui16Temp;
+
+
+					ui16Temp = Sensor_SPIRead(1, SPI_SensorBufAcc.ui16StartReg + 2);
+					ui16Temp = ui16Temp & 0x00ff;
+					SPI_SensorBufAcc.DATA.buf[2] = (uint8_t)ui16Temp;
+
+					ui16Temp = Sensor_SPIRead(1, SPI_SensorBufAcc.ui16StartReg + 3);
+					ui16Temp = ui16Temp & 0x00ff;
+					SPI_SensorBufAcc.DATA.buf[3] = (uint8_t)ui16Temp;
+
+
+					ui16Temp = Sensor_SPIRead(1, SPI_SensorBufAcc.ui16StartReg + 4);
+					ui16Temp = ui16Temp & 0x00ff;
+					SPI_SensorBufAcc.DATA.buf[4] = (uint8_t)ui16Temp;
+
+					ui16Temp = Sensor_SPIRead(1, SPI_SensorBufAcc.ui16StartReg + 5);
+					ui16Temp = ui16Temp & 0x00ff;
+					SPI_SensorBufAcc.DATA.buf[5] = (uint8_t)ui16Temp;
+					*/
+
+				}
+				else
+				{
+					I2C2_PollTimer = 20;
+				}
+			}
+		}
+
+
+
 /*
 		if(EXTSENS_INIT_DONE)
 		{
@@ -1227,8 +1306,9 @@ void EXTI3_ISR_Handler(void)
 			{
 				// Store baro buffer address
 				SPI_SensorBuf = &SPI_SensorBufBaro;
+				SPI_SensorBuf->ui8Device = BARO_DEV_CS;
 				// Read data from baro
-				Sensor_SPIReadDMA(BARO_DEV_CS);
+				Sensor_SPIReadDMA();
 			}
 			else
 			{
@@ -1245,8 +1325,9 @@ void EXTI3_ISR_Handler(void)
 			{
 				// Store mag buffer address
 				SPI_SensorBuf = &SPI_SensorBufMag;
+				SPI_SensorBuf->ui8Device = MAG_DEV_CS;
 				// Read data from mag
-				Sensor_SPIReadDMA(MAG_DEV_CS);
+				Sensor_SPIReadDMA();
 			}
 			else
 			{
@@ -1282,8 +1363,9 @@ void EXTI4_ISR_Handler(void)
 			{
 				// Store mag buffer address
 				SPI_SensorBuf = &SPI_SensorBufMag;
+				SPI_SensorBuf->ui8Device = MAG_DEV_CS;
 				// Read data from mag
-				Sensor_SPIReadDMA(MAG_DEV_CS);
+				Sensor_SPIReadDMA();
 			}
 			else
 			{
@@ -1319,8 +1401,9 @@ void EXTI15_10_ISRHandler(void)
 			{
 				// Store mag buffer address
 				SPI_SensorBuf = &SPI_SensorBufAcc;
+				SPI_SensorBuf->ui8Device = ACC_DEV_CS;
 				// Read data from mag
-				Sensor_SPIReadDMA(ACC_DEV_CS);
+				Sensor_SPIReadDMA();
 			}
 			else
 			{
@@ -1345,8 +1428,9 @@ void EXTI15_10_ISRHandler(void)
 			{
 				// Store mag buffer address
 				SPI_SensorBuf = &SPI_SensorBufGyro;
+				SPI_SensorBuf->ui8Device = GYRO_DEV_CS;
 				// Read data from mag
-				Sensor_SPIReadDMA(GYRO_DEV_CS);
+				Sensor_SPIReadDMA();
 			}
 			else
 			{

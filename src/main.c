@@ -101,6 +101,30 @@ int main(void)
 	// Configure MCU hardware
 	System_Config();
 
+	// Power - up sensors
+	SENSOR_POWER_ON;
+
+	// Set sensors
+	Sensor_SPIInitAG();
+	Sensor_SPIInitM();
+	Sensor_SPIInitB();
+
+	// Enable A/G data out
+	A_G_ON;
+
+	// Setup sensor data structs
+	SPI_SensorBufGyro.ui16StartReg = GYRO_START_REG;
+	SPI_SensorBufGyro.ui32ByteCount = GYRO_BYTE_COUNT;
+
+	SPI_SensorBufAcc.ui16StartReg = ACC_START_REG;
+	SPI_SensorBufAcc.ui32ByteCount = ACC_BYTE_COUNT;
+
+	SPI_SensorBufBaro.ui16StartReg = BARO_START_REG;
+	SPI_SensorBufBaro.ui32ByteCount = BARO_BYTE_COUNT;
+
+	SPI_SensorBufMag.ui16StartReg = MAG_START_REG;
+	SPI_SensorBufMag.ui32ByteCount = MAG_BYTE_COUNT;
+
 	// Init CAN filters
 	InitCANLink();
 

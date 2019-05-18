@@ -304,5 +304,6 @@ extern int32_t i32CurrentMavlinkCommand;
 
 extern int16_t i16SPITestData;
 extern uint16_t ui16SPITestAddress;
+extern uint16_t ui16SPITestDevice;
 
 #endif /* VAR_H_ */
