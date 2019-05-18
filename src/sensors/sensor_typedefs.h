@@ -441,9 +441,10 @@ typedef struct
 	uint8_t ui8DummyByte;
 	uint8_t ui8Empty[3];
 	uint16_t ui16StartReg;
-	uint16_t ui16Empty;
+	uint16_t ui16WatchdogCounter;
 	uint32_t ui32ByteCount;
 	uint32_t ui32InterruptTime;
+	uint32_t ui32InterruptDeltaTime;
 	union
 	{
 		uint8_t buf[16];

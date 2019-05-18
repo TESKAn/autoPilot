@@ -220,7 +220,7 @@
 #define GYRO_BYTE_COUNT		10
 
 #define ACC_DEV_CS			2
-#define ACC_START_REG		0x26
+#define ACC_START_REG		0x28
 #define ACC_BYTE_COUNT		8
 
 #define MAG_DEV_CS			3
@@ -242,8 +242,9 @@
 #define A_G_CTRL_REG5_XL	0x38		// Enable acc outputs
 #define A_G_CTRL_REG6_XL	0x7b		// Acc ODR 119 Hz, +/- 8G, 50 Hz BW
 #define A_G_CTRL_REG7_XL	0x00		// Acc
-#define A_G_CTRL_REG8		0x46		// Reg address increment on data access, output not updated until readout, BLE set
+#define A_G_CTRL_REG8		0x44		// Reg address increment on data access, output not updated until readout, BLE set
 #define A_G_CTRL_REG9		0x04		// SPI only
+#define A_G_INT_GEN_CFG_G	0x40		// Latch gyro interrupt
 
 // MAG
 #define MAG_INT_CFG_M		0x05		// Int enabled, latched, active high

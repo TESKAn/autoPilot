@@ -196,7 +196,7 @@ int16_t Sensor_SPIReadDMA()
 	//peripheral data address
 	DMAInitStructure.DMA_PeripheralBaseAddr = (uint32_t)&SPI3->DR;//    I2C2_DR_ADDRESS;
 	// DMA buffer address
-	DMAInitStructure.DMA_Memory0BaseAddr = (uint32_t)(&SPI_SensorBuf->DATA.buf);
+	DMAInitStructure.DMA_Memory0BaseAddr = (uint32_t)(&SPI_SensorBuf->DATA.buf[0]);
 	DMAInitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
 	DMAInitStructure.DMA_BufferSize = byteCount;
 	DMAInitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
@@ -280,6 +280,8 @@ int16_t Sensor_SPIInitAG()
 
 	Sensor_SPIWrite(1, 0x0c, A_G_INT1_CTRL);
 	Sensor_SPIWrite(1, 0x0d, A_G_INT2_CTRL);
+
+	Sensor_SPIWrite(1, 0x30, A_G_INT_GEN_CFG_G);
 
 	return 0;
 }

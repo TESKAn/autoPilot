@@ -118,6 +118,8 @@ void init_Timer2()
 
 	// Enable timer
 	TIM_Cmd(TIM2, ENABLE);
+	// Reset to 0
+	TIM_SetCounter(TIM2, 0);
 	// End of Timer 2
 }
 
@@ -933,7 +935,7 @@ void init_EXTI3()
 	//set pin mode to alternate function
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
 	//set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
@@ -947,18 +949,20 @@ void init_EXTI3()
 	//set pin mode to alternate function
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
 	//set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
 
-	/*
+	// Interrupt = baro_DRDY
+	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource3);
+
 	EXTI_InitStructure.EXTI_Line = EXTI_Line3;
 	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
 	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
 	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
 
 	EXTI_Init(&EXTI_InitStructure);
-	*/
+
 }
 
 void init_EXTI4()
@@ -978,18 +982,20 @@ void init_EXTI4()
 	//set pin mode to alternate function
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
 	//set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOE, &GPIO_InitStructure);
 
-	/*
+
+	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOE, EXTI_PinSource4);
+
 	EXTI_InitStructure.EXTI_Line = EXTI_Line4;
 	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
 	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
 	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
 
 	EXTI_Init(&EXTI_InitStructure);
-	*/
+
 }
 
 void init_EXTI14_15()
@@ -1009,11 +1015,14 @@ void init_EXTI14_15()
 	//set pin mode to alternate function
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
 	//set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
 
-	/*
+	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOC, EXTI_PinSource14);
+	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOC, EXTI_PinSource15);
+
+
 	EXTI_InitStructure.EXTI_Line = EXTI_Line14;
 	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
 	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
@@ -1022,7 +1031,7 @@ void init_EXTI14_15()
 
 	EXTI_InitStructure.EXTI_Line = EXTI_Line15;
 	EXTI_Init(&EXTI_InitStructure);
-	*/
+
 }
 
 void init_SPI1()
@@ -1680,14 +1689,10 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 
 	// Init EXTI interrupts
 	// Enable and set EXTI Line0 Interrupt to the lowest priority
-	NVCInitStructure.NVIC_IRQChannel = EXTI0_IRQn;
+	NVCInitStructure.NVIC_IRQChannel = EXTI3_IRQn;
 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 15;
 	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVCInitStructure.NVIC_IRQChannelCmd = newState;
-	NVIC_Init(&NVCInitStructure);
-
-	// Enable and set EXTI Line3 Interrupt to the lowest priority
-	NVCInitStructure.NVIC_IRQChannel = EXTI3_IRQn;
 	NVIC_Init(&NVCInitStructure);
 
 	// Enable and set EXTI Line4 Interrupt to the lowest priority
@@ -1750,8 +1755,8 @@ void System_Config(void)
 	init_USART3();
 	init_UART4();
 	// External interrupt
-	init_EXTI3();
-	init_EXTI4();
+	//init_EXTI3();
+	//init_EXTI4();
 	init_EXTI14_15();
 	// SPI config
 	init_SPI1();

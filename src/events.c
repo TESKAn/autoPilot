@@ -785,40 +785,28 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 					SPI_SensorBuf->ui8Device = ACC_DEV_CS;
 					// Read data from mag
 					Sensor_SPIReadDMA();
-/*
-					ui16Temp = Sensor_SPIRead(1, SPI_SensorBufAcc.ui16StartReg);
-					ui16Temp = ui16Temp & 0x00ff;
-					SPI_SensorBufAcc.DATA.buf[0] = (uint8_t)ui16Temp;
-
-					ui16Temp = Sensor_SPIRead(1, SPI_SensorBufAcc.ui16StartReg + 1);
-					ui16Temp = ui16Temp & 0x00ff;
-					SPI_SensorBufAcc.DATA.buf[1] = (uint8_t)ui16Temp;
-
-
-					ui16Temp = Sensor_SPIRead(1, SPI_SensorBufAcc.ui16StartReg + 2);
-					ui16Temp = ui16Temp & 0x00ff;
-					SPI_SensorBufAcc.DATA.buf[2] = (uint8_t)ui16Temp;
-
-					ui16Temp = Sensor_SPIRead(1, SPI_SensorBufAcc.ui16StartReg + 3);
-					ui16Temp = ui16Temp & 0x00ff;
-					SPI_SensorBufAcc.DATA.buf[3] = (uint8_t)ui16Temp;
-
-
-					ui16Temp = Sensor_SPIRead(1, SPI_SensorBufAcc.ui16StartReg + 4);
-					ui16Temp = ui16Temp & 0x00ff;
-					SPI_SensorBufAcc.DATA.buf[4] = (uint8_t)ui16Temp;
-
-					ui16Temp = Sensor_SPIRead(1, SPI_SensorBufAcc.ui16StartReg + 5);
-					ui16Temp = ui16Temp & 0x00ff;
-					SPI_SensorBufAcc.DATA.buf[5] = (uint8_t)ui16Temp;
-					*/
-
 				}
 				else
 				{
 					I2C2_PollTimer = 20;
 				}
 			}
+		}
+
+		// Check sensors
+		SPI_SensorBufAcc.ui16WatchdogCounter++;
+		if(10 < SPI_SensorBufAcc.ui16WatchdogCounter)
+		{
+			SPI_SensorBufAcc.ui16WatchdogCounter = 0;
+			// Trigger update
+			SPI_SensorBufAcc.ui32InterruptDeltaTime = READ_SYS_TIME - SPI_SensorBufAcc.ui32InterruptTime;
+			SPI_SensorBufAcc.ui32InterruptTime = READ_SYS_TIME;
+			SPI_SensorBufAcc.ui16WatchdogCounter = 0;
+			// Store buffer address
+			SPI_SensorBuf = &SPI_SensorBufAcc;
+			SPI_SensorBuf->ui8Device = ACC_DEV_CS;
+			// Read data from mag
+			Sensor_SPIReadDMA();
 		}
 
 
@@ -1297,10 +1285,12 @@ void EXTI3_ISR_Handler(void)
 		// A3, I_D_INT_BARO_DRDY
 		// C3, I_D_INT_M
 		// Check lines A3/C3
-		if(GPIOA->IDR & 0x08)
+		if(GPIOA->IDR & GPIO_Pin_3)
 		{
 			// Baro data ready nterrupt
+			SPI_SensorBufBaro.ui32InterruptDeltaTime = ui32InterruptTime - SPI_SensorBufBaro.ui32InterruptTime;
 			SPI_SensorBufBaro.ui32InterruptTime = ui32InterruptTime;
+			SPI_SensorBufBaro.ui16WatchdogCounter = 0;
 			// SPI idle?
 			if(0 == SPI_SensorBuf->ui8Busy)
 			{
@@ -1314,25 +1304,6 @@ void EXTI3_ISR_Handler(void)
 			{
 				SPI_SensorBuf->ui8NextDev = BARO_DEV_CS;
 				SPI_SensorBufBaro.ui8DataWaiting = 1;
-			}
-		}
-		if(GPIOC->IDR & 0x08)
-		{
-			// Mag data ready interrupt
-			SPI_SensorBufMag.ui32InterruptTime = ui32InterruptTime;
-			// SPI idle?
-			if(0 == SPI_SensorBuf->ui8Busy)
-			{
-				// Store mag buffer address
-				SPI_SensorBuf = &SPI_SensorBufMag;
-				SPI_SensorBuf->ui8Device = MAG_DEV_CS;
-				// Read data from mag
-				Sensor_SPIReadDMA();
-			}
-			else
-			{
-				SPI_SensorBuf->ui8NextDev = MAG_DEV_CS;
-				SPI_SensorBufMag.ui8DataWaiting = 1;
 			}
 		}
 	}
@@ -1354,10 +1325,12 @@ void EXTI4_ISR_Handler(void)
 		EXTI_ClearITPendingBit(EXTI_Line4);
 		// E4, I_D_MAG_DRDY
 		// Check lines E4
-		if(GPIOE->IDR & 0x10)
+		if(GPIOE->IDR & GPIO_Pin_4)
 		{
 			// Baro data ready nterrupt
+			SPI_SensorBufMag.ui32InterruptDeltaTime = ui32InterruptTime - SPI_SensorBufMag.ui32InterruptTime;
 			SPI_SensorBufMag.ui32InterruptTime = ui32InterruptTime;
+			SPI_SensorBufMag.ui16WatchdogCounter = 0;
 			// SPI idle?
 			if(0 == SPI_SensorBuf->ui8Busy)
 			{
@@ -1386,20 +1359,28 @@ void EXTI15_10_ISRHandler(void)
 	// Store time of interrupt
 	uint32_t ui32InterruptTime = READ_SYS_TIME;
 
+	uint16_t uiPortA = GPIO_ReadInputData(GPIOA);
+	uint16_t uiPortB = GPIO_ReadInputData(GPIOB);
+	uint16_t uiPortC = GPIO_ReadInputData(GPIOC);
+	uint16_t uiPortD = GPIO_ReadInputData(GPIOD);
+	uint16_t uiPortE = GPIO_ReadInputData(GPIOE);
+
 	if(EXTI_GetITStatus(EXTI_Line14) != RESET)
 	{
 		/* Clear the EXTI line 14 pending bit */
 		EXTI_ClearITPendingBit(EXTI_Line14);
 		// C14, I_D_INT_A_G_2,
 		// Check line C14
-		if(GPIO_ReadInputDataBit(GPIOC, 14))
+		if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_14))
 		{
 			// Acc data ready nterrupt
+			SPI_SensorBufAcc.ui32InterruptDeltaTime = ui32InterruptTime - SPI_SensorBufAcc.ui32InterruptTime;
 			SPI_SensorBufAcc.ui32InterruptTime = ui32InterruptTime;
+			SPI_SensorBufAcc.ui16WatchdogCounter = 0;
 			// SPI idle?
 			if(0 == SPI_SensorBuf->ui8Busy)
 			{
-				// Store mag buffer address
+				// Store buffer address
 				SPI_SensorBuf = &SPI_SensorBufAcc;
 				SPI_SensorBuf->ui8Device = ACC_DEV_CS;
 				// Read data from mag
@@ -1419,14 +1400,17 @@ void EXTI15_10_ISRHandler(void)
 		EXTI_ClearITPendingBit(EXTI_Line15);
 		// C15, I_D_INT_A_G_1
 		// Check line C15
-		if(GPIO_ReadInputDataBit(GPIOC, 15))
+		/*
+		if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_15))
 		{
 			// Gyro data ready nterrupt
+			SPI_SensorBufGyro.ui32InterruptDeltaTime = ui32InterruptTime - SPI_SensorBufGyro.ui32InterruptTime;
 			SPI_SensorBufGyro.ui32InterruptTime = ui32InterruptTime;
+			SPI_SensorBufGyro.ui16WatchdogCounter = 0;
 			// SPI idle?
 			if(0 == SPI_SensorBuf->ui8Busy)
 			{
-				// Store mag buffer address
+				// Store buffer address
 				SPI_SensorBuf = &SPI_SensorBufGyro;
 				SPI_SensorBuf->ui8Device = GYRO_DEV_CS;
 				// Read data from mag
@@ -1437,7 +1421,7 @@ void EXTI15_10_ISRHandler(void)
 				SPI_SensorBuf->ui8NextDev = GYRO_DEV_CS;
 				SPI_SensorBufGyro.ui8DataWaiting = 1;
 			}
-		}
+		}*/
 	}
 }
 
