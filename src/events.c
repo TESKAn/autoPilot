@@ -154,6 +154,8 @@ void DMA1_Stream0_ISR_Handler(void)
 		{
 			A_G_CS_1;
 			// Update gyro data
+			// Convert to rad/sec
+
 			fusionData._gyro.vectorRaw.x = (float32_t)SPI_SensorBufGyro.DATA.GYRO.i16XOut * fusionData._gyro.gyroRateXP * GYRO_DEG_TO_RAD;
 			fusionData._gyro.vector.x = fusionData._gyro.vectorRaw.x - fusionData._gyroErrorPID.x.s;
 
@@ -163,17 +165,75 @@ void DMA1_Stream0_ISR_Handler(void)
 			fusionData._gyro.vectorRaw.z = (float32_t)SPI_SensorBufGyro.DATA.GYRO.i16ZOut * fusionData._gyro.gyroRateZP * GYRO_DEG_TO_RAD;
 			fusionData._gyro.vector.z = fusionData._gyro.vectorRaw.z - fusionData._gyroErrorPID.z.s;
 
+
 			// Time from last sample
 			fusionData._gyro.fDeltaTime = (float32_t)SPI_SensorBufGyro.ui32InterruptDeltaTime * fusionData.PARAMETERS.systimeToSeconds;
 
 			// Update DCM
 			fusion_dataUpdate(&fusionData, fusionData._gyro.fDeltaTime);
 
+			storeAHRSAngles(&fusionData);
+
+			// Update flight data
+			FCFlightData.ORIENTATION.f32Roll = fusionData.ROLLPITCHYAW.roll - FCFlightData.ORIENTATION.f32RollOffset;
+			FCFlightData.ORIENTATION.f32Pitch = fusionData.ROLLPITCHYAW.pitch - FCFlightData.ORIENTATION.f32PitchOffset;
+			FCFlightData.ORIENTATION.f32Yaw = fusionData.ROLLPITCHYAW.yaw - FCFlightData.ORIENTATION.f32YawOffset;
+			FCFlightData.ORIENTATION.f32Altitude = fusionData._altimeter.altitude;
+
 			break;
 		}
 		case ACC_DEV_CS:
 		{
 			A_G_CS_1;
+
+
+
+
+			uint32_t deltaTime = 0;
+
+
+			// Update accelerometer reading
+			// Store raw data, multiply with - to get gravity - acceleration
+			fusionData._accelerometer.vectorRaw.x = (float32_t)SPI_SensorBufAcc.DATA.ACC.i16XOut * -fusionData._accelerometer.accRate;
+			fusionData._accelerometer.vectorRaw.y = (float32_t)SPI_SensorBufAcc.DATA.ACC.i16YOut * -fusionData._accelerometer.accRate;
+			fusionData._accelerometer.vectorRaw.z = (float32_t)SPI_SensorBufAcc.DATA.ACC.i16ZOut * -fusionData._accelerometer.accRate;
+
+
+
+			// Filter
+			fusionData._accelerometer.filterAccum.x += fusionData._accelerometer.vectorRaw.x;
+			fusionData._accelerometer.vectorKFiltered.x = fusionData._accelerometer.filterAccum.x / 5.0f;
+			fusionData._accelerometer.filterAccum.x -= fusionData._accelerometer.vectorKFiltered.x;
+
+			fusionData._accelerometer.filterAccum.y += fusionData._accelerometer.vectorRaw.y;
+			fusionData._accelerometer.vectorKFiltered.y = fusionData._accelerometer.filterAccum.y / 5.0f;
+			fusionData._accelerometer.filterAccum.y -= fusionData._accelerometer.vectorKFiltered.y;
+
+			fusionData._accelerometer.filterAccum.z += fusionData._accelerometer.vectorRaw.z;
+			fusionData._accelerometer.vectorKFiltered.z = fusionData._accelerometer.filterAccum.z / 5.0f;
+			fusionData._accelerometer.filterAccum.z -= fusionData._accelerometer.vectorKFiltered.z;
+
+
+		/*
+			fusionData._accelerometer.vectorKFiltered.x = fusionData._accelerometer.vectorRaw.x;
+			fusionData._accelerometer.vectorKFiltered.y = fusionData._accelerometer.vectorRaw.y;
+			fusionData._accelerometer.vectorKFiltered.z = fusionData._accelerometer.vectorRaw.z;
+		*/
+
+			// Remove offset
+			vectorf_add(&fusionData._accelerometer.vectorKFiltered, &fusionData._accelerometer.offsets, &fusionData._accelerometer.vector);
+
+			// Use gain correction on outputs?
+			fusionData._accelerometer.vector.x *= fusionData._accelerometer.gains.x;
+			fusionData._accelerometer.vector.y *= fusionData._accelerometer.gains.y;
+			fusionData._accelerometer.vector.z *= fusionData._accelerometer.gains.z;
+
+
+			// Also store normalized vector
+			vectorf_normalizeAToB(&fusionData._accelerometer.vector, &fusionData._accelerometer.vectorNormalized);
+			// Store time information
+			fusionData._accelerometer.deltaTime = (float32_t)SPI_SensorBufAcc.ui32InterruptDeltaTime * fusionData.PARAMETERS.systimeToSeconds;;
+
 			break;
 		}
 		case MAG_DEV_CS:

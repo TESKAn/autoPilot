@@ -233,7 +233,9 @@
 #define BARO_START_REG		0x65
 #define BARO_BYTE_COUNT		10
 
-#define GYRO_DEFAULT_RATE					0.0152587890625f//0.030517578125f			// 500/32768 -> deg/sec
+#define PI_500								1570.7963267948966192313216916398f
+#define GIRO_DIV							5898060.0f
+#define GYRO_DEFAULT_RATE					0.01525925473799859614856410412915f//0.030517578125f			// 500/32768 -> deg/sec
 #define GYRO_DEG_TO_RAD						0.017453292519f			// 1 deg/sec is this in rad/sec
 #define GYRO_RAD_TO_DEG						57.295779513082f		// 1 rad/sec is this in deg/sec
 
@@ -247,7 +249,7 @@
 #define A_G_INT1_CTRL		0x02		// Gyro data ready on INT1 pin
 #define A_G_INT2_CTRL		0x01		// Acc data ready on INT2 pin
 #define A_G_CTRL_REG1_G		0x69		// ODR 119 Hz, 500 dps, BW 31 Hz
-#define A_G_CTRL_REG2_G		0x0f		// INT/OUTput after LPF2
+#define A_G_CTRL_REG2_G		0x00		// INT/OUTput after A/D
 #define A_G_CTRL_REG3_G		0x47		// HP filter enable, cutoff 0.05 Hz
 #define A_G_CTRL_REG4_G		0x3a		// Enable gyro outputs, latched interrupt
 #define A_G_CTRL_REG5_XL	0x38		// Enable acc outputs

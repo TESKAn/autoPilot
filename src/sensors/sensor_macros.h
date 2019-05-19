@@ -36,8 +36,8 @@
 #define GYRO_GAIN_ADJUSTMENT_FACTOR				0.00001f
 
 // Time to wait before sensor data is considered OK
-// 1 tick is 10 usec, wait for 1 sec, 100000 ticks is 1 sec
-#define SENSOR_INVALID_TIME						100000
+// 1 tick is 10 usec, wait for 1 sec, 1000000 ticks is 1 sec
+#define SENSOR_INVALID_TIME						1000000
 
 // PID macros
 // Drift compensation

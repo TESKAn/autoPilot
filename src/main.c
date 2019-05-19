@@ -110,7 +110,7 @@ int main(void)
 
 	// Set sensors
 	Sensor_SPIInitAG();
-	//Sensor_SPIInitM();
+	Sensor_SPIInitM();
 	Sensor_SPIInitB();
 
 	// Enable A/G data out

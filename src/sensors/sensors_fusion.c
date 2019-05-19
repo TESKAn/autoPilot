@@ -144,8 +144,7 @@ ErrorStatus fusion_dataUpdate(FUSION_CORE *data, float32_t f32DeltaTime)
 {
 
 	ErrorStatus status = SUCCESS;
-	Matrixf newMatrix;										// Place to store new DCM matrix
-	float32_t dt = 0;
+	Matrixf newMatrix;
 	float32_t a = 0;
 	float32_t b = 0;
 	float32_t c = 0;
@@ -156,37 +155,23 @@ ErrorStatus fusion_dataUpdate(FUSION_CORE *data, float32_t f32DeltaTime)
 		//fusion_updateRotationMatrix(data);
 
 		// Calculate delta time
-		dt = (float32_t)data->_gyro.deltaTime;
-		dt = dt * data->PARAMETERS.systimeToSeconds;
-
-		data->integrationTime = dt;
+		data->integrationTime = f32DeltaTime;
 
 		// Calculate current rotation angle
 		// Part 1
 		// Is gyro value * delta time in seconds
-		/*
-		data->updateRotation.x = data->_gyro.vector.x * dt;
-		data->updateRotation.y = data->_gyro.vector.y * dt;
-		data->updateRotation.z = data->_gyro.vector.z * dt;
-*/
-		// Generate update matrix
-		//status = fusion_generateUpdateMatrix(&data->updateRotation, &data->_fusion_update, 1);
-
 		// Populate elements of matrix
 		data->_fusion_update.a.x = 1.0f;
-		data->_fusion_update.a.y = -(data->_gyro.vector.z * dt);
-		data->_fusion_update.a.z = data->_gyro.vector.y * dt;
+		data->_fusion_update.a.y = -(data->_gyro.vector.z * f32DeltaTime);
+		data->_fusion_update.a.z = data->_gyro.vector.y * f32DeltaTime;
 
-		data->_fusion_update.b.x = data->_gyro.vector.z * dt;
+		data->_fusion_update.b.x = data->_gyro.vector.z * f32DeltaTime;
 		data->_fusion_update.b.y = 1.0f;
-		data->_fusion_update.b.z = -(data->_gyro.vector.x * dt);
+		data->_fusion_update.b.z = -(data->_gyro.vector.x * f32DeltaTime);
 
-		data->_fusion_update.c.x = -(data->_gyro.vector.y * dt);
-		data->_fusion_update.c.y = data->_gyro.vector.x * dt;
+		data->_fusion_update.c.x = -(data->_gyro.vector.y * f32DeltaTime);
+		data->_fusion_update.c.y = data->_gyro.vector.x * f32DeltaTime;
 		data->_fusion_update.c.z = 1.0f;
-
-		// Multiply DCM and update matrix
-		//status = matrix3_MatrixMultiply(&data->_fusion_DCM, &data->_fusion_update, &newMatrix);
 
 		// Calculate resulting matrix by multiplying matrices A and B
 		// Row A.a, col B.x
@@ -242,7 +227,7 @@ ErrorStatus fusion_dataUpdate(FUSION_CORE *data, float32_t f32DeltaTime)
 		vectorf_add(&data->_gyro.vectorRaw, &data->_gyroError.GyroData, &data->_gyroError.GyroData);
 		data->_gyroError.ui8SamplesGyro++;
 		// Check time
-		if(SENSOR_INVALID_TIME < f32DeltaTime)
+		if(SENSOR_INVALID_TIME < (uint32_t)(TIM2->CNT))
 		{
 			// If 1 second has passed since power up,try to init DCM matrix to initial value
 			if(SUCCESS == fusion_generateDCM(data))

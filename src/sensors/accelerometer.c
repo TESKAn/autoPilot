@@ -14,7 +14,7 @@
 #include "sensor_typedefs.h"
 #include "accelerometer.h"
 
-#define ACC_DEFAULT_RATE					0.000244140625f			// 8/32768 -> g
+#define ACC_DEFAULT_RATE					0.00024414807f			// 8/32768 -> g
 
 
 // Init accelerometer data structure
@@ -38,14 +38,14 @@ ErrorStatus acc_initDataStructure(AccelerometerData *data, uint32_t time)
 	status = SUCCESS;
 
 	// Init offsets
-	data->offsets.x = 0.010282576f;
-	data->offsets.y = 0.003120095f;
-	data->offsets.z = -0.137751132f;
+	data->offsets.x = 0.0f;//0.010282576f;
+	data->offsets.y = 0.0f;//0.003120095f;
+	data->offsets.z = 0.0f;//-0.137751132f;
 
 	// And scale
-	data->gains.x = 0.996f;
-	data->gains.y = 0.996f;
-	data->gains.z = 0.994f;
+	data->gains.x = 1.0f;
+	data->gains.y = 1.0f;
+	data->gains.z = 1.0f;
 
 	return status;
 }
