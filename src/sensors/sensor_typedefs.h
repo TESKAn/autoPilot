@@ -445,19 +445,17 @@ typedef struct
 	uint32_t ui32ByteCount;
 	uint32_t ui32InterruptTime;
 	uint32_t ui32InterruptDeltaTime;
+	uint8_t ui8TxBuf[16];
 	union
 	{
 		uint8_t buf[16];
 		struct
 		{
-			uint8_t ui8Empty;
-			int16_t i16Temperature;
-			uint8_t ui8Status;
+			int16_t i16Empty;
 			int16_t i16XOut;
 			int16_t i16YOut;
 			int16_t i16ZOut;
-			int16_t i16Empty;
-			int32_t i32Empty;
+			int32_t i32Empty[2];
 		}GYRO;
 		struct
 		{
@@ -469,15 +467,20 @@ typedef struct
 		}ACC;
 		struct
 		{
+			int16_t i16Empty;
 			int16_t i16XOut;
 			int16_t i16YOut;
 			int16_t i16ZOut;
-			int16_t i16Empty;
 			int32_t i32Empty[2];
 		}MAG;
 		struct
 		{
-			uint8_t buf[16];
+			int16_t i16Empty;
+			int16_t i16Empty1;
+			int32_t i32Pressure;
+			int16_t i16Temperature;
+			int16_t i16Empty2;
+			uint32_t ui32Empty;
 		}BARO;
 	}DATA;
 }__attribute__((aligned(4),packed)) FUSION_SPIDATA;

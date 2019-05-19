@@ -172,49 +172,59 @@ int16_t CheckMainLoopStates()
 		case 19:
 		{
 			// Store baro buffer address
-			SPI_SensorBuf = &SPI_SensorBufBaro;
-			SPI_SensorBuf->ui8Device = BARO_DEV_CS;
-			// Read data from baro
-			Sensor_SPIReadDMA();
+			SPI_SensorBufMag.ui8TxBuf[0] = 0x80 | SPI_SensorBufMag.ui16StartReg;
+			SPI_SensorBufMag.ui8TxBuf[1] = SPI_SensorBufMag.ui8TxBuf[0] + 1;
+			SPI_SensorBufMag.ui8TxBuf[2] = SPI_SensorBufMag.ui8TxBuf[1] + 1;
+			SPI_SensorBufMag.ui8TxBuf[3] = SPI_SensorBufMag.ui8TxBuf[2] + 1;
+			SPI_SensorBufMag.ui8TxBuf[4] = SPI_SensorBufMag.ui8TxBuf[3] + 1;
+			SPI_SensorBufMag.ui8TxBuf[5] = SPI_SensorBufMag.ui8TxBuf[4] + 1;
+			SPI_SensorBufMag.ui8TxBuf[6] = SPI_SensorBufMag.ui8TxBuf[5] + 1;
+			SPI_SensorBufMag.ui8TxBuf[7] = SPI_SensorBufMag.ui8TxBuf[6] + 1;
+			SPI_SensorBufMag.ui8TxBuf[8] = SPI_SensorBufMag.ui8TxBuf[7] + 1;
+			SPI_SensorBufMag.ui8TxBuf[9] = SPI_SensorBufMag.ui8TxBuf[8] + 1;
+			SPI_SensorBufMag.ui8TxBuf[10] = SPI_SensorBufMag.ui8TxBuf[9] + 1;
+			SPI_SensorBufMag.ui8TxBuf[11] = SPI_SensorBufMag.ui8TxBuf[10] + 1;
+			SPI_SensorBufMag.ui8TxBuf[12] = SPI_SensorBufMag.ui8TxBuf[11] + 1;
+			SPI_SensorBufMag.ui8TxBuf[13] = SPI_SensorBufMag.ui8TxBuf[12] + 1;
+			SPI_SensorBufMag.ui8TxBuf[14] = SPI_SensorBufMag.ui8TxBuf[13] + 1;
+			SPI_SensorBufMag.ui8TxBuf[15] = SPI_SensorBufMag.ui8TxBuf[14] + 1;
+
 			mainLoopState = 0;
 			break;
 		}
 		case 20:
 		{
-			// Store mag buffer address
-			SPI_SensorBuf = &SPI_SensorBufAcc;
-			SPI_SensorBuf->ui8Device = ACC_DEV_CS;
-			// Read data from mag
-			Sensor_SPIReadDMA();
+			RB32_push(&rb32SensorTXQueue, MAG_GET_DATA);
 			mainLoopState = 0;
 			break;
 		}
 		case 21:
 		{
-			// Store mag buffer address
-			SPI_SensorBuf = &SPI_SensorBufGyro;
-			SPI_SensorBuf->ui8Device = GYRO_DEV_CS;
-			// Read data from mag
-			Sensor_SPIReadDMA();
+			RB32_push(&rb32SensorTXQueue, BARO_GET_DATA);
 			mainLoopState = 0;
 			break;
 		}
 		case 22:
 		{
-			i16SPITestData = Sensor_SPIWrite(ui16SPITestDevice, ui16SPITestAddress, i16SPITestData);
+			if(SPI_INC_ADDRESS_WRITE) ui16SPITestAddress++;
+			RB32_push(&rb32SensorTXQueue, SENSOR_WRITE_REG);
+			//RB32_push(&rb32SensorTXQueue, SENSOR_WRITE_REG);
+			//i16SPITestData = Sensor_SPIWrite(ui16SPITestDevice, ui16SPITestAddress, i16SPITestData);
 			mainLoopState = 0;
 			break;
 		}
 		case 23:
 		{
-			i16SPITestData = Sensor_SPIRead(ui16SPITestDevice, ui16SPITestAddress);
-			//ui16SPITestAddress++;
+			if(SPI_INC_ADDRESS_READ) ui16SPITestAddress++;
+			RB32_push(&rb32SensorTXQueue, SENSOR_READ_REG);
+			//RB32_push(&rb32SensorTXQueue, SENSOR_READ_REG);
+			//i16SPITestData = Sensor_SPIRead(ui16SPITestDevice, ui16SPITestAddress);
 			mainLoopState = 0;
 			break;
 		}
 		case 24:
 		{
-			CAN_SendENABLE(1, CAN_MOTOR_ALL_ID);
+			RB32_push(&rb32SensorTXQueue, SENSOR_READ_WORD);
 			mainLoopState = 0;
 			break;
 		}

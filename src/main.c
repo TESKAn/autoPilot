@@ -77,6 +77,10 @@ int main(void)
 	// Init MAVLINK buffer
 	RB32_Init(&rb32MavlinkTXQueue, ui32MavlinkBuf, 32);
 
+	// Init sensor tx queue buffer
+	RB32_Init(&rb32SensorTXQueue, ui32SensorBuf, 32);
+
+
 	// Initialize flight data
 	flight_init(&FCFlightData, &RCData);
 
@@ -106,7 +110,7 @@ int main(void)
 
 	// Set sensors
 	Sensor_SPIInitAG();
-	Sensor_SPIInitM();
+	//Sensor_SPIInitM();
 	Sensor_SPIInitB();
 
 	// Enable A/G data out

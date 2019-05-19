@@ -56,25 +56,11 @@ ErrorStatus gyro_initDataStructure(GyroData *data, uint32_t time)
 }
 
 // Update gyro reading
-ErrorStatus gyro_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
+ErrorStatus gyro_update(FUSION_CORE *data, int16_t *rawData, uint32_t deltaTime)
 {
-	uint32_t deltaTime = 0;
-
 	// Update sensor temperature
 	data->_accelerometer.sensorTemperature = data->MPUTemperature;
 
-	// First store raw reading
-/*
-	data->_gyro.vectorRaw.x = (float32_t)rawData[0] * data->_gyro.gyroRate * GYRO_DEG_TO_RAD;
-	data->_gyro.vectorRaw.y = (float32_t)rawData[1] * data->_gyro.gyroRate * GYRO_DEG_TO_RAD;
-	data->_gyro.vectorRaw.z = (float32_t)rawData[2] * data->_gyro.gyroRate * GYRO_DEG_TO_RAD;
-	 */
-	// Use gain PID result
-	/*
-	data->_gyro.vectorRaw.x = (float32_t)rawData[0] * data->_gyroGainPID.x.s * GYRO_DEG_TO_RAD;
-	data->_gyro.vectorRaw.y = (float32_t)rawData[1] * data->_gyroGainPID.y.s * GYRO_DEG_TO_RAD;
-	data->_gyro.vectorRaw.z = (float32_t)rawData[2] * data->_gyroGainPID.z.s * GYRO_DEG_TO_RAD;
-	*/
 	// Use different rates depending on direction of rotation
 	// X
 	if(0 < rawData[0])
@@ -110,16 +96,8 @@ ErrorStatus gyro_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 	data->_gyro.vector.x -= data->_gyroErrorPID.x.s;
 	data->_gyro.vector.y -= data->_gyroErrorPID.y.s;
 	data->_gyro.vector.z -= data->_gyroErrorPID.z.s;
-	/*
-	data->_gyro.vector.x -= 0.045f;//data->_gyroErrorPID.x.s;
-	data->_gyro.vector.y -= -0.01f;//data->_gyroErrorPID.y.s;
-	data->_gyro.vector.z -= 0.02f;//data->_gyroErrorPID.z.s;
-	*/
-	// Calculate time difference
-	deltaTime = dataTime - data->_gyro.dataTime;
-	// Do checks on time passed...
 
-	data->_gyro.dataTime = dataTime;
+	//data->_gyro.dataTime = dataTime;
 	data->_gyro.deltaTime = deltaTime;
 
 	data->_gyro.fDeltaTime = (float32_t)data->_gyro.deltaTime * data->PARAMETERS.systimeToSeconds;

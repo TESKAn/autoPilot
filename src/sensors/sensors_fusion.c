@@ -140,7 +140,7 @@ ErrorStatus fusion_initGyroGainPID(FUSION_CORE *data)
 	return SUCCESS;
 }
 
-ErrorStatus fusion_dataUpdate(FUSION_CORE *data, FUSION_SENSORDATA *sensorData, uint32_t time)
+ErrorStatus fusion_dataUpdate(FUSION_CORE *data, float32_t f32DeltaTime)
 {
 
 	ErrorStatus status = SUCCESS;
@@ -150,10 +150,6 @@ ErrorStatus fusion_dataUpdate(FUSION_CORE *data, FUSION_SENSORDATA *sensorData, 
 	float32_t b = 0;
 	float32_t c = 0;
 
-	// Update temperature
-	fusion_calculateMPUTemperature(data, sensorData->data.temperature, sensorData->data.dataTakenTime);
-	// Update gyro
-	gyro_update(data, (int16_t*)&sensorData->arrays.gyro, sensorData->data.dataTakenTime);
 	if(data->sFlag.bits.SFLAG_DO_DCM_UPDATE)
 	{
 		// Update rotation matrix
@@ -246,7 +242,7 @@ ErrorStatus fusion_dataUpdate(FUSION_CORE *data, FUSION_SENSORDATA *sensorData, 
 		vectorf_add(&data->_gyro.vectorRaw, &data->_gyroError.GyroData, &data->_gyroError.GyroData);
 		data->_gyroError.ui8SamplesGyro++;
 		// Check time
-		if(SENSOR_INVALID_TIME < (time - data->ui32SensorInitTime))
+		if(SENSOR_INVALID_TIME < f32DeltaTime)
 		{
 			// If 1 second has passed since power up,try to init DCM matrix to initial value
 			if(SUCCESS == fusion_generateDCM(data))
@@ -262,6 +258,7 @@ ErrorStatus fusion_dataUpdate(FUSION_CORE *data, FUSION_SENSORDATA *sensorData, 
 			}
 		}
 	}
+	/*
 	// Update acceleration
 	acc_update(data, (int16_t*)&sensorData->arrays.acc, sensorData->data.dataTakenTime);
 	// Update speed from acceleration
@@ -273,7 +270,7 @@ ErrorStatus fusion_dataUpdate(FUSION_CORE *data, FUSION_SENSORDATA *sensorData, 
 
 	// Estimate gyro error
 	fusion_updateGyroError(data);
-
+*/
 
 	return SUCCESS;
 }

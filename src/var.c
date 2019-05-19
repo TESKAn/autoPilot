@@ -189,6 +189,9 @@ T32BITVARS t32CANVar;
 int32_t i32CurrentMavlinkMessage = 0;
 int32_t i32CurrentMavlinkCommand = 0;
 
+RING_BUFFER32 rb32SensorTXQueue;
+uint32_t ui32SensorBuf[32];
+
 int16_t i16SPITestData = 0;
 uint16_t ui16SPITestAddress = 0;
 uint16_t ui16SPITestDevice = 1;

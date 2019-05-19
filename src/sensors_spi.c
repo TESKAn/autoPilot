@@ -13,6 +13,94 @@ int16_t Sensor_SPIInit()
 	return 0;
 }
 
+
+// Call every 1 ms, manage all SPI traffic.
+int16_t Sensor_SPICommProcess()
+{
+	uint32_t ui32Temp = 0;
+	uint16_t ui16Temp = 0;
+	uint16_t ui16Address = 0;
+	uint16_t ui16AddressOffset = 0;
+	uint8_t ui8Temp = 0;
+	// Is SPI idle?
+	if(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_BSY))
+	{
+		if(0 < rb32SensorTXQueue.count)
+		{
+			ui32Temp = RB32_pop(&rb32SensorTXQueue);
+			switch(ui32Temp)
+			{
+				case 0:
+				{
+					break;
+				}
+				case ACC_GET_DATA:
+				{
+					// Store buffer address
+					SPI_SensorBuf = &SPI_SensorBufAcc;
+					SPI_SensorBuf->ui8Device = ACC_DEV_CS;
+					// Read data from mag
+					Sensor_SPIReadDMA();
+					break;
+				}
+				case GYRO_GET_DATA:
+				{
+					// Store buffer address
+					SPI_SensorBuf = &SPI_SensorBufGyro;
+					SPI_SensorBuf->ui8Device = GYRO_DEV_CS;
+					// Read data from mag
+					Sensor_SPIReadDMA();
+					break;
+				}
+				case MAG_GET_DATA:
+				{
+					// Store buffer address
+					SPI_SensorBuf = &SPI_SensorBufMag;
+					SPI_SensorBuf->ui8Device = MAG_DEV_CS;
+					// Read data from mag
+					Sensor_SPIReadDMA();
+
+					break;
+				}
+				case BARO_GET_DATA:
+				{
+					// Store buffer address
+					SPI_SensorBuf = &SPI_SensorBufBaro;
+					SPI_SensorBuf->ui8Device = BARO_DEV_CS;
+					// Read data from mag
+					Sensor_SPIReadDMA();
+					break;
+				}
+				case SENSOR_WRITE_REG:
+				{
+					i16SPITestData = Sensor_SPIWrite(ui16SPITestDevice, ui16SPITestAddress, i16SPITestData);
+					break;
+				}
+				case SENSOR_READ_REG:
+				{
+					i16SPITestData = Sensor_SPIRead(ui16SPITestDevice, ui16SPITestAddress);
+					break;
+				}
+				case SENSOR_READ_WORD:
+				{
+					i16SPITestData = Sensor_SPIReadWord(ui16SPITestDevice, ui16SPITestAddress);
+					break;
+				}
+				case SENSOR_READ_T:
+				{
+
+					break;
+				}
+				default:
+				{
+					break;
+				}
+			}
+		}
+	}
+	return 0;
+}
+
 int16_t Sensor_setCS(uint8_t device, uint8_t state)
 {
 	switch(device)
@@ -64,10 +152,19 @@ int16_t Sensor_SPIWrite(uint8_t device, uint8_t address, uint8_t data)
 	// Is SPI idle?
 	if(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_BSY))
 	{
-		// Set CS low
-		Sensor_setCS(device, 0);
+		// Cleanup SPI
+		// Wait until TX is empty
+		while(!(SPI3->SR & SPI_I2S_FLAG_TXE)){}
+		// Check that there is no data in RX buffer
+		if(SPI3->SR & SPI_I2S_FLAG_RXNE)
+		{
+			ui16Temp = SPI3->DR;
+		}
 
 		ui16Temp = 0x7F & (uint16_t)address;
+
+		// Set CS low
+		Sensor_setCS(device, 0);
 
 		SPI3->DR = ui16Temp;
 		// Wait until RX is ready
@@ -99,12 +196,23 @@ int16_t Sensor_SPIRead(uint8_t device, uint8_t address)
 	// Is SPI idle?
 	if(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_BSY))
 	{
+		// Cleanup SPI
+		// Wait until TX is empty
+		while(!(SPI3->SR & SPI_I2S_FLAG_TXE)){}
+		// Check that there is no data in RX buffer
+		if(SPI3->SR & SPI_I2S_FLAG_RXNE)
+		{
+			ui16Temp = SPI3->DR;
+		}
+
+		ui16Temp = 0x80 | (uint16_t)address;
+
 		// Set CS low
 		Sensor_setCS(device, 0);
 
-		ui16Temp = 0x80 | (uint16_t)address;
+		// Send address
 		SPI3->DR = ui16Temp;
-		// Wait until RX is ready
+		// Wait until TX is empty
 		while(!(SPI3->SR & SPI_I2S_FLAG_RXNE))
 		{
 
@@ -113,7 +221,7 @@ int16_t Sensor_SPIRead(uint8_t device, uint8_t address)
 		ui16Temp = SPI3->DR;
 
 		// Send data
-		SPI3->DR = 0;
+		SPI3->DR = 0xff;
 		// Wait until RX buffer is full
 		while(!(SPI3->SR & SPI_I2S_FLAG_RXNE))
 		{
@@ -125,6 +233,68 @@ int16_t Sensor_SPIRead(uint8_t device, uint8_t address)
 		Sensor_setCS(device, 1);
 	}
 	return (int16_t)ui16Temp;
+}
+
+int16_t Sensor_SPIReadWord(uint8_t device, uint8_t address)
+{
+	uint16_t ui16Temp = 0;
+	uint16_t ui16Result = 0;
+	// Is SPI idle?
+	if(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_BSY))
+	{
+		// Cleanup SPI
+		// Wait until TX is empty
+		while(!(SPI3->SR & SPI_I2S_FLAG_TXE)){}
+		// Check that there is no data in RX buffer
+		if(SPI3->SR & SPI_I2S_FLAG_RXNE)
+		{
+			ui16Temp = SPI3->DR;
+		}
+
+		ui16Temp = 0x80 | (uint16_t)address;
+
+		// Set CS low
+		Sensor_setCS(device, 0);
+
+		// Send address
+		SPI3->DR = ui16Temp;
+		// Wait until TX is empty
+		while(!(SPI3->SR & SPI_I2S_FLAG_RXNE))
+		{
+
+		}
+		// Read data
+		ui16Temp = SPI3->DR;
+
+		// Send data
+		SPI3->DR = 0xff;
+		// Wait until RX buffer is full
+		while(!(SPI3->SR & SPI_I2S_FLAG_RXNE))
+		{
+
+		}
+		// Read data
+		ui16Result = SPI3->DR;
+
+		// Send data
+		SPI3->DR = 0xff;
+		// Wait until RX buffer is full
+		while(!(SPI3->SR & SPI_I2S_FLAG_RXNE))
+		{
+
+		}
+		// Read data
+		ui16Temp = SPI3->DR;
+
+		Sensor_setCS(device, 1);
+
+		ui16Temp = ui16Temp << 8;
+		ui16Temp = ui16Temp & 0xff00;
+		ui16Result = ui16Result & 0xff;
+		ui16Result = ui16Result | ui16Temp;
+
+	}
+	return (int16_t)ui16Result;
 }
 
 int16_t Sensor_SPIReadDMA()
@@ -154,28 +324,17 @@ int16_t Sensor_SPIReadDMA()
 		}
 	}
 
-	// Set correct CS bit
-	switch(SPI_SensorBuf->ui8Device)
+	// Disable DMA TX stream
+	DMA_Cmd(DMA_SPI3_TX_STREAM, DISABLE);
+	// Wait until stream is disabled
+	sensorTimeCounter = 0;
+	while (DMA_GetCmdStatus(DMA_SPI3_TX_STREAM) != DISABLE)
 	{
-		case GYRO_DEV_CS:
+		// Call sensor timer
+		sensorTimer();
+		if(sensorTimeCounter > SPI_ERRORTIMEOUT)
 		{
-			// A/G module
-			A_G_CS_0;
-			break;
-		}
-		case ACC_DEV_CS:
-		{
-			A_G_CS_0;
-			break;
-		}
-		case MAG_DEV_CS:
-		{
-			MAG_CS_0;
-			break;
-		}
-		case BARO_DEV_CS:
-		{
-			BARO_CS_0;
+			return ERROR;
 			break;
 		}
 	}
@@ -228,6 +387,7 @@ int16_t Sensor_SPIReadDMA()
 	DMAInitStructure.DMA_PeripheralBaseAddr = (uint32_t)&SPI3->DR;//    I2C2_DR_ADDRESS;
 	// DMA buffer address
 	DMAInitStructure.DMA_Memory0BaseAddr = (uint32_t)(&SPI_SensorBuf->ui8DummyByte);
+	//DMAInitStructure.DMA_Memory0BaseAddr = (uint32_t)(&SPI_SensorBuf->ui8TxBuf[0]);
 	DMAInitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
 	DMAInitStructure.DMA_BufferSize = byteCount;
 	DMAInitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
@@ -246,17 +406,61 @@ int16_t Sensor_SPIReadDMA()
 	// Clear DMA flags
 	DMA_ClearFlag(DMA_SPI3_TX_STREAM, DMA_FLAG_TCIF3 | DMA_FLAG_FEIF3 | DMA_FLAG_DMEIF3 |  DMA_FLAG_TEIF3 | DMA_FLAG_HTIF3);
 
+	// Cleanup SPI
+	// Wait until TX is empty
+	while(!(SPI3->SR & SPI_I2S_FLAG_TXE)){}
+	// Check that there is no data in RX buffer
+	if(SPI3->SR & SPI_I2S_FLAG_RXNE)
+	{
+		ui16Temp = SPI3->DR;
+	}
+
+	//SPI_Cmd(SPI3, DISABLE);
 	// Start SPI RX process
-	ui16Temp = 0x80 + ui16StartRegAddress;
-	SPI_I2S_SendData(SPI3, ui16Temp);
+	// Address
+	ui16Temp = 0x80 | ui16StartRegAddress;
+
+	//SPI_SensorBuf->ui8TxBuf[0] = ui16Temp;
+
+	// Store to send buffer
+	SPI_SensorBuf->ui8DummyByte = ui16Temp;
+	// Set correct CS bit
+	switch(SPI_SensorBuf->ui8Device)
+	{
+		case GYRO_DEV_CS:
+		{
+			// A/G module
+			A_G_CS_0;
+			break;
+		}
+		case ACC_DEV_CS:
+		{
+			A_G_CS_0;
+			break;
+		}
+		case MAG_DEV_CS:
+		{
+			MAG_CS_0;
+			break;
+		}
+		case BARO_DEV_CS:
+		{
+			BARO_CS_0;
+			break;
+		}
+	}
+
+	//SPI_I2S_SendData(SPI3, ui16Temp);
+
+	/* Enable DMA RX, TX Channel */
+	DMA_Cmd(DMA_SPI3_TX_STREAM, ENABLE);
+	DMA_Cmd(DMA_SPI3_RX_STREAM, ENABLE);
 
 	/* SPI DMA Enable */
-	SPI_I2S_DMACmd(SPI3, SPI_I2S_DMAReq_Rx, ENABLE);
 	SPI_I2S_DMACmd(SPI3, SPI_I2S_DMAReq_Tx, ENABLE);
+	SPI_I2S_DMACmd(SPI3, SPI_I2S_DMAReq_Rx, ENABLE);
 
-	/* Enable DMA RX Channel */
-	DMA_Cmd(DMA_SPI3_RX_STREAM, ENABLE);
-	DMA_Cmd(DMA_SPI3_TX_STREAM, ENABLE);
+	//SPI_Cmd(SPI3, ENABLE);
 
 	DMA_ITConfig(DMA_SPI3_RX_STREAM, DMA_IT_TC | DMA_IT_DME | DMA_IT_FE, ENABLE);
 	DMA_ITConfig(DMA_SPI3_TX_STREAM, DMA_IT_TC | DMA_IT_DME | DMA_IT_FE, ENABLE);

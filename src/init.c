@@ -1143,7 +1143,7 @@ void init_SPI3()
 	// Set pin mode to alternate function
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
 	// Set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	// Write mode to selected pins and selected port
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
 
@@ -1158,7 +1158,7 @@ void init_SPI3()
 	// Set pin mode to alternate function
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
 	// Set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	// Write mode to selected pins and selected port
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
 	// Set pin to 1
@@ -1174,7 +1174,7 @@ void init_SPI3()
 	// Set pin mode to alternate function
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
 	// Set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	// Write mode to selected pins and selected port
 	GPIO_Init(GPIOE, &GPIO_InitStructure);
 	// Set pin to 1
@@ -1195,7 +1195,7 @@ void init_SPI3()
 	SPI_InitStructure.SPI_CPOL = SPI_CPOL_High;
 	SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;
 	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
-	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_64;
+	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_256;
 	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
 	SPI_InitStructure.SPI_CRCPolynomial = 7;
 	SPI_Init(SPI3, &SPI_InitStructure);
@@ -1755,8 +1755,8 @@ void System_Config(void)
 	init_USART3();
 	init_UART4();
 	// External interrupt
-	//init_EXTI3();
-	//init_EXTI4();
+	init_EXTI3();
+	init_EXTI4();
 	init_EXTI14_15();
 	// SPI config
 	init_SPI1();

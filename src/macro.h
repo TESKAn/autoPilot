@@ -92,6 +92,8 @@
 #define FPU_EXC_DIVZERO			flag1.bits.BIT4
 #define FPU_EXC_INVALIDOP		flag1.bits.BIT5
 #define COMM_SEND_DATA			flag1.bits.BIT6
+#define SPI_INC_ADDRESS_READ	flag1.bits.BIT7
+#define SPI_INC_ADDRESS_WRITE	flag1.bits.BIT8
 
 // Clear flag1 FPU exceptions
 #define CLEAR_FPU_EXCEPTIONS	flag1.flag.flag = flag1.flag.flag & 0xFFFFFFC3
@@ -216,20 +218,29 @@
 
 // Sensor macros
 #define GYRO_DEV_CS			1
-#define GYRO_START_REG		0x14
+#define GYRO_START_REG		0x17
 #define GYRO_BYTE_COUNT		10
 
 #define ACC_DEV_CS			2
-#define ACC_START_REG		0x28
+#define ACC_START_REG		0x27
 #define ACC_BYTE_COUNT		8
 
 #define MAG_DEV_CS			3
-#define MAG_START_REG		0x28
-#define MAG_BYTE_COUNT		6
+#define MAG_START_REG		0x67
+#define MAG_BYTE_COUNT		8
 
 #define BARO_DEV_CS			4
-#define BARO_START_REG		0x28
-#define BARO_BYTE_COUNT		5
+#define BARO_START_REG		0x65
+#define BARO_BYTE_COUNT		10
+
+#define GYRO_DEFAULT_RATE					0.0152587890625f//0.030517578125f			// 500/32768 -> deg/sec
+#define GYRO_DEG_TO_RAD						0.017453292519f			// 1 deg/sec is this in rad/sec
+#define GYRO_RAD_TO_DEG						57.295779513082f		// 1 rad/sec is this in deg/sec
+
+
+//**************************************
+//#define SPI_SENSOR_TESTING
+//**************************************
 
 // Sensor reg settings
 // A_G
@@ -247,18 +258,28 @@
 #define A_G_INT_GEN_CFG_G	0x40		// Latch gyro interrupt
 
 // MAG
-#define MAG_INT_CFG_M		0x05		// Int enabled, latched, active high
+#define MAG_INT_CFG_M		0x00		// Int disabled on INT_M pin
 #define MAG_CTRL_REG_1_M	0x7c		// High performance, 80 Hz output data rate
 #define MAG_CTRL_REG_2_M	0x00		// +/- 4 gauss full-scale
 #define MAG_CTRL_REG_3_M	0x80		// Disable I2C, no low power, SPI write, continuous conversion
 #define MAG_CTRL_REG_4_M	0x0c		// High - performance mode on Z axis
-#define MAG_CTRL_REG_5_M	0x40		// Block data update until readout
+#define MAG_CTRL_REG_5_M	0x00		// Block data update until readout
 
 // BARO
 #define BARO_CTRL_REG1		0xcc		// Active mode, interrupt enable, 25 Hz rate, block update until readout, 4 - wire interface
 #define BARO_CTRL_REG2		0x08		// I2C interface disabled
 #define BARO_CTRL_REG3		0x00		// Default
 #define BARO_CTRL_REG4		0x01		// Data ready on interrupt pin
+
+// Sensor SPI ring buffer
+#define ACC_GET_DATA		1
+#define GYRO_GET_DATA		2
+#define MAG_GET_DATA		3
+#define BARO_GET_DATA		4
+#define SENSOR_WRITE_REG	5
+#define SENSOR_READ_REG		6
+#define SENSOR_READ_WORD	7
+#define SENSOR_READ_T		8
 
 // Sensor CS
 // Baro
@@ -281,6 +302,9 @@
 #define USB_POWER_ON		GPIO_WriteBit(GPIOA, GPIO_Pin_15, 0)
 // USB power OFF
 #define USB_POWER_OFF		GPIO_WriteBit(GPIOA, GPIO_Pin_15, 1)
+
+
+
 
 // Signal strength macros
 // How much time between pulses to declare value to be DC
