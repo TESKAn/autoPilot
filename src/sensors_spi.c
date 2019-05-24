@@ -18,10 +18,7 @@ int16_t Sensor_SPIInit()
 int16_t Sensor_SPICommProcess()
 {
 	uint32_t ui32Temp = 0;
-	uint16_t ui16Temp = 0;
-	uint16_t ui16Address = 0;
-	uint16_t ui16AddressOffset = 0;
-	uint8_t ui8Temp = 0;
+
 	// Is SPI idle?
 	if(!SPI_I2S_GetFlagStatus(SPI3, SPI_I2S_FLAG_BSY))
 	{

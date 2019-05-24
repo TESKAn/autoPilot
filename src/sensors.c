@@ -246,7 +246,6 @@ void storeAHRSAngles(FUSION_CORE *data)
 void copySensorData(void)
 {
 	uint32_t receiveTime = getSystemTime();
-	uint32_t currentTime = receiveTime;
 
 	// Store time it took to get data
 	receiveTime = receiveTime - sensorAcquisitionTime;

@@ -58,9 +58,7 @@ ErrorStatus gyro_initDataStructure(GyroData *data, uint32_t time)
 // Update gyro reading
 ErrorStatus gyro_update(FUSION_CORE *data, int16_t *rawData, uint32_t deltaTime)
 {
-	// Update sensor temperature
-	data->_accelerometer.sensorTemperature = data->MPUTemperature;
-
+/*
 	// Use different rates depending on direction of rotation
 	// X
 	if(0 < rawData[0])
@@ -91,11 +89,15 @@ ErrorStatus gyro_update(FUSION_CORE *data, int16_t *rawData, uint32_t deltaTime)
 	}
 
 	vectorf_copy(&data->_gyro.vectorRaw, &data->_gyro.vector);
+*/
+	data->_gyro.vectorRaw.x = (float32_t)rawData[0] * data->_gyro.gyroRateXP * GYRO_DEG_TO_RAD;
+	data->_gyro.vector.x = data->_gyro.vectorRaw.x - data->_gyroErrorPID.x.s;
 
-	// Remove offset
-	data->_gyro.vector.x -= data->_gyroErrorPID.x.s;
-	data->_gyro.vector.y -= data->_gyroErrorPID.y.s;
-	data->_gyro.vector.z -= data->_gyroErrorPID.z.s;
+	data->_gyro.vectorRaw.y = (float32_t)rawData[1] * data->_gyro.gyroRateYP * GYRO_DEG_TO_RAD;
+	data->_gyro.vector.y = data->_gyro.vectorRaw.y - data->_gyroErrorPID.y.s;
+
+	data->_gyro.vectorRaw.z = (float32_t)rawData[2] * data->_gyro.gyroRateZP * GYRO_DEG_TO_RAD;
+	data->_gyro.vector.z = data->_gyro.vectorRaw.z - data->_gyroErrorPID.z.s;
 
 	//data->_gyro.dataTime = dataTime;
 	data->_gyro.deltaTime = deltaTime;

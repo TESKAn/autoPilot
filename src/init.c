@@ -542,7 +542,7 @@ void init_DAC(void)
 {
 	DAC_InitTypeDef DAC_InitStruct;
 	DMA_InitTypeDef DMAInitStructure;
-	GPIO_InitTypeDef  GPIO_InitStructure;
+	//GPIO_InitTypeDef  GPIO_InitStructure;
 	// init DAC pins
 	// Configure GPIO pins
 	/* GPIO Peripheral clock enable */
@@ -1728,7 +1728,7 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 void init_swin()
 {
 	//make structure for configuring pins
-	GPIO_InitTypeDef  GPIO_InitStructure;
+	//GPIO_InitTypeDef  GPIO_InitStructure;
 
 }
 

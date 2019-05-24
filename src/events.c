@@ -186,10 +186,6 @@ void DMA1_Stream0_ISR_Handler(void)
 		{
 			A_G_CS_1;
 
-
-			uint32_t deltaTime = 0;
-
-
 			// Update accelerometer reading
 			// Store raw data, multiply with - to get gravity - acceleration
 			fusionData._accelerometer.vectorRaw.x = (float32_t)SPI_SensorBufAcc.DATA.ACC.i16XOut * -fusionData._accelerometer.accRate;
@@ -804,7 +800,7 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 {
 
 	//uint8_t retriesCount = 0;
-	uint16_t ui16Temp;
+	//uint16_t ui16Temp;
 
 	//ErrorStatus error = SUCCESS;
 	if((TIM14->SR & TIM_FLAG_Update) != (u16)RESET)
