@@ -187,8 +187,6 @@ void DMA1_Stream0_ISR_Handler(void)
 			A_G_CS_1;
 
 
-
-
 			uint32_t deltaTime = 0;
 
 
@@ -213,13 +211,6 @@ void DMA1_Stream0_ISR_Handler(void)
 			fusionData._accelerometer.vectorKFiltered.z = fusionData._accelerometer.filterAccum.z / 5.0f;
 			fusionData._accelerometer.filterAccum.z -= fusionData._accelerometer.vectorKFiltered.z;
 
-
-		/*
-			fusionData._accelerometer.vectorKFiltered.x = fusionData._accelerometer.vectorRaw.x;
-			fusionData._accelerometer.vectorKFiltered.y = fusionData._accelerometer.vectorRaw.y;
-			fusionData._accelerometer.vectorKFiltered.z = fusionData._accelerometer.vectorRaw.z;
-		*/
-
 			// Remove offset
 			vectorf_add(&fusionData._accelerometer.vectorKFiltered, &fusionData._accelerometer.offsets, &fusionData._accelerometer.vector);
 
@@ -239,6 +230,25 @@ void DMA1_Stream0_ISR_Handler(void)
 		case MAG_DEV_CS:
 		{
 			MAG_CS_1;
+
+			// Update current reading
+			fusionData._mag.vectorRaw.x = (float32_t)SPI_SensorBufMag.DATA.MAG.i16XOut * fusionData._mag.magRate;
+			fusionData._mag.vectorRaw.y = (float32_t)SPI_SensorBufMag.DATA.MAG.i16YOut * fusionData._mag.magRate;
+			fusionData._mag.vectorRaw.z = (float32_t)SPI_SensorBufMag.DATA.MAG.i16ZOut * fusionData._mag.magRate;
+
+			//Filter
+			fusionData._mag.vectorKFiltered.x = Kalman_Update(&fusionData._mag.kFilter.X, fusionData._mag.vectorRaw.x);
+			fusionData._mag.vectorKFiltered.y = Kalman_Update(&fusionData._mag.kFilter.Y, fusionData._mag.vectorRaw.y);
+			fusionData._mag.vectorKFiltered.z = Kalman_Update(&fusionData._mag.kFilter.Z, fusionData._mag.vectorRaw.z);
+
+			// Use soft iron matrix to correct mag reading
+			// Remove offset
+			vectorf_substract(&fusionData._mag.vectorKFiltered, &fusionData._mag.offset, &fusionData._mag.currentMagReading);
+			// Multiply with soft iron matrix to correct distortions
+			matrix3_vectorMultiply(&fusionData._mag.softIron, &fusionData._mag.currentMagReading, &fusionData._mag.vector);
+			// Normalize mag vector
+
+
 			break;
 		}
 		case BARO_DEV_CS:
@@ -831,26 +841,6 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 	        ADC_SoftwareStartConv(ADC3);
 		}
 
-		if(SPI_TEST_RX)
-		{
-			I2C2_PollTimer++;
-			if(I2C2_PollTimer >= 20)
-			{
-				ui16Temp = Sensor_SPIRead(1, 0x27);
-				if((ui16Temp & 0x01))
-				{
-					I2C2_PollTimer = 0;
-					SPI_SensorBuf = &SPI_SensorBufAcc;
-					SPI_SensorBuf->ui8Device = ACC_DEV_CS;
-					// Read data from mag
-					Sensor_SPIReadDMA();
-				}
-				else
-				{
-					I2C2_PollTimer = 20;
-				}
-			}
-		}
 
 		Sensor_SPICommProcess();
 
@@ -898,47 +888,13 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			RB32_push(&rb32SensorTXQueue, BARO_GET_DATA);
 		}
 #endif
-/*
-		if(EXTSENS_INIT_DONE)
-		{
-			// Check I2C sensors
-			I2C2_PollTimer++;
-			if(I2C2_PollTimer >= I2C2_POLLTIME)
-			{
-				I2C2_PollTimer = I2C2_POLLTIME;
-				if(!I2C2_WAITINGDATA && I2C2_INITDONE && MPU_COMM_ENABLED)
-				{
-					// Store start time
-					ui32StartTime = getSystemTime();
-					I2C2_PollTimer = 0;
-					for(retriesCount = I2C2_ERROR_RETRIESCOUNT; retriesCount > 0; retriesCount --)
-					{
-						// Mark time when data is requested
-						sensorAcquisitionTime = getSystemTime();
-						// Read from MPU, start at reg 59, read 25 bytes
-						error = masterReceive_beginDMA(MPU6000_ADDRESS, 59, I2C2_sensorBufRX.buf, 26);
-						if(error == SUCCESS)
-						{
-							break;
-						}
-						else
-						{
-							// Handle error
-							I2C2_ResetInterface();
-						}
-					}
-					// Store system time
-					fusionData.deltaTime = READ_SYS_TIME - fusionData.dataTime;
-					fusionData.dataTime = READ_SYS_TIME;
-				}
-			}
-		}*/
 
 		// LED counter
 		LED_ToggleCount++;
 		if(LED_ToggleCount >= 100)
 		{
 			LED_ToggleCount = 0;
+			LED_OK_TOGGLE;
 			// Send out data
 			// Event every second
 

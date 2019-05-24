@@ -19,7 +19,6 @@ uint8_t I2C2_DMABufRX[DMA_BUF_COUNT];
 FUSION_SENSORDATA I2C2_sensorBufRX;
 volatile int I2C2_DMABufTXCount = 0;
 volatile int I2C2_DMABufRXCount = 0;
-volatile int I2C2_PollTimer = 0;
 volatile int sensorTimeCounter = 0;
 volatile uint32_t sensoruTimeCounter = 0;
 // Data taken at time

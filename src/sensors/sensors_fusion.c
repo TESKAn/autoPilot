@@ -295,20 +295,24 @@ ErrorStatus fusion_generateDCM(FUSION_CORE *data)
 	f32Temp = vectorf_getNorm(&data->_accelerometer.vector);
 	if(((1.0f + DCMGEN_GRAVITY_ACCURACY) > f32Temp) && ((1.0f - DCMGEN_GRAVITY_ACCURACY) < f32Temp))
 	{
-		// C is gravity
-		// Copy
-		status = vectorf_copy(&data->_accelerometer.vector, &data->_fusion_DCM.c);
-		// Normalize vector
-		status = vectorf_normalize(&data->_fusion_DCM.c);
-		// Get B as cross product of C row and magnetometer vector
-		status = vectorf_crossProduct(&data->_fusion_DCM.c, &data->_mag.vector, &data->_fusion_DCM.b);
-		// Normalize vector
-		status = vectorf_normalize(&data->_fusion_DCM.b);
-		// Get A as cross product of B with C
-		status = vectorf_crossProduct(&data->_fusion_DCM.b, &data->_fusion_DCM.c, &data->_fusion_DCM.a);
-		// Normalize vector
-		status = vectorf_normalize(&data->_fusion_DCM.a);
-		status = SUCCESS;
+		f32Temp = vectorf_getNorm(&data->_mag.vector);
+		if(0.0f != f32Temp)
+		{
+			// C is gravity
+			// Copy
+			status = vectorf_copy(&data->_accelerometer.vector, &data->_fusion_DCM.c);
+			// Normalize vector
+			status = vectorf_normalize(&data->_fusion_DCM.c);
+			// Get B as cross product of C row and magnetometer vector
+			status = vectorf_crossProduct(&data->_fusion_DCM.c, &data->_mag.vector, &data->_fusion_DCM.b);
+			// Normalize vector
+			status = vectorf_normalize(&data->_fusion_DCM.b);
+			// Get A as cross product of B with C
+			status = vectorf_crossProduct(&data->_fusion_DCM.b, &data->_fusion_DCM.c, &data->_fusion_DCM.a);
+			// Normalize vector
+			status = vectorf_normalize(&data->_fusion_DCM.a);
+			status = SUCCESS;
+		}
 	}
 
 

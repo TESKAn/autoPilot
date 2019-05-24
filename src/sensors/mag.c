@@ -14,7 +14,9 @@
 #include "mag.h"
 
 //#define MAG_DEFAULT_RATE					0.000635075720f			// 1,3/2047 -> gauss, result is in gauss	0,00917431192660550458715596330275
-#define MAG_DEFAULT_RATE					0.000917431192660550458715596330275f			// 1,3/2047 -> gauss, result is in gauss	0,00917431192660550458715596330275
+#//define MAG_DEFAULT_RATE					0.000917431192660550458715596330275f			// 1,3/2047 -> gauss, result is in gauss	0,00917431192660550458715596330275
+
+#define MAG_DEFAULT_RATE					0.00012207403790398876918851283303323f
 #define MAG_DEF_OFFSET_X					0.06422015f
 #define MAG_DEF_OFFSET_Y					-0.1655963f
 #define MAG_DEF_OFFSET_Z					0.07706425f
@@ -106,34 +108,6 @@ ErrorStatus mag_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 	// Normalize mag vector
 
 
-/*
-	// Remove offset
-	vectorf_substract(&data->_mag.vectorKFiltered, &data->_mag.offset, &data->_mag.currentMagReading);
-
-	// Get vector difference
-	vectorf_substract(&data->_mag.currentMagReading, &data->_mag.previousMagReading, &data->_mag.calcVector);
-	// Try to normalize vector
-	if(ERROR != vectorf_normalize(&data->_mag.calcVector))
-	{
-		// Calculate current magnitude
-		data->_mag.currentMagnitude = vectorf_getNorm(&data->_mag.currentMagReading);
-		// Calculate magnitude difference
-		temp = data->_mag.currentMagnitude - data->_mag.previousMagnitude;
-		// If magnitude difference larger than
-		if(0.005f < temp)
-		{
-			// Multiply by gain
-			temp = temp * data->_mag.magOffsetNullGain;
-			// Multiply current offset estimate vector
-			vectorf_scalarProduct(&data->_mag.calcVector, temp, &data->_mag.calcVector);
-			// Add to offset calculation
-			vectorf_add(&data->_mag.offset, &data->_mag.calcVector, &data->_mag.offset);
-		}
-
-	}
-
-	vectorf_normalizeAToB(&data->_mag.currentMagReading, &data->_mag.vector);
-*/
 
 	cos_pitch_sq = 1.0f-(data->_fusion_DCM.c.x * data->_fusion_DCM.c.x);
 	headY = data->_mag.vector.y * data->_fusion_DCM.c.z - data->_mag.vector.z * data->_fusion_DCM.c.y;

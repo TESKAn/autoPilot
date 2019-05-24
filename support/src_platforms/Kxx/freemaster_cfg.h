@@ -68,7 +68,7 @@
 #define FMSTR_REC_OWNBUFF       0   //! Use user-allocated rec. buffer (1=yes)
 
 //! Built-in recorder buffer (use when FMSTR_REC_OWNBUFF is 0)
-#define FMSTR_REC_BUFF_SIZE     1024    //!< Built-in buffer size
+#define FMSTR_REC_BUFF_SIZE     8192//1024    //!< Built-in buffer size
 
 //! Recorder time base, specifies how often the recorder is called in the user app.
 #define FMSTR_REC_TIMEBASE      FMSTR_REC_BASE_MILLISEC(0)  //!< 0 = "unknown"

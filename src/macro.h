@@ -64,7 +64,7 @@
 #define ADC_ENABLED				flag0.bits.BIT11
 #define SENSOR_TEST_STEP		flag0.bits.BIT12
 #define SYSTEM_RUNNING			flag0.bits.BIT13
-#define SPI_TEST_RX				flag0.bits.BIT14
+//#define SPI_TEST_RX				flag0.bits.BIT14
 
 #define SD_WRITE_LOG			flag0.bits.BIT15
 #define SD_LOG_ISOPEN			flag0.bits.BIT16

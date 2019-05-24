@@ -138,15 +138,6 @@ int main(void)
 	// Peripherals initialized, wait 1 sec
 	Delayms(100);
 
-	// Initialize external peripheral
-	//extPeripheralInit();
-
-	//Sensor_SPIInitAG();
-
-	// Calibrate I2C sensors
-	// Function has no function...
-	//calibrateI2CSensors();
-
 	MPU_COMM_ENABLED = 1;
 
 	SYSTEM_RUNNING = 1;
