@@ -176,6 +176,10 @@ typedef struct
 typedef struct
 {
 	Vectorf vector;
+	Vectorf vectorHistory[8];
+	Vectorf vectorAverage;
+	Vectorf accHistory[8];
+	Vectorf accTotal;
 	float32_t vectorNorm;
 	Vectorf vectorRaw;
 	Vectorf vectorKFiltered;
@@ -193,7 +197,7 @@ typedef struct
 	float32_t sensorTemperature;
 	Vectori16 offset;
 	uint8_t valid;
-	uint8_t nerabim;
+	uint8_t ui8CurrentHistory;
 }__attribute__((aligned(4),packed)) AccelerometerData, *PAccelerometerData;
 
 // Structure that holds data for gyro error calculations

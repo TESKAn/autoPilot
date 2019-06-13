@@ -135,6 +135,8 @@ void DMA1_Stream4_ISR_Handler(void)
   */
 void DMA1_Stream0_ISR_Handler(void)
 {
+	Vectorf vfTempVector;
+	float32_t f32Temp;
 	// Disable interrupts
 	DMA_ITConfig(DMA_SPI3_RX_STREAM, DMA_IT_TC | DMA_IT_DME | DMA_IT_FE, DISABLE);
 
@@ -219,7 +221,28 @@ void DMA1_Stream0_ISR_Handler(void)
 			// Also store normalized vector
 			vectorf_normalizeAToB(&fusionData._accelerometer.vector, &fusionData._accelerometer.vectorNormalized);
 			// Store time information
-			fusionData._accelerometer.deltaTime = (float32_t)SPI_SensorBufAcc.ui32InterruptDeltaTime * fusionData.PARAMETERS.systimeToSeconds;;
+			fusionData._accelerometer.deltaTime = (float32_t)SPI_SensorBufAcc.ui32InterruptDeltaTime * fusionData.PARAMETERS.systimeToSeconds;
+
+
+			// Calculate delta acc
+			// C = A - B
+			vectorf_substract(&fusionData._accelerometer.vectorHistory[fusionData._accelerometer.ui8CurrentHistory], &fusionData._accelerometer.vector, &vfTempVector);
+
+			// Increase address
+			fusionData._accelerometer.ui8CurrentHistory++;
+			fusionData._accelerometer.ui8CurrentHistory &= 0x07;
+
+			// Calculate new vector average
+			vectorf_substract(&fusionData._accelerometer.vectorAverage, &fusionData._accelerometer.vectorHistory[fusionData._accelerometer.ui8CurrentHistory], &fusionData._accelerometer.vectorAverage);
+			vectorf_add(&fusionData._accelerometer.vectorAverage, &fusionData._accelerometer.vector, &fusionData._accelerometer.vectorAverage);
+			// Calculate new acceleration average
+			vectorf_substract(&fusionData._accelerometer.accTotal, &fusionData._accelerometer.accHistory[fusionData._accelerometer.ui8CurrentHistory], &fusionData._accelerometer.accTotal);
+			vectorf_add(&fusionData._accelerometer.accTotal, &vfTempVector, &fusionData._accelerometer.accTotal);
+			// Store to history
+			vectorf_copy(&fusionData._accelerometer.vector, &fusionData._accelerometer.vectorHistory[fusionData._accelerometer.ui8CurrentHistory]);
+			//vectorf_copy( &vfTempVector, &fusionData._accelerometer.accTotal);
+
+			f32Temp = vectorf_getNorm(&fusionData._accelerometer.accTotal);
 
 			break;
 		}
