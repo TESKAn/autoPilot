@@ -180,6 +180,7 @@ typedef struct
 	Vectorf vectorAverage;
 	Vectorf accHistory[8];
 	Vectorf accTotal;
+	float32_t accTotalNorm;
 	float32_t vectorNorm;
 	Vectorf vectorRaw;
 	Vectorf vectorKFiltered;

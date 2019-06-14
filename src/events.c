@@ -240,9 +240,9 @@ void DMA1_Stream0_ISR_Handler(void)
 			vectorf_add(&fusionData._accelerometer.accTotal, &vfTempVector, &fusionData._accelerometer.accTotal);
 			// Store to history
 			vectorf_copy(&fusionData._accelerometer.vector, &fusionData._accelerometer.vectorHistory[fusionData._accelerometer.ui8CurrentHistory]);
-			//vectorf_copy( &vfTempVector, &fusionData._accelerometer.accTotal);
+			vectorf_copy( &vfTempVector, &fusionData._accelerometer.accTotal);
 
-			f32Temp = vectorf_getNorm(&fusionData._accelerometer.accTotal);
+			fusionData._accelerometer.accTotalNorm = vectorf_getNorm(&fusionData._accelerometer.accTotal);
 
 			break;
 		}
