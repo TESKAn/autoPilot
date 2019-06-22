@@ -17,9 +17,9 @@
 #//define MAG_DEFAULT_RATE					0.000917431192660550458715596330275f			// 1,3/2047 -> gauss, result is in gauss	0,00917431192660550458715596330275
 
 #define MAG_DEFAULT_RATE					0.00012207403790398876918851283303323f
-#define MAG_DEF_OFFSET_X					0.06422015f
-#define MAG_DEF_OFFSET_Y					-0.1655963f
-#define MAG_DEF_OFFSET_Z					0.07706425f
+#define MAG_DEF_OFFSET_X					-0.269852f
+#define MAG_DEF_OFFSET_Y					0.423706f
+#define MAG_DEF_OFFSET_Z					0.058639f
 
 // Init data structure
 ErrorStatus mag_initDataStructure(MagData *data, uint32_t time)
@@ -53,20 +53,20 @@ ErrorStatus mag_initDataStructure(MagData *data, uint32_t time)
 
 	// Setup offset and soft iron matrix
 
-	data->offset.x = 0.204285f;
-	data->offset.y = -0.338368f;
-	data->offset.z = 0.327841f;
+	data->offset.x = -0.269852f;
+	data->offset.y = 0.423706f;
+	data->offset.z = 0.058639f;
 
 
-	data->softIron.a.x = 1.022889f;
-	data->softIron.a.y = -0.006248f;
-	data->softIron.a.z = -0.005899f;
-	data->softIron.b.x = -0.006248f;
-	data->softIron.b.y = 1.000230f;
-	data->softIron.b.z = -0.005560f;
-	data->softIron.c.x = -0.005899f;
-	data->softIron.c.y = -0.005560f;
-	data->softIron.c.z = 1.133341f;
+	data->softIron.a.x = 2.695982f;
+	data->softIron.a.y = 0.557823f;
+	data->softIron.a.z = 0.225689f;
+	data->softIron.b.x = 0.557823f;
+	data->softIron.b.y = 3.457842f;
+	data->softIron.b.z = 0.044006f;
+	data->softIron.c.x = 0.225689f;
+	data->softIron.c.y = 0.044006f;
+	data->softIron.c.z = 3.599465f;
 
 
 	success = SUCCESS;

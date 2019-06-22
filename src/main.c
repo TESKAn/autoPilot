@@ -144,6 +144,8 @@ int main(void)
 
 	SPI_SensorBuf = &SPI_SensorBufAcc;
 
+	UART4_SEND_VECTOR = 1;
+
     while (1)
     {
     	// Check freemaster

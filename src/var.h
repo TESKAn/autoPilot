@@ -309,4 +309,8 @@ extern int16_t i16SPITestData;
 extern uint16_t ui16SPITestAddress;
 extern uint16_t ui16SPITestDevice;
 
+extern uint8_t ui8MagDataTransfer[13];
+extern uint8_t ui8MagDataTransferTime;
+extern uint8_t ui8ui8MagDataTransferCount;
+
 #endif /* VAR_H_ */

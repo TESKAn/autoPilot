@@ -195,3 +195,7 @@ uint32_t ui32SensorBuf[32];
 int16_t i16SPITestData = 0;
 uint16_t ui16SPITestAddress = 0;
 uint16_t ui16SPITestDevice = 1;
+
+uint8_t ui8MagDataTransfer[13];
+uint8_t ui8MagDataTransferTime = 0;
+uint8_t ui8ui8MagDataTransferCount = 0;

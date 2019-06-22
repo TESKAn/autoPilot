@@ -136,7 +136,6 @@ void DMA1_Stream4_ISR_Handler(void)
 void DMA1_Stream0_ISR_Handler(void)
 {
 	Vectorf vfTempVector;
-	float32_t f32Temp;
 	// Disable interrupts
 	DMA_ITConfig(DMA_SPI3_RX_STREAM, DMA_IT_TC | DMA_IT_DME | DMA_IT_FE, DISABLE);
 
@@ -266,7 +265,6 @@ void DMA1_Stream0_ISR_Handler(void)
 			// Multiply with soft iron matrix to correct distortions
 			matrix3_vectorMultiply(&fusionData._mag.softIron, &fusionData._mag.currentMagReading, &fusionData._mag.vector);
 			// Normalize mag vector
-
 
 			break;
 		}
@@ -825,6 +823,8 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 	//uint8_t retriesCount = 0;
 	//uint16_t ui16Temp;
 
+	T32BITVARS T32Temp;
+
 	//ErrorStatus error = SUCCESS;
 	if((TIM14->SR & TIM_FLAG_Update) != (u16)RESET)
 	{
@@ -937,6 +937,66 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 				LED_OK_TOGGLE;
 			}*/
 		}
+
+		ui8MagDataTransferTime++;
+		if(50 < ui8MagDataTransferTime)
+		{
+			ui8MagDataTransferTime = 0;
+			if(UART4_SEND_VECTOR)
+			{
+				ui8MagDataTransfer[0] = 0xfa;
+
+				/*
+				// Raw value
+				T32Temp.f = fusionData._mag.vectorKFiltered.x;
+				ui8MagDataTransfer[1] = T32Temp.ui8[0];
+				ui8MagDataTransfer[2] = T32Temp.ui8[1];
+				ui8MagDataTransfer[3] = T32Temp.ui8[2];
+				ui8MagDataTransfer[4] = T32Temp.ui8[3];
+
+				T32Temp.f = fusionData._mag.vectorKFiltered.y;
+				ui8MagDataTransfer[5] = T32Temp.ui8[0];
+				ui8MagDataTransfer[6] = T32Temp.ui8[1];
+				ui8MagDataTransfer[7] = T32Temp.ui8[2];
+				ui8MagDataTransfer[8] = T32Temp.ui8[3];
+
+				T32Temp.f = fusionData._mag.vectorKFiltered.z;
+				ui8MagDataTransfer[9] = T32Temp.ui8[0];
+				ui8MagDataTransfer[10] = T32Temp.ui8[1];
+				ui8MagDataTransfer[11] = T32Temp.ui8[2];
+				ui8MagDataTransfer[12] = T32Temp.ui8[3];
+				*/
+
+				// Adjusted value
+				T32Temp.f = fusionData._mag.vector.x;
+				ui8MagDataTransfer[1] = T32Temp.ui8[0];
+				ui8MagDataTransfer[2] = T32Temp.ui8[1];
+				ui8MagDataTransfer[3] = T32Temp.ui8[2];
+				ui8MagDataTransfer[4] = T32Temp.ui8[3];
+
+				T32Temp.f = fusionData._mag.vector.y;
+				ui8MagDataTransfer[5] = T32Temp.ui8[0];
+				ui8MagDataTransfer[6] = T32Temp.ui8[1];
+				ui8MagDataTransfer[7] = T32Temp.ui8[2];
+				ui8MagDataTransfer[8] = T32Temp.ui8[3];
+
+				T32Temp.f = fusionData._mag.vector.z;
+				ui8MagDataTransfer[9] = T32Temp.ui8[0];
+				ui8MagDataTransfer[10] = T32Temp.ui8[1];
+				ui8MagDataTransfer[11] = T32Temp.ui8[2];
+				ui8MagDataTransfer[12] = T32Temp.ui8[3];
+
+
+				ui8ui8MagDataTransferCount = 0;
+				// Clear interrupt
+				UART4->SR = UART4->SR & !USART_FLAG_TC;
+				// Enable TX empty interrupt
+				USART_ITConfig(UART4, USART_IT_TXE, ENABLE);
+				// Send data
+				//USART_SendData(UART4, 0xfa);
+			}
+		}
+
 		// Call fatfs timer
 		SD_TimerCount++;
 		if(SD_TimerCount >= 10)
@@ -1292,16 +1352,36 @@ void USART3_ISR_Handler(void)
 void UART4_ISR_Handler(void)
 {
 	int iData = 0;
+	uint32_t ui32Temp = UART4->SR;
+
 	if ((UART4->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
 	{
 		iData = USART_ReceiveData(UART4);
-		//GPS_ReceiveProcess((uint8_t)iData, getSystemTime());
-		//ubx_parser((uint8_t)iData);
+		if(0xaa == iData)
+		{
+			UART4_SEND_VECTOR = 1;
+		}
+		else
+		{
+			UART4_SEND_VECTOR = 0;
+		}
 	}
 
-	if((UART4->SR & USART_FLAG_TC) != (u16)RESET)	//if transfer complete
+	if((UART4->SR & USART_FLAG_TXE) != (u16)RESET)	//if transfer complete
 	{
 		UART4->SR = UART4->SR & !USART_FLAG_TC;
+
+
+		if(13 > ui8ui8MagDataTransferCount)
+		{
+			// Send data
+			USART_SendData(UART4, ui8MagDataTransfer[ui8ui8MagDataTransferCount]);
+			ui8ui8MagDataTransferCount++;
+		}
+		else
+		{
+			USART_ITConfig(UART4, USART_IT_TXE, DISABLE);
+		}
 	}
 }
 

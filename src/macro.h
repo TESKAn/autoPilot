@@ -94,7 +94,7 @@
 #define COMM_SEND_DATA			flag1.bits.BIT6
 #define SPI_INC_ADDRESS_READ	flag1.bits.BIT7
 #define SPI_INC_ADDRESS_WRITE	flag1.bits.BIT8
-
+#define UART4_SEND_VECTOR		flag1.bits.BIT9
 // Clear flag1 FPU exceptions
 #define CLEAR_FPU_EXCEPTIONS	flag1.flag.flag = flag1.flag.flag & 0xFFFFFFC3
 

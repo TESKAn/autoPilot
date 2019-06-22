@@ -890,7 +890,7 @@ void init_UART4()
 	//set pin mode to alternate function
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
 	//set pin speed
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;
 	//write mode to selected pins and selected port
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
@@ -912,6 +912,7 @@ void init_UART4()
 
 	//enable interrupt - RX not empty, transfer complete
 	USART_ITConfig(UART4, USART_IT_RXNE, ENABLE);
+	USART_ITConfig(UART4, USART_IT_TXE, DISABLE);
 
 	//enable module 4
 	USART_Cmd(UART4, ENABLE);
@@ -1547,6 +1548,17 @@ void NVIC_EnableInterrupts(FunctionalState newState)
 	//init USART3 interrupt
 	//set IRQ channel
 	NVCInitStructure.NVIC_IRQChannel = USART3_IRQn;
+	//set priority 0 - 15
+	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 13;
+	//set priority 0 - 15
+	NVCInitStructure.NVIC_IRQChannelSubPriority = 0;
+	//enable IRQ channel
+	NVCInitStructure.NVIC_IRQChannelCmd = newState;
+	NVIC_Init(&NVCInitStructure);
+
+	//init USART4 interrupt
+	//set IRQ channel
+	NVCInitStructure.NVIC_IRQChannel = UART4_IRQn;
 	//set priority 0 - 15
 	NVCInitStructure.NVIC_IRQChannelPreemptionPriority = 13;
 	//set priority 0 - 15
