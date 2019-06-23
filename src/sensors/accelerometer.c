@@ -35,6 +35,9 @@ ErrorStatus acc_initDataStructure(AccelerometerData *data, uint32_t time)
 	data->accRate = ACC_DEFAULT_RATE;
 	data->sensorTemperature = 0;
 	data->valid = 1;
+
+	data->f32MinChange = 0.0005f;
+
 	status = SUCCESS;
 
 	// Init offsets

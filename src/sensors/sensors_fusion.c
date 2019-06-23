@@ -342,6 +342,14 @@ ErrorStatus fusion_generateUpdateMatrix(Vectorf * omega, Matrixf * updateMatrix,
 }
 
 // Function uses sensor data to calculate error in DCM estimation
+ErrorStatus fusion_updateGyroErrorAccel(FUSION_CORE *data, float32_t f32DeltaTime)
+{
+	ErrorStatus status = SUCCESS;
+
+	return status;
+}
+
+// Function uses sensor data to calculate error in DCM estimation
 ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 {
 	ErrorStatus status;

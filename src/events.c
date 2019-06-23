@@ -136,6 +136,7 @@ void DMA1_Stream4_ISR_Handler(void)
 void DMA1_Stream0_ISR_Handler(void)
 {
 	Vectorf vfTempVector;
+	float32_t fTemp;
 	// Disable interrupts
 	DMA_ITConfig(DMA_SPI3_RX_STREAM, DMA_IT_TC | DMA_IT_DME | DMA_IT_FE, DISABLE);
 
@@ -188,6 +189,9 @@ void DMA1_Stream0_ISR_Handler(void)
 			A_G_CS_1;
 
 			// Update accelerometer reading
+
+			// Store previous vector
+			vectorf_copy(&fusionData._accelerometer.vector, &fusionData._accelerometer.vector_m);
 			// Store raw data, multiply with - to get gravity - acceleration
 			fusionData._accelerometer.vectorRaw.x = (float32_t)SPI_SensorBufAcc.DATA.ACC.i16XOut * -fusionData._accelerometer.accRate;
 			fusionData._accelerometer.vectorRaw.y = (float32_t)SPI_SensorBufAcc.DATA.ACC.i16YOut * -fusionData._accelerometer.accRate;
@@ -223,6 +227,7 @@ void DMA1_Stream0_ISR_Handler(void)
 			fusionData._accelerometer.deltaTime = (float32_t)SPI_SensorBufAcc.ui32InterruptDeltaTime * fusionData.PARAMETERS.systimeToSeconds;
 
 
+			// Use accelerometer to determine orientation -> acceleration history is 0
 			// Calculate delta acc
 			// C = A - B
 			vectorf_substract(&fusionData._accelerometer.vectorHistory[fusionData._accelerometer.ui8CurrentHistory], &fusionData._accelerometer.vector, &vfTempVector);
@@ -242,6 +247,25 @@ void DMA1_Stream0_ISR_Handler(void)
 			vectorf_copy( &vfTempVector, &fusionData._accelerometer.accTotal);
 
 			fusionData._accelerometer.accTotalNorm = vectorf_getNorm(&fusionData._accelerometer.accTotal);
+
+
+
+			// Use accelerometer data to determine no rotation -> gyro should be 0
+			vectorf_crossProduct(&fusionData._accelerometer.vector, &fusionData._accelerometer.vector_m, &vfTempVector);
+			fusionData._accelerometer.f32VectorDiff = vectorf_getNorm(&vfTempVector);
+
+			if(fusionData._accelerometer.f32MinChange > fusionData._accelerometer.accTotalNorm)
+			{
+				// Gyro error is current gyro reading * some value
+				vectorf_scalarProduct(&fusionData._gyro.vector, fusionData._gyro.errorScale, &vfTempVector);
+
+				vectorf_copy(&vfTempVector, &fusionData._gyro.gyroError);
+
+				math_PID3(&vfTempVector, fusionData._gyro.fDeltaTime, &fusionData._gyroErrorPID);
+			}
+
+
+
 
 			break;
 		}

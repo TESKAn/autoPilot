@@ -29,15 +29,15 @@ ErrorStatus gyro_initDataStructure(GyroData *data, uint32_t time)
 	data->scale = vectorf_init(1);
 
 	// How much to scale rotation error
-	data->errorScale = 0.1;
+	data->errorScale = 0.01;
 
 	data->vector = vectorf_init(0);
 
 	data->vectorRaw = vectorf_init(0);
 
-	data->offsets.x = 0.01805281f;
-	data->offsets.y = 0.016643153f;
-	data->offsets.z = -0.034478845f;
+	data->offsets.x = 0.007f;
+	data->offsets.y = 0.011f;
+	data->offsets.z = -0.021f;
 	// gyro rate in radians
 	data->gyroRate = GYRO_DEFAULT_RATE;
 	data->gyroRateXP = GYRO_DEFAULT_RATE;

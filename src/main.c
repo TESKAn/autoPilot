@@ -142,6 +142,9 @@ int main(void)
 
 	SYSTEM_RUNNING = 1;
 
+	// Mark do initial calibration
+	INITIAL_OFFSET_CAL = 0;
+
 	SPI_SensorBuf = &SPI_SensorBufAcc;
 
 	UART4_SEND_VECTOR = 1;
@@ -159,6 +162,20 @@ int main(void)
 
     	// Check main loop
     	CheckMainLoopStates();
+
+    	if(INITIAL_OFFSET_CAL)
+    	{
+    		// If 100 ms elapsed
+    		if(1000000 < getSystemTime())
+    		{
+    			// Calibrate gyro offsets
+    			math_PIDSet(&fusionData._gyroErrorPID.x, fusionData._gyro.vectorRaw.x);
+    			math_PIDSet(&fusionData._gyroErrorPID.y, fusionData._gyro.vectorRaw.y);
+    			math_PIDSet(&fusionData._gyroErrorPID.z, fusionData._gyro.vectorRaw.z);
+
+    			INITIAL_OFFSET_CAL = 0;
+    		}
+    	}
 
         // Check log write buffers
         if(SD_WRITING_BUF1)

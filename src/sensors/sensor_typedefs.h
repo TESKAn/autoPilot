@@ -176,12 +176,15 @@ typedef struct
 typedef struct
 {
 	Vectorf vector;
+	Vectorf vector_m;
 	Vectorf vectorHistory[8];
 	Vectorf vectorAverage;
 	Vectorf accHistory[8];
 	Vectorf accTotal;
 	float32_t accTotalNorm;
 	float32_t vectorNorm;
+	float32_t f32VectorDiff;
+	float32_t f32MinChange;
 	Vectorf vectorRaw;
 	Vectorf vectorKFiltered;
 	Vectorf vectorNormalized;
