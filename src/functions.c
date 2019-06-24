@@ -247,6 +247,12 @@ int16_t CheckMainLoopStates()
 			mainLoopState = 0;
 			break;
 		}
+		case 27:
+		{
+			matrix3_init(1, &fusionData._fusion_DCM);
+			mainLoopState = 0;
+			break;
+		}
 		default:
 		{
 			mainLoopState = 0;

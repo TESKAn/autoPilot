@@ -95,9 +95,7 @@ typedef struct
 	float32_t errorScale;
 	// Kalman filter data
 	KALMAN3 kFilter;
-	// Error
-	Vectorf gyroError;
-	Vectorf gyroGainError;
+	//Vectorf gyroGainError;
 	Vectori16 offset;
 	Vectorf offsets;
 	uint32_t dataTime;
@@ -177,13 +175,15 @@ typedef struct
 {
 	Vectorf vector;
 	Vectorf vector_m;
+	Vectorf vector_earth;
+	Vectorf vectorNorm_earth;
+	float32_t vectorNorm;
 	Vectorf vectorHistory[8];
 	Vectorf vectorAverage;
 	Vectorf accHistory[8];
 	Vectorf accTotal;
 	float32_t accTotalNorm;
-	float32_t vectorNorm;
-	float32_t f32VectorDiff;
+	float32_t f32VectorAvgDiff;
 	float32_t f32MinChange;
 	Vectorf vectorRaw;
 	Vectorf vectorKFiltered;
@@ -216,6 +216,12 @@ typedef struct
 	Vectorf AccelerometerData;
 	Vectorf MagData;
 	Vectorf GyroData;
+	// Errors
+	Vectorf AccError;
+	Vectorf GyroError;
+	Vectorf MagError;
+	Vectorf GPSError;
+	Vectorf BaroError;
 	// Vectors that hold earth axes as seen from plane
 	Vectorf DCMNorth;
 	Vectorf DCMEast;
@@ -320,7 +326,6 @@ typedef struct
 	// PIDs
 	myMath_PID3 _gyroErrorPID;
 
-	myMath_PID3 _gyroGainPID;
 	// Counter for error PID
 	uint32_t _gyroErrorUpdateCount;
 	uint32_t _gyroIErrorUpdateCount;

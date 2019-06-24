@@ -136,7 +136,7 @@ void DMA1_Stream4_ISR_Handler(void)
 void DMA1_Stream0_ISR_Handler(void)
 {
 	Vectorf vfTempVector;
-	float32_t fTemp;
+	//float32_t fTemp;
 	// Disable interrupts
 	DMA_ITConfig(DMA_SPI3_RX_STREAM, DMA_IT_TC | DMA_IT_DME | DMA_IT_FE, DISABLE);
 
@@ -223,10 +223,13 @@ void DMA1_Stream0_ISR_Handler(void)
 
 			// Also store normalized vector
 			vectorf_normalizeAToB(&fusionData._accelerometer.vector, &fusionData._accelerometer.vectorNormalized);
+			// Store vector length
+			fusionData._accelerometer.vectorNorm = vectorf_getNorm(&fusionData._accelerometer.vector);
 			// Store time information
 			fusionData._accelerometer.deltaTime = (float32_t)SPI_SensorBufAcc.ui32InterruptDeltaTime * fusionData.PARAMETERS.systimeToSeconds;
 
 
+			//*****************************
 			// Use accelerometer to determine orientation -> acceleration history is 0
 			// Calculate delta acc
 			// C = A - B
@@ -249,23 +252,49 @@ void DMA1_Stream0_ISR_Handler(void)
 			fusionData._accelerometer.accTotalNorm = vectorf_getNorm(&fusionData._accelerometer.accTotal);
 
 
+			// Store DCM estimation of acc reading
+			vectorf_copy(&fusionData._fusion_DCM.c, &fusionData._gyroError.DCMDown);
 
-			// Use accelerometer data to determine no rotation -> gyro should be 0
-			vectorf_crossProduct(&fusionData._accelerometer.vector, &fusionData._accelerometer.vector_m, &vfTempVector);
-			fusionData._accelerometer.f32VectorDiff = vectorf_getNorm(&vfTempVector);
+			fusionData._gyroError.DCMDown.x = -fusionData._gyroError.DCMDown.x;
+			fusionData._gyroError.DCMDown.y = -fusionData._gyroError.DCMDown.y;
+			fusionData._gyroError.DCMDown.z = -fusionData._gyroError.DCMDown.z;
 
-			if(fusionData._accelerometer.f32MinChange > fusionData._accelerometer.accTotalNorm)
+			// Transform gravity to earth coordinates
+			matrix3_transposeVectorMultiply(&fusionData._fusion_DCM, &fusionData._accelerometer.vector, &fusionData._accelerometer.vector_earth);
+
+			vectorf_normalizeAToB(&fusionData._accelerometer.vector_earth, &fusionData._accelerometer.vectorNorm_earth);
+
+
+			// Calculate gravity error
+			if((0.98f < fusionData._accelerometer.vectorNorm)&&(1.02 > fusionData._accelerometer.vectorNorm))
 			{
-				// Gyro error is current gyro reading * some value
-				vectorf_scalarProduct(&fusionData._gyro.vector, fusionData._gyro.errorScale, &vfTempVector);
-
-				vectorf_copy(&vfTempVector, &fusionData._gyro.gyroError);
-
-				math_PID3(&vfTempVector, fusionData._gyro.fDeltaTime, &fusionData._gyroErrorPID);
+				vfTempVector.x = 0;
+				vfTempVector.y = 0;
+				vfTempVector.z = 1;
+				vectorf_crossProduct(&vfTempVector, &fusionData._accelerometer.vectorNorm_earth, &fusionData._gyroError.AccError);
+				//vectorf_scalarProduct(&fusionData._gyroError.AccError, 0.1f);
+			}
+			else
+			{
+				fusionData._gyroError.AccError.x = 0.0f;
+				fusionData._gyroError.AccError.y = 0.0f;
+				fusionData._gyroError.AccError.z = 0.0f;
 			}
 
 
 
+			// Use accelerometer data to determine no rotation -> gyro should be 0
+			vectorf_crossProduct(&fusionData._accelerometer.vector, &fusionData._accelerometer.vector_m, &vfTempVector);
+			fusionData._accelerometer.f32VectorAvgDiff += vectorf_getNorm(&vfTempVector);
+			fusionData._accelerometer.f32VectorAvgDiff *= 0.5f;
+
+			// If average acc change is below limit (= no rotation), adjust gyro offset towards zero.
+			if(fusionData._accelerometer.f32MinChange > fusionData._accelerometer.f32VectorAvgDiff)
+			{
+				// Gyro error is current gyro reading * some value
+				vectorf_scalarProduct(&fusionData._gyro.vector, fusionData._gyro.errorScale, &fusionData._gyroError.GyroError);
+				math_PID3(&fusionData._gyroError.GyroError, fusionData._gyro.fDeltaTime, &fusionData._gyroErrorPID);
+			}
 
 			break;
 		}
@@ -1376,7 +1405,6 @@ void USART3_ISR_Handler(void)
 void UART4_ISR_Handler(void)
 {
 	int iData = 0;
-	uint32_t ui32Temp = UART4->SR;
 
 	if ((UART4->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
 	{

@@ -79,13 +79,6 @@ ErrorStatus fusion_init(FUSION_CORE *data, uint32_t time)
 	math_PIDInit(&data->_gyroErrorPID.y, GYRO_PID_DRIFT_KP, GYRO_PID_DRIFT_KI, GYRO_PID_DRIFT_KD, GYRO_PID_DRIFT_SMIN, GYRO_PID_DRIFT_SMAX);
 	math_PIDInit(&data->_gyroErrorPID.z, GYRO_PID_DRIFT_KP, GYRO_PID_DRIFT_KI, GYRO_PID_DRIFT_KD, GYRO_PID_DRIFT_SMIN, GYRO_PID_DRIFT_SMAX);
 
-	// Gyro gain
-	math_PIDInit(&data->_gyroGainPID.x, GYRO_PID_GAIN_KP, GYRO_PID_GAIN_KI, GYRO_PID_GAIN_KD, GYRO_PID_GAIN_SMIN, GYRO_PID_GAIN_SMAX);
-	math_PIDInit(&data->_gyroGainPID.y, GYRO_PID_GAIN_KP, GYRO_PID_GAIN_KI, GYRO_PID_GAIN_KD, GYRO_PID_GAIN_SMIN, GYRO_PID_GAIN_SMAX);
-	math_PIDInit(&data->_gyroGainPID.z, GYRO_PID_GAIN_KP, GYRO_PID_GAIN_KI, GYRO_PID_GAIN_KD, GYRO_PID_GAIN_SMIN, GYRO_PID_GAIN_SMAX);
-
-
-
 	// Create identity matrix
 	matrix3_init(1, &data->_fusion_DCM);
 
@@ -102,11 +95,6 @@ ErrorStatus fusion_init(FUSION_CORE *data, uint32_t time)
 	data->PARAMETERS.gyroErrorUpdateInterval = GYRO_ERROR_UPDATE_INTERVAL;
 	data->PARAMETERS.gyroIErrorUpdateInterval = GYRO_I_UPDATE_INTERVAL;
 
-
-	// Set PID for first run
-	fusion_initGyroDriftPID(&fusionData);
-	fusion_initGyroGainPID(&fusionData);
-
 	// Mark wait for valid sensor signals
 	data->sFlag.bits.SFLAG_DO_DCM_UPDATE = 0;
 	// Store initial time
@@ -115,34 +103,9 @@ ErrorStatus fusion_init(FUSION_CORE *data, uint32_t time)
 	return SUCCESS;
 }
 
-ErrorStatus fusion_initGyroDriftPID(FUSION_CORE *data)
-{
-	// Set initial PID values
-	math_PIDSet(&data->_gyroErrorPID.x, 0.045f);
-	math_PIDSet(&data->_gyroErrorPID.y, -0.009f);
-	math_PIDSet(&data->_gyroErrorPID.z, 0.017f);
-
-	return SUCCESS;
-}
-
-ErrorStatus fusion_initGyroGainPID(FUSION_CORE *data)
-{
-	// Init default I value
-	data->_gyroGainPID.x.im = 0.030517578125f / data->_gyroGainPID.x.Ki;
-	data->_gyroGainPID.y.im = 0.030517578125f / data->_gyroGainPID.y.Ki;
-	data->_gyroGainPID.z.im = 0.030517578125f / data->_gyroGainPID.z.Ki;
-
-	// And default output
-	data->_gyroGainPID.x.s = 0.030517578125f;
-	data->_gyroGainPID.y.s = 0.030517578125f;
-	data->_gyroGainPID.z.s = 0.030517578125f;
-
-	return SUCCESS;
-}
-
 ErrorStatus fusion_dataUpdate(FUSION_CORE *data, float32_t f32DeltaTime)
 {
-
+	Vectorf updateVector;
 	ErrorStatus status = SUCCESS;
 	Matrixf newMatrix;
 	float32_t a = 0;
@@ -157,20 +120,27 @@ ErrorStatus fusion_dataUpdate(FUSION_CORE *data, float32_t f32DeltaTime)
 		// Calculate delta time
 		data->integrationTime = f32DeltaTime;
 
+		//fusionData._gyroError.AccError
+
+		updateVector.x = data->_gyro.vector.x + data->_gyroError.AccError.x;
+		updateVector.y = data->_gyro.vector.y + data->_gyroError.AccError.y;
+		updateVector.z = data->_gyro.vector.z + data->_gyroError.AccError.z;
+
+
 		// Calculate current rotation angle
 		// Part 1
 		// Is gyro value * delta time in seconds
 		// Populate elements of matrix
 		data->_fusion_update.a.x = 1.0f;
-		data->_fusion_update.a.y = -(data->_gyro.vector.z * f32DeltaTime);
-		data->_fusion_update.a.z = data->_gyro.vector.y * f32DeltaTime;
+		data->_fusion_update.a.y = -(updateVector.z * f32DeltaTime);
+		data->_fusion_update.a.z = updateVector.y * f32DeltaTime;
 
-		data->_fusion_update.b.x = data->_gyro.vector.z * f32DeltaTime;
+		data->_fusion_update.b.x = updateVector.z * f32DeltaTime;
 		data->_fusion_update.b.y = 1.0f;
-		data->_fusion_update.b.z = -(data->_gyro.vector.x * f32DeltaTime);
+		data->_fusion_update.b.z = -(updateVector.x * f32DeltaTime);
 
-		data->_fusion_update.c.x = -(data->_gyro.vector.y * f32DeltaTime);
-		data->_fusion_update.c.y = data->_gyro.vector.x * f32DeltaTime;
+		data->_fusion_update.c.x = -(updateVector.y * f32DeltaTime);
+		data->_fusion_update.c.y = updateVector.x * f32DeltaTime;
 		data->_fusion_update.c.z = 1.0f;
 
 		// Calculate resulting matrix by multiplying matrices A and B
@@ -341,13 +311,7 @@ ErrorStatus fusion_generateUpdateMatrix(Vectorf * omega, Matrixf * updateMatrix,
 	return status;
 }
 
-// Function uses sensor data to calculate error in DCM estimation
-ErrorStatus fusion_updateGyroErrorAccel(FUSION_CORE *data, float32_t f32DeltaTime)
-{
-	ErrorStatus status = SUCCESS;
 
-	return status;
-}
 
 // Function uses sensor data to calculate error in DCM estimation
 ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
@@ -465,7 +429,7 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 					// Scale error
 					//vectorf_scalarProduct(&error, data->_gyro.errorScale, &error);
 					// Store errors
-					vectorf_copy(&error, &data->_gyro.gyroError);
+					//vectorf_copy(&error, &data->_gyro.gyroError);
 
 					// Update PID
 					status = math_PID3(&error, dt, &data->_gyroErrorPID);
@@ -480,9 +444,10 @@ ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
 	}
 	else
 	{
+		/*
 		data->_gyro.gyroError.x = 0.0f;
 		data->_gyro.gyroError.y = 0.0f;
-		data->_gyro.gyroError.z = 0.0f;
+		data->_gyro.gyroError.z = 0.0f;*/
 		// Update PID
 		//status = math_PID3(&data->_gyro.gyroError, 0.01f, &data->_gyroErrorPID);
 	}
