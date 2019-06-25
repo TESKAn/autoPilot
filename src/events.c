@@ -272,7 +272,11 @@ void DMA1_Stream0_ISR_Handler(void)
 				vfTempVector.y = 0;
 				vfTempVector.z = 1;
 				vectorf_crossProduct(&vfTempVector, &fusionData._accelerometer.vectorNorm_earth, &fusionData._gyroError.AccError);
-				//vectorf_scalarProduct(&fusionData._gyroError.AccError, 0.1f);
+
+				// Transform to plane coordinates
+				matrix3_vectorMultiply(&fusionData._fusion_DCM, &fusionData._gyroError.AccError, &fusionData._gyroError.AccError);
+
+				vectorf_scalarProduct(&fusionData._gyroError.AccError, 0.1f, &fusionData._gyroError.AccError);
 			}
 			else
 			{
