@@ -96,6 +96,8 @@
 #define SPI_INC_ADDRESS_WRITE	flag1.bits.BIT8
 #define UART4_SEND_VECTOR		flag1.bits.BIT9
 #define INITIAL_OFFSET_CAL		flag1.bits.BIT10
+#define UART4_SEND_VECTOR_ADJ	flag1.bits.BIT11
+#define MAG_ERROR_OK			flag1.bits.BIT12
 
 
 // Clear flag1 FPU exceptions

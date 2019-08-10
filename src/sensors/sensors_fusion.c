@@ -127,6 +127,15 @@ ErrorStatus fusion_dataUpdate(FUSION_CORE *data, float32_t f32DeltaTime)
 		updateVector.z = data->_gyro.vector.z + data->_gyroError.AccError.z;
 
 
+		//if(MAG_ERROR_OK)
+		{
+			// Add mag error
+			updateVector.x += data->_gyroError.MagError.x;
+			updateVector.y += data->_gyroError.MagError.y;
+			updateVector.z += data->_gyroError.MagError.z;
+		}
+
+
 		// Calculate current rotation angle
 		// Part 1
 		// Is gyro value * delta time in seconds

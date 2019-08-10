@@ -14,7 +14,7 @@
 #include "gyro.h"
 
 
-#define GYRO_DEFAULT_RATE					0.0152587890625f//0.030517578125f			// 500/32768 -> deg/sec
+#define GYRO_DEFAULT_RATE					0.0177772//0.030517578125f			// 500/32768 -> deg/sec
 #define GYRO_DEG_TO_RAD						0.017453292519f			// 1 deg/sec is this in rad/sec
 #define GYRO_RAD_TO_DEG						57.295779513082f		// 1 rad/sec is this in deg/sec
 
@@ -26,10 +26,9 @@ ErrorStatus gyro_initDataStructure(GyroData *data, uint32_t time)
 
 	data->offset = vectori16_init(0);
 
-	data->scale = vectorf_init(1);
-
-	// How much to scale rotation error
-	data->errorScale = 0.01;
+	data->vfGyroScale.x = GYRO_DEFAULT_RATE;
+	data->vfGyroScale.y = -GYRO_DEFAULT_RATE;
+	data->vfGyroScale.z = GYRO_DEFAULT_RATE;
 
 	data->vector = vectorf_init(0);
 
@@ -38,14 +37,7 @@ ErrorStatus gyro_initDataStructure(GyroData *data, uint32_t time)
 	data->offsets.x = 0.007f;
 	data->offsets.y = 0.011f;
 	data->offsets.z = -0.021f;
-	// gyro rate in radians
-	data->gyroRate = GYRO_DEFAULT_RATE;
-	data->gyroRateXP = GYRO_DEFAULT_RATE;
-	data->gyroRateXN = GYRO_DEFAULT_RATE;
-	data->gyroRateYP = GYRO_DEFAULT_RATE;
-	data->gyroRateYN = GYRO_DEFAULT_RATE;
-	data->gyroRateZP = GYRO_DEFAULT_RATE;
-	data->gyroRateZN = GYRO_DEFAULT_RATE;
+
 	data->sensorTemperature = 0;
 	data->valid = 1;
 
@@ -90,6 +82,7 @@ ErrorStatus gyro_update(FUSION_CORE *data, int16_t *rawData, uint32_t deltaTime)
 
 	vectorf_copy(&data->_gyro.vectorRaw, &data->_gyro.vector);
 */
+	/*
 	data->_gyro.vectorRaw.x = (float32_t)rawData[0] * data->_gyro.gyroRateXP * GYRO_DEG_TO_RAD;
 	data->_gyro.vector.x = data->_gyro.vectorRaw.x - data->_gyroErrorPID.x.s;
 
@@ -98,7 +91,7 @@ ErrorStatus gyro_update(FUSION_CORE *data, int16_t *rawData, uint32_t deltaTime)
 
 	data->_gyro.vectorRaw.z = (float32_t)rawData[2] * data->_gyro.gyroRateZP * GYRO_DEG_TO_RAD;
 	data->_gyro.vector.z = data->_gyro.vectorRaw.z - data->_gyroErrorPID.z.s;
-
+*/
 	//data->_gyro.dataTime = dataTime;
 	data->_gyro.deltaTime = deltaTime;
 

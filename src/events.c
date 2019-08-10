@@ -158,15 +158,14 @@ void DMA1_Stream0_ISR_Handler(void)
 			// Update gyro data
 			// Convert to rad/sec
 
-			fusionData._gyro.vectorRaw.x = (float32_t)SPI_SensorBufGyro.DATA.GYRO.i16XOut * fusionData._gyro.gyroRateXP * GYRO_DEG_TO_RAD;
+			fusionData._gyro.vectorRaw.x = (float32_t)SPI_SensorBufGyro.DATA.GYRO.i16XOut * fusionData._gyro.vfGyroScale.x * GYRO_DEG_TO_RAD;
 			fusionData._gyro.vector.x = fusionData._gyro.vectorRaw.x - fusionData._gyroErrorPID.x.s;
 
-			fusionData._gyro.vectorRaw.y = (float32_t)SPI_SensorBufGyro.DATA.GYRO.i16YOut * fusionData._gyro.gyroRateYP * GYRO_DEG_TO_RAD;
+			fusionData._gyro.vectorRaw.y = (float32_t)SPI_SensorBufGyro.DATA.GYRO.i16YOut * fusionData._gyro.vfGyroScale.y * GYRO_DEG_TO_RAD;
 			fusionData._gyro.vector.y = fusionData._gyro.vectorRaw.y - fusionData._gyroErrorPID.y.s;
 
-			fusionData._gyro.vectorRaw.z = (float32_t)SPI_SensorBufGyro.DATA.GYRO.i16ZOut * fusionData._gyro.gyroRateZP * GYRO_DEG_TO_RAD;
+			fusionData._gyro.vectorRaw.z = (float32_t)SPI_SensorBufGyro.DATA.GYRO.i16ZOut * fusionData._gyro.vfGyroScale.z * GYRO_DEG_TO_RAD;
 			fusionData._gyro.vector.z = fusionData._gyro.vectorRaw.z - fusionData._gyroErrorPID.z.s;
-
 
 			// Time from last sample
 			fusionData._gyro.fDeltaTime = (float32_t)SPI_SensorBufGyro.ui32InterruptDeltaTime * fusionData.PARAMETERS.systimeToSeconds;
@@ -193,12 +192,12 @@ void DMA1_Stream0_ISR_Handler(void)
 			// Store previous vector
 			vectorf_copy(&fusionData._accelerometer.vector, &fusionData._accelerometer.vector_m);
 			// Store raw data, multiply with - to get gravity - acceleration
-			fusionData._accelerometer.vectorRaw.x = (float32_t)SPI_SensorBufAcc.DATA.ACC.i16XOut * -fusionData._accelerometer.accRate;
-			fusionData._accelerometer.vectorRaw.y = (float32_t)SPI_SensorBufAcc.DATA.ACC.i16YOut * -fusionData._accelerometer.accRate;
-			fusionData._accelerometer.vectorRaw.z = (float32_t)SPI_SensorBufAcc.DATA.ACC.i16ZOut * -fusionData._accelerometer.accRate;
+			fusionData._accelerometer.vectorRaw.x = (float32_t)SPI_SensorBufAcc.DATA.ACC.i16XOut * -fusionData._accelerometer.vfAccRate.x;
+			fusionData._accelerometer.vectorRaw.y = (float32_t)SPI_SensorBufAcc.DATA.ACC.i16YOut * -fusionData._accelerometer.vfAccRate.y;
+			fusionData._accelerometer.vectorRaw.z = (float32_t)SPI_SensorBufAcc.DATA.ACC.i16ZOut * -fusionData._accelerometer.vfAccRate.z;
 
 
-
+/*
 			// Filter
 			fusionData._accelerometer.filterAccum.x += fusionData._accelerometer.vectorRaw.x;
 			fusionData._accelerometer.vectorKFiltered.x = fusionData._accelerometer.filterAccum.x / 5.0f;
@@ -211,11 +210,12 @@ void DMA1_Stream0_ISR_Handler(void)
 			fusionData._accelerometer.filterAccum.z += fusionData._accelerometer.vectorRaw.z;
 			fusionData._accelerometer.vectorKFiltered.z = fusionData._accelerometer.filterAccum.z / 5.0f;
 			fusionData._accelerometer.filterAccum.z -= fusionData._accelerometer.vectorKFiltered.z;
-
+*/
 			// Remove offset
-			vectorf_add(&fusionData._accelerometer.vectorKFiltered, &fusionData._accelerometer.offsets, &fusionData._accelerometer.vector);
+			vectorf_add(&fusionData._accelerometer.vectorRaw, &fusionData._accelerometer.offsets, &fusionData._accelerometer.vector);
 
 			// Use gain correction on outputs?
+
 			fusionData._accelerometer.vector.x *= fusionData._accelerometer.gains.x;
 			fusionData._accelerometer.vector.y *= fusionData._accelerometer.gains.y;
 			fusionData._accelerometer.vector.z *= fusionData._accelerometer.gains.z;
@@ -276,7 +276,7 @@ void DMA1_Stream0_ISR_Handler(void)
 				// Transform to plane coordinates
 				matrix3_vectorMultiply(&fusionData._fusion_DCM, &fusionData._gyroError.AccError, &fusionData._gyroError.AccError);
 
-				vectorf_scalarProduct(&fusionData._gyroError.AccError, 0.1f, &fusionData._gyroError.AccError);
+				vectorf_scalarProduct(&fusionData._gyroError.AccError, fusionData._gyroError.f32AccErrorScale, &fusionData._gyroError.AccError);
 			}
 			else
 			{
@@ -296,7 +296,7 @@ void DMA1_Stream0_ISR_Handler(void)
 			if(fusionData._accelerometer.f32MinChange > fusionData._accelerometer.f32VectorAvgDiff)
 			{
 				// Gyro error is current gyro reading * some value
-				vectorf_scalarProduct(&fusionData._gyro.vector, fusionData._gyro.errorScale, &fusionData._gyroError.GyroError);
+				vectorf_scalarProduct(&fusionData._gyro.vector, fusionData._gyroError.f32GyroErrorScale, &fusionData._gyroError.GyroError);
 				math_PID3(&fusionData._gyroError.GyroError, fusionData._gyro.fDeltaTime, &fusionData._gyroErrorPID);
 			}
 
@@ -307,9 +307,9 @@ void DMA1_Stream0_ISR_Handler(void)
 			MAG_CS_1;
 
 			// Update current reading
-			fusionData._mag.vectorRaw.x = (float32_t)SPI_SensorBufMag.DATA.MAG.i16XOut * fusionData._mag.magRate;
-			fusionData._mag.vectorRaw.y = (float32_t)SPI_SensorBufMag.DATA.MAG.i16YOut * fusionData._mag.magRate;
-			fusionData._mag.vectorRaw.z = (float32_t)SPI_SensorBufMag.DATA.MAG.i16ZOut * fusionData._mag.magRate;
+			fusionData._mag.vectorRaw.x = (float32_t)SPI_SensorBufMag.DATA.MAG.i16XOut * fusionData._mag.vfMagRate.x;
+			fusionData._mag.vectorRaw.y = (float32_t)SPI_SensorBufMag.DATA.MAG.i16YOut * fusionData._mag.vfMagRate.y;
+			fusionData._mag.vectorRaw.z = (float32_t)SPI_SensorBufMag.DATA.MAG.i16ZOut * fusionData._mag.vfMagRate.z;
 
 			//Filter
 			fusionData._mag.vectorKFiltered.x = Kalman_Update(&fusionData._mag.kFilter.X, fusionData._mag.vectorRaw.x);
@@ -322,6 +322,27 @@ void DMA1_Stream0_ISR_Handler(void)
 			// Multiply with soft iron matrix to correct distortions
 			matrix3_vectorMultiply(&fusionData._mag.softIron, &fusionData._mag.currentMagReading, &fusionData._mag.vector);
 			// Normalize mag vector
+			// Use mag reading to set yaw
+
+			// Mag vector x gravity = east and normalize
+			vectorf_crossProduct(&fusionData._mag.vector, &fusionData._accelerometer.vector, &fusionData._gyroError.MagData);
+			vectorf_normalize(&fusionData._gyroError.MagData);
+			// east x DCM.b is error rotation
+			vectorf_crossProduct(&fusionData._fusion_DCM.b, &fusionData._gyroError.MagData,&fusionData._gyroError.MagError);
+
+
+			vectorf_scalarProduct(&fusionData._gyroError.MagError, fusionData._gyroError.f32MagErrorScale, &fusionData._gyroError.MagError);
+
+			// Check that more than 2 seconds passed
+			if(READ_SYS_TIME > 2000000)
+			{
+				MAG_ERROR_OK = 1;
+			}
+			else
+			{
+				MAG_ERROR_OK = 0;
+			}
+
 
 			break;
 		}
@@ -1001,48 +1022,50 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			ui8MagDataTransferTime = 0;
 			if(UART4_SEND_VECTOR)
 			{
-				ui8MagDataTransfer[0] = 0xfa;
+				if(UART4_SEND_VECTOR_ADJ)
+				{
+					ui8MagDataTransfer[0] = 0xf5;
+					// Adjusted value
+					T32Temp.f = fusionData._mag.vector.x;
+					ui8MagDataTransfer[1] = T32Temp.ui8[0];
+					ui8MagDataTransfer[2] = T32Temp.ui8[1];
+					ui8MagDataTransfer[3] = T32Temp.ui8[2];
+					ui8MagDataTransfer[4] = T32Temp.ui8[3];
 
-				/*
-				// Raw value
-				T32Temp.f = fusionData._mag.vectorKFiltered.x;
-				ui8MagDataTransfer[1] = T32Temp.ui8[0];
-				ui8MagDataTransfer[2] = T32Temp.ui8[1];
-				ui8MagDataTransfer[3] = T32Temp.ui8[2];
-				ui8MagDataTransfer[4] = T32Temp.ui8[3];
+					T32Temp.f = fusionData._mag.vector.y;
+					ui8MagDataTransfer[5] = T32Temp.ui8[0];
+					ui8MagDataTransfer[6] = T32Temp.ui8[1];
+					ui8MagDataTransfer[7] = T32Temp.ui8[2];
+					ui8MagDataTransfer[8] = T32Temp.ui8[3];
 
-				T32Temp.f = fusionData._mag.vectorKFiltered.y;
-				ui8MagDataTransfer[5] = T32Temp.ui8[0];
-				ui8MagDataTransfer[6] = T32Temp.ui8[1];
-				ui8MagDataTransfer[7] = T32Temp.ui8[2];
-				ui8MagDataTransfer[8] = T32Temp.ui8[3];
+					T32Temp.f = fusionData._mag.vector.z;
+					ui8MagDataTransfer[9] = T32Temp.ui8[0];
+					ui8MagDataTransfer[10] = T32Temp.ui8[1];
+					ui8MagDataTransfer[11] = T32Temp.ui8[2];
+					ui8MagDataTransfer[12] = T32Temp.ui8[3];
+				}
+				else
+				{
+					ui8MagDataTransfer[0] = 0xfa;
+					// Raw value
+					T32Temp.f = fusionData._mag.vectorKFiltered.x;
+					ui8MagDataTransfer[1] = T32Temp.ui8[0];
+					ui8MagDataTransfer[2] = T32Temp.ui8[1];
+					ui8MagDataTransfer[3] = T32Temp.ui8[2];
+					ui8MagDataTransfer[4] = T32Temp.ui8[3];
 
-				T32Temp.f = fusionData._mag.vectorKFiltered.z;
-				ui8MagDataTransfer[9] = T32Temp.ui8[0];
-				ui8MagDataTransfer[10] = T32Temp.ui8[1];
-				ui8MagDataTransfer[11] = T32Temp.ui8[2];
-				ui8MagDataTransfer[12] = T32Temp.ui8[3];
-				*/
+					T32Temp.f = fusionData._mag.vectorKFiltered.y;
+					ui8MagDataTransfer[5] = T32Temp.ui8[0];
+					ui8MagDataTransfer[6] = T32Temp.ui8[1];
+					ui8MagDataTransfer[7] = T32Temp.ui8[2];
+					ui8MagDataTransfer[8] = T32Temp.ui8[3];
 
-				// Adjusted value
-				T32Temp.f = fusionData._mag.vector.x;
-				ui8MagDataTransfer[1] = T32Temp.ui8[0];
-				ui8MagDataTransfer[2] = T32Temp.ui8[1];
-				ui8MagDataTransfer[3] = T32Temp.ui8[2];
-				ui8MagDataTransfer[4] = T32Temp.ui8[3];
-
-				T32Temp.f = fusionData._mag.vector.y;
-				ui8MagDataTransfer[5] = T32Temp.ui8[0];
-				ui8MagDataTransfer[6] = T32Temp.ui8[1];
-				ui8MagDataTransfer[7] = T32Temp.ui8[2];
-				ui8MagDataTransfer[8] = T32Temp.ui8[3];
-
-				T32Temp.f = fusionData._mag.vector.z;
-				ui8MagDataTransfer[9] = T32Temp.ui8[0];
-				ui8MagDataTransfer[10] = T32Temp.ui8[1];
-				ui8MagDataTransfer[11] = T32Temp.ui8[2];
-				ui8MagDataTransfer[12] = T32Temp.ui8[3];
-
+					T32Temp.f = fusionData._mag.vectorKFiltered.z;
+					ui8MagDataTransfer[9] = T32Temp.ui8[0];
+					ui8MagDataTransfer[10] = T32Temp.ui8[1];
+					ui8MagDataTransfer[11] = T32Temp.ui8[2];
+					ui8MagDataTransfer[12] = T32Temp.ui8[3];
+				}
 
 				ui8ui8MagDataTransferCount = 0;
 				// Clear interrupt
@@ -1412,21 +1435,39 @@ void UART4_ISR_Handler(void)
 
 	if ((UART4->SR & USART_FLAG_RXNE) != (u16)RESET)	//if new data in
 	{
+		USART_ClearFlag(UART4, USART_FLAG_RXNE);
+		USART_ClearITPendingBit(UART4, USART_IT_RXNE);
 		iData = USART_ReceiveData(UART4);
 		if(0xaa == iData)
 		{
-			UART4_SEND_VECTOR = 1;
+			if(UART4_SEND_VECTOR)
+			{
+				UART4_SEND_VECTOR = 0;
+			}
+			else
+			{
+				UART4_SEND_VECTOR = 1;
+			}
 		}
-		else
+		if(0x55 == iData)
 		{
-			UART4_SEND_VECTOR = 0;
+			if(UART4_SEND_VECTOR_ADJ)
+			{
+				UART4_SEND_VECTOR_ADJ = 0;
+			}
+			else
+			{
+				UART4_SEND_VECTOR_ADJ = 1;
+			}
 		}
 	}
 
 	if((UART4->SR & USART_FLAG_TXE) != (u16)RESET)	//if transfer complete
 	{
-		UART4->SR = UART4->SR & !USART_FLAG_TC;
+		UART4->SR = UART4->SR & !USART_FLAG_TXE;
 
+		USART_ClearITPendingBit(UART4, USART_IT_TC);
+		USART_ClearFlag(UART4, USART_FLAG_TC);
 
 		if(13 > ui8ui8MagDataTransferCount)
 		{

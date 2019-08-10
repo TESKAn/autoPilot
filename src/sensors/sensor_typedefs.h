@@ -61,6 +61,7 @@ typedef struct
 	Vectorf vector;					// Normalized vector in body frame
 	Vectorf vectorRaw;
 	Vectorf vectorKFiltered;
+	Vectorf vfMagRate;
 	Vectorf vectorEarthFrame;		// Normalized vector in earth frame
 	Vectorf vecorPrevious;			// Store previous result for use in offset removal
 	KALMAN3 kFilter;				// Kalman filter data
@@ -76,7 +77,6 @@ typedef struct
 	Matrixf softIron;
 	uint32_t dataTime;
 	uint32_t deltaTime;				// Store time difference between current and previous sample
-	float32_t magRate;
 	float32_t sensorTemperature;
 	float32_t magOffsetNullGain;
 	uint8_t valid;
@@ -89,10 +89,9 @@ typedef struct
 	float32_t vectorNorm;
 	Vectorf vectorRaw;
 	Vectorf vectorKFiltered;
-	Vectorf scale;
+	Vectorf vfGyroScale;
 	float32_t fDeltaTime;
 	float32_t fReceiveTime;
-	float32_t errorScale;
 	// Kalman filter data
 	KALMAN3 kFilter;
 	//Vectorf gyroGainError;
@@ -100,13 +99,6 @@ typedef struct
 	Vectorf offsets;
 	uint32_t dataTime;
 	uint32_t deltaTime;
-	float32_t gyroRate;
-	float32_t gyroRateXP;
-	float32_t gyroRateXN;
-	float32_t gyroRateYP;
-	float32_t gyroRateYN;
-	float32_t gyroRateZP;
-	float32_t gyroRateZN;
 	float32_t sensorTemperature;
 	uint8_t valid;
 	uint8_t nerabim[3];
@@ -177,6 +169,7 @@ typedef struct
 	Vectorf vector_m;
 	Vectorf vector_earth;
 	Vectorf vectorNorm_earth;
+	Vectorf vfAccRate;
 	float32_t vectorNorm;
 	Vectorf vectorHistory[8];
 	Vectorf vectorAverage;
@@ -197,7 +190,6 @@ typedef struct
 	float32_t speed_3D_dt;
 	uint32_t dataTime;
 	uint32_t deltaTime;
-	float32_t accRate;
 	float32_t sensorTemperature;
 	Vectori16 offset;
 	uint8_t valid;
@@ -222,6 +214,9 @@ typedef struct
 	Vectorf MagError;
 	Vectorf GPSError;
 	Vectorf BaroError;
+	float32_t f32AccErrorScale;
+	float32_t f32GyroErrorScale;
+	float32_t f32MagErrorScale;
 	// Vectors that hold earth axes as seen from plane
 	Vectorf DCMNorth;
 	Vectorf DCMEast;

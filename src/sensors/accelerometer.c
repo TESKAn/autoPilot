@@ -14,7 +14,7 @@
 #include "sensor_typedefs.h"
 #include "accelerometer.h"
 
-#define ACC_DEFAULT_RATE					0.00024414807f			// 8/32768 -> g
+#define ACC_DEFAULT_RATE					0.0002392651086f			// 8/32768 -> g
 
 
 // Init accelerometer data structure
@@ -32,7 +32,10 @@ ErrorStatus acc_initDataStructure(AccelerometerData *data, uint32_t time)
 	data->Speed_3D = vectorf_init(0);
 	data->Speed_3D_Frac = vectorf_init(0);
 	data->speed_3D_dt = 0;
-	data->accRate = ACC_DEFAULT_RATE;
+	data->vfAccRate.x = ACC_DEFAULT_RATE;
+	data->vfAccRate.y = -ACC_DEFAULT_RATE;
+	data->vfAccRate.z = ACC_DEFAULT_RATE;
+
 	data->sensorTemperature = 0;
 	data->valid = 1;
 
@@ -150,10 +153,11 @@ ErrorStatus acc_update(FUSION_CORE *coreData, int16_t *rawData, uint32_t dataTim
 
 	// Update accelerometer reading
 	// Store raw data, multiply with - to get gravity - acceleration
+	/*
 	coreData->_accelerometer.vectorRaw.x = (float32_t)rawData[0] * -coreData->_accelerometer.accRate;
 	coreData->_accelerometer.vectorRaw.y = (float32_t)rawData[1] * -coreData->_accelerometer.accRate;
 	coreData->_accelerometer.vectorRaw.z = (float32_t)rawData[2] * -coreData->_accelerometer.accRate;
-
+*/
 	// Filter
 	//coreData->_accelerometer.vectorKFiltered.x = Kalman_Update(&coreData->_accelerometer.kFilter.X, coreData->_accelerometer.vectorRaw.x);
 	//coreData->_accelerometer.vectorKFiltered.y = Kalman_Update(&coreData->_accelerometer.kFilter.Y, coreData->_accelerometer.vectorRaw.y);

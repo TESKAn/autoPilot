@@ -30,7 +30,9 @@ ErrorStatus mag_initDataStructure(MagData *data, uint32_t time)
 	data->dataTime = time;
 	data->deltaTime = 0;
 	data->hardIron = vectorf_init(0);
-	data->magRate = MAG_DEFAULT_RATE;
+	data->vfMagRate.x = -MAG_DEFAULT_RATE;
+	data->vfMagRate.y = -MAG_DEFAULT_RATE;
+	data->vfMagRate.z = MAG_DEFAULT_RATE;
 	data->sensorTemperature = 0;
 	matrix3_init(1, &data->softIron);
 	data->vector = vectorf_init(0);
@@ -53,20 +55,20 @@ ErrorStatus mag_initDataStructure(MagData *data, uint32_t time)
 
 	// Setup offset and soft iron matrix
 
-	data->offset.x = -0.269852f;
-	data->offset.y = 0.423706f;
-	data->offset.z = 0.058639f;
+	data->offset.x = -0.047097f;
+	data->offset.y = -0.151491f;
+	data->offset.z = 0.019625f;
 
 
-	data->softIron.a.x = 2.695982f;
-	data->softIron.a.y = 0.557823f;
-	data->softIron.a.z = 0.225689f;
-	data->softIron.b.x = 0.557823f;
-	data->softIron.b.y = 3.457842f;
-	data->softIron.b.z = 0.044006f;
-	data->softIron.c.x = 0.225689f;
-	data->softIron.c.y = 0.044006f;
-	data->softIron.c.z = 3.599465f;
+	data->softIron.a.x = 2.362166f;
+	data->softIron.a.y = 0.069429f;
+	data->softIron.a.z = 0.016196f;
+	data->softIron.b.x = 0.069429f;
+	data->softIron.b.y = 2.318745f;
+	data->softIron.b.z = 0.011444f;
+	data->softIron.c.x = 0.016196f;
+	data->softIron.c.y = 0.011444f;
+	data->softIron.c.z = 2.369234f;
 
 
 	success = SUCCESS;
@@ -89,9 +91,9 @@ ErrorStatus mag_update(FUSION_CORE *data, int16_t *rawData, uint32_t dataTime)
 	vectorf_copy(&data->_mag.currentMagReading, &data->_mag.previousMagReading);
 	data->_mag.previousMagnitude = data->_mag.currentMagnitude;
 	// Update current reading
-	data->_mag.vectorRaw.x = (float32_t)rawData[0] * data->_mag.magRate;
-	data->_mag.vectorRaw.y = (float32_t)rawData[2] * data->_mag.magRate;
-	data->_mag.vectorRaw.z = (float32_t)rawData[1] * data->_mag.magRate;
+	data->_mag.vectorRaw.x = (float32_t)rawData[0] * data->_mag.vfMagRate.x;
+	data->_mag.vectorRaw.y = (float32_t)rawData[2] * data->_mag.vfMagRate.y;
+	data->_mag.vectorRaw.z = (float32_t)rawData[1] * data->_mag.vfMagRate.z;
 	// Store raw
 	//vectorf_copy(&data->_mag.currentMagReading, &data->_mag.vectorRaw);
 
