@@ -568,7 +568,7 @@ void init_DAC(void)
 	DMA_DeInit(DMA_DAC1);
 	DMAInitStructure.DMA_Channel = DMA_Channel_7;
 	DMAInitStructure.DMA_PeripheralBaseAddr = (uint32_t)DAC_DHR12R1_ADDRESS;
-	DMAInitStructure.DMA_Memory0BaseAddr = (uint32_t)&Sine12bit;
+	//DMAInitStructure.DMA_Memory0BaseAddr = (uint32_t)&Sine12bit;
 	DMAInitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
 	DMAInitStructure.DMA_BufferSize = 32;
 	DMAInitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;

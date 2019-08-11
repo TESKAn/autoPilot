@@ -44,8 +44,6 @@
 #include "diskio.h"
 #include "ff.h"
 
-#include "unitConversions.h"
-
 #include "stm32f4xx_usart.h"
 #include "stm32f4xx_rcc.h"
 #include "stm32f4xx_gpio.h"
@@ -63,7 +61,6 @@
 
 #include "CAN/can.h"
 
-#include "sensors.h"
 #include "sensors_spi.h"
 
 #endif /* ALLINCLUDE_H_ */

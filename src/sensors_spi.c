@@ -7,6 +7,39 @@
 
 #include "allinclude.h"
 
+volatile int sensorTimeCounter = 0;
+volatile uint32_t sensoruTimeCounter = 0;
+
+
+// Timeout function
+void sensorTimer(void)
+{
+	sensoruTimeCounter++;
+	if(sensoruTimeCounter > 100)
+	{
+		sensoruTimeCounter = 0;
+		// Function is called once every millisecond
+		sensorTimeCounter++;
+
+		if(sensorTimeCounter > 65000)
+		{
+			sensorTimeCounter = 65000;
+		}
+	}
+	Delaynus(2);
+}
+
+void storeAHRSAngles(FUSION_CORE *data)
+{
+	// Store angles
+
+	fusionData.ROLLPITCHYAW.roll = atan2f(data->_fusion_DCM.c.y, data->_fusion_DCM.c.z);
+
+	fusionData.ROLLPITCHYAW.pitch = -asinf(data->_fusion_DCM.c.x);
+
+	fusionData.ROLLPITCHYAW.yaw = atan2f( data->_fusion_DCM.b.x, data->_fusion_DCM.a.x);
+}
+
 int16_t Sensor_SPIInit()
 {
 

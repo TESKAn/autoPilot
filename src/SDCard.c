@@ -767,7 +767,7 @@ ErrorStatus storeSettings(void)
 
 	// Mag inclination
 	// Store number
-	float32ToStr(DEFAULT_MAG_INCLINATION, "magInclination=", FSBuffer);
+	float32ToStr(0.0542506509161570f, "magInclination=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
@@ -776,7 +776,7 @@ ErrorStatus storeSettings(void)
 
 	// Mag declination
 	// Store number
-	float32ToStr(DEFAULT_MAG_DECLINATION, "magDeclination=", FSBuffer);
+	float32ToStr(1.0902441579423135f, "magDeclination=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write
@@ -891,7 +891,7 @@ ErrorStatus storeSettings(void)
 
 	// Hard mag scale
 	// Store number
-	float32ToStr(SOFTMAG_SCALE, "hardMagScale=", FSBuffer);
+	float32ToStr(591.226172172661f, "hardMagScale=", FSBuffer);
 	// Store end of line
 	strcat(FSBuffer, ";\r\n");
 	// Write

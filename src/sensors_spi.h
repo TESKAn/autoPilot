@@ -13,7 +13,11 @@
 #define SPI_ERRORTIMEOUT		2000
 #define SPI_ERROR_RETRIESCOUNT	5		// How many times to retry communication
 
+extern volatile int sensorTimeCounter;
+extern volatile uint32_t sensoruTimeCounter;
 
+void sensorTimer(void);
+void storeAHRSAngles(FUSION_CORE *data);
 int16_t Sensor_SPIInit();
 int16_t Sensor_SPICommProcess();
 int16_t Sensor_setCS(uint8_t device, uint8_t state);

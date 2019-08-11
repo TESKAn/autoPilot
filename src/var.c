@@ -7,22 +7,11 @@
 
 #include "allinclude.h"
 
-// Timing variables
-uint32_t ui32StartTime = 0;
-uint32_t ui32EndTime = 0;
-uint32_t ui32ElapsedTime = 0;
-uint32_t ui32LastSensorUpdateTime = 0;
-uint32_t ui32SensorUpdateInterval = 0;
 
 // Variable for main loop state execution machine
 
  uint16_t mainLoopState = 0;
  uint16_t ui16MainLoopVar = 0;
- uint16_t servoMovePosition = 0;
- float32_t motorFRSpeed = 0.0f;
- uint16_t readRS485Data = 0;
- uint32_t ui32MainLoopCanVar = 0;
- uint32_t ui32MainLoopCanVar1 = 0;
 
 // Fusion data
 FUSION_CORE fusionData;
@@ -31,14 +20,7 @@ FUSION_CORE fusionData;
 FLIGHT_CORE FCFlightData;
 // R/C variable
 RCDATA RCData;
-// Flight check interval
-uint32_t ui32FlightCheckCounter = 0;
-// Interval time = value * 10 ms
-uint32_t ui32FlightCheckInterval = 4;
-
 // SPI variables
-int16_t i16SPIInitAGState = 0;
-
 FUSION_SPIDATA *SPI_SensorBuf;
 FUSION_SPIDATA SPI_SensorBufAcc;
 FUSION_SPIDATA SPI_SensorBufGyro;
@@ -48,8 +30,6 @@ FUSION_SPIDATA SPI_SensorBufBaro;
 // Flag variables
 volatile Flag flag0;
 volatile Flag flag1;
-volatile Flag APStatus1;
-volatile Flag APStatus2;
 
 
 // A/D variables
@@ -58,14 +38,7 @@ uint16_t AIn1 = 0;
 uint16_t AIn2 = 0;
 uint16_t AIn3 = 0;
 
-
-volatile char* fileBuffer;
-
 //TIM1 variables
-volatile uint16_t TIM1_CCRValue4 = 2200;
-
-volatile uint16_t TIM1_changeDelay = 0;
-
 volatile int TIM1CaptureValue1 = 0;
 volatile int TIM1CaptureValue2 = 0;
 volatile int TIM1CaptureValue3 = 0;
@@ -112,21 +85,6 @@ volatile uint32_t TIM9_IC1_PreviousValue = 0;
 volatile uint32_t TIM9_IC1_LowWidth = 0;
 volatile uint32_t TIM9_IC1_HighWidth = 0;
 
-// GPS variables
-// Defined in modbus.h
-
-// Power sensor variables
-// Defined in modbus.h
-
-// ADC trigger timer
-volatile uint32_t ADC_TriggerTimer = 0;
-
-// DAC variables
-volatile uint32_t DAC1_TIM6reloadValue = 0xFF;
-const uint16_t Sine12bit[32] = {
-                      2047, 2447, 2831, 3185, 3498, 3750, 3939, 4056, 4095, 4056,
-                      3939, 3750, 3495, 3185, 2831, 2447, 2047, 1647, 1263, 909,
-                      599, 344, 155, 38, 0, 38, 155, 344, 599, 909, 1263, 1647};
 // SD card variables
 volatile uint8_t SD_TimerCount = 0;
 // SD card buffers - 2 x 2 kb
@@ -144,25 +102,12 @@ uint8_t FatFS_FlushBuffer = 0;
 // LED count variable
 volatile uint16_t LED_ToggleCount = 0;
 
-// Buffer for data from PC to uC for USB
-char StringBuffer[161];			// Buffer for string manipulation
 char FSBuffer[FATFS_BUFF_SIZE];	// Pointer to buffer for file write
 
-// UART2 buffer
-//uint8_t UART2Buffer[1024];
-uint8_t ui8BufferToSend = 0;
 
-
-volatile CONVERTNUM convertNumFormat;
-
-volatile uint32_t fastDataSelect = 0;
-
-volatile uint16_t errorUpdateInterval = 0;
 
 // Signal strength variables
 volatile uint32_t signalStrengthCount = 0;
-
-uint32_t ui32TestVar = 0;
 
 uint32_t ui32CANTime = 0;
 uint32_t ui32SendAHRSDataTime = 0;

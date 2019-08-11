@@ -15,9 +15,6 @@
 #define USE_FREEMASTER		// Use freemaster instead of own comm
 
 
-// APStatus flags macros
-#define LOG_ISOPEN	APStatus1.bits.BIT0
-
 // File write buffer size
 #define FATFS_BUFF_SIZE		256
 // After how many writes flush buffer?
@@ -53,18 +50,18 @@
 #define COPYI2C					flag0.bits.BIT0
 #define PSBUSY					flag0.bits.BIT1
 #define PS_WAITINGDATA			flag0.bits.BIT2
-#define I2C2_WAITINGDATA		flag0.bits.BIT3
-#define I2C2_INITDONE			flag0.bits.BIT4
-#define MPU_COMM_ENABLED		flag0.bits.BIT5
-#define I2C2_REENABLE			flag0.bits.BIT6
-#define PWM_PASSTHROUGH			flag0.bits.BIT7
+//#define a		flag0.bits.BIT3
+//#define b			flag0.bits.BIT4
+//#define c		flag0.bits.BIT5
+//#define d			flag0.bits.BIT6
+//#define e			flag0.bits.BIT7
 #define EXTSENS_INIT_DONE		flag0.bits.BIT8
 #define SYSTEM_INTERRUPTS_ON	flag0.bits.BIT9
 #define LED_BLINK				flag0.bits.BIT10
 #define ADC_ENABLED				flag0.bits.BIT11
 #define SENSOR_TEST_STEP		flag0.bits.BIT12
 #define SYSTEM_RUNNING			flag0.bits.BIT13
-//#define SPI_TEST_RX				flag0.bits.BIT14
+#define LOG_ISOPEN				flag0.bits.BIT14
 
 #define SD_WRITE_LOG			flag0.bits.BIT15
 #define SD_LOG_ISOPEN			flag0.bits.BIT16
@@ -97,7 +94,6 @@
 #define UART4_SEND_VECTOR		flag1.bits.BIT9
 #define INITIAL_OFFSET_CAL		flag1.bits.BIT10
 #define UART4_SEND_VECTOR_ADJ	flag1.bits.BIT11
-#define MAG_ERROR_OK			flag1.bits.BIT12
 
 
 // Clear flag1 FPU exceptions

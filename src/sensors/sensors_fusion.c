@@ -96,7 +96,7 @@ ErrorStatus fusion_init(FUSION_CORE *data, uint32_t time)
 	data->PARAMETERS.gyroIErrorUpdateInterval = GYRO_I_UPDATE_INTERVAL;
 
 	// Mark wait for valid sensor signals
-	data->sFlag.bits.SFLAG_DO_DCM_UPDATE = 0;
+	data->ui8DoDCMUpdate = 0;
 	// Store initial time
 	data->ui32SensorInitTime = time;
 
@@ -112,7 +112,7 @@ ErrorStatus fusion_dataUpdate(FUSION_CORE *data, float32_t f32DeltaTime)
 	float32_t b = 0;
 	float32_t c = 0;
 
-	if(data->sFlag.bits.SFLAG_DO_DCM_UPDATE)
+	if(1 == data->ui8DoDCMUpdate)
 	{
 		// Update rotation matrix
 		//fusion_updateRotationMatrix(data);
@@ -134,7 +134,6 @@ ErrorStatus fusion_dataUpdate(FUSION_CORE *data, float32_t f32DeltaTime)
 			updateVector.y += data->_gyroError.MagError.y;
 			updateVector.z += data->_gyroError.MagError.z;
 		}
-
 
 		// Calculate current rotation angle
 		// Part 1
@@ -212,7 +211,7 @@ ErrorStatus fusion_dataUpdate(FUSION_CORE *data, float32_t f32DeltaTime)
 			if(SUCCESS == fusion_generateDCM(data))
 			{
 				// And if successful do matrix update
-				data->sFlag.bits.SFLAG_DO_DCM_UPDATE = 1;
+				data->ui8DoDCMUpdate = 1;
 				// Also store current gyro values as initial PID values
 				vectorf_scalarDivide(&data->_gyroError.GyroData, (float32_t)data->_gyroError.ui8SamplesGyro, &data->_gyroError.GyroData);
 				// Set initial PID values
@@ -222,27 +221,7 @@ ErrorStatus fusion_dataUpdate(FUSION_CORE *data, float32_t f32DeltaTime)
 			}
 		}
 	}
-	/*
-	// Update acceleration
-	acc_update(data, (int16_t*)&sensorData->arrays.acc, sensorData->data.dataTakenTime);
-	// Update speed from acceleration
-	acc_updateSpeedCalculation(data, sensorData->data.dataTakenTime);
-	// Update mag
-	mag_update(data, (int16_t*)&sensorData->arrays.mag, sensorData->data.dataTakenTime);
-	// Update altimeter
-	altimeter_update(data, sensorData->arrays.pressure.statusPressure, sensorData->arrays.baroTemperatureDegrees, sensorData->arrays.baroTemperatureFrac, sensorData->data.dataTakenTime);
 
-	// Estimate gyro error
-	fusion_updateGyroError(data);
-*/
-
-	return SUCCESS;
-}
-
-// Function calculates temperature from MPU 6000 temperature measurement.
-ErrorStatus fusion_calculateMPUTemperature(FUSION_CORE *data, int16_t temperatureData, uint32_t dataTime)
-{
-	data->MPUTemperature = ((float32_t) temperatureData / 340.0f) + 36.53f;
 	return SUCCESS;
 }
 
@@ -298,170 +277,3 @@ ErrorStatus fusion_generateDCM(FUSION_CORE *data)
 
 	return status;
 }
-
-// Function generates rotation update matrix.
-ErrorStatus fusion_generateUpdateMatrix(Vectorf * omega, Matrixf * updateMatrix, int isIdentity)
-{
-	ErrorStatus status = ERROR;
-
-	// First create identity matrix
-	matrix3_init(isIdentity, updateMatrix);
-	// Populate elements of matrix
-	updateMatrix->a.y = -omega->z;
-	updateMatrix->a.z = omega->y;
-
-	updateMatrix->b.x = omega->z;
-	updateMatrix->b.z = -omega->x;
-
-	updateMatrix->c.x = -omega->y;
-	updateMatrix->c.y = omega->x;
-
-	status = SUCCESS;
-	return status;
-}
-
-
-
-// Function uses sensor data to calculate error in DCM estimation
-ErrorStatus fusion_updateGyroError(FUSION_CORE *data)
-{
-	ErrorStatus status;
-	status = SUCCESS;
-	Vectorf temporaryVector = vectorf_init(0);
-	//Vectorf temporaryVector1 = vectorf_init(0);
-	//Vectorf temporaryVector2 = vectorf_init(0);
-	Vectorf error_gps_acc = vectorf_init(0);				// Error from GPS and accelerometer data
-	Vectorf error_acc_gravity = vectorf_init(0);			// Error from acceleration and gravity
-	Vectorf error_mag = vectorf_init(0);					// Error from compass
-	Vectorf error = vectorf_init(0);						// Cumulative error
-	float32_t fTemp = 0;
-	float32_t dt = 0;
-	// Calculate GPS speed
-	data->_gps.speed_from3D = vectorf_getNorm(&data->_gps.speed3D);
-
-
-	// Check how fast we are rotating. Calculate offset error only if below limit
-	data->_gyro.vectorNorm = vectorf_getNorm(&data->_gyro.vector);
-	if(data->_gyroError.f32GyroErrorUpdateMaxRate > data->_gyro.vectorNorm)
-	{
-		// Do only if speed below limit and acceleration is really low
-		if((data->PARAMETERS.minGPSSpeed > data->_gps.speed_from3D)&&(1 == data->_accelerometer.valid))
-		{
-			// Check that we have only gravity - acc. magnitude is 1 +- 0.05
-			data->_accelerometer.vectorNorm = vectorf_getNorm(&data->_accelerometer.vector);
-			if((0.9 < data->_accelerometer.vectorNorm)&&(1.1 > data->_accelerometer.vectorNorm))
-			{
-				// Store errors
-				// Store acc reading
-				vectorf_add(&data->_accelerometer.vectorNormalized, &data->_gyroError.AccelerometerData, &data->_gyroError.AccelerometerData);
-				// Store DCM estimation of acc reading
-				vectorf_add(&data->_fusion_DCM.c, &data->_gyroError.DCMDown, &data->_gyroError.DCMDown);
-				// Store number of samples
-				data->_gyroError.ui8SamplesAcc++;
-				// Store mag?
-				if(data->_mag.valid)
-				{
-					vectorf_add(&data->_mag.vector, &data->_gyroError.MagData, &data->_gyroError.MagData);
-					vectorf_add(&data->_fusion_DCM.b, &data->_gyroError.DCMEast, &data->_gyroError.DCMEast);
-					data->_gyroError.ui8SamplesMag++;
-				}
-				else
-				{
-					data->_gyroError.MagData = vectorf_init(0);
-					data->_gyroError.DCMEast = vectorf_init(0);
-					data->_gyroError.ui8SamplesMag = 0;
-				}
-
-				// Enough samples?
-				if(data->_gyroError.ui8SampleWindow < data->_gyroError.ui8SamplesAcc)
-				{
-					// Calculate errors
-					// Average data
-					// Accelerometer
-					fTemp = (float32_t)data->_gyroError.ui8SamplesAcc;
-					vectorf_scalarDivide(&data->_gyroError.AccelerometerData, fTemp, &data->_gyroError.AccelerometerData);
-					vectorf_scalarDivide(&data->_gyroError.DCMDown, fTemp, &data->_gyroError.DCMDown);
-					// Do mag if we have samples
-					if(0 != data->_gyroError.ui8SamplesMag)
-					{
-						// Mag
-						fTemp = (float32_t)data->_gyroError.ui8SamplesMag;
-						vectorf_scalarDivide(&data->_gyroError.MagData, fTemp, &data->_gyroError.MagData);
-						vectorf_scalarDivide(&data->_gyroError.DCMEast, fTemp, &data->_gyroError.DCMEast);
-						// Calculate mag error
-						// Calculate heading error in body frame
-						// Use gravity from accelerometer
-						// grav X raw mag = earth Y axis
-						// earth Y axis X DCM line b is yaw error in body frame
-						// temporaryVector - normalized mag with subtracted offsets
-						status = vectorf_normalizeAToB(&data->_gyroError.MagData, &temporaryVector);
-						// Get where earth's Y axis is supposed to be
-						status = vectorf_crossProduct(&data->_gyroError.AccelerometerData, &temporaryVector, &data->_mag.earthYAxis);
-						// Normalize
-						vectorf_normalize(&data->_mag.earthYAxis);
-						// Get error - rotate DCM B axis to our calculated Y axis
-						status = vectorf_crossProduct(&data->_gyroError.DCMEast, &data->_mag.earthYAxis, &error_mag);
-					}
-
-					// Calculate gravity error
-					status = vectorf_crossProduct(&data->_gyroError.DCMDown, &data->_gyroError.AccelerometerData, &error_acc_gravity);
-					// Check if there was calculation error
-					// If yes, set error to 0
-					if(ERROR == status)
-					{
-						error_acc_gravity = vectorf_init(0);
-					}
-
-					// Store time
-					data->_gyroError.ui32DeltaTime =  data->dataTime - data->_gyroError.ui32SamplingTime;
-					data->_gyroError.ui32SamplingTime = data->dataTime;
-
-					// Calculate delta time
-					dt = (float32_t)data->_gyroError.ui32DeltaTime;
-					dt = dt * data->PARAMETERS.systimeToSeconds;
-
-					// Zero
-					data->_gyroError.AccelerometerData = vectorf_init(0);
-					data->_gyroError.DCMDown = vectorf_init(0);
-					data->_gyroError.DCMEast = vectorf_init(0);
-					data->_gyroError.DCMNorth = vectorf_init(0);
-					data->_gyroError.DCMX = vectorf_init(0);
-					data->_gyroError.DCMY = vectorf_init(0);
-					data->_gyroError.DCMZ = vectorf_init(0);
-					data->_gyroError.MagData = vectorf_init(0);
-					data->_gyroError.ui8SamplesAcc = 0;
-					data->_gyroError.ui8SamplesMag = 0;
-
-					// Sum up all errors
-					status = vectorf_add(&error_acc_gravity, &error_gps_acc, &error);
-					status = vectorf_add(&error_mag, &error, &error);
-					// Scale error
-					//vectorf_scalarProduct(&error, data->_gyro.errorScale, &error);
-					// Store errors
-					//vectorf_copy(&error, &data->_gyro.gyroError);
-
-					// Update PID
-					status = math_PID3(&error, dt, &data->_gyroErrorPID);
-				}
-			}
-			else
-			{
-				error_acc_gravity = vectorf_init(0);
-				error_mag = vectorf_init(0);
-			}
-		}
-	}
-	else
-	{
-		/*
-		data->_gyro.gyroError.x = 0.0f;
-		data->_gyro.gyroError.y = 0.0f;
-		data->_gyro.gyroError.z = 0.0f;*/
-		// Update PID
-		//status = math_PID3(&data->_gyro.gyroError, 0.01f, &data->_gyroErrorPID);
-	}
-
-	return SUCCESS;
-}
-
-// Function updates rotation matrix from gyro data. At end it renormalizes and reorthogonalizes matrix.

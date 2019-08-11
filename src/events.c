@@ -136,6 +136,9 @@ void DMA1_Stream4_ISR_Handler(void)
 void DMA1_Stream0_ISR_Handler(void)
 {
 	Vectorf vfTempVector;
+	float32_t cos_pitch_sq = 0.0f;
+	float32_t headY = 0.0f;
+	float32_t headX = 0.0f;
 	//float32_t fTemp;
 	// Disable interrupts
 	DMA_ITConfig(DMA_SPI3_RX_STREAM, DMA_IT_TC | DMA_IT_DME | DMA_IT_FE, DISABLE);
@@ -174,6 +177,11 @@ void DMA1_Stream0_ISR_Handler(void)
 			fusion_dataUpdate(&fusionData, fusionData._gyro.fDeltaTime);
 
 			storeAHRSAngles(&fusionData);
+
+			// Store gyro norm
+			fusionData._gyro.f32Average += vectorf_getNorm(&fusionData._gyro.vector);
+			fusionData._gyro.f32Average *= 0.5f;
+
 
 			// Update flight data
 			FCFlightData.ORIENTATION.f32Roll = fusionData.ROLLPITCHYAW.roll - FCFlightData.ORIENTATION.f32RollOffset;
@@ -333,16 +341,13 @@ void DMA1_Stream0_ISR_Handler(void)
 
 			vectorf_scalarProduct(&fusionData._gyroError.MagError, fusionData._gyroError.f32MagErrorScale, &fusionData._gyroError.MagError);
 
-			// Check that more than 2 seconds passed
-			if(READ_SYS_TIME > 2000000)
-			{
-				MAG_ERROR_OK = 1;
-			}
-			else
-			{
-				MAG_ERROR_OK = 0;
-			}
-
+			// Calculate heading
+			cos_pitch_sq = 1.0f-(fusionData._fusion_DCM.c.x * fusionData._fusion_DCM.c.x);
+			headY = fusionData._mag.vector.y * fusionData._fusion_DCM.c.z - fusionData._mag.vector.z * fusionData._fusion_DCM.c.y;
+			headX = fusionData._mag.vector.x * cos_pitch_sq - fusionData._fusion_DCM.c.x * (fusionData._mag.vector.y * fusionData._fusion_DCM.c.y + fusionData._mag.vector.z * fusionData._fusion_DCM.c.z);
+			fusionData._mag.heading = atan2f(-headY, headX);
+			if(3.15f < fusionData._mag.heading) fusionData._mag.heading = 3.15f;
+			if(-3.15f > fusionData._mag.heading) fusionData._mag.heading = -3.15f;
 
 			break;
 		}
@@ -414,11 +419,9 @@ void DMA1_Stream3_ISR_Handler(void)
 	I2C_DMACmd(I2C2,DISABLE);
 	DMA_ClearITPendingBit(DMA1_Stream3, DMA_IT_TC);
 	// Copy data
-	copySensorData();
+	//copySensorData();
 	// Set flag to mark has data
 	COPYI2C = 1;
-	// Clear receive in progress
-	I2C2_WAITINGDATA = 0;
 }
 
 /**
@@ -552,11 +555,6 @@ void TIM4_ISR_Handler(void)
 			RCData.ch[0].PWMIN = (uint16_t)TIM4_IC1_HighWidth;
 			RCData.ch[0].PWM_Good = 1;
 			RCData.ch[0].PWM_Timeout = 0;
-			if(PWM_PASSTHROUGH)
-			{
-				TIM_SetCompare4(TIM1, RCData.ch[0].PWMIN);
-				RCData.ch[0].PWMOUT = RCData.ch[0].PWMIN;
-			}
 		}
 		TIM4_IC1_PreviousValue = dataTemp;
 		TIM_ClearITPendingBit(TIM4, TIM_IT_CC1);
@@ -590,11 +588,6 @@ void TIM4_ISR_Handler(void)
 			RCData.ch[1].PWMIN = (uint16_t)TIM4_IC2_HighWidth;
 			RCData.ch[1].PWM_Good = 1;
 			RCData.ch[1].PWM_Timeout = 0;
-			if(PWM_PASSTHROUGH)
-			{
-				TIM_SetCompare3(TIM1, RCData.ch[1].PWMIN);
-				RCData.ch[1].PWMOUT = RCData.ch[1].PWMIN;
-			}
 		}
 		TIM4_IC2_PreviousValue = dataTemp;
 		TIM_ClearITPendingBit(TIM4, TIM_IT_CC2);
@@ -628,11 +621,6 @@ void TIM4_ISR_Handler(void)
 			RCData.ch[2].PWMIN = (uint16_t)TIM4_IC3_HighWidth;
 			RCData.ch[2].PWM_Good = 1;
 			RCData.ch[2].PWM_Timeout = 0;
-			if(PWM_PASSTHROUGH)
-			{
-				TIM_SetCompare2(TIM1, RCData.ch[2].PWMIN);
-				RCData.ch[2].PWMOUT = RCData.ch[2].PWMIN;
-			}
 		}
 		TIM4_IC3_PreviousValue = dataTemp;
 		TIM_ClearITPendingBit(TIM4, TIM_IT_CC3);
@@ -666,11 +654,6 @@ void TIM4_ISR_Handler(void)
 			RCData.ch[3].PWMIN = (uint16_t)TIM4_IC4_HighWidth;
 			RCData.ch[3].PWM_Good = 1;
 			RCData.ch[3].PWM_Timeout = 0;
-			if(PWM_PASSTHROUGH)
-			{
-				TIM_SetCompare1(TIM1, RCData.ch[3].PWMIN);
-				RCData.ch[3].PWMOUT = RCData.ch[3].PWMIN;
-			}
 		}
 		TIM4_IC4_PreviousValue = dataTemp;
 		TIM_ClearITPendingBit(TIM4, TIM_IT_CC4);
@@ -709,11 +692,6 @@ void TIM8_CC_ISR_Handler(void)
 			RCData.ch[4].PWMIN = (uint16_t)TIM8_IC1_HighWidth;
 			RCData.ch[4].PWM_Good = 1;
 			RCData.ch[4].PWM_Timeout = 0;
-			if(PWM_PASSTHROUGH)
-			{
-				TIM_SetCompare4(TIM3, RCData.ch[4].PWMIN);
-				RCData.ch[4].PWMOUT = RCData.ch[4].PWMIN;
-			}
 		}
 		TIM8_IC1_PreviousValue = dataTemp;
 		TIM_ClearITPendingBit(TIM8, TIM_IT_CC1);
@@ -746,11 +724,6 @@ void TIM8_CC_ISR_Handler(void)
 			RCData.ch[5].PWMIN = (uint16_t)TIM8_IC2_HighWidth;
 			RCData.ch[5].PWM_Good = 1;
 			RCData.ch[5].PWM_Timeout = 0;
-			if(PWM_PASSTHROUGH)
-			{
-				TIM_SetCompare3(TIM3, RCData.ch[5].PWMIN);
-				RCData.ch[5].PWMOUT = RCData.ch[5].PWMIN;
-			}
 		}
 		TIM8_IC2_PreviousValue = dataTemp;
 		TIM_ClearITPendingBit(TIM8, TIM_IT_CC2);
@@ -784,11 +757,6 @@ void TIM8_CC_ISR_Handler(void)
 			RCData.ch[6].PWMIN = (uint16_t)TIM8_IC3_HighWidth;
 			RCData.ch[6].PWM_Good = 1;
 			RCData.ch[6].PWM_Timeout = 0;
-			if(PWM_PASSTHROUGH)
-			{
-				TIM_SetCompare2(TIM3, RCData.ch[6].PWMIN);
-				RCData.ch[6].PWMOUT = RCData.ch[6].PWMIN;
-			}
 		}
 		TIM8_IC3_PreviousValue = dataTemp;
 		TIM_ClearITPendingBit(TIM8, TIM_IT_CC3);
@@ -822,11 +790,6 @@ void TIM8_CC_ISR_Handler(void)
 			RCData.ch[7].PWMIN = (uint16_t)TIM8_IC4_HighWidth;
 			RCData.ch[7].PWM_Good = 1;
 			RCData.ch[7].PWM_Timeout = 0;
-			if(PWM_PASSTHROUGH)
-			{
-				TIM_SetCompare1(TIM3, RCData.ch[7].PWMIN);
-				RCData.ch[7].PWMOUT = RCData.ch[7].PWMIN;
-			}
 		}
 		TIM8_IC4_PreviousValue = dataTemp;
 		TIM_ClearITPendingBit(TIM8, TIM_IT_CC4);
@@ -1084,8 +1047,6 @@ void TIM8_TRG_COM_TIM14_ISR_Handler(void)
 			SD_TimerCount = 0;
 			disk_timerproc();
 		}
-		// Call sensor timer
-		sensorInterruptTimer();
 
 		// GPS timeout
 		ubx_timeout();

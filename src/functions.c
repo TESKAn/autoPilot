@@ -37,41 +37,21 @@ int16_t CheckMainLoopStates()
 		case 3:
 		{
 			mainLoopState = 0;
-			MPU_COMM_ENABLED = 0;
-			while(I2C2_WAITINGDATA ) {}
-			MPU6000_GyroSelfTest(DISABLE);
-			MPU_COMM_ENABLED = 1;
-
 			break;
 		}
 		case 4:
 		{
 			mainLoopState = 0;
-			MPU_COMM_ENABLED = 0;
-			while(I2C2_WAITINGDATA ) {}
-			MPU6000_AccSelfTest(ENABLE);
-			MPU_COMM_ENABLED = 1;
-
 			break;
 		}
 		case 5:
 		{
 			mainLoopState = 0;
-			MPU_COMM_ENABLED = 0;
-			while(I2C2_WAITINGDATA ) {}
-			MPU6000_AccSelfTest(DISABLE);
-			MPU_COMM_ENABLED = 1;
-
 			break;
 		}
 		case 6:
 		{
 			mainLoopState = 0;
-			MPU_COMM_ENABLED = 0;
-			while(I2C2_WAITINGDATA ) {}
-			MPU6000_ReadFTValues();
-			MPU_COMM_ENABLED = 1;
-
 			break;
 		}
 		case 7:
@@ -477,8 +457,6 @@ void extPeripheralInit(void)
 	PSBUSY = 1;
 	// Short delay
 	Delaynus(5000);
-
-	sensorInit();
 
 	ADC_ENABLED = 1;
 	// Mark sensors initiated

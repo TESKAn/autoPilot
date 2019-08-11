@@ -54,16 +54,11 @@ uint16_t MavlinkTransfer();
  */
 
 
-// AHRS
-float32_t t1 = 0;
-float32_t t2 = 0;
-
-
 
 int main(void)
 {
 	//uint16_t ui16Temp = 0;
-	unsigned int bytesWritten;
+	//unsigned int bytesWritten;
 	//uint32_t ui32Temp = 0;
 	SYSTEM_RUNNING = 0;
 	//float32_t temp = 0;
@@ -138,7 +133,6 @@ int main(void)
 	// Peripherals initialized, wait 1 sec
 	Delayms(100);
 
-	MPU_COMM_ENABLED = 1;
 
 	SYSTEM_RUNNING = 1;
 
@@ -146,8 +140,6 @@ int main(void)
 	INITIAL_OFFSET_CAL = 0;
 
 	SPI_SensorBuf = &SPI_SensorBufAcc;
-
-	//UART4_SEND_VECTOR = 1;
 
     while (1)
     {
@@ -177,6 +169,7 @@ int main(void)
     		}
     	}
 
+    	/*
         // Check log write buffers
         if(SD_WRITING_BUF1)
         {
@@ -196,6 +189,7 @@ int main(void)
         	SD_Buf2Count = 0;
         	SD_WRITING_BUF2 = 0;
         }
+        */
     }
     /* Infinite loop */
     while (1)

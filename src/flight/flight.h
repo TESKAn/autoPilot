@@ -67,14 +67,6 @@ int16_t flight_decodeServosQ(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues
 
 #define RC_GEAR			11
 
-/*
-#define RC_NACELLE_FL	PWMOUT_Val_9
-#define RC_NACELLE_FR	PWMOUT_Val_10
-#define RC_NACELLE_BM	PWMOUT_Val_11
-#define RC_NACELLE_BR	PWMOUT_Val_12
-*/
-
-
 
 #define RC_NACELLE_FL_MID	0
 #define RC_NACELLE_FR_MID	0
@@ -135,13 +127,10 @@ int16_t flight_decodeServosQ(FLIGHT_CORE * FCFlightData_local, RCDATA * RCValues
 #define FDEINIT_WAIT_SERVO_DISABLED		6
 
 
-
-
 // Tilt transition states
 #define FLIGHT_TILT_START				0
 #define FLIGHT_TILT_P					1
 #define FLIGHT_TILT_H					2
-
 
 
 // Flight variables

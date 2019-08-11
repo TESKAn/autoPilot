@@ -126,22 +126,12 @@ typedef union
     float f;
 }__attribute__((aligned(4),packed))  FP32;
 
-
-// Timing variables
-extern uint32_t ui32StartTime;
-extern uint32_t ui32EndTime;
-extern uint32_t ui32ElapsedTime;
-extern uint32_t ui32LastSensorUpdateTime;
-extern uint32_t ui32SensorUpdateInterval;
+#include "sensors/sensor_typedefs.h"
+#include "sensors/sensors_fusion.h"
 
 
 extern uint16_t mainLoopState;
 extern uint16_t ui16MainLoopVar;
-extern uint16_t servoMovePosition;
-extern float32_t motorFRSpeed;
-extern uint16_t readRS485Data;
-extern uint32_t ui32MainLoopCanVar;
-extern uint32_t ui32MainLoopCanVar1;
 
 extern FUSION_CORE fusionData;
 
@@ -149,13 +139,8 @@ extern FUSION_CORE fusionData;
 extern FLIGHT_CORE FCFlightData;
 // R/C variable
 extern RCDATA RCData;
-// Flight check interval
-extern uint32_t ui32FlightCheckCounter;
-extern uint32_t ui32FlightCheckInterval;
 
 // SPI variables
-extern int16_t i16SPIInitAGState;
-
 extern FUSION_SPIDATA *SPI_SensorBuf;
 extern FUSION_SPIDATA SPI_SensorBufAcc;
 extern FUSION_SPIDATA SPI_SensorBufGyro;
@@ -164,8 +149,6 @@ extern FUSION_SPIDATA SPI_SensorBufBaro;
 // Flag variable
 extern volatile Flag flag0;
 extern volatile Flag flag1;
-extern volatile Flag APStatus1;
-extern volatile Flag APStatus2;
 
 // A/D variables
 extern uint16_t AIn0;
@@ -173,13 +156,7 @@ extern uint16_t AIn1;
 extern uint16_t AIn2;
 extern uint16_t AIn3;
 
-
-extern volatile char* fileBuffer;
-
-
 //TIM1 variables
-extern volatile uint16_t TIM1_CCRValue4;
-extern volatile uint16_t TIM1_changeDelay;
 extern volatile int TIM1CaptureValue1;
 extern volatile int TIM1CaptureValue2;
 extern volatile int TIM1CaptureValue3;
@@ -234,12 +211,6 @@ extern volatile uint16_t GPS_Speed;
 extern volatile uint16_t GPS_TrackAngle;
 extern volatile uint16_t GPS_SattelitesStatus;
 
-// ADC trigger timer
-extern volatile uint32_t ADC_TriggerTimer;
-
-// DAC variables
-extern volatile uint32_t DAC1_TIM6reloadValue;
-extern const uint16_t Sine12bit[32];
 // SD card variables
 extern volatile uint8_t SD_TimerCount;
 // SD card buffers - 2 x 2 kb
@@ -257,25 +228,10 @@ extern uint8_t FatFS_FlushBuffer;
 // LED count variable
 extern volatile uint16_t LED_ToggleCount;
 
-// Buffer for data from PC to uC for USB
-extern uint8_t Buffer[64];
-extern char StringBuffer[161];			// Buffer for string manipulation
 extern char FSBuffer[FATFS_BUFF_SIZE];	// Pointer to buffer for file write
-
-// UART2 buffer
-//extern uint8_t UART2Buffer[1024];
-extern uint8_t ui8BufferToSend;
-
-extern volatile CONVERTNUM convertNumFormat;
-
-extern volatile uint32_t fastDataSelect;
-
-extern volatile uint16_t errorUpdateInterval;
 
 // Signal strength variables
 extern volatile uint32_t signalStrengthCount;
-
-extern uint32_t ui32TestVar;
 
 extern uint32_t ui32CANTime;
 extern uint32_t ui32SendAHRSDataTime;

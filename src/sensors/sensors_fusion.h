@@ -17,10 +17,8 @@
 
 ErrorStatus fusion_init(FUSION_CORE *data, uint32_t time);
 ErrorStatus fusion_dataUpdate(FUSION_CORE *data, float32_t f32DeltaTime);
-ErrorStatus fusion_calculateMPUTemperature(FUSION_CORE *data, int16_t temperatureData, uint32_t dataTime);
 ErrorStatus fusion_generateDCM(FUSION_CORE *data);
-ErrorStatus fusion_generateUpdateMatrix(Vectorf * omega, Matrixf * updateMatrix, int isIdentity);
-ErrorStatus fusion_updateGyroError(FUSION_CORE *data);
+
 
 
 #endif /* SENSORS_FUSION_H_ */
