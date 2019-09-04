@@ -144,3 +144,5 @@ uint16_t ui16SPITestDevice = 1;
 uint8_t ui8MagDataTransfer[13];
 uint8_t ui8MagDataTransferTime = 0;
 uint8_t ui8ui8MagDataTransferCount = 0;
+
+MAFilter MARotationFilter;

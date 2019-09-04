@@ -75,6 +75,9 @@ int main(void)
 	// Init sensor tx queue buffer
 	RB32_Init(&rb32SensorTXQueue, ui32SensorBuf, 32);
 
+	// Initialize rotation filter
+	MAFilter_init(&MARotationFilter, 10.0f);
+
 
 	// Initialize flight data
 	flight_init(&FCFlightData, &RCData);

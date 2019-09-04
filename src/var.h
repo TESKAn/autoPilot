@@ -269,4 +269,6 @@ extern uint8_t ui8MagDataTransfer[13];
 extern uint8_t ui8MagDataTransferTime;
 extern uint8_t ui8ui8MagDataTransferCount;
 
+extern MAFilter MARotationFilter;
+
 #endif /* VAR_H_ */

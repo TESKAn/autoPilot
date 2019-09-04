@@ -665,3 +665,20 @@ uint16_t Float32ToFloat16(float value)
 
 	return t16Var1.ui16;
 }
+
+void MAFilter_init(MAFilter *filter, float32_t f32Window)
+{
+	filter->f32Window = f32Window;
+	filter->f32Divisor = 1 / filter->f32Window;
+}
+
+float32_t MAFilter_sample(float32_t f32RawValue, MAFilter *filter)
+{
+	// Substract current value
+	filter->f32Accum -= filter->f32FilteredValue;
+	// Add new value
+	filter->f32Accum += f32RawValue;
+	// Calculate current filtered value
+	filter->f32FilteredValue = filter->f32Accum * filter->f32Divisor;
+	return filter->f32FilteredValue;
+}

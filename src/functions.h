@@ -8,6 +8,13 @@
 #ifndef FUNCTIONS_H_
 #define FUNCTIONS_H_
 
+typedef struct
+{
+    float32_t f32Accum;
+    float32_t f32Window;
+    float32_t f32Divisor;
+    float32_t f32FilteredValue;
+}__attribute__((aligned(4),packed))  MAFilter;
 
 int16_t CheckMainLoopStates();
 int16_t CheckRCInputTimeouts();
@@ -30,5 +37,7 @@ void transferDMA_USART3(uint8_t *data, int length);
 float32_t intToFloat(uint16_t whole, uint16_t frac);
 void sendUSBMessage(char* message);
 uint16_t Float32ToFloat16(float value);
+void MAFilter_init(MAFilter *filter, float32_t f32Window);
+float32_t MAFilter_sample(float32_t f32RawValue, MAFilter *filter);
 
 #endif /* FUNCTIONS_H_ */

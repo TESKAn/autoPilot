@@ -139,7 +139,7 @@ void DMA1_Stream0_ISR_Handler(void)
 	float32_t cos_pitch_sq = 0.0f;
 	float32_t headY = 0.0f;
 	float32_t headX = 0.0f;
-	//float32_t fTemp;
+	float32_t f32Temp;
 	// Disable interrupts
 	DMA_ITConfig(DMA_SPI3_RX_STREAM, DMA_IT_TC | DMA_IT_DME | DMA_IT_FE, DISABLE);
 
@@ -172,6 +172,9 @@ void DMA1_Stream0_ISR_Handler(void)
 
 			// Time from last sample
 			fusionData._gyro.fDeltaTime = (float32_t)SPI_SensorBufGyro.ui32InterruptDeltaTime * fusionData.PARAMETERS.systimeToSeconds;
+
+			f32Temp = vectorf_getNorm(&fusionData._gyro.vector);
+			MAFilter_sample(f32Temp, &MARotationFilter);
 
 			// Update DCM
 			fusion_dataUpdate(&fusionData, fusionData._gyro.fDeltaTime);
