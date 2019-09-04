@@ -174,7 +174,7 @@ void DMA1_Stream0_ISR_Handler(void)
 			fusionData._gyro.fDeltaTime = (float32_t)SPI_SensorBufGyro.ui32InterruptDeltaTime * fusionData.PARAMETERS.systimeToSeconds;
 
 			f32Temp = vectorf_getNorm(&fusionData._gyro.vector);
-			MAFilter_sample(f32Temp, &MARotationFilter);
+			fusionData._gyro.f32FilteredRotation = MAFilter_sample(f32Temp, &MARotationFilter);
 
 			// Update DCM
 			fusion_dataUpdate(&fusionData, fusionData._gyro.fDeltaTime);
@@ -207,21 +207,6 @@ void DMA1_Stream0_ISR_Handler(void)
 			fusionData._accelerometer.vectorRaw.y = (float32_t)SPI_SensorBufAcc.DATA.ACC.i16YOut * -fusionData._accelerometer.vfAccRate.y;
 			fusionData._accelerometer.vectorRaw.z = (float32_t)SPI_SensorBufAcc.DATA.ACC.i16ZOut * -fusionData._accelerometer.vfAccRate.z;
 
-
-/*
-			// Filter
-			fusionData._accelerometer.filterAccum.x += fusionData._accelerometer.vectorRaw.x;
-			fusionData._accelerometer.vectorKFiltered.x = fusionData._accelerometer.filterAccum.x / 5.0f;
-			fusionData._accelerometer.filterAccum.x -= fusionData._accelerometer.vectorKFiltered.x;
-
-			fusionData._accelerometer.filterAccum.y += fusionData._accelerometer.vectorRaw.y;
-			fusionData._accelerometer.vectorKFiltered.y = fusionData._accelerometer.filterAccum.y / 5.0f;
-			fusionData._accelerometer.filterAccum.y -= fusionData._accelerometer.vectorKFiltered.y;
-
-			fusionData._accelerometer.filterAccum.z += fusionData._accelerometer.vectorRaw.z;
-			fusionData._accelerometer.vectorKFiltered.z = fusionData._accelerometer.filterAccum.z / 5.0f;
-			fusionData._accelerometer.filterAccum.z -= fusionData._accelerometer.vectorKFiltered.z;
-*/
 			// Remove offset
 			vectorf_add(&fusionData._accelerometer.vectorRaw, &fusionData._accelerometer.offsets, &fusionData._accelerometer.vector);
 
@@ -236,9 +221,11 @@ void DMA1_Stream0_ISR_Handler(void)
 			vectorf_normalizeAToB(&fusionData._accelerometer.vector, &fusionData._accelerometer.vectorNormalized);
 			// Store vector length
 			fusionData._accelerometer.vectorNorm = vectorf_getNorm(&fusionData._accelerometer.vector);
+
+			fusionData._accelerometer.f32FilteredAcceleration = MAFilter_sample(fusionData._accelerometer.vectorNorm, &MAAccelerationFilter);
+
 			// Store time information
 			fusionData._accelerometer.deltaTime = (float32_t)SPI_SensorBufAcc.ui32InterruptDeltaTime * fusionData.PARAMETERS.systimeToSeconds;
-
 
 			//*****************************
 			// Use accelerometer to determine orientation -> acceleration history is 0
@@ -262,6 +249,20 @@ void DMA1_Stream0_ISR_Handler(void)
 
 			fusionData._accelerometer.accTotalNorm = vectorf_getNorm(&fusionData._accelerometer.accTotal);
 
+			// Check that rotation is under minimum and acceleration is under minimum
+			// to do error correction
+			CALCULATE_GYRO_ERROR = 0;
+			if(fusionData._gyro.f32FilteredRotation < fusionData._gyroError.f32MaxRotationAmplitude)
+			{
+				if(fusionData._accelerometer.f32FilteredAcceleration < fusionData._gyroError.f32MaxAccAmplitude)
+				{
+					if(fusionData._accelerometer.accTotalNorm < fusionData._gyroError.f32MaxAccChange)
+					{
+						// All values under limit, calculate error
+						CALCULATE_GYRO_ERROR = 1;
+					}
+				}
+			}
 
 			// Store DCM estimation of acc reading
 			vectorf_copy(&fusionData._fusion_DCM.c, &fusionData._gyroError.DCMDown);
@@ -295,22 +296,15 @@ void DMA1_Stream0_ISR_Handler(void)
 				fusionData._gyroError.AccError.y = 0.0f;
 				fusionData._gyroError.AccError.z = 0.0f;
 			}
-
-
-
-			// Use accelerometer data to determine no rotation -> gyro should be 0
-			vectorf_crossProduct(&fusionData._accelerometer.vector, &fusionData._accelerometer.vector_m, &vfTempVector);
-			fusionData._accelerometer.f32VectorAvgDiff += vectorf_getNorm(&vfTempVector);
-			fusionData._accelerometer.f32VectorAvgDiff *= 0.5f;
-
+			/*
 			// If average acc change is below limit (= no rotation), adjust gyro offset towards zero.
-			if(fusionData._accelerometer.f32MinChange > fusionData._accelerometer.f32VectorAvgDiff)
+			if(CALCULATE_GYRO_ERROR)
 			{
 				// Gyro error is current gyro reading * some value
 				vectorf_scalarProduct(&fusionData._gyro.vector, fusionData._gyroError.f32GyroErrorScale, &fusionData._gyroError.GyroError);
 				math_PID3(&fusionData._gyroError.GyroError, fusionData._gyro.fDeltaTime, &fusionData._gyroErrorPID);
 			}
-
+*/
 			break;
 		}
 		case MAG_DEV_CS:

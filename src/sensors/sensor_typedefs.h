@@ -43,6 +43,7 @@ typedef struct
 	Vectorf vector;
 	float32_t vectorNorm;
 	float32_t f32Average;
+	float32_t f32FilteredRotation;	// Filtered norm of rotation vector
 	Vectorf vectorRaw;
 	Vectorf vectorKFiltered;
 	Vectorf vfGyroScale;
@@ -126,6 +127,7 @@ typedef struct
 	Vectorf vector_earth;
 	Vectorf vectorNorm_earth;
 	Vectorf vfAccRate;
+	float32_t f32FilteredAcceleration;	// Filtered norm of acceleration vector
 	float32_t vectorNorm;
 	Vectorf vectorHistory[8];
 	Vectorf vectorAverage;
@@ -173,6 +175,11 @@ typedef struct
 	float32_t f32AccErrorScale;
 	float32_t f32GyroErrorScale;
 	float32_t f32MagErrorScale;
+	// Maximum rotation and acceleration for gyro error correction
+	float32_t f32MaxRotationAmplitude;
+	float32_t f32MaxAccAmplitude;
+	float32_t f32MaxAccChange;
+
 	// Vectors that hold earth axes as seen from plane
 	Vectorf DCMNorth;
 	Vectorf DCMEast;

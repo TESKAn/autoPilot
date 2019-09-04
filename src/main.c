@@ -77,7 +77,7 @@ int main(void)
 
 	// Initialize rotation filter
 	MAFilter_init(&MARotationFilter, 10.0f);
-
+	MAFilter_init(&MAAccelerationFilter, 10.0f);
 
 	// Initialize flight data
 	flight_init(&FCFlightData, &RCData);

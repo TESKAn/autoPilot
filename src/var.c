@@ -146,3 +146,5 @@ uint8_t ui8MagDataTransferTime = 0;
 uint8_t ui8ui8MagDataTransferCount = 0;
 
 MAFilter MARotationFilter;
+MAFilter MAAccelerationFilter;
+
